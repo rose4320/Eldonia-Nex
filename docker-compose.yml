@@ -1,0 +1,146 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: eldonia_postgres
+    environment:
+      POSTGRES_DB: eldonia_nex
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    networks:
+      - eldonia_network
+
+  # Redis Cache & Session Store
+  redis:
+    image: redis:7.4-alpine
+    container_name: eldonia_redis
+    command: redis-server --appendonly yes --requirepass redis123
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - eldonia_network
+
+  # Django Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eldonia_backend
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/eldonia_nex
+      - REDIS_URL=redis://:redis123@redis:6379/0
+      - CELERY_BROKER_URL=redis://:redis123@redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - eldonia_network
+    command: python manage.py runserver 0.0.0.0:8000
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: eldonia_frontend
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - eldonia_network
+    command: npm run dev
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eldonia_celery_worker
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/eldonia_nex
+      - REDIS_URL=redis://:redis123@redis:6379/0
+      - CELERY_BROKER_URL=redis://:redis123@redis:6379/0
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - eldonia_network
+    command: celery -A eldonia_nex worker -l info
+
+  # Celery Beat (Task Scheduler)
+  celery_beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eldonia_celery_beat
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/eldonia_nex
+      - REDIS_URL=redis://:redis123@redis:6379/0
+      - CELERY_BROKER_URL=redis://:redis123@redis:6379/0
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - eldonia_network
+    command: celery -A eldonia_nex beat -l info
+
+  # Nginx (Production用)
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: eldonia_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - media_files:/var/www/media
+      - static_files:/var/www/static
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - eldonia_network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+  redis_data:
+  media_files:
+  static_files:
+
+networks:
+  eldonia_network:
+    driver: bridge

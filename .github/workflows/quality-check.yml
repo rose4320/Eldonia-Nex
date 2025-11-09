@@ -1,0 +1,145 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: '3.13.3'
+  NODE_VERSION: '25.1.0'
+
+jobs:
+  backend-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run Black (Auto-formatter)
+      run: |
+        black backend/ --check --diff --color
+        
+    - name: Run isort (Import sorting)
+      run: |
+        isort backend/ --check --diff --color
+        
+    - name: Run flake8 (Linting)
+      run: |
+        flake8 backend/
+        
+    - name: Run mypy (Type checking)
+      run: |
+        mypy backend/
+        
+    - name: Run pytest with coverage
+      run: |
+        cd backend
+        pytest --cov=. --cov-report=xml --cov-report=html
+        
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./backend/coverage.xml
+        flags: backend
+        name: backend-coverage
+
+  frontend-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Run ESLint
+      run: |
+        cd frontend
+        npm run lint -- --format=json --output-file=eslint-report.json
+        
+    - name: Run Prettier check
+      run: |
+        cd frontend
+        npx prettier --check .
+        
+    - name: Run TypeScript check
+      run: |
+        cd frontend
+        npx tsc --noEmit
+        
+    - name: Build for production
+      run: |
+        cd frontend
+        npm run build
+        
+    - name: Analyze bundle size
+      run: |
+        cd frontend
+        npx next build --experimental-debug
+        
+    - name: Upload frontend artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: frontend-build
+        path: frontend/.next/
+
+  dependency-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Check Python dependencies
+      run: |
+        pip install safety
+        safety check --json --output safety-report.json
+        
+    - name: Set up Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Check Node.js dependencies
+      run: |
+        cd frontend
+        npm audit --json > npm-audit.json
+        
+    - name: Upload security reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          safety-report.json
+          frontend/npm-audit.json

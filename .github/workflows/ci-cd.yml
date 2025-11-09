@@ -1,0 +1,241 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHON_VERSION: '3.13.3'
+  NODE_VERSION: '25.1.0'
+
+jobs:
+  # Backend Tests
+  backend-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: test_eldinia_nex
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7.4-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Run Django system checks
+      run: |
+        cd backend
+        python manage.py check
+      env:
+        SECRET_KEY: 'test-secret-key'
+        DEBUG: 'False'
+        POSTGRES_DB: test_eldinia_nex
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        
+    - name: Run Django migrations
+      run: |
+        cd backend
+        python manage.py migrate
+      env:
+        SECRET_KEY: 'test-secret-key'
+        DEBUG: 'False'
+        POSTGRES_DB: test_eldinia_nex
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        
+    - name: Run Django tests
+      run: |
+        cd backend
+        python manage.py test
+      env:
+        SECRET_KEY: 'test-secret-key'
+        DEBUG: 'False'
+        POSTGRES_DB: test_eldinia_nex
+        POSTGRES_USER: test_user
+        POSTGRES_PASSWORD: test_password
+        POSTGRES_HOST: localhost
+        POSTGRES_PORT: 5432
+        REDIS_HOST: localhost
+        REDIS_PORT: 6379
+        
+    - name: Run Black (Code Formatter Check)
+      run: |
+        black --check backend/
+        
+    - name: Run isort (Import Sorting Check)
+      run: |
+        isort --check-only backend/
+        
+    - name: Run flake8 (Linting)
+      run: |
+        flake8 backend/
+        
+    - name: Run mypy (Type Checking)
+      run: |
+        mypy backend/
+
+  # Frontend Tests
+  frontend-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+        
+    - name: Install Node.js dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Run ESLint
+      run: |
+        cd frontend
+        npm run lint
+        
+    - name: Run TypeScript Check
+      run: |
+        cd frontend
+        npx tsc --noEmit
+        
+    - name: Run Prettier Check
+      run: |
+        cd frontend
+        npx prettier --check .
+        
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+        
+    - name: Run Frontend Tests (if available)
+      run: |
+        cd frontend
+        # npm test (when tests are added)
+        echo "Frontend tests will be added later"
+
+  # Security Checks
+  security-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        
+    - name: Install Security Tools
+      run: |
+        pip install safety bandit
+        
+    - name: Run Safety (Python Security Check)
+      run: |
+        safety check --json
+        
+    - name: Run Bandit (Python Security Linter)
+      run: |
+        bandit -r backend/ -f json
+        
+    - name: Set up Node.js ${{ env.NODE_VERSION }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        
+    - name: Run npm audit
+      run: |
+        cd frontend
+        npm audit --audit-level=high
+
+  # Docker Build Test
+  docker-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Backend Docker Image
+      run: |
+        docker build -t eldinia-nex-backend:test backend/
+        
+    - name: Test Backend Docker Image
+      run: |
+        docker run --rm eldinia-nex-backend:test python manage.py check --deploy
+
+  # Deploy (only on main branch)
+  deploy:
+    needs: [backend-test, frontend-test, security-check, docker-build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to Production
+      run: |
+        echo "🚀 Production deployment will be configured later"
+        # Add actual deployment steps here
+        
+    - name: Notify Slack (Success)
+      if: success()
+      run: |
+        echo "✅ Deployment successful notification"
+        # Add Slack notification here
+        
+    - name: Notify Slack (Failure)
+      if: failure()
+      run: |
+        echo "❌ Deployment failed notification"
+        # Add Slack notification here

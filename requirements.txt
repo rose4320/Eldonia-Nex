@@ -1,0 +1,79 @@
+# Python 3.13.3対応 requirements.txt
+# 2025年11月9日版 - Python 3.13.3サポート
+
+# Core Django Framework
+Django==5.1.3
+djangorestframework==3.15.2
+
+# Authentication & Authorization
+django-allauth==0.64.2                # Python 3.13対応版
+djangorestframework-simplejwt==5.3.0
+django-cors-headers==4.4.0
+
+# Database & ORM
+psycopg2-binary==2.9.9                # Python 3.13対応済み
+django-extensions==3.2.3
+
+# Cache & Session
+redis==5.0.8                          # Python 3.13対応版
+django-redis==5.4.0
+
+# Async & Background Tasks  
+celery==5.4.0                         # Python 3.13対応済み
+channels==4.1.0                       # WebSocket支援
+channels-redis==4.2.0
+
+# File & Image Processing
+Pillow==10.4.0                        # Python 3.13対応版
+python-magic==0.4.27                  # ファイル形式検出
+
+# API & Filtering
+django-filter==24.3                   # 最新版でPython 3.13対応
+django-import-export==4.1.0           # データインポート/エクスポート
+
+# Internationalization
+django-modeltranslation==0.18.11      # 多言語対応
+
+# Security & Environment
+python-decouple==3.8
+python-dotenv==1.0.1
+cryptography==41.0.7                  # セキュリティライブラリ
+
+# Payment Integration
+stripe==7.7.0                         # 決済処理
+
+# Development Tools
+django-debug-toolbar==4.4.6           # Python 3.13対応版
+django-silk==5.1.0                    # プロファイリング
+
+# Testing Framework
+pytest==8.3.3                         # Python 3.13対応版
+pytest-django==4.9.0                  # Django用pytest
+pytest-cov==5.0.0                     # カバレッジ測定
+factory-boy==3.3.1                    # テストデータ生成
+
+# Code Quality
+black==24.8.0                         # Python 3.13対応版
+flake8==7.1.1                         # Python 3.13対応版
+isort==5.13.2                         # インポート整理
+pre-commit==3.8.0                     # コミット前チェック
+
+# Documentation
+sphinx==8.0.2                         # Python 3.13対応版
+sphinx-rtd-theme==2.0.0
+
+# Monitoring & Logging
+sentry-sdk==2.14.0                    # エラー監視
+structlog==24.4.0                     # 構造化ログ
+
+# Performance & Optimization
+django-cachalot==2.6.3                # ORM結果キャッシュ
+django-compression-middleware==0.5.0   # レスポンス圧縮
+
+# API Documentation
+drf-spectacular==0.27.2               # OpenAPI 3.0スキーマ生成
+
+# Utilities
+requests==2.32.3                      # HTTP客户端
+python-dateutil==2.9.0                # 日付処理
+pytz==2024.2                         # タイムゾーン処理

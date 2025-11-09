@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eldonia-nex"
+version = "1.0.0"
+description = "クリエイタープラットフォーム"
+authors = [{name = "Eldonia-Nex Team", email = "dev@eldonia-nex.com"}]
+readme = "README.md"
+requires-python = ">=3.13.0"
+dependencies = [
+    "Django>=5.1.3",
+    "djangorestframework>=3.15.2",
+    "psycopg2-binary>=2.9.9",
+    "redis>=5.0.8",
+    "celery>=5.4.0",
+    "channels>=4.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.3",
+    "pytest-django>=4.9.0",
+    "black>=24.8.0",
+    "flake8>=7.1.1",
+    "isort>=5.13.2",
+    "django-debug-toolbar>=4.4.6",
+]
+
+[tool.black]
+target-version = ['py313']
+line-length = 88
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  migrations
+)/
+'''
+
+[tool.isort]
+profile = "black"
+known_django = "django"
+known_first_party = "eldonia_nex"
+sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+line_length = 88
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "eldonia_nex.settings.test"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--tb=short",
+    "--cov=eldonia_nex",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=80",
+]
+
+[tool.coverage.run]
+source = ["eldonia_nex"]
+omit = [
+    "*/migrations/*",
+    "*/venv/*",
+    "*/tests/*",
+    "manage.py",
+    "*/settings/*",
+    "*/__pycache__/*",
+]
+
+[tool.flake8]
+max-line-length = 88
+exclude = [
+    ".git",
+    "__pycache__",
+    "migrations",
+    "venv",
+    "build",
+    "dist",
+]
+ignore = [
+    "E203",  # whitespace before ':'
+    "E501",  # line too long
+    "W503",  # line break before binary operator
+]

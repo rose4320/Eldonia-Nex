@@ -1,0 +1,278 @@
+@import "tailwindcss";
+
+/* UI/UX設計書準拠：CSS変数定義 */
+@layer base {
+  :root {
+    /* フォントファミリー（UI/UX設計書準拠） */
+    --font-brand: var(--font-pt-serif);
+    --font-primary: var(--font-noto-sans-jp), var(--font-inter), sans-serif;
+    --font-code: var(--font-jetbrains-mono), "Fira Code", monospace;
+
+    /* プライマリカラー */
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --primary-light: #a5b4fc;
+
+    /* セカンダリカラー */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+
+    /* ダークモード（デフォルトテーマ） */
+    --background: #111827;
+    --foreground: #f9fafb;
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --surface: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --border: #4b5563;
+
+    /* ブランドグラデーション（必須） */
+    --brand-gradient: linear-gradient(180deg, #fcd34d 0%, #f97316 100%);
+
+    /* 固定サイジング */
+    --header-height: 88px;
+    --footer-min-height: 320px;
+    --container-max-width: 1200px;
+    --border-radius: 8px;
+    --exp-bar-height: 6px;
+  }
+}
+
+/* デフォルトフォント設定 */
+@layer base {
+  body {
+    font-family: var(--font-noto-sans-jp), var(--font-inter), sans-serif;
+  }
+}
+
+/* UI/UX設計書準拠：カスタムコンポーネント */
+@layer components {
+  /* ブランドテキスト専用スタイル（必須） */
+  .brand-title {
+    font-family: var(--font-pt-serif), "PT Serif", serif;
+    font-size: 32px;
+    font-weight: 700;
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .brand-subtitle {
+    font-family: var(--font-pt-serif), "PT Serif", serif;
+    font-size: 24px;
+    font-weight: 400;
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  /* ヘッダー専用スタイル（フル幅対応） */
+  .header-container {
+    display: grid;
+    grid-template-columns: 30% 40% 30%;
+    align-items: center;
+    gap: 24px;
+    min-height: var(--header-height);
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 16px 24px;
+  }
+
+  /* ブランドタイポグラフィ強化（必須スタイル） */
+  .brand-title {
+    font-family: var(--font-pt-serif), "PT Serif", serif !important;
+    font-size: 32px !important;
+    font-weight: 700 !important;
+    background: linear-gradient(180deg, #fcd34d 0%, #f97316 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    text-shadow: 0 2px 4px rgba(252, 211, 77, 0.3);
+  }
+
+  .brand-subtitle {
+    font-family: var(--font-pt-serif), "PT Serif", serif !important;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    background: linear-gradient(180deg, #fcd34d 0%, #f97316 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  @media (max-width: 767px) {
+    .header-container {
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+    }
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-noto-sans-jp), var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-brand: var(--font-pt-serif);
+}
+
+/* ダークモード優先設定 */
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* ブランドテキスト専用スタイル（必須） */
+.brand-title {
+  font-family: var(--font-brand);
+  font-size: 32px;
+  font-weight: 700;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-family: var(--font-brand);
+  font-size: 24px;
+  font-weight: 400;
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* EXPバー専用スタイル */
+.exp-bar {
+  width: 100%;
+  height: var(--exp-bar-height);
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: calc(var(--exp-bar-height) / 2);
+  overflow: hidden;
+}
+
+.exp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: calc(var(--exp-bar-height) / 2);
+  transition: width 0.3s ease;
+}
+
+/* ヘッダー専用スタイル */
+.header-container {
+  display: grid;
+  grid-template-columns: 30% 40% 30%;
+  align-items: center;
+  gap: 24px;
+  min-height: var(--header-height);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 16px 24px;
+}
+
+/* EXPバー専用スタイル（改良版） */
+.exp-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.exp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #3b82f6);
+  border-radius: 4px;
+  transition: width 0.5s ease-out;
+  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 1023px) {
+  .header-container {
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    padding: 12px 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .header-container {
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 8px 16px;
+    min-height: 72px;
+  }
+
+  .brand-title {
+    font-size: 24px !important;
+  }
+
+  .brand-subtitle {
+    font-size: 18px !important;
+  }
+}
+
+/* ナビゲーション強化 */
+.nav-item-enhanced {
+  font-family: var(--font-inter), Inter, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: all 0.2s ease;
+  position: relative;
+  padding: 8px 0;
+}
+
+.nav-item-enhanced:hover {
+  transform: translateY(-1px);
+}
+
+.nav-item-enhanced::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b5cf6, #3b82f6);
+  transition: width 0.3s ease;
+}
+
+.nav-item-enhanced:hover::after {
+  width: 100%;
+}
+
+/* タイポグラフィー統一 */
+.typography-primary {
+  font-family: var(--font-noto-sans-jp), "Noto Sans JP", var(--font-inter),
+    Inter, sans-serif;
+}
+
+.typography-brand {
+  font-family: var(--font-pt-serif), "PT Serif", serif;
+}
+
+.typography-code {
+  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+}
