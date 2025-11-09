@@ -208,7 +208,9 @@ jobs:
     
     - name: Build Backend Docker Image
       run: |
-        docker build -t eldinia-nex-backend:test backend/
+        # build from repository root but use the backend Dockerfile so
+        # top-level files like requirements.txt are available to the build
+        docker build -t eldinia-nex-backend:test -f backend/Dockerfile .
         
     - name: Test Backend Docker Image
       run: |
