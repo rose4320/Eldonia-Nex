@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "eldonia-nex"
-version = "1.0.0"
+version = "1.0.1"
 description = "クリエイタープラットフォーム"
 authors = [{name = "Eldonia-Nex Team", email = "dev@eldonia-nex.com"}]
 readme = "README.md"

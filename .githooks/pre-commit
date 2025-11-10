@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-commit hook to prevent committing env.md
+# To enable for all contributors: git config core.hooksPath .githooks
+
+# Check staged files
+if git diff --cached --name-only | grep -q '^env.md$'; then
+  echo "ERROR: env.md is staged for commit. Do NOT commit secrets into the repo." 1>&2
+  echo "Move secrets to GitHub Secrets and remove env.md from the index:" 1>&2
+  echo "  git reset HEAD env.md" 1>&2
+  echo "  rm -f env.md" 1>&2
+  exit 1
+fi
+
+exit 0
