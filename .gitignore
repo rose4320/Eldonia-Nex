@@ -375,3 +375,6 @@ logs
 /media/
 /static/
 /staticfiles/
+
+# Local secrets file (do not commit)
+env.md

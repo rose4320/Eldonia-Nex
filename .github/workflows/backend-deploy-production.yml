@@ -1,0 +1,78 @@
+name: "Backend: build, push image, deploy to production"
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ghcr.io/${{ github.repository }}:prod-${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run backend tests
+        run: |
+          python backend/manage.py test --verbosity=2
+
+      - name: Build and push Docker image to GHCR
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:prod-${{ github.sha }}
+          platforms: linux/amd64
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+  deploy:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to production server via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_DEPLOY_HOST }}
+          username: ${{ secrets.PROD_DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PROD_DEPLOY_PORT }}
+          script: |
+            set -e
+            cd ${{ secrets.PROD_DEPLOY_PATH }}
+            docker-compose pull || true
+            docker-compose up -d --remove-orphans
+
+      - name: Wait for app and run production health check
+        run: |
+          echo "Waiting for production app to start..."
+          sleep 5
+          curl -f ${{ secrets.PRODUCTION_URL }}/health
+
+      - name: Notify
+        run: echo "Production deployment finished"
