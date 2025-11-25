@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 # pyright: reportUnknownVariableType=false
 
 # Load environment variables from .env file
-load_dotenv(Path(__file__).resolve().parent.parent.parent / '.env')
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,71 +22,71 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-m7a_498b&oydhb^lr1e(_^sl^ad*9#j+r4$y^+(c579qtjs%vq')
+SECRET_KEY = os.getenv(
+    "SECRET_KEY", "django-insecure-m7a_498b&oydhb^lr1e(_^sl^ad*9#j+r4$y^+(c579qtjs%vq"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
     # Third-party apps
-    'rest_framework',
-    'rest_framework.authtoken',
-    'corsheaders',
-    'channels',
-    
+    "rest_framework",
+    "rest_framework.authtoken",
+    "corsheaders",
+    "channels",
     # Local apps
-    'users.apps.UsersConfig',
-    'content.apps.ContentConfig',
-    'collaboration.apps.CollaborationConfig',
-    'events.apps.EventsConfig',
-    'marketplace.apps.MarketplaceConfig',
-    'streaming.apps.StreamingConfig',
-    'jobs.apps.JobsConfig',
-    'gamification.apps.GamificationConfig',
+    "users.apps.UsersConfig",
+    "content.apps.ContentConfig",
+    "collaboration.apps.CollaborationConfig",
+    "events.apps.EventsConfig",
+    "marketplace.apps.MarketplaceConfig",
+    "streaming.apps.StreamingConfig",
+    "jobs.apps.JobsConfig",
+    "gamification.apps.GamificationConfig",
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'eldinia_nex.urls'
+ROOT_URLCONF = "eldinia_nex.urls"
 
 TEMPLATES = [  # type: ignore
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'eldinia_nex.wsgi.application'
+WSGI_APPLICATION = "eldinia_nex.wsgi.application"
 
 
 # Database
@@ -95,55 +95,55 @@ WSGI_APPLICATION = 'eldinia_nex.wsgi.application'
 # Database Configuration - Multi-Environment Support
 # 環境変数で簡単に切り替え可能: 'sqlite' | 'postgresql' | 'aurora'
 
-DATABASE_TYPE = os.getenv('DATABASE_TYPE', 'sqlite')
+DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
 
-if DATABASE_TYPE == 'sqlite':
+if DATABASE_TYPE == "sqlite":
     # Current: SQLite (開発中)
     DATABASES = {  # type: ignore
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-elif DATABASE_TYPE == 'postgresql':
+elif DATABASE_TYPE == "postgresql":
     # Future: PostgreSQL 15 (移行準備完了)
     DATABASES = {  # type: ignore
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('POSTGRES_DB', 'eldonia_nex_dev'),
-            'USER': os.getenv('POSTGRES_USER', 'postgres'),
-            'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'eldonia_pass'),
-            'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-            'PORT': os.getenv('POSTGRES_PORT', '5433'),
-            'OPTIONS': {
-                'connect_timeout': 10,
-                'options': '-c default_transaction_isolation=read_committed'
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("POSTGRES_DB", "eldonia_nex_dev"),
+            "USER": os.getenv("POSTGRES_USER", "postgres"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "eldonia_pass"),
+            "HOST": os.getenv("POSTGRES_HOST", "localhost"),
+            "PORT": os.getenv("POSTGRES_PORT", "5433"),
+            "OPTIONS": {
+                "connect_timeout": 10,
+                "options": "-c default_transaction_isolation=read_committed",
             },
         }
     }
-elif DATABASE_TYPE == 'aurora':
+elif DATABASE_TYPE == "aurora":
     # Production: AWS Aurora PostgreSQL
     DATABASES = {  # type: ignore
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.getenv('AURORA_DB_NAME', 'eldonia_nex'),
-            'USER': os.getenv('AURORA_DB_USER', 'aurora_user'),
-            'PASSWORD': os.getenv('AURORA_DB_PASSWORD'),
-            'HOST': os.getenv('AURORA_DB_HOST'),  # Aurora cluster endpoint
-            'PORT': os.getenv('AURORA_DB_PORT', '5432'),
-            'OPTIONS': {
-                'sslmode': 'require',
-                'connect_timeout': 10,
-                'options': '-c default_transaction_isolation=read_committed'
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("AURORA_DB_NAME", "eldonia_nex"),
+            "USER": os.getenv("AURORA_DB_USER", "aurora_user"),
+            "PASSWORD": os.getenv("AURORA_DB_PASSWORD"),
+            "HOST": os.getenv("AURORA_DB_HOST"),  # Aurora cluster endpoint
+            "PORT": os.getenv("AURORA_DB_PORT", "5432"),
+            "OPTIONS": {
+                "sslmode": "require",
+                "connect_timeout": 10,
+                "options": "-c default_transaction_isolation=read_committed",
             },
         }
     }
 else:
     # Fallback to SQLite
     DATABASES = {  # type: ignore
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
         }
     }
 
@@ -153,16 +153,16 @@ else:
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -170,9 +170,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'ja'
+LANGUAGE_CODE = "ja"
 
-TIME_ZONE = 'Asia/Tokyo'
+TIME_ZONE = "Asia/Tokyo"
 
 USE_I18N = True
 
@@ -182,39 +182,42 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
 # Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Use custom user model implemented in backend/users/models.py
+AUTH_USER_MODEL = "users.User"
 
 # Django REST Framework
 REST_FRAMEWORK = {  # type: ignore
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
     ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
     ],
 }
 
 # Channels (WebSocket) - Development configuration
-ASGI_APPLICATION = 'eldinia_nex.asgi.application'
+ASGI_APPLICATION = "eldinia_nex.asgi.application"
 
 # Redis for caching and channels (disabled for development)
 # CHANNEL_LAYERS = {  # type: ignore
@@ -228,8 +231,8 @@ ASGI_APPLICATION = 'eldinia_nex.asgi.application'
 
 # Development: Use in-memory channel layer
 CHANNEL_LAYERS = {  # type: ignore
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
 
@@ -246,14 +249,14 @@ CHANNEL_LAYERS = {  # type: ignore
 
 # Development: Use database cache
 CACHES = {  # type: ignore
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'eldinia_cache_table',
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "eldinia_cache_table",
     }
 }
 
 # Alternative: Use dummy cache for development
-# CACHES = {  # type: ignore  
+# CACHES = {  # type: ignore
 #     'default': {
 #         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
 #     }
@@ -264,7 +267,7 @@ CACHES = {  # type: ignore
 # SESSION_CACHE_ALIAS = 'default'
 
 # Development: Use database sessions
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # Celery configuration - Development setup (disabled)
 # CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
@@ -275,46 +278,46 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # CELERY_TIMEZONE = TIME_ZONE
 
 # Email configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@eldinia-nex.com')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("EMAIL_HOST", "localhost")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@eldinia-nex.com")
 
 # Logging
 LOGGING = {  # type: ignore
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs' / 'django.log',
-            'formatter': 'verbose',
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs" / "django.log",
+            "formatter": "verbose",
         },
-        'console': {
-            'level': 'DEBUG' if DEBUG else 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+        "console": {
+            "level": "DEBUG" if DEBUG else "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
         },
     },
-    'root': {
-        'handlers': ['console', 'file'],
-        'level': 'INFO',
+    "root": {
+        "handlers": ["console", "file"],
+        "level": "INFO",
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': False,
+    "loggers": {
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }
@@ -329,33 +332,26 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
 ]
 
-CORS_ALLOW_METHODS = [
-    'GET',
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS'
-]
+CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
 # Security settings
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
-    X_FRAME_OPTIONS = 'DENY'
+    X_FRAME_OPTIONS = "DENY"

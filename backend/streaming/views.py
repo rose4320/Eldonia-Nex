@@ -1,3 +1,4 @@
-from django.shortcuts import render
+"""Views for streaming app.
 
-# Create your views here.
+Currently no view implementations; placeholder module.
+"""

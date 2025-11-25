@@ -1,3 +1,4 @@
-from django.shortcuts import render
+"""Views for collaboration app.
 
-# Create your views here.
+Currently no view implementations; placeholder module.
+"""

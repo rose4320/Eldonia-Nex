@@ -1,3 +1,4 @@
-from django.contrib import admin
+"""Django admin registrations for collaboration app.
 
-# Register your models here.
+This file intentionally left minimal for now.
+"""

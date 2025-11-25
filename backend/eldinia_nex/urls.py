@@ -20,20 +20,28 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
+from .views import community_page
+
 
 # API Health Check
 def api_health_check(request):
     """Next.js SSR連携用ヘルスチェックAPI"""
-    return JsonResponse({
-        'status': 'healthy',
-        'message': 'Eldonia-Nex Django API is running',
-        'version': '1.0.0',
-        'environment': 'development' if settings.DEBUG else 'production',
-        'ssr_ready': True
-    })
+    return JsonResponse(
+        {
+            "status": "healthy",
+            "message": "Eldonia-Nex Django API is running",
+            "version": "1.0.0",
+            "environment": "development" if settings.DEBUG else "production",
+            "ssr_ready": True,
+        }
+    )
+
+
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/health/', api_health_check, name='api_health'),
+    path("admin/", admin.site.urls),
+    path("api/v1/health/", api_health_check, name="api_health"),
+    path("community/", community_page, name="community"),
     # path('api/v1/users/', include('users.urls')),
     # path('api/v1/content/', include('content.urls')),
     # path('api/v1/marketplace/', include('marketplace.urls')),
