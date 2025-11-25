@@ -1,3 +1,4 @@
-from django.test import TestCase
+"""Tests for events app.
 
-# Create your tests here.
+No tests implemented yet.
+"""

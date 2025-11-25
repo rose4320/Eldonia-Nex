@@ -29,7 +29,7 @@ dev = [
 ]
 
 [tool.black]
-target-version = ['py313']
+target-version = ['py312']
 line-length = 88
 include = '\.pyi?$'
 extend-exclude = '''

@@ -1,3 +1,4 @@
-from django.db import models
+"""Collaboration models module.
 
-# Create your models here.
+No models implemented yet. Placeholder module.
+"""

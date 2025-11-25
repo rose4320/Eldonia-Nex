@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Noto_Sans_JP, PT_Serif } from "next/font/google";
+
 import Layout from "../components/layout/Layout";
+import { AuthProvider } from "./context/AuthContext";
 import "./globals.css";
 
 // UI/UX設計書準拠：ブランドフォント
@@ -56,9 +58,11 @@ export default function RootLayout({
       <body
         className={`${ptSerif.variable} ${notoSansJP.variable} ${inter.variable} ${jetbrainsMono.variable} antialiased bg-gray-900 text-gray-100`}
       >
-        <Layout>
-          {children}
-        </Layout>
+        <AuthProvider>
+          <Layout>
+            {children}
+          </Layout>
+        </AuthProvider>
       </body>
     </html>
   );

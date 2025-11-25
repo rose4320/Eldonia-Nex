@@ -1,3 +1,4 @@
-from django.db import models
+"""Jobs models module.
 
-# Create your models here.
+No models implemented yet. Placeholder module.
+"""

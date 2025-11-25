@@ -1,3 +1,4 @@
-from django.db import models
+"""Content models module.
 
-# Create your models here.
+No models implemented yet. Placeholder module.
+"""
