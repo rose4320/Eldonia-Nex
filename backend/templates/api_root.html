@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eldonia-Nex API - クリエイターのための創作プラットフォーム</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", "Noto Sans JP", -apple-system,
+          BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+        color: #e0e0e0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+      }
+
+      /* ヘッダー */
+      header {
+        background: rgba(15, 52, 96, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem 2rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo-icon {
+        font-size: 2.5rem;
+        filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
+      }
+
+      .logo-text h1 {
+        font-size: 2rem;
+        background: linear-gradient(135deg, #fcd34d 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        letter-spacing: 1px;
+      }
+
+      .logo-text p {
+        font-size: 0.9rem;
+        color: #a0a0a0;
+        margin-top: 0.25rem;
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #e0e0e0;
+        border: 2px solid rgba(139, 92, 246, 0.5);
+      }
+
+      .btn-secondary:hover {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.8);
+      }
+
+      /* メインコンテンツ */
+      main {
+        flex: 1;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+
+      /* ヒーローセクション */
+      .hero {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 3rem 1rem;
+      }
+
+      .hero h2 {
+        font-size: 3rem;
+        background: linear-gradient(135deg, #fcd34d 0%, #f97316 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        font-weight: 800;
+        line-height: 1.2;
+      }
+
+      .hero p {
+        font-size: 1.25rem;
+        color: #b0b0b0;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(34, 197, 94, 0.1);
+        border: 2px solid rgba(34, 197, 94, 0.5);
+        padding: 0.5rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 600;
+        color: #22c55e;
+        margin-top: 1rem;
+      }
+
+      .status-badge::before {
+        content: "";
+        width: 10px;
+        height: 10px;
+        background: #22c55e;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* 統計情報 */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 4rem;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        border-radius: 15px;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        text-align: center;
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        border-color: rgba(139, 92, 246, 0.6);
+      }
+
+      .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.9rem;
+        color: #a0a0a0;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* エンドポイント一覧 */
+      .endpoints {
+        margin-bottom: 3rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        color: #fcd34d;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .section-title::before {
+        content: "";
+        width: 4px;
+        height: 2rem;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+      }
+
+      .endpoint-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .endpoint-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .endpoint-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(139, 92, 246, 0.6);
+        transform: translateX(5px);
+      }
+
+      .endpoint-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .endpoint-title {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .endpoint-icon {
+        font-size: 1.5rem;
+      }
+
+      .endpoint-name {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #e0e0e0;
+      }
+
+      .method-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 5px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+
+      .method-get {
+        background: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.5);
+      }
+
+      .method-post {
+        background: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.5);
+      }
+
+      .endpoint-url {
+        font-family: "Courier New", monospace;
+        font-size: 0.9rem;
+        color: #8b5cf6;
+        background: rgba(139, 92, 246, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 5px;
+        margin-bottom: 0.75rem;
+        border: 1px solid rgba(139, 92, 246, 0.3);
+        overflow-x: auto;
+      }
+
+      .endpoint-description {
+        color: #b0b0b0;
+        font-size: 0.95rem;
+      }
+
+      .try-button {
+        margin-top: 1rem;
+        width: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .try-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+
+      /* フッター */
+      footer {
+        background: rgba(15, 52, 96, 0.8);
+        backdrop-filter: blur(10px);
+        padding: 2rem;
+        text-align: center;
+        border-top: 2px solid rgba(139, 92, 246, 0.3);
+        margin-top: auto;
+      }
+
+      footer p {
+        color: #a0a0a0;
+        margin-bottom: 0.5rem;
+      }
+
+      .footer-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1rem;
+      }
+
+      .footer-links a {
+        color: #8b5cf6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .footer-links a:hover {
+        color: #a78bfa;
+      }
+
+      /* レスポンシブ */
+      @media (max-width: 768px) {
+        .hero h2 {
+          font-size: 2rem;
+        }
+
+        .header-content {
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .stats {
+          grid-template-columns: 1fr;
+        }
+
+        .footer-links {
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+      }
+
+      /* アニメーション */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .endpoint-card {
+        animation: fadeInUp 0.5s ease forwards;
+      }
+
+      .endpoint-card:nth-child(1) {
+        animation-delay: 0.1s;
+      }
+      .endpoint-card:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .endpoint-card:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+      .endpoint-card:nth-child(4) {
+        animation-delay: 0.4s;
+      }
+      .endpoint-card:nth-child(5) {
+        animation-delay: 0.5s;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">🎨</div>
+          <div class="logo-text">
+            <h1>Eldonia-Nex API</h1>
+            <p>v{{ version }} - {{ environment }}</p>
+          </div>
+        </div>
+        <div class="header-actions">
+          <a href="{{ documentation }}" class="btn btn-secondary"
+            >📚 ドキュメント</a
+          >
+          <a href="{{ documentation }}" class="btn btn-primary">🛡️ 管理画面</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ヒーローセクション -->
+      <section class="hero">
+        <h2>クリエイターのための<br />創作プラットフォーム</h2>
+        <p>{{ description }}</p>
+        <div class="status-badge">{{ status|upper }} - システム正常稼働中</div>
+      </section>
+
+      <!-- 統計情報 -->
+      <section class="stats">
+        <div class="stat-card">
+          <div class="stat-icon">🚀</div>
+          <div class="stat-value">{{ version }}</div>
+          <div class="stat-label">API Version</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🌐</div>
+          <div class="stat-value">{{ endpoints|length }}</div>
+          <div class="stat-label">エンドポイント</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value">&lt; 50ms</div>
+          <div class="stat-label">平均レスポンス</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔒</div>
+          <div class="stat-value">99.9%</div>
+          <div class="stat-label">稼働率</div>
+        </div>
+      </section>
+
+      <!-- エンドポイント一覧 -->
+      <section class="endpoints">
+        <h3 class="section-title">利用可能なエンドポイント</h3>
+        <div class="endpoint-grid">
+          {% for key, endpoint in endpoints.items %}
+          <div
+            class="endpoint-card"
+            onclick="tryEndpoint('{{ endpoint.url }}', '{{ endpoint.method }}')"
+          >
+            <div class="endpoint-header">
+              <div class="endpoint-title">
+                <span class="endpoint-icon">
+                  {% if key == 'health' %}🔍 {% elif key == 'admin' %}🛡️ {% elif
+                  key == 'register' %}📝 {% elif key == 'plans' %}💳 {% elif key
+                  == 'community' %}👥 {% else %}📡{% endif %}
+                </span>
+                <span class="endpoint-name">{{ endpoint.description }}</span>
+              </div>
+              <span class="method-badge method-{{ endpoint.method|lower }}"
+                >{{ endpoint.method }}</span
+              >
+            </div>
+            <div class="endpoint-url">{{ endpoint.url }}</div>
+            <div class="endpoint-description">{{ endpoint.description }}</div>
+            <button class="try-button">試してみる →</button>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>&copy; 2025 Eldonia-Nex. All rights reserved.</p>
+      <p>クリエイターが自由に表現し、正当な評価と収益を得られる世界の実現</p>
+      <div class="footer-links">
+        <a href="{{ documentation }}">管理画面</a>
+        <a href="/api/v1/health/">ヘルスチェック</a>
+        <a href="https://github.com/eldonia-nex" target="_blank">GitHub</a>
+      </div>
+    </footer>
+
+    <script>
+      function tryEndpoint(url, method) {
+        if (method === "GET") {
+          window.open(url, "_blank");
+        } else {
+          alert(
+            `${method} リクエストは管理画面またはAPIクライアントから送信してください。\n\nURL: ${url}`
+          );
+        }
+      }
+
+      // アニメーション
+      document.addEventListener("DOMContentLoaded", function () {
+        const cards = document.querySelectorAll(".endpoint-card");
+        cards.forEach((card, index) => {
+          card.style.opacity = "0";
+          setTimeout(() => {
+            card.style.opacity = "1";
+          }, index * 100);
+        });
+      });
+    </script>
+  </body>
+</html>

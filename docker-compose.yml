@@ -3,7 +3,7 @@ version: "3.9"
 services:
   # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: eldonia_postgres
     environment:
       POSTGRES_DB: eldonia_nex
@@ -37,12 +37,18 @@ services:
       dockerfile: Dockerfile
     container_name: eldonia_backend
     environment:
-      - DEBUG=1
+      - DEBUG=True
+      - DATABASE_TYPE=postgresql
+      - POSTGRES_DB=eldonia_nex
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres123
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
       - DATABASE_URL=postgresql://postgres:postgres123@postgres:5432/eldonia_nex
       - REDIS_URL=redis://:redis123@redis:6379/0
       - CELERY_BROKER_URL=redis://:redis123@redis:6379/0
     ports:
-      - "8000:8000"
+      - "8001:8000"
     volumes:
       - ./backend:/app
       - media_files:/app/media

@@ -1,0 +1,4 @@
+media (空フォルダ)
+__pycache__ (Pythonキャッシュ)
+.mypy_cache (型チェックキャッシュ)
+logs/django.log (ログファイル)

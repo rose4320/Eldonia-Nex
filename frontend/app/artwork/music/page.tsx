@@ -7,7 +7,9 @@ import PlaceholderImage from '../../../components/common/PlaceholderImage'
 import { MusicArtwork } from '../../../types/artwork'
 // import { Comment, Review, ReviewStats } from '../../../types/artwork' // 将来のコメント・レビュー機能用
 
-const MusicDetailPage: React.FC = () => {
+import { Suspense } from 'react'
+
+const MusicDetailPageInner: React.FC = () => {
   const [artwork, setArtwork] = useState<MusicArtwork | null>(null)
   const [loading, setLoading] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -378,5 +380,11 @@ const MusicDetailPage: React.FC = () => {
     </div>
   )
 }
+
+const MusicDetailPage: React.FC = () => (
+  <Suspense>
+    <MusicDetailPageInner />
+  </Suspense>
+)
 
 export default MusicDetailPage

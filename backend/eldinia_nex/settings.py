@@ -7,12 +7,11 @@ Creative Platform for Artists and Creators
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
+# Temporarily disabled due to encoding issues
+# load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 # pyright: reportUnknownVariableType=false
-
-# Load environment variables from .env file
-load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -106,18 +105,17 @@ if DATABASE_TYPE == "sqlite":
         }
     }
 elif DATABASE_TYPE == "postgresql":
-    # Future: PostgreSQL 15 (移行準備完了)
+    # Future: PostgreSQL 17 (移行準備完了)
     DATABASES = {  # type: ignore
         "default": {
             "ENGINE": "django.db.backends.postgresql",
-            "NAME": os.getenv("POSTGRES_DB", "eldonia_nex_dev"),
+            "NAME": os.getenv("POSTGRES_DB", "eldonia_nex"),
             "USER": os.getenv("POSTGRES_USER", "postgres"),
-            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "eldonia_pass"),
+            "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres123"),
             "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-            "PORT": os.getenv("POSTGRES_PORT", "5433"),
+            "PORT": os.getenv("POSTGRES_PORT", "5432"),
             "OPTIONS": {
                 "connect_timeout": 10,
-                "options": "-c default_transaction_isolation=read_committed",
             },
         }
     }
@@ -347,6 +345,7 @@ CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
 # Security settings
 if not DEBUG:
+    # 本番環境: 全セキュリティ機能を有効化
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_HSTS_SECONDS = 31536000
@@ -355,3 +354,23 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = "DENY"
+    
+    # Cookie セキュリティ
+    SESSION_COOKIE_SECURE = True              # セッションCookieをHTTPSのみに制限
+    CSRF_COOKIE_SECURE = True                 # CSRF CookieをHTTPSのみに制限
+    CSRF_COOKIE_HTTPONLY = True               # JavaScriptからCSRF Cookieへのアクセスを防止
+    SESSION_COOKIE_HTTPONLY = True            # JavaScriptからセッションCookieへのアクセスを防止
+    CSRF_COOKIE_SAMESITE = 'Strict'          # CSRF対策: 同一サイトからのみCookie送信
+    SESSION_COOKIE_SAMESITE = 'Strict'       # セッション固定攻撃対策
+    
+    # 追加のセキュリティヘッダー
+    SECURE_REFERRER_POLICY = 'same-origin'    # リファラー情報を同一オリジンのみに制限
+else:
+    # 開発環境: HTTPアクセスを許可
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    CSRF_COOKIE_HTTPONLY = True               # 開発環境でもXSS対策は有効化
+    SESSION_COOKIE_HTTPONLY = True            # 開発環境でもXSS対策は有効化
+    CSRF_COOKIE_SAMESITE = 'Lax'             # 開発環境では少し緩和
+    SESSION_COOKIE_SAMESITE = 'Lax'          # 開発環境では少し緩和

@@ -10,7 +10,7 @@ from .models import User
 
 @receiver(post_save, sender=User)
 def attach_referral_on_signup(
-    sender: Any, instance: User, created: bool, **kwargs: Any
+    sender: type, instance: Any, created: bool, **kwargs: Any
 ) -> None:
     """If a new user has `referral_code_used`, attach them to the referrer.
 
@@ -23,7 +23,7 @@ def attach_referral_on_signup(
         try:
             ref = Referral.objects.filter(
                 referral_code=instance.referral_code_used
-            ).first()
+            ).first()  # type: ignore[attr-defined]
             if ref:
                 # assign referred_user and user's referred_by_user
                 instance.referred_by_user = ref.referrer
@@ -31,13 +31,14 @@ def attach_referral_on_signup(
                 if not ref.referred_user:
                     ref.referred_user = instance
                     ref.save(update_fields=["referred_user"])
-        except Exception:
+        except (AttributeError, ValueError, TypeError) as e:  # よく起こる例外のみ握りつぶし
+            print(f"[attach_referral_on_signup] Exception: {e}")
             return
 
 
 @receiver(post_save, sender=User)
 def sync_artwork_denorm_on_user_update(
-    sender: Any, instance: User, created: bool, **kwargs: Any
+    sender: type, instance: Any, **kwargs: Any
 ) -> None:
     """Keep Artwork.denormalized creator fields in sync when a User changes.
 
@@ -52,13 +53,13 @@ def sync_artwork_denorm_on_user_update(
 
         # Build update values
         update_vals: Dict[str, Any] = {
-            "creator_display_name": instance.display_name or instance.username,
-            "creator_avatar_url": instance.avatar_url or "",
-            "creator_external_id": instance.external_id,
+            "creator_display_name": getattr(instance, "display_name", getattr(instance, "username", "")),
+            "creator_avatar_url": getattr(instance, "avatar_url", ""),
+            "creator_external_id": getattr(instance, "external_id", None),
         }
 
         # Perform bulk update on all artworks by this creator
-        Artwork.objects.filter(creator_id=instance.pk).update(**update_vals)
-    except Exception:
-        # Best-effort: do not raise from signal
+        Artwork.objects.filter(creator_id=instance.pk).update(**update_vals)  # type: ignore[attr-defined]
+    except (AttributeError, ValueError, TypeError) as e:  # よく起こる例外のみ握りつぶし
+        print(f"[sync_artwork_denorm_on_user_update] Exception: {e}")
         return

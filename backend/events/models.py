@@ -26,7 +26,8 @@ class Event(models.Model):
 class EventTicket(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="tickets")
     ticket_type = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    from decimal import Decimal
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
     quantity = models.IntegerField()
     sold_quantity = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
@@ -36,7 +37,4 @@ class EventTicket(models.Model):
         db_table = "event_tickets"
 
 
-"""Event models module.
 
-Defined models above. Removed trailing template lines.
-"""

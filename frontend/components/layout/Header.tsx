@@ -346,14 +346,18 @@ const Header: React.FC<HeaderProps> = ({
                     ログイン
                   </button>
                   <button 
-                    className="text-white px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                    // ...existing code...
+                  />
+                  <Link 
+                    href="/plans"
+                    className="text-white px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg block w-full h-full text-center"
                     style={{ 
                       background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-                      fontFamily: 'var(--font-noto-sans-jp), "Noto Sans JP", sans-serif'
+                      fontFamily: 'var(--font-noto-sans-jp), \"Noto Sans JP\", sans-serif'
                     }}
                   >
                     新規登録
-                  </button>
+                  </Link>
                 </div>
               </div>
             )}
@@ -527,37 +531,39 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
 
                 {/* ユーザープロフィール */}
-                <button className="flex items-center space-x-1 p-1.5 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:scale-105">
-                  {user.avatar ? (
-                    <Image
-                      src={user.avatar}
-                      alt={`${user.name}のアバター`}
-                      width={28}
-                      height={28}
-                      className="rounded-full ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
-                    />
-                  ) : (
-                    <div 
-                      className="w-7 h-7 rounded-full flex items-center justify-center ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
-                      style={{
-                        background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)'
-                      }}
-                    >
-                      <span 
-                        className="text-white text-sm font-bold"
-                        style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
+                <Link href="/dashboard">
+                  <button className="flex items-center space-x-1 p-1.5 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:scale-105">
+                    {user.avatar ? (
+                      <Image
+                        src={user.avatar}
+                        alt={`${user.name}のアバター`}
+                        width={28}
+                        height={28}
+                        className="rounded-full ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
+                      />
+                    ) : (
+                      <div 
+                        className="w-7 h-7 rounded-full flex items-center justify-center ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
+                        style={{
+                          background: 'linear-gradient(135deg, #8B5CF6, #3B82F6)'
+                        }}
                       >
-                        {user.name.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                  <span 
-                    className="text-gray-300 text-sm font-medium hidden xl:block"
-                    style={{ fontFamily: 'var(--font-noto-sans-jp), "Noto Sans JP", sans-serif' }}
-                  >
-                    👤
-                  </span>
-                </button>
+                        <span 
+                          className="text-white text-sm font-bold"
+                          style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
+                        >
+                          {user.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    <span 
+                      className="text-gray-300 text-sm font-medium hidden xl:block"
+                      style={{ fontFamily: 'var(--font-noto-sans-jp), "Noto Sans JP", sans-serif' }}
+                    >
+                      👤
+                    </span>
+                  </button>
+                </Link>
               </div>
 
               {/* EXPバー（下段・横並び） UI/UX設計書準拠 */}
@@ -593,7 +599,7 @@ const Header: React.FC<HeaderProps> = ({
           ) : (
             // 未ログイン時UI
             <div className="flex flex-col items-center space-y-3 mt-4 px-2">
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-row items-center w-full justify-center flex-wrap gap-2">
                 {/* 言語選択 */}
                 <div className="relative language-selector">
                   <button 
@@ -625,21 +631,26 @@ const Header: React.FC<HeaderProps> = ({
                   )}
                 </div>
 
-                <button 
+                <Link 
+                  href="/signin"
                   className="text-gray-300 hover:text-purple-400 text-sm font-semibold px-3 py-1.5 border border-gray-600 rounded-lg hover:border-purple-500 transition-all duration-200 hover:scale-105"
-                  style={{ fontFamily: 'var(--font-noto-sans-jp), "Noto Sans JP", sans-serif' }}
+                  style={{ fontFamily: 'var(--font-noto-sans-jp), \"Noto Sans JP\", sans-serif' }}
+                  passHref
                 >
                   ログイン
-                </button>
+                </Link>
                 <button 
-                  className="text-white px-4 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg"
+                  // ...existing code...
+                />
+                <Link 
+                  href="/plans"
+                  className="text-white bg-linear-to-r from-purple-600 to-purple-400 px-3 py-1.5 border border-gray-600 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg block text-center hover:border-purple-500"
                   style={{ 
-                    background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-                    fontFamily: 'var(--font-noto-sans-jp), "Noto Sans JP", sans-serif'
+                    fontFamily: 'var(--font-noto-sans-jp), \"Noto Sans JP\", sans-serif'
                   }}
                 >
                   新規登録
-                </button>
+                </Link>
               </div>
               <div 
                 className="text-center text-xs text-gray-500 font-medium"
@@ -733,14 +744,18 @@ const Header: React.FC<HeaderProps> = ({
                     ログイン
                   </button>
                   <button 
-                    className="w-full text-white px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105"
+                    // ...existing code...
+                  />
+                  <Link 
+                    href="/plans"
+                    className="w-full text-white px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 block text-center"
                     style={{ 
                       background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-                      fontFamily: 'var(--font-noto-sans-jp), "Noto Sans JP", sans-serif'
+                      fontFamily: 'var(--font-noto-sans-jp), \"Noto Sans JP\", sans-serif'
                     }}
                   >
                     新規登録
-                  </button>
+                  </Link>
                 </div>
               </div>
             )}

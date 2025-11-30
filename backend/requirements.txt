@@ -1,0 +1,11 @@
+# Eldonia-Nex backend requirements
+# このファイルはCelery Worker/Beat用にも利用されます
+Django>=5.1
+djangorestframework>=3.15
+django-cors-headers
+psycopg2-binary
+celery>=5.4
+redis
+python-dotenv
+channels>=4.1
+

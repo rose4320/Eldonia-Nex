@@ -4,16 +4,26 @@ import React, { useState } from "react";
 import PageHero from "../../../../components/common/PageHero";
 
 
-// ファイルカードUIコンポーネント
+import Image from "next/image";
+
+// ファイル型定義
+type File = {
+  id: string;
+  name: string;
+  type: string;
+  content?: string;
+};
+
 type FileCardProps = {
-  file: any;
+  file: File;
   onDelete: () => void;
   onRename: (newName: string) => void;
-  onDragStart?: (file: any) => void;
-  onDrop?: (file: any) => void;
+  onDragStart?: (file: File) => void;
+  onDrop?: (file: File) => void;
+  draggable?: boolean;
 };
 function FileCard(props: FileCardProps) {
-  const { file, onDelete, onRename } = props;
+  const { file, onDelete, onRename, draggable = true } = props;
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(file.name);
   const [showPreview, setShowPreview] = useState(false);
@@ -31,10 +41,10 @@ function FileCard(props: FileCardProps) {
   return (
     <div
       className="group border border-gray-700/40 rounded-xl bg-gray-800/60 p-6 flex flex-col items-center justify-center relative hover:shadow-lg hover:border-indigo-400/60 transition-all duration-200"
-      draggable
+      draggable={draggable}
       onDragStart={() => props.onDragStart?.(file)}
       onDragOver={e => e.preventDefault()}
-      onDrop={e => props.onDrop?.(file)}
+      onDrop={() => props.onDrop?.(file)}
     >
       <button
         className="absolute top-2 right-2 text-gray-400 hover:text-red-400 text-lg"
@@ -74,7 +84,7 @@ function FileCard(props: FileCardProps) {
             <div className="text-gray-400 text-sm mb-2">{file.type} [{ext}]</div>
             <div className="my-4">
               {file.type === "image" && file.content && (
-                <img src={file.content} alt={file.name} className="max-w-xs max-h-60 rounded shadow" />
+                <Image src={file.content} alt={file.name} width={400} height={300} className="max-w-xs max-h-60 rounded shadow" />
               )}
               {(file.type === "text" || file.type === "doc") && file.content && (
                 <pre className="bg-gray-800 text-gray-100 p-3 rounded max-w-xs max-h-60 overflow-auto text-sm whitespace-pre-wrap">{file.content}</pre>
@@ -112,36 +122,34 @@ const mockFiles = [
   { id: "f6", name: "sample.mp3", type: "audio", content: "https://www.w3schools.com/html/horse.mp3" },
   { id: "f7", name: "movie.mp4", type: "video", content: "https://www.w3schools.com/html/mov_bbb.mp4" }
 ];
-const mockWorkspace = [
-  { id: "w1", name: "main.psd", type: "image" }
-];
+// mockWorkspaceは未使用のため削除
 const mockChat = [
   { id: 1, user: "花子", text: "このレイヤーの色味を調整できますか？", lang: "ja" },
   { id: 2, user: "太郎", text: "Can you adjust the color tone of this layer?", lang: "en" }
 ];
 
 const DeepGroupWorkPage: React.FC = () => {
-    // タイムライン用
-    const [timelineClips, setTimelineClips] = useState<any[]>([]);
-    // タイムラインへのドロップ
-    const handleTimelineDrop = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      if (draggedFile && !timelineClips.some(f => f.id === draggedFile.id)) {
-        setTimelineClips([...timelineClips, draggedFile]);
-      }
-      setDraggedFile(null);
-    };
-    const handleTimelineDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-      e.preventDefault();
-    };
-  const [files, setFiles] = useState(mockFiles); // エクスプローラ用
-  const [workspaceFiles, setWorkspaceFiles] = useState(mockFiles); // 中央作業スペース用
-  const [chat, setChat] = useState(mockChat);
-  const [draggedFile, setDraggedFile] = useState<any>(null);
+  // タイムライン用
+  const [timelineClips, setTimelineClips] = useState<File[]>([]);
+  // タイムラインへのドロップ
+  const handleTimelineDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (draggedFile && !timelineClips.some(f => f.id === draggedFile.id)) {
+      setTimelineClips([...timelineClips, draggedFile]);
+    }
+    setDraggedFile(null);
+  };
+  const handleTimelineDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+  };
+  const [files, setFiles] = useState<File[]>(mockFiles); // エクスプローラ用
+  const [workspaceFiles, setWorkspaceFiles] = useState<File[]>(mockFiles); // 中央作業スペース用
+  const [chat, setChat] = useState<typeof mockChat>(mockChat);
+  const [draggedFile, setDraggedFile] = useState<File | null>(null);
   const [input, setInput] = useState("");
 
   // ドラッグ&ドロップ
-  const handleDragStart = (file: any) => setDraggedFile(file);
+  const handleDragStart = (file: File) => setDraggedFile(file);
   const handleDrop = () => {
     if (draggedFile) {
       // workspaceFilesに同じIDがなければ追加
@@ -237,7 +245,7 @@ const DeepGroupWorkPage: React.FC = () => {
           </div>
           <div className="flex-1 grid grid-cols-2 gap-6">
             {workspaceFiles.length > 0 ? (
-              workspaceFiles.map((file, idx) => (
+              workspaceFiles.map((file) => (
                 <FileCard
                   key={file.id}
                   file={file}
@@ -253,7 +261,7 @@ const DeepGroupWorkPage: React.FC = () => {
                     setWorkspaceFiles(newFiles);
                     setDraggedFile(null);
                   }}
-                  draggable
+                  draggable={true}
                 />
               ))
             ) : (

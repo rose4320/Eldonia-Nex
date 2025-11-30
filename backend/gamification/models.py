@@ -59,7 +59,4 @@ class UserAchievement(models.Model):
         unique_together = ("user", "achievement")
 
 
-"""Gamification models module.
 
-Defined models above. Removed trailing template lines.
-"""
