@@ -6,7 +6,9 @@ import PageHero from '../../../components/common/PageHero'
 import { VideoArtwork } from '../../../types/artwork'
 // import { Comment, Review, ReviewStats } from '../../../types/artwork' // 将来のコメント・レビュー機能用
 
-const VideoDetailPage: React.FC = () => {
+import { Suspense } from 'react'
+
+const VideoDetailPageInner: React.FC = () => {
   const [artwork, setArtwork] = useState<VideoArtwork | null>(null)
   const [loading, setLoading] = useState(true)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -333,5 +335,11 @@ const VideoDetailPage: React.FC = () => {
     </div>
   )
 }
+
+const VideoDetailPage: React.FC = () => (
+  <Suspense>
+    <VideoDetailPageInner />
+  </Suspense>
+)
 
 export default VideoDetailPage

@@ -1,14 +1,14 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import CommentsSection from '../../../components/artwork/CommentsSection'
 import ReviewsSection from '../../../components/artwork/ReviewsSection'
 import PageHero from '../../../components/common/PageHero'
 import PlaceholderImage from '../../../components/common/PlaceholderImage'
 import { Comment, ImageArtwork, Review, ReviewStats } from '../../../types/artwork'
 
-const ImageDetailPage: React.FC = () => {
+const ImageDetailPageInner: React.FC = () => {
   const [artwork, setArtwork] = useState<ImageArtwork | null>(null)
   const [loading, setLoading] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -26,7 +26,6 @@ const ImageDetailPage: React.FC = () => {
   useEffect(() => {
     const fetchArtwork = async () => {
       if (!artworkId) return
-      
       setLoading(true)
       try {
         // モックデータ - 実際のAPIに置き換えてください
@@ -55,10 +54,7 @@ const ImageDetailPage: React.FC = () => {
           colorProfile: 'sRGB',
           dpi: 300
         }
-        
         setArtwork(mockArtwork)
-        
-        // コメント・レビューのモックデータ
         const mockComments: Comment[] = [
           {
             id: '1',
@@ -483,5 +479,11 @@ const ImageDetailPage: React.FC = () => {
     </div>
   )
 }
+
+const ImageDetailPage: React.FC = () => (
+  <Suspense>
+    <ImageDetailPageInner />
+  </Suspense>
+)
 
 export default ImageDetailPage

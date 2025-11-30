@@ -102,6 +102,7 @@ class UserProfile(models.Model):
 
 class Plan(models.Model):
     """Service subscription plan (pricing & features)."""
+    objects = models.Manager()
 
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)

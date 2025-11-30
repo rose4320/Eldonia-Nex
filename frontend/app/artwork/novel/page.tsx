@@ -1,13 +1,13 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import PageHero from '../../../components/common/PageHero'
 import PlaceholderImage from '../../../components/common/PlaceholderImage'
 import { NovelArtwork } from '../../../types/artwork'
 // import { Comment, Review, ReviewStats } from '../../../types/artwork' // 将来のコメント・レビュー機能用
 
-const NovelDetailPage: React.FC = () => {
+const NovelDetailPageInner: React.FC = () => {
   const [artwork, setArtwork] = useState<NovelArtwork | null>(null)
   const [loading, setLoading] = useState(true)
   const [fontSize, setFontSize] = useState(16)
@@ -68,6 +68,7 @@ const NovelDetailPage: React.FC = () => {
   const toggleReading = () => {
     setIsReading(!isReading)
   }
+
 
   const handleDownload = () => {
     if (!artwork) return
@@ -372,5 +373,11 @@ const NovelDetailPage: React.FC = () => {
     </div>
   )
 }
+
+const NovelDetailPage: React.FC = () => (
+  <Suspense>
+    <NovelDetailPageInner />
+  </Suspense>
+);
 
 export default NovelDetailPage

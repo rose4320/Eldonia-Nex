@@ -1,0 +1,329 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'admin/css/custom_admin.css' %}">
+<style>
+    /* Eldonia-Nex カスタム管理画面スタイル */
+    
+    /* ヘッダー */
+    #header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    #branding h1 {
+        color: white;
+        font-weight: 600;
+        font-size: 24px;
+        margin: 0;
+    }
+    
+    #branding h1::before {
+        content: "🎨 ";
+    }
+    
+    /* ナビゲーション */
+    #header a:link, #header a:visited {
+        color: white;
+        font-weight: 500;
+    }
+    
+    #user-tools a {
+        color: white;
+        border-bottom: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    /* サイドバー */
+    .module h2, .module caption, .inline-group h2 {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        padding: 10px 15px;
+    }
+    
+    /* テーブル */
+    #changelist-form .results {
+        overflow-x: auto;
+    }
+    
+    #result_list th {
+        background: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        border-bottom: 2px solid #667eea;
+    }
+    
+    #result_list tbody tr:hover {
+        background-color: #f0f4ff !important;
+    }
+    
+    /* ボタン */
+    .button, input[type=submit], input[type=button], .submit-row input, button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        font-weight: 500;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    
+    .button.default, input[type=submit].default {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+    
+    /* 削除ボタン */
+    .deletelink, .deletelink-box a {
+        background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%) !important;
+    }
+    
+    /* カード風レイアウト */
+    .module, .inline-group {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        border: none;
+    }
+    
+    /* フォーム */
+    .form-row {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .form-row:last-child {
+        border-bottom: none;
+    }
+    
+    /* ダッシュボード */
+    #content-main {
+        background: #f8f9fa;
+        padding: 20px;
+    }
+    
+    .app-content .module {
+        background: white;
+        border-radius: 10px;
+        padding: 0;
+    }
+    
+    .app-content .module table {
+        margin: 0;
+    }
+    
+    /* 検索バー */
+    #changelist-search {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    
+    #searchbar {
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    #searchbar:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        outline: none;
+    }
+    
+    /* フィルター */
+    #changelist-filter {
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    
+    #changelist-filter h2 {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 10px 15px;
+        margin: -15px -15px 15px -15px;
+        border-radius: 10px 10px 0 0;
+    }
+    
+    #changelist-filter h3 {
+        color: #495057;
+        font-weight: 600;
+        margin-top: 15px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #667eea;
+    }
+    
+    /* アクションバー */
+    .actions {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    
+    .actions select {
+        padding: 8px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    
+    /* ページネーション */
+    .paginator {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-top: 20px;
+    }
+    
+    .paginator a {
+        background: #667eea;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin: 0 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .paginator a:hover {
+        background: #764ba2;
+        transform: translateY(-2px);
+    }
+    
+    /* メッセージ */
+    .messagelist {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin: 20px 0;
+    }
+    
+    .success {
+        background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        padding: 15px 20px;
+        border-left: none;
+    }
+    
+    .error {
+        background: linear-gradient(90deg, #eb3349 0%, #f45c43 100%);
+        color: white;
+        padding: 15px 20px;
+        border-left: none;
+    }
+    
+    .warning {
+        background: linear-gradient(90deg, #f7971e 0%, #ffd200 100%);
+        color: #333;
+        padding: 15px 20px;
+        border-left: none;
+    }
+    
+    /* breadcrumbs */
+    .breadcrumbs {
+        background: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    
+    .breadcrumbs a {
+        color: #667eea;
+        font-weight: 500;
+    }
+    
+    /* オブジェクトツール */
+    .object-tools {
+        margin-top: 0;
+    }
+    
+    .object-tools li {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 5px;
+    }
+    
+    .object-tools a {
+        color: white;
+        font-weight: 500;
+    }
+    
+    /* カスタムバッジ */
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    /* ダッシュボードアイコン */
+    .app-content .section h2 {
+        font-size: 18px;
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .app-content .section h2::before {
+        content: "📦 ";
+        margin-right: 5px;
+    }
+    
+    /* レスポンシブ */
+    @media (max-width: 768px) {
+        #changelist-filter {
+            width: 100%;
+            margin-top: 20px;
+        }
+    }
+    
+    /* スクロールバー */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #764ba2;
+    }
+</style>
+{% endblock %}
+
+{% block title %}Eldonia-Nex 管理画面{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Eldonia-Nex 管理システム</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

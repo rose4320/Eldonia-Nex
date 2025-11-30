@@ -9,7 +9,7 @@ from django.utils import timezone
 class Command(BaseCommand):
     help = "Seed sample data for development (artworks, events, streams, gamification, orders)."
 
-    def handle(self, *args, **options):
+    def handle(self, *args: object, **options: object):
         User = get_user_model()
 
         # Create sample users
@@ -45,14 +45,14 @@ class Command(BaseCommand):
 
         cat, _ = Category.objects.get_or_create(
             slug="illustrations", defaults={"name": "Illustrations"}
-        )
+        )  # type: ignore[attr-defined]
         cat2, _ = Category.objects.get_or_create(
             slug="photography", defaults={"name": "Photography"}
-        )
+        )  # type: ignore[attr-defined]
 
         tags = []
         for t in ("fantasy", "landscape", "portrait"):
-            tag, _ = Tag.objects.get_or_create(name=t)
+            tag, _ = Tag.objects.get_or_create(name=t)  # type: ignore[attr-defined]
             tags.append(tag)
 
         artworks = []
@@ -72,21 +72,21 @@ class Command(BaseCommand):
                     "price": Decimal("500.00") if i % 2 == 0 else Decimal("0.00"),
                     "is_free": i % 2 != 0,
                 },
-            )
+            )  # type: ignore[attr-defined]
             artworks.append(art)
             # attach tags
             for t in tags[: (i % len(tags)) + 1]:
-                ArtworkTag.objects.get_or_create(artwork=art, tag=t)
+                ArtworkTag.objects.get_or_create(artwork=art, tag=t)  # type: ignore[attr-defined]
             # sample likes/comments
-            Like.objects.get_or_create(user=creator, artwork=art)
+            Like.objects.get_or_create(user=creator, artwork=art)  # type: ignore[attr-defined]
             Comment.objects.get_or_create(
                 artwork=art, user=creator, content=f"Nice work #{i}"
-            )
+            )  # type: ignore[attr-defined]
 
         # Products & Orders
         from marketplace.models import Order, OrderItem
 
-        product, _ = Product.objects.get_or_create(
+        Product.objects.get_or_create(
             name="Sample Print",
             defaults={
                 "seller": users[0],
@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 "stock_quantity": 10,
                 "is_digital": False,
             },
-        )
+        )  # type: ignore[attr-defined]
 
         order, _ = Order.objects.get_or_create(
             user=users[1],
@@ -104,7 +104,7 @@ class Command(BaseCommand):
                 "currency": "JPY",
                 "status": "completed",
             },
-        )
+        )  # type: ignore[attr-defined]
         OrderItem.objects.get_or_create(
             order=order,
             artwork=artworks[0],
@@ -112,7 +112,7 @@ class Command(BaseCommand):
                 "unit_price": artworks[0].price or Decimal("0.00"),
                 "quantity": 1,
             },
-        )
+        )  # type: ignore[attr-defined]
 
         # Events and tickets
         from events.models import Event, EventTicket
@@ -128,12 +128,12 @@ class Command(BaseCommand):
                 "is_free": False,
                 "status": "published",
             },
-        )
+        )  # type: ignore[attr-defined]
         EventTicket.objects.get_or_create(
             event=ev,
             ticket_type="standard",
             defaults={"price": Decimal("1500.00"), "quantity": 100},
-        )
+        )  # type: ignore[attr-defined]
 
         # Streaming: streams and donations
         from streaming.models import LiveStream, StreamDonation
@@ -147,7 +147,7 @@ class Command(BaseCommand):
                 "status": "live",
                 "actual_start": timezone.now(),
             },
-        )
+        )  # type: ignore[attr-defined]
         StreamDonation.objects.get_or_create(
             stream=stream,
             donor=users[1],
@@ -156,7 +156,7 @@ class Command(BaseCommand):
                 "message": "Great stream!",
                 "payment_status": "completed",
             },
-        )
+        )  # type: ignore[attr-defined]
 
         # Gamification: exp actions, logs, achievements
         from gamification.models import (
@@ -170,7 +170,7 @@ class Command(BaseCommand):
         from users.models import Plan
 
         # Use update_or_create so existing plans are updated to current pricing/specs
-        free_plan, _ = Plan.objects.update_or_create(
+        Plan.objects.update_or_create(
             slug="free",
             defaults={
                 "name": "Free",
@@ -180,7 +180,7 @@ class Command(BaseCommand):
                 "is_active": True,
             },
         )
-        standard_plan, _ = Plan.objects.update_or_create(
+        Plan.objects.update_or_create(
             slug="standard",
             defaults={
                 "name": "Standard",
@@ -191,7 +191,7 @@ class Command(BaseCommand):
             },
         )
         # Add premium plan as requested (¥1,500.00)
-        premium_plan, _ = Plan.objects.update_or_create(
+        Plan.objects.update_or_create(
             slug="premium",
             defaults={
                 "name": "Premium",
@@ -203,9 +203,9 @@ class Command(BaseCommand):
         )
         # If a legacy 'pro' plan exists, map users to 'premium' and remove the duplicate
         if Plan.objects.filter(slug="pro").exists():
-            pro_obj = Plan.objects.get(slug="pro")
+            pro_obj = Plan.objects.get(slug="pro")  # type: ignore[attr-defined]
             # Ensure premium exists (create from pro if needed)
-            premium_obj, created = Plan.objects.get_or_create(
+            Plan.objects.get_or_create(
                 slug="premium",
                 defaults={
                     "name": pro_obj.name if pro_obj.name else "Premium",
@@ -214,17 +214,13 @@ class Command(BaseCommand):
                     "trial_days": pro_obj.trial_days,
                     "is_active": pro_obj.is_active,
                 },
-            )
+            )  # type: ignore[attr-defined]
             # Map users who had 'pro' to 'premium'
             User.objects.filter(subscription_plan="pro").update(
                 subscription_plan="premium"
             )
-            # If premium was created above, delete the old pro; otherwise remove pro to avoid duplicates
-            if created:
-                pro_obj.delete()
-            else:
-                pro_obj.delete()
-        business_plan, _ = Plan.objects.update_or_create(
+            pro_obj.delete()
+        Plan.objects.update_or_create(
             slug="business",
             defaults={
                 "name": "Business",
@@ -247,12 +243,12 @@ class Command(BaseCommand):
         ea, _ = ExpAction.objects.get_or_create(
             action_type="upload_artwork",
             defaults={"base_exp": 50, "description": "Upload an artwork"},
-        )
+        )  # type: ignore[attr-defined]
         UserExpLog.objects.get_or_create(
             user=users[0],
             action=ea,
             defaults={"exp_gained": 50, "description": "Seed: upload"},
-        )
+        )  # type: ignore[attr-defined]
 
         ach, _ = Achievement.objects.get_or_create(
             name="First Upload",
@@ -261,13 +257,13 @@ class Command(BaseCommand):
                 "condition_value": 1,
                 "description": "Awarded for first upload",
             },
-        )
+        )  # type: ignore[attr-defined]
         UserAchievement.objects.get_or_create(
             user=users[0],
             achievement=ach,
             defaults={"progress": 1, "completed_at": timezone.now()},
-        )
+        )  # type: ignore[attr-defined]
 
         # Summary output
-        self.stdout.write(self.style.SUCCESS("Sample data seeded."))
+        self.stdout.write(self.style.SUCCESS("Sample data seeded."))  # type: ignore[attr-defined]
         self.stdout.write(f"Users: {len(users)}, Artworks: {len(artworks)}")

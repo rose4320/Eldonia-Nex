@@ -14,18 +14,34 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from typing import List
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.http import JsonResponse
+from django.http import HttpRequest, JsonResponse
+from django.shortcuts import render
 from django.urls import path
+from marketplace.artwork_views import (
+    ArtworkListView,
+    CreateArtworkView,
+    UploadArtworkImageView,
+)
+from users.referral_views import ReferralCodeView, ReferralListView
+from users.upload_views import UploadAvatarView
+from users.views import PlanListView, RegisterUserView
 
 from .views import community_page
 
+## import削除（重複）
+
+
+
 
 # API Health Check
-def api_health_check(request):
+def api_health_check(request: HttpRequest) -> JsonResponse:
     """Next.js SSR連携用ヘルスチェックAPI"""
+    _ = request  # noqa: F841 未使用引数警告抑制
     return JsonResponse(
         {
             "status": "healthy",
@@ -37,17 +53,112 @@ def api_health_check(request):
     )
 
 
+# API Root / Welcome Page
+def api_root(request: HttpRequest):
+    """APIルートエンドポイント - プロフェッショナルなUIウェルカムページを表示"""
+    
+    base_url = request.build_absolute_uri('/').rstrip('/')
+    
+    # JSON APIとして使いたい場合
+    if request.META.get('HTTP_ACCEPT', '').startswith('application/json'):
+        return JsonResponse(
+            {
+                "message": "🎨 Eldonia-Nex API へようこそ",
+                "description": "クリエイターのための創作プラットフォーム",
+                "version": "1.0.0",
+                "environment": "development" if settings.DEBUG else "production",
+                "documentation": f"{base_url}/admin/",
+                "endpoints": {
+                    "health": {
+                        "url": f"{base_url}/api/v1/health/",
+                        "method": "GET",
+                        "description": "APIヘルスチェック"
+                    },
+                    "admin": {
+                        "url": f"{base_url}/admin/",
+                        "method": "GET",
+                        "description": "Django管理画面"
+                    },
+                    "register": {
+                        "url": f"{base_url}/api/v1/register/",
+                        "method": "POST",
+                        "description": "ユーザー登録"
+                    },
+                    "plans": {
+                        "url": f"{base_url}/api/v1/plans/",
+                        "method": "GET",
+                        "description": "サブスクリプションプラン一覧"
+                    },
+                    "community": {
+                        "url": f"{base_url}/community/",
+                        "method": "GET",
+                        "description": "コミュニティページ"
+                    }
+                },
+                "status": "operational",
+                "timestamp": "2025-11-30T22:00:00Z"
+            },
+            json_dumps_params={'ensure_ascii': False, 'indent': 2}
+        )
+    
+    # ブラウザからのアクセス - HTMLテンプレートを表示
+    context = {
+        "message": "🎨 Eldonia-Nex API へようこそ",
+        "description": "クリエイターのための創作プラットフォーム",
+        "version": "1.0.0",
+        "environment": "development" if settings.DEBUG else "production",
+        "documentation": f"{base_url}/admin/",
+        "endpoints": {
+            "health": {
+                "url": f"{base_url}/api/v1/health/",
+                "method": "GET",
+                "description": "APIヘルスチェック"
+            },
+            "admin": {
+                "url": f"{base_url}/admin/",
+                "method": "GET",
+                "description": "Django管理画面"
+            },
+            "register": {
+                "url": f"{base_url}/api/v1/register/",
+                "method": "POST",
+                "description": "ユーザー登録"
+            },
+            "plans": {
+                "url": f"{base_url}/api/v1/plans/",
+                "method": "GET",
+                "description": "サブスクリプションプラン一覧"
+            },
+            "community": {
+                "url": f"{base_url}/community/",
+                "method": "GET",
+                "description": "コミュニティページ"
+            }
+        },
+        "status": "operational",
+    }
+    
+    return render(request, 'api_root.html', context)
 
-urlpatterns = [
+
+
+urlpatterns: List[object] = [
+    path("", api_root, name="api_root"),  # ルートパス
     path("admin/", admin.site.urls),
     path("api/v1/health/", api_health_check, name="api_health"),
     path("community/", community_page, name="community"),
-    # path('api/v1/users/', include('users.urls')),
-    # path('api/v1/content/', include('content.urls')),
-    # path('api/v1/marketplace/', include('marketplace.urls')),
+    path("api/v1/register/", RegisterUserView.as_view(), name="register_user"),
+    path("api/v1/plans/", PlanListView.as_view(), name="plan_list"),
+    path("api/v1/users/upload-avatar/", UploadAvatarView.as_view(), name="upload_avatar"),
+    path("api/v1/users/<int:user_id>/referral-code/", ReferralCodeView.as_view(), name="referral_code"),
+    path("api/v1/users/<int:user_id>/referrals/", ReferralListView.as_view(), name="referral_list"),
+    path("api/v1/artworks/upload-image/", UploadArtworkImageView.as_view(), name="upload_artwork_image"),
+    path("api/v1/artworks/create/", CreateArtworkView.as_view(), name="create_artwork"),
+    path("api/v1/artworks/list/", ArtworkListView.as_view(), name="artwork_list"),
 ]
 
 # Development: Static/Media files
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
