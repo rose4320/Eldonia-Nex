@@ -1,6 +1,9 @@
 "use client";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
+// API Base URL
+const API_BASE_URL = 'http://localhost:8001/api/v1';
+
 // ユーザー型（必要に応じて拡張）
 export type User = {
   id: number;
@@ -11,6 +14,7 @@ export type User = {
   subscription?: string;
   level?: number;
   exp?: number;
+  fan_count?: number;
 };
 
 // Context型
@@ -19,6 +23,7 @@ type AuthContextType = {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,109 +34,189 @@ export const useAuth = () => {
   return ctx;
 };
 
-// ダミーユーザーデータベース
-const DUMMY_USERS = [
-  {
-    id: 1,
-    username: "demo",
-    email: "demo@eldonia-nex.com",
-    password: "demo123",
-    display_name: "デモユーザー",
-    avatar_url: "",
-    subscription: "free",
-    level: 5,
-    exp: 1250
-  },
-  {
-    id: 2,
-    username: "creator",
-    email: "creator@eldonia-nex.com",
-    password: "creator123",
-    display_name: "クリエイター太郎",
-    avatar_url: "",
-    subscription: "premium",
-    level: 10,
-    exp: 5000
-  },
-  {
-    id: 3,
-    username: "admin",
-    email: "admin@eldonia-nex.com",
-    password: "admin123",
-    display_name: "管理者",
-    avatar_url: "",
-    subscription: "enterprise",
-    level: 99,
-    exp: 99999
-  }
-];
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // ページロード時に認証状態確認（ローカルストレージから復元）
+  // ページロード時に認証状態確認（トークンで検証）
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
       try {
-        // ローカルストレージから保存されたユーザー情報を取得
-        const savedUser = localStorage.getItem("eldonia_user");
-        if (savedUser) {
-          setUser(JSON.parse(savedUser));
+        const authToken = localStorage.getItem("authToken");
+        
+        if (authToken) {
+          // トークンが存在する場合、バックエンドで検証
+          const response = await fetch(`${API_BASE_URL}/users/me/`, {
+            headers: {
+              'Authorization': `Token ${authToken}`,
+            },
+          });
+
+          if (response.ok) {
+            const userData = await response.json();
+            setUser(userData);
+            localStorage.setItem("eldonia_user", JSON.stringify(userData));
+          } else {
+            // トークンが無効な場合はクリア
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("eldonia_user");
+            setUser(null);
+          }
         } else {
           setUser(null);
         }
-      } catch {
+      } catch (error) {
+        console.error('Auth check error:', error);
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("eldonia_user");
         setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchUser();
   }, []);
 
-  // ログイン（ダミー認証）
+  // ログイン（バックエンドAPI統合）
   const login = async (usernameOrEmail: string, password: string) => {
     setLoading(true);
     
-    // シミュレートのため少し待つ
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // ダミーユーザーデータベースから検索
-    const foundUser = DUMMY_USERS.find(
-      u => (u.username === usernameOrEmail || u.email === usernameOrEmail) && u.password === password
-    );
-    
-    if (foundUser) {
-      // パスワードを除外してユーザー情報を設定
-      const { password: _, ...userWithoutPassword } = foundUser;
-      setUser(userWithoutPassword);
+    try {
+      // バックエンドAPIにログインリクエストを送信
+      const response = await fetch(`${API_BASE_URL}/login/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: usernameOrEmail,
+          password: password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || errorData.non_field_errors?.[0] || 'ログインに失敗しました');
+      }
+
+      const data = await response.json();
       
-      // ローカルストレージに保存
-      localStorage.setItem("eldonia_user", JSON.stringify(userWithoutPassword));
-    } else {
-      setUser(null);
-      throw new Error("ユーザー名またはパスワードが正しくありません");
+      // トークンを保存
+      localStorage.setItem('authToken', data.token);
+      
+      // ユーザー情報を取得（トークンを使用）
+      const userResponse = await fetch(`${API_BASE_URL}/users/me/`, {
+        headers: {
+          'Authorization': `Token ${data.token}`,
+        },
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        setUser(userData);
+        localStorage.setItem("eldonia_user", JSON.stringify(userData));
+      } else {
+        // ユーザー情報取得失敗時は最小限の情報でログイン状態にする
+        const minimalUser = {
+          id: 0,
+          username: usernameOrEmail,
+        };
+        setUser(minimalUser);
+        localStorage.setItem("eldonia_user", JSON.stringify(minimalUser));
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   // ログアウト
   const logout = async () => {
     setLoading(true);
     
-    // シミュレートのため少し待つ
-    await new Promise(resolve => setTimeout(resolve, 500));
+    try {
+      const authToken = localStorage.getItem('authToken');
+      
+      if (authToken) {
+        // バックエンドにログアウトリクエストを送信（オプション）
+        await fetch(`${API_BASE_URL}/logout/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${authToken}`,
+          },
+        }).catch(() => {
+          // ログアウトAPIがなくてもローカルのクリーンアップは実行
+        });
+      }
+      
+      setUser(null);
+      localStorage.removeItem("eldonia_user");
+      localStorage.removeItem("authToken");
+    } catch (error) {
+      console.error('Logout error:', error);
+      // エラーが発生してもローカルの状態はクリア
+      setUser(null);
+      localStorage.removeItem("eldonia_user");
+      localStorage.removeItem("authToken");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 新規登録（バックエンドAPI統合）
+  const register = async (username: string, email: string, password: string) => {
+    setLoading(true);
     
-    setUser(null);
-    localStorage.removeItem("eldonia_user");
-    
-    setLoading(false);
+    try {
+      const response = await fetch(`${API_BASE_URL}/register/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || errorData.username?.[0] || errorData.email?.[0] || '登録に失敗しました');
+      }
+
+      const data = await response.json();
+      
+      // 登録成功後、自動的にログイン
+      if (data.token) {
+        localStorage.setItem('authToken', data.token);
+        
+        // ユーザー情報を取得
+        const userResponse = await fetch(`${API_BASE_URL}/users/me/`, {
+          headers: {
+            'Authorization': `Token ${data.token}`,
+          },
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUser(userData);
+          localStorage.setItem("eldonia_user", JSON.stringify(userData));
+        }
+      }
+    } catch (error) {
+      console.error('Register error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );

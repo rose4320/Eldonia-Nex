@@ -184,6 +184,22 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
+                    <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-2 border-blue-500/50 rounded-xl p-6">
+                      <h3 className="text-xl font-bold text-blue-200 mb-3 flex items-center gap-2">
+                        🎉 イベント管理
+                      </h3>
+                      <p className="text-blue-100 mb-4 text-sm">
+                        新しいイベントを企画して、参加者を募集しましょう
+                      </p>
+                      <button
+                        onClick={() => router.push("/events/create")}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center gap-2"
+                      >
+                        <span>➕</span>
+                        イベントを追加
+                      </button>
+                    </div>
+
                     <div className="bg-red-900/20 border-2 border-red-500/50 rounded-xl p-6">
                       <h3 className="text-xl font-bold text-red-300 mb-3">⚠️ 危険な操作</h3>
                       <p className="text-red-200 mb-4 text-sm">
