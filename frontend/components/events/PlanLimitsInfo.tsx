@@ -1,0 +1,153 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+interface PlanLimits {
+  subscription_plan: string;
+  max_events_per_month: number | null;
+  events_created_this_month: number;
+  remaining_events_this_month: number | null;
+  max_capacity: number | null;
+  can_use_paid_events: boolean;
+  can_use_advanced_features: boolean;
+  description: string;
+}
+
+export default function PlanLimitsInfo() {
+  const [limits, setLimits] = useState<PlanLimits | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPlanLimits();
+  }, []);
+
+  const fetchPlanLimits = async () => {
+    try {
+      const response = await fetch('http://localhost:8001/api/v1/users/plan-limits/', {
+        headers: {
+          'Authorization': `Token ${localStorage.getItem('authToken')}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLimits(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch plan limits:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-4 animate-pulse">
+        <div className="h-6 bg-blue-200 dark:bg-blue-700 rounded w-3/4 mb-2"></div>
+        <div className="h-4 bg-blue-200 dark:bg-blue-700 rounded w-1/2"></div>
+      </div>
+    );
+  }
+
+  if (!limits) {
+    return null;
+  }
+
+  const getPlanBadgeColor = (plan: string) => {
+    switch (plan) {
+      case 'pro':
+        return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white';
+      case 'premium':
+        return 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
+  const getProgressColor = () => {
+    if (limits.remaining_events_this_month === null) return 'bg-green-500';
+    const percentage = (limits.events_created_this_month / (limits.max_events_per_month || 1)) * 100;
+    if (percentage >= 100) return 'bg-red-500';
+    if (percentage >= 75) return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
+  const isLimitReached = limits.remaining_events_this_month !== null && limits.remaining_events_this_month <= 0;
+
+  return (
+    <div className={`rounded-xl p-6 border-2 shadow-lg ${
+      isLimitReached 
+        ? 'bg-red-50 dark:bg-red-900/30 border-red-300 dark:border-red-700' 
+        : 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
+    }`}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <span>💎</span>
+          現在のプラン
+        </h3>
+        <span className={`px-4 py-1 rounded-full text-sm font-bold uppercase ${getPlanBadgeColor(limits.subscription_plan)}`}>
+          {limits.subscription_plan}
+        </span>
+      </div>
+
+      {/* 月間イベント作成数 */}
+      {limits.max_events_per_month !== null ? (
+        <div className="mb-4">
+          <div className="flex justify-between mb-2">
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              今月のイベント作成数
+            </span>
+            <span className={`text-sm font-bold ${isLimitReached ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
+              {limits.events_created_this_month} / {limits.max_events_per_month}
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+            <div
+              className={`h-full ${getProgressColor()} transition-all duration-300`}
+              style={{ width: `${Math.min((limits.events_created_this_month / limits.max_events_per_month) * 100, 100)}%` }}
+            ></div>
+          </div>
+          {isLimitReached && (
+            <p className="text-sm text-red-600 dark:text-red-400 mt-2 font-semibold">
+              ⚠️ 今月の作成上限に達しました
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="mb-4">
+          <span className="text-sm font-semibold text-green-600 dark:text-green-400">
+            ✨ 無制限のイベント作成が可能です
+          </span>
+        </div>
+      )}
+
+      {/* プラン制限の詳細 */}
+      <div className="space-y-2 text-sm">
+        <div className="flex items-center gap-2">
+          <span className="text-gray-600 dark:text-gray-400">最大収容人数:</span>
+          <span className="font-semibold text-gray-900 dark:text-white">
+            {limits.max_capacity === null ? '無制限' : `${limits.max_capacity}名`}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-gray-600 dark:text-gray-400">有料イベント:</span>
+          <span className={`font-semibold ${limits.can_use_paid_events ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+            {limits.can_use_paid_events ? '✅ 可能' : '❌ 不可'}
+          </span>
+        </div>
+      </div>
+
+      {/* アップグレード促進 */}
+      {limits.subscription_plan === 'free' && (
+        <div className="mt-4 pt-4 border-t-2 border-blue-300 dark:border-blue-700">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+            より多くのイベントを作成したいですか？
+          </p>
+          <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105">
+            プランをアップグレード
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
