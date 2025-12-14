@@ -55,6 +55,23 @@ class User(AbstractUser):
     # the referral code used at registration (if any)
     referral_code_used = models.CharField(max_length=50, null=True, blank=True)
 
+    # Localization settings
+    preferred_language = models.CharField(
+        max_length=5,
+        default="ja",
+        help_text="User's preferred language (ISO 639-1 code)",
+    )
+    preferred_currency = models.CharField(
+        max_length=3,
+        default="JPY",
+        help_text="User's preferred currency (ISO 4217 code)",
+    )
+    timezone = models.CharField(
+        max_length=50,
+        default="Asia/Tokyo",
+        help_text="User's timezone (e.g., 'Asia/Tokyo', 'America/New_York')",
+    )
+
     total_exp = models.BigIntegerField(default=0)
     current_level = models.IntegerField(default=1)
     fan_count = models.IntegerField(default=0)
@@ -72,6 +89,8 @@ class User(AbstractUser):
             models.Index(fields=["total_exp"]),
             models.Index(fields=["subscription_plan"]),
             models.Index(fields=["subscription"]),
+            models.Index(fields=["preferred_language"]),
+            models.Index(fields=["preferred_currency"]),
         ]
 
 
@@ -98,6 +117,171 @@ class UserProfile(models.Model):
 
     class Meta:
         db_table = "user_profiles"
+
+
+class UserAddress(models.Model):
+    """ユーザー住所詳細テーブル"""
+    objects = models.Manager()
+
+    user = models.OneToOneField(
+        "users.User", on_delete=models.CASCADE, related_name="address"
+    )
+    # 国コード (ISO 3166-1 alpha-2)
+    country_code = models.CharField(max_length=2, null=True, blank=True)
+    country_name = models.CharField(max_length=100, null=True, blank=True)
+    # 郵便番号
+    postal_code = models.CharField(max_length=20, null=True, blank=True)
+    # 都道府県/州
+    state_province = models.CharField(max_length=100, null=True, blank=True)
+    # 市区町村
+    city = models.CharField(max_length=100, null=True, blank=True)
+    # 町名・番地
+    address_line1 = models.CharField(max_length=255, null=True, blank=True)
+    # 建物名・部屋番号
+    address_line2 = models.CharField(max_length=255, null=True, blank=True)
+    # フルアドレス（表示用）
+    full_address = models.TextField(null=True, blank=True)
+    # 緯度・経度（オプション）
+    latitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    # 住所タイプ
+    ADDRESS_TYPE_CHOICES = [
+        ("home", "Home"),
+        ("work", "Work"),
+        ("billing", "Billing"),
+        ("shipping", "Shipping"),
+    ]
+    address_type = models.CharField(max_length=20, choices=ADDRESS_TYPE_CHOICES, default="home")
+    is_primary = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "user_addresses"
+        indexes = [
+            models.Index(fields=["country_code"]),
+            models.Index(fields=["postal_code"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.city or 'No city'}, {self.country_name or 'No country'}"
+
+
+class UserSkill(models.Model):
+    """ユーザースキル詳細テーブル（正規化版）"""
+    objects = models.Manager()
+
+    user = models.ForeignKey(
+        "users.User", on_delete=models.CASCADE, related_name="user_skills"
+    )
+    # スキル名
+    skill_name = models.CharField(max_length=100)
+    # スキルカテゴリ
+    CATEGORY_CHOICES = [
+        ("art", "Art & Illustration"),
+        ("music", "Music & Audio"),
+        ("video", "Video & Animation"),
+        ("writing", "Writing & Content"),
+        ("programming", "Programming"),
+        ("design", "Design"),
+        ("3d", "3D Modeling"),
+        ("game", "Game Development"),
+        ("marketing", "Marketing"),
+        ("other", "Other"),
+    ]
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, default="other")
+    # スキルレベル (1-5)
+    LEVEL_CHOICES = [
+        (1, "Beginner"),
+        (2, "Elementary"),
+        (3, "Intermediate"),
+        (4, "Advanced"),
+        (5, "Expert"),
+    ]
+    level = models.IntegerField(choices=LEVEL_CHOICES, default=1)
+    # 経験年数
+    years_of_experience = models.IntegerField(null=True, blank=True)
+    # 認定・資格（あれば）
+    certification = models.CharField(max_length=255, null=True, blank=True)
+    # スキル説明
+    description = models.TextField(null=True, blank=True)
+    # 表示順
+    sort_order = models.IntegerField(default=0)
+    # メインスキルかどうか
+    is_primary = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "user_skills"
+        ordering = ["-is_primary", "sort_order", "-level"]
+        indexes = [
+            models.Index(fields=["skill_name"]),
+            models.Index(fields=["category"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.skill_name} (Lv.{self.level})"
+
+
+class UserDetail(models.Model):
+    """ユーザー詳細情報テーブル"""
+    objects = models.Manager()
+
+    user = models.OneToOneField(
+        "users.User", on_delete=models.CASCADE, related_name="detail"
+    )
+    # 氏名（本名）
+    first_name_kanji = models.CharField(max_length=50, null=True, blank=True)
+    last_name_kanji = models.CharField(max_length=50, null=True, blank=True)
+    first_name_kana = models.CharField(max_length=50, null=True, blank=True)
+    last_name_kana = models.CharField(max_length=50, null=True, blank=True)
+    # 職業
+    occupation = models.CharField(max_length=100, null=True, blank=True)
+    # 会社名/所属
+    company_name = models.CharField(max_length=200, null=True, blank=True)
+    company_position = models.CharField(max_length=100, null=True, blank=True)
+    # 学歴
+    education = models.CharField(max_length=200, null=True, blank=True)
+    education_status = models.CharField(max_length=50, null=True, blank=True)
+    # 収入区分（オプション）
+    INCOME_RANGE_CHOICES = [
+        ("under_200", "Under 2M JPY"),
+        ("200_400", "2M - 4M JPY"),
+        ("400_600", "4M - 6M JPY"),
+        ("600_800", "6M - 8M JPY"),
+        ("800_1000", "8M - 10M JPY"),
+        ("over_1000", "Over 10M JPY"),
+        ("undisclosed", "Undisclosed"),
+    ]
+    income_range = models.CharField(max_length=20, choices=INCOME_RANGE_CHOICES, null=True, blank=True)
+    # 興味・関心
+    interests = models.JSONField(null=True, blank=True)
+    # 自己PR
+    self_introduction = models.TextField(null=True, blank=True)
+    # 希望案件・仕事
+    desired_work_types = models.JSONField(null=True, blank=True)
+    # 希望報酬
+    desired_hourly_rate_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    desired_hourly_rate_max = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    # 稼働可能時間/週
+    available_hours_per_week = models.IntegerField(null=True, blank=True)
+    # リモートワーク可否
+    is_remote_available = models.BooleanField(null=True, blank=True)
+    # 身分証明確認済み
+    is_identity_verified = models.BooleanField(default=False)
+    # NDA締結済み
+    has_signed_nda = models.BooleanField(default=False)
+    # その他メモ
+    notes = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "user_details"
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - Detail"
 
 
 class Plan(models.Model):

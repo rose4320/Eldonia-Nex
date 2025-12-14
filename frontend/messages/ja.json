@@ -1,0 +1,90 @@
+{
+  "home": {
+    "heroTitle1": "クリエイターのための",
+    "heroTitle2": "創作プラットフォーム",
+    "heroDescription": "すべてのクリエイターが自由に表現し、正当な評価と収益を得られる世界の実現",
+    "systemStatus": "システムステータス",
+    "backendHealthy": "バックエンド正常稼働中",
+    "frontendHealthy": "SSR正常稼働中",
+    "gallery": "作品ギャラリー",
+    "galleryDesc": "様々な形式の作品を投稿・展示",
+    "streaming": "ライブ配信",
+    "streamingDesc": "リアルタイムで創作過程を配信",
+    "marketplace": "マーケットプレイス",
+    "marketplaceDesc": "作品販売で収益化を実現",
+    "gamification": "ゲーミフィケーション",
+    "gamificationDesc": "EXP獲得でレベルアップ",
+    "startNow": "今すぐ始める"
+  },
+  "common": {
+    "appName": "Eldonia-Nex",
+    "welcome": "ようこそ",
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "search": "検索",
+    "logout": "ログアウト",
+    "login": "ログイン",
+    "register": "新規登録"
+  },
+  "nav": {
+    "home": "ホーム",
+    "gallery": "ギャラリー",
+    "community": "コミュニティ",
+    "events": "イベント",
+    "marketplace": "マーケット",
+    "profile": "プロフィール"
+  },
+  "settings": {
+    "title": "設定",
+    "language": "言語",
+    "currency": "通貨",
+    "timezone": "タイムゾーン",
+    "theme": "テーマ",
+    "notifications": "通知",
+    "privacy": "プライバシー"
+  },
+  "user": {
+    "profile": "プロフィール",
+    "exp": "EXP",
+    "level": "レベル",
+    "plan": "プラン",
+    "upgrade": "アップグレード"
+  },
+  "events": {
+    "title": "イベント",
+    "create": "イベント作成",
+    "myEvents": "自分のイベント",
+    "upcoming": "開催予定",
+    "past": "過去のイベント",
+    "name": "イベント名",
+    "description": "説明",
+    "date": "日時",
+    "venue": "会場",
+    "capacity": "定員",
+    "price": "価格"
+  },
+  "plan": {
+    "free": "フリー",
+    "premium": "プレミアム",
+    "pro": "プロ",
+    "limits": "制限",
+    "eventsPerMonth": "月間イベント数",
+    "maxCapacity": "最大収容人数",
+    "paidEventsAllowed": "有料イベント可",
+    "currentPlan": "現在のプラン",
+    "thisMonth": "今月のイベント作成数",
+    "remaining": "残り",
+    "unlimited": "無制限",
+    "limitReached": "今月の作成上限に達しました"
+  },
+  "header": {
+    "search": "検索...",
+    "notifications": "通知",
+    "cart": "カート",
+    "menu": "メニュー"
+  }
+}

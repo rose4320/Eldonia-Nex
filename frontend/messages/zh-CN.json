@@ -1,0 +1,90 @@
+{
+  "home": {
+    "heroTitle1": "为创作者打造",
+    "heroTitle2": "创作平台",
+    "heroDescription": "实现所有创作者自由表达，获得公正评价和收益的世界",
+    "systemStatus": "系统状态",
+    "backendHealthy": "后端正常运行中",
+    "frontendHealthy": "SSR正常运行中",
+    "gallery": "作品画廊",
+    "galleryDesc": "发布和展示各种形式的作品",
+    "streaming": "直播",
+    "streamingDesc": "实时直播创作过程",
+    "marketplace": "市场",
+    "marketplaceDesc": "通过销售作品实现收益",
+    "gamification": "游戏化",
+    "gamificationDesc": "获得经验值升级",
+    "startNow": "立即开始"
+  },
+  "common": {
+    "appName": "Eldonia-Nex",
+    "welcome": "欢迎",
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "search": "搜索",
+    "logout": "登出",
+    "login": "登录",
+    "register": "注册"
+  },
+  "nav": {
+    "home": "首页",
+    "gallery": "画廊",
+    "community": "社区",
+    "events": "活动",
+    "marketplace": "市场",
+    "profile": "个人资料"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言",
+    "currency": "货币",
+    "timezone": "时区",
+    "theme": "主题",
+    "notifications": "通知",
+    "privacy": "隐私"
+  },
+  "user": {
+    "profile": "个人资料",
+    "exp": "经验值",
+    "level": "等级",
+    "plan": "计划",
+    "upgrade": "升级"
+  },
+  "events": {
+    "title": "活动",
+    "create": "创建活动",
+    "myEvents": "我的活动",
+    "upcoming": "即将举行",
+    "past": "过往活动",
+    "name": "活动名称",
+    "description": "描述",
+    "date": "日期",
+    "venue": "场地",
+    "capacity": "容量",
+    "price": "价格"
+  },
+  "plan": {
+    "free": "免费",
+    "premium": "高级",
+    "pro": "专业",
+    "limits": "限制",
+    "eventsPerMonth": "每月活动数",
+    "maxCapacity": "最大容量",
+    "paidEventsAllowed": "允许付费活动",
+    "currentPlan": "当前计划",
+    "thisMonth": "本月创建的活动",
+    "remaining": "剩余",
+    "unlimited": "无限制",
+    "limitReached": "已达到本月创建上限"
+  },
+  "header": {
+    "search": "搜索...",
+    "notifications": "通知",
+    "cart": "购物车",
+    "menu": "菜单"
+  }
+}

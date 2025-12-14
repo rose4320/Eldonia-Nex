@@ -215,6 +215,85 @@ class ReferralTrack(models.Model):
         db_table = "referral_tracks"
 
 
-from django.db import models
+class Portfolio(models.Model):
+    """ユーザーポートフォリオ - 作品集"""
+    objects = models.Manager()
 
-# Create your models here.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="portfolios"
+    )
+    # 作品情報
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    # 作品タイプ
+    WORK_TYPE_CHOICES = [
+        ("illustration", "イラスト"),
+        ("manga", "漫画"),
+        ("animation", "アニメーション"),
+        ("3d", "3Dモデル"),
+        ("music", "音楽"),
+        ("video", "動画"),
+        ("novel", "小説"),
+        ("game", "ゲーム"),
+        ("design", "デザイン"),
+        ("photo", "写真"),
+        ("other", "その他"),
+    ]
+    work_type = models.CharField(max_length=50, choices=WORK_TYPE_CHOICES, default="illustration")
+    # メイン画像/サムネイル
+    thumbnail_url = models.URLField(max_length=1000, blank=True)
+    # 作品ファイルURL（複数可能な場合はJSONで）
+    file_urls = models.JSONField(null=True, blank=True)
+    # 外部リンク（YouTubeやSoundCloud等）
+    external_url = models.URLField(max_length=1000, blank=True)
+    # タグ
+    tags = models.JSONField(null=True, blank=True)
+    # 使用ツール・技術
+    tools_used = models.JSONField(null=True, blank=True)
+    # 制作期間
+    creation_period = models.CharField(max_length=100, blank=True)
+    # クライアント情報（公開可能な場合）
+    client_name = models.CharField(max_length=200, blank=True)
+    # 公開設定
+    VISIBILITY_CHOICES = [
+        ("public", "公開"),
+        ("unlisted", "限定公開"),
+        ("private", "非公開"),
+    ]
+    visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default="public")
+    # 注目作品フラグ
+    is_featured = models.BooleanField(default=False)
+    # 表示順
+    sort_order = models.IntegerField(default=0)
+    # 統計
+    view_count = models.BigIntegerField(default=0)
+    like_count = models.IntegerField(default=0)
+    # 関連Artwork（マーケットプレイスに出品している場合）
+    related_artwork = models.ForeignKey(
+        Artwork, null=True, blank=True, on_delete=models.SET_NULL, related_name="portfolio_items"
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "portfolios"
+        ordering = ["-is_featured", "sort_order", "-created_at"]
+        indexes = [
+            models.Index(fields=["user", "visibility"]),
+            models.Index(fields=["work_type"]),
+            models.Index(fields=["-created_at"]),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} - {self.title}"
+
+
+class PortfolioLike(models.Model):
+    """ポートフォリオへのいいね"""
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "portfolio_likes"
+        unique_together = ("user", "portfolio")

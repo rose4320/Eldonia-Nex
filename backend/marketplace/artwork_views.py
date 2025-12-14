@@ -1,11 +1,8 @@
 """作品アップロード用のビュー"""
 
-import os
 import uuid
-from pathlib import Path
 from typing import Any
 
-from common.security import FileSecurityChecker
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import UploadedFile
@@ -13,9 +10,10 @@ from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from users.models import User
 
+from common.security import FileSecurityChecker
 from marketplace.models import Artwork, Category
+from users.models import User
 
 
 class UploadArtworkImageView(View):

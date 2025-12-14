@@ -1,0 +1,90 @@
+{
+  "home": {
+    "heroTitle1": "크리에이터를 위한",
+    "heroTitle2": "창작 플랫폼",
+    "heroDescription": "모든 크리에이터가 자유롭게 표현하고, 정당한 평가와 수익을 얻을 수 있는 세상의 실현",
+    "systemStatus": "시스템 상태",
+    "backendHealthy": "백엔드 정상 작동 중",
+    "frontendHealthy": "SSR 정상 작동 중",
+    "gallery": "작품 갤러리",
+    "galleryDesc": "다양한 형식의 작품을 게시하고 전시",
+    "streaming": "라이브 스트리밍",
+    "streamingDesc": "실시간으로 창작 과정을 스트리밍",
+    "marketplace": "마켓플레이스",
+    "marketplaceDesc": "작품 판매로 수익 실현",
+    "gamification": "게이미피케이션",
+    "gamificationDesc": "EXP 획득으로 레벨업",
+    "startNow": "지금 시작하기"
+  },
+  "common": {
+    "appName": "Eldonia-Nex",
+    "welcome": "환영합니다",
+    "loading": "로딩 중...",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "create": "생성",
+    "search": "검색",
+    "logout": "로그아웃",
+    "login": "로그인",
+    "register": "회원가입"
+  },
+  "nav": {
+    "home": "홈",
+    "gallery": "갤러리",
+    "community": "커뮤니티",
+    "events": "이벤트",
+    "marketplace": "마켓플레이스",
+    "profile": "프로필"
+  },
+  "settings": {
+    "title": "설정",
+    "language": "언어",
+    "currency": "통화",
+    "timezone": "시간대",
+    "theme": "테마",
+    "notifications": "알림",
+    "privacy": "개인정보"
+  },
+  "user": {
+    "profile": "프로필",
+    "exp": "경험치",
+    "level": "레벨",
+    "plan": "플랜",
+    "upgrade": "업그레이드"
+  },
+  "events": {
+    "title": "이벤트",
+    "create": "이벤트 만들기",
+    "myEvents": "내 이벤트",
+    "upcoming": "예정된 이벤트",
+    "past": "지난 이벤트",
+    "name": "이벤트 이름",
+    "description": "설명",
+    "date": "날짜",
+    "venue": "장소",
+    "capacity": "정원",
+    "price": "가격"
+  },
+  "plan": {
+    "free": "무료",
+    "premium": "프리미엄",
+    "pro": "프로",
+    "limits": "제한",
+    "eventsPerMonth": "월간 이벤트 수",
+    "maxCapacity": "최대 수용 인원",
+    "paidEventsAllowed": "유료 이벤트 허용",
+    "currentPlan": "현재 플랜",
+    "thisMonth": "이번 달 생성한 이벤트",
+    "remaining": "남은 수",
+    "unlimited": "무제한",
+    "limitReached": "이번 달 생성 한도 도달"
+  },
+  "header": {
+    "search": "검색...",
+    "notifications": "알림",
+    "cart": "장바구니",
+    "menu": "메뉴"
+  }
+}

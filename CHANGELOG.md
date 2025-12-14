@@ -1,5 +1,109 @@
 # Eldonia-Nex Version History
 
+## Version 0.5.0 (2025-12-14)
+
+### 🎨 新機能
+
+#### **ポートフォリオシステム**
+- ユーザーポートフォリオ作成・管理機能
+- 公開/限定公開/非公開の可視性設定
+- 作品タイプ別分類（イラスト、漫画、3D、動画、音楽等）
+- いいね機能、閲覧数カウント
+- ダッシュボードからのポートフォリオ管理
+
+#### **求人・案件応募システム（WORKSページ）**
+- 2タブ構成: 求人検索 / クリエイター検索
+- 求人応募時にユーザー情報自動添付
+  - Lv、EXP、称号（レベルに応じて自動決定）
+  - 公開設定のポートフォリオのみ自動添付
+- クリエイター検索・オファー機能
+- 称号システム: ルーキー → ビギナー → インターミディエイト → アドバンス → エキスパート → マスター → レジェンド
+
+#### **ユーザープロフィール拡張**
+- UserAddress モデル: 詳細住所情報
+- UserSkill モデル: スキル情報（カテゴリ、レベル、経験年数）
+- UserDetail モデル: その他詳細情報（職業、学歴等）
+- フルプロフィールAPI（統合取得）
+
+### 🔧 改善
+
+- ダッシュボードのプラン同期修正
+- プラン変更タブとヘッダーのプラン表示統一
+- アバター表示の修正（相対URL→絶対URL変換）
+- 応募時のポートフォリオ自動添付ロジック最適化
+
+### 🗄️ データベース
+
+- `portfolios` テーブル追加
+- `portfolio_likes` テーブル追加
+- `user_addresses` テーブル追加
+- `user_skills` テーブル追加
+- `user_details` テーブル追加
+
+### 📡 API エンドポイント
+
+- `GET/POST /api/v1/portfolios/me/` - マイポートフォリオ
+- `GET/PATCH/DELETE /api/v1/portfolios/me/<id>/` - ポートフォリオ詳細
+- `GET /api/v1/portfolios/` - 公開ポートフォリオ一覧
+- `POST /api/v1/portfolios/<id>/like/` - いいね
+- `GET/PATCH /api/v1/users/me/address/` - 住所情報
+- `GET/POST /api/v1/users/me/skills/` - スキル情報
+- `GET/PATCH /api/v1/users/me/detail/` - 詳細情報
+- `GET /api/v1/users/me/full-profile/` - フルプロフィール
+
+---
+
+## Version 0.4.0 (2025-12-13)
+
+### 🌍 新機能
+
+#### **多言語・多通貨対応**
+- 5言語対応: 日本語、English、한국어、简体中文、繁體中文
+- 6通貨対応: JPY, USD, EUR, KRW, CNY, TWD
+- リアルタイム為替レート換算機能
+- ユーザー別言語・通貨設定保存
+- next-intl による完全なi18n対応
+
+#### **バックエンド実装**
+- `localization` アプリ新規作成
+- `Language` モデル: 対応言語マスタ
+- `Currency` モデル: 対応通貨マスタ
+- `ExchangeRate` モデル: 為替レート履歴
+- `ContentTranslation` モデル: コンテンツ翻訳データ
+- Userモデルに `preferred_language`, `preferred_currency`, `timezone` フィールド追加
+
+#### **API エンドポイント**
+- `GET /api/v1/localization/languages/` - 対応言語一覧
+- `GET /api/v1/localization/currencies/` - 対応通貨一覧
+- `GET /api/v1/localization/currencies/rates/` - 為替レート取得
+- `POST /api/v1/localization/currencies/convert/` - 通貨換算
+- `GET /api/v1/localization/users/me/locale/` - ユーザー地域設定取得
+- `PUT /api/v1/localization/users/me/language/` - 言語設定更新
+- `PUT /api/v1/localization/users/me/currency/` - 通貨設定更新
+
+#### **フロントエンド実装**
+- `LanguageSwitcher` コンポーネント: 言語切り替えUI（国旗表示）
+- `LocalizationSettings` コンポーネント: 言語・通貨設定画面
+- `CurrencyDisplay` コンポーネント: 自動通貨換算表示
+- next-intl ミドルウェア設定
+- 多言語メッセージファイル（ja.json, en.json, ko.json）
+
+### 🔧 改善
+
+- 初期データ投入用マネジメントコマンド `load_localization_data` 追加
+- 為替レート自動計算（逆レート生成）
+- 通貨表示の小数点桁数自動調整（JPY/KRW: 0桁、USD/EUR: 2桁）
+- 為替レート自動更新コマンド `update_exchange_rates` 追加（ExchangeRate-API連携）
+- PostgreSQL 17への移行完了
+- 全5言語のメッセージファイル完備（ja, en, ko, zh-CN, zh-TW）
+- PlanLimitsInfoコンポーネントの多言語対応完了
+
+### 📚 ドキュメント
+
+- 多言語・多通貨対応のドキュメント更新
+
+---
+
 ## Version 0.3.0 (2025-12-12)
 
 ### 🎉 新機能
@@ -209,4 +313,5 @@
 
 **最終更新**: 2025-11-30
 **次期バージョン予定**: 0.3.0
+
 

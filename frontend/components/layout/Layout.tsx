@@ -29,6 +29,31 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const { user } = useAuth();
   const pathname = usePathname() || '';
+
+  // アバターURLを絶対URLに変換する関数
+  const getFullAvatarUrl = (avatarUrl: string | undefined): string | undefined => {
+    if (!avatarUrl) return undefined;
+    // 既に絶対URLの場合はそのまま返す
+    if (avatarUrl.startsWith('http://') || avatarUrl.startsWith('https://')) {
+      return avatarUrl;
+    }
+    // 相対パスの場合はバックエンドのURLを付加
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      const backendHost = hostname === 'localhost' || hostname === '127.0.0.1' 
+        ? 'http://localhost:8000' 
+        : `http://${hostname}:8000`;
+      return `${backendHost}${avatarUrl}`;
+    }
+    return `http://localhost:8000${avatarUrl}`;
+  };
+
+  // #region agent log
+  React.useEffect(() => {
+    const fullAvatarUrl = getFullAvatarUrl(user?.avatar_url);
+    fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Layout.tsx:useEffect',message:'User data in Layout',data:{hasUser:!!user,avatar_url:user?.avatar_url,fullAvatarUrl,username:user?.username,display_name:user?.display_name},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+  }, [user]);
+  // #endregion
   const hideFooterPaths = [
     '/community/groupwork/deep',
     '/community/groupwork/deep/'
@@ -49,11 +74,11 @@ const Layout: React.FC<LayoutProps> = ({
             {...headerProps}
             isAuthenticated={!!user}
             user={user ? {
-              name: user.username,
-              level: 1,
-              currentExp: 0,
+              name: user.display_name || user.username,
+              level: user.level || 1,
+              currentExp: user.exp || 0,
               maxExp: 100,
-              avatar: undefined
+              avatar: getFullAvatarUrl(user.avatar_url)
             } : undefined}
           />
         )}

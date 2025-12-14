@@ -1,8 +1,17 @@
 "use client";
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 
-// API Base URL
-const API_BASE_URL = 'http://localhost:8001/api/v1';
+// ブラウザのホスト名を使用してAPIのベースURLを動的に決定（呼び出し時に評価）
+const getApiBaseUrl = (): string => {
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:8000/api/v1';
+    }
+    return `http://${hostname}:8000/api/v1`;
+  }
+  return 'http://localhost:8000/api/v1';
+};
 
 // ユーザー型（必要に応じて拡張）
 export type User = {
@@ -15,6 +24,7 @@ export type User = {
   level?: number;
   exp?: number;
   fan_count?: number;
+  preferred_language?: string;
 };
 
 // Context型
@@ -47,7 +57,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         
         if (authToken) {
           // トークンが存在する場合、バックエンドで検証
-          const response = await fetch(`${API_BASE_URL}/users/me/`, {
+          const response = await fetch(`${getApiBaseUrl()}/users/me/`, {
             headers: {
               'Authorization': `Token ${authToken}`,
             },
@@ -84,7 +94,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     try {
       // バックエンドAPIにログインリクエストを送信
-      const response = await fetch(`${API_BASE_URL}/login/`, {
+      const response = await fetch(`${getApiBaseUrl()}/login/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +116,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('authToken', data.token);
       
       // ユーザー情報を取得（トークンを使用）
-      const userResponse = await fetch(`${API_BASE_URL}/users/me/`, {
+      const userResponse = await fetch(`${getApiBaseUrl()}/users/me/`, {
         headers: {
           'Authorization': `Token ${data.token}`,
         },
@@ -142,7 +152,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       
       if (authToken) {
         // バックエンドにログアウトリクエストを送信（オプション）
-        await fetch(`${API_BASE_URL}/logout/`, {
+        await fetch(`${getApiBaseUrl()}/logout/`, {
           method: 'POST',
           headers: {
             'Authorization': `Token ${authToken}`,
@@ -171,7 +181,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     
     try {
-      const response = await fetch(`${API_BASE_URL}/register/`, {
+      const response = await fetch(`${getApiBaseUrl()}/register/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +205,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('authToken', data.token);
         
         // ユーザー情報を取得
-        const userResponse = await fetch(`${API_BASE_URL}/users/me/`, {
+        const userResponse = await fetch(`${getApiBaseUrl()}/users/me/`, {
           headers: {
             'Authorization': `Token ${data.token}`,
           },
