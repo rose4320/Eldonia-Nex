@@ -1,4 +1,8 @@
-@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&family=EB+Garamond:wght@400;500;600;700;800&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* UI/UX設計書準拠：CSS変数定義 */
 @layer base {
@@ -275,4 +279,23 @@ body {
 
 .typography-code {
   font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+}
+
+/* ページタイトル専用スタイル - 中世風エレガント */
+.page-title {
+  font-family: "Cinzel Decorative", "Cinzel", "EB Garamond", serif;
+  font-weight: 700;
+  background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 50%, #ea580c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.08em;
+}
+
+.page-subtitle {
+  font-family: "Cormorant Garamond", "EB Garamond", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-style: italic;
 }

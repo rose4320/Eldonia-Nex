@@ -16,21 +16,38 @@ Including another URLconf
 """
 from typing import List
 
+from api.events.views import UserPlanLimitsView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.urls import include, path
-
-from api.events.views import UserPlanLimitsView
 from marketplace.artwork_views import (
     ArtworkListView,
     CreateArtworkView,
     UploadArtworkImageView,
 )
-from rest_framework.authtoken.views import obtain_auth_token
-from users.api_views import CurrentUserView, LogoutView
+from marketplace.portfolio_views import (
+    MyPortfolioDetailView,
+    MyPortfolioListView,
+    PortfolioDetailView,
+    PortfolioLikeView,
+    PortfolioListView,
+    UserPortfolioView,
+)
+from users.api_views import (
+    CurrentUserView,
+    CustomLoginView,
+    LogoutView,
+    ProfileUpdateView,
+    SubscriptionUpdateView,
+    UserAddressView,
+    UserDetailView,
+    UserFullProfileView,
+    UserSkillDetailView,
+    UserSkillsView,
+)
 from users.referral_views import ReferralCodeView, ReferralListView
 from users.upload_views import UploadAvatarView
 from users.views import PlanListView, RegisterUserView
@@ -152,9 +169,17 @@ urlpatterns: List[object] = [
     path("api/v1/health/", api_health_check, name="api_health"),
     path("community/", community_page, name="community"),
     # 認証関連
-    path("api/v1/login/", obtain_auth_token, name="api_login"),
+    path("api/v1/login/", CustomLoginView.as_view(), name="api_login"),
     path("api/v1/logout/", LogoutView.as_view(), name="api_logout"),
     path("api/v1/users/me/", CurrentUserView.as_view(), name="current_user"),
+    path("api/v1/users/me/profile/", ProfileUpdateView.as_view(), name="profile_update"),
+    path("api/v1/users/me/subscription/", SubscriptionUpdateView.as_view(), name="subscription_update"),
+    # 住所・スキル・詳細情報
+    path("api/v1/users/me/address/", UserAddressView.as_view(), name="user_address"),
+    path("api/v1/users/me/skills/", UserSkillsView.as_view(), name="user_skills"),
+    path("api/v1/users/me/skills/<int:skill_id>/", UserSkillDetailView.as_view(), name="user_skill_detail"),
+    path("api/v1/users/me/detail/", UserDetailView.as_view(), name="user_detail"),
+    path("api/v1/users/me/full-profile/", UserFullProfileView.as_view(), name="user_full_profile"),
     path("api/v1/register/", RegisterUserView.as_view(), name="register_user"),
     # プラン制限情報
     path("api/v1/users/plan-limits/", UserPlanLimitsView.as_view(), name="user_plan_limits"),
@@ -167,12 +192,24 @@ urlpatterns: List[object] = [
     path("api/v1/artworks/upload-image/", UploadArtworkImageView.as_view(), name="upload_artwork_image"),
     path("api/v1/artworks/create/", CreateArtworkView.as_view(), name="create_artwork"),
     path("api/v1/artworks/list/", ArtworkListView.as_view(), name="artwork_list"),
+    # ポートフォリオAPI
+    path("api/v1/portfolios/", PortfolioListView.as_view(), name="portfolio_list"),
+    path("api/v1/portfolios/<int:portfolio_id>/", PortfolioDetailView.as_view(), name="portfolio_detail"),
+    path("api/v1/portfolios/<int:portfolio_id>/like/", PortfolioLikeView.as_view(), name="portfolio_like"),
+    path("api/v1/portfolios/me/", MyPortfolioListView.as_view(), name="my_portfolio_list"),
+    path("api/v1/portfolios/me/<int:portfolio_id>/", MyPortfolioDetailView.as_view(), name="my_portfolio_detail"),
+    path("api/v1/portfolios/user/<str:username>/", UserPortfolioView.as_view(), name="user_portfolio"),
     # Events API
     path("api/v1/events/", include('api.events.urls')),
+    # Localization API
+    path("api/v1/localization/", include('localization.urls')),
 ]
 
 # Development: Static/Media files
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+# Development: Static/Media files
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

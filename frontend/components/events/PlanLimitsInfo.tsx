@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 interface PlanLimits {
@@ -14,6 +15,7 @@ interface PlanLimits {
 }
 
 export default function PlanLimitsInfo() {
+  const t = useTranslations('plan');
   const [limits, setLimits] = useState<PlanLimits | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,8 @@ export default function PlanLimitsInfo() {
 
   const fetchPlanLimits = async () => {
     try {
-      const response = await fetch('http://localhost:8001/api/v1/users/plan-limits/', {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      const response = await fetch(`${API_BASE_URL}/users/plan-limits/`, {
         headers: {
           'Authorization': `Token ${localStorage.getItem('authToken')}`,
         },
@@ -83,10 +86,10 @@ export default function PlanLimitsInfo() {
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <span>💎</span>
-          現在のプラン
+          {t('currentPlan')}
         </h3>
         <span className={`px-4 py-1 rounded-full text-sm font-bold uppercase ${getPlanBadgeColor(limits.subscription_plan)}`}>
-          {limits.subscription_plan}
+          {t(limits.subscription_plan as 'free' | 'premium' | 'pro')}
         </span>
       </div>
 
@@ -95,7 +98,7 @@ export default function PlanLimitsInfo() {
         <div className="mb-4">
           <div className="flex justify-between mb-2">
             <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              今月のイベント作成数
+              {t('thisMonth')}
             </span>
             <span className={`text-sm font-bold ${isLimitReached ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'}`}>
               {limits.events_created_this_month} / {limits.max_events_per_month}
@@ -109,14 +112,14 @@ export default function PlanLimitsInfo() {
           </div>
           {isLimitReached && (
             <p className="text-sm text-red-600 dark:text-red-400 mt-2 font-semibold">
-              ⚠️ 今月の作成上限に達しました
+              ⚠️ {t('limitReached')}
             </p>
           )}
         </div>
       ) : (
         <div className="mb-4">
           <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-            ✨ 無制限のイベント作成が可能です
+            ✨ {t('unlimited')}のイベント作成が可能です
           </span>
         </div>
       )}
@@ -124,13 +127,13 @@ export default function PlanLimitsInfo() {
       {/* プラン制限の詳細 */}
       <div className="space-y-2 text-sm">
         <div className="flex items-center gap-2">
-          <span className="text-gray-600 dark:text-gray-400">最大収容人数:</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('maxCapacity')}:</span>
           <span className="font-semibold text-gray-900 dark:text-white">
-            {limits.max_capacity === null ? '無制限' : `${limits.max_capacity}名`}
+            {limits.max_capacity === null ? t('unlimited') : `${limits.max_capacity}名`}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-gray-600 dark:text-gray-400">有料イベント:</span>
+          <span className="text-gray-600 dark:text-gray-400">{t('paidEventsAllowed')}:</span>
           <span className={`font-semibold ${limits.can_use_paid_events ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
             {limits.can_use_paid_events ? '✅ 可能' : '❌ 不可'}
           </span>
@@ -144,7 +147,7 @@ export default function PlanLimitsInfo() {
             より多くのイベントを作成したいですか？
           </p>
           <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105">
-            プランをアップグレード
+            {t('upgrade')}
           </button>
         </div>
       )}

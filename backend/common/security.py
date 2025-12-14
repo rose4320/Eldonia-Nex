@@ -1,13 +1,14 @@
 """ファイルセキュリティチェック用ユーティリティ"""
 
 import hashlib
-import magic
 import os
 import re
 from pathlib import Path
 from typing import Tuple
 
 from django.core.files.uploadedfile import UploadedFile
+
+import filetype
 
 
 class FileSecurityChecker:
@@ -94,16 +95,17 @@ class FileSecurityChecker:
 
     @classmethod
     def check_mime_type(cls, file: UploadedFile, expected_media_type: str) -> Tuple[bool, str]:
-        """MIMEタイプの整合性チェック（libmagic使用）"""
+        """MIMEタイプの整合性チェック（filetype使用）"""
         try:
-            # python-magicを使用してファイルの実際のMIMEタイプを取得
+            # filetypeを使用してファイルの実際のMIMEタイプを取得
             file_content = file.read(2048)  # 最初の2KBを読み込む
             file.seek(0)  # ファイルポインタを戻す
 
-            detected_mime = magic.from_buffer(file_content, mime=True)
+            kind = filetype.guess(file_content)
+            detected_mime = kind.mime if kind else None
 
             # 期待されるメディアタイプのMIMEパターンと照合
-            if expected_media_type in cls.ALLOWED_MIME_PATTERNS:
+            if expected_media_type in cls.ALLOWED_MIME_PATTERNS and detected_mime:
                 pattern = cls.ALLOWED_MIME_PATTERNS[expected_media_type]
                 if not re.match(pattern, detected_mime):
                     # Content-Typeとの整合性もチェック
@@ -114,7 +116,7 @@ class FileSecurityChecker:
             return True, ""
 
         except Exception as e:
-            # python-magicがない場合はスキップ（開発環境用）
+            # filetypeがない場合はスキップ（開発環境用）
             return True, ""
 
     @classmethod
@@ -234,4 +236,5 @@ class FileSecurityChecker:
             return False, error
 
         return True, ""
+
 

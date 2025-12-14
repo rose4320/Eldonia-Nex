@@ -1,14 +1,13 @@
 """紹介コード生成と管理のビュー"""
 
-import hashlib
 from typing import Any
 
 from django.http import HttpRequest, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from marketplace.models import Referral
 
+from marketplace.models import Referral
 from users.models import User
 
 

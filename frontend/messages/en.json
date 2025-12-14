@@ -1,0 +1,90 @@
+{
+  "home": {
+    "heroTitle1": "For Creators",
+    "heroTitle2": "Creative Platform",
+    "heroDescription": "A world where all creators can express freely and receive fair recognition and revenue",
+    "systemStatus": "System Status",
+    "backendHealthy": "Backend running normally",
+    "frontendHealthy": "SSR running normally",
+    "gallery": "Artwork Gallery",
+    "galleryDesc": "Post and exhibit various forms of artwork",
+    "streaming": "Live Streaming",
+    "streamingDesc": "Stream your creative process in real-time",
+    "marketplace": "Marketplace",
+    "marketplaceDesc": "Monetize your work through sales",
+    "gamification": "Gamification",
+    "gamificationDesc": "Level up by earning EXP",
+    "startNow": "Get Started"
+  },
+  "common": {
+    "appName": "Eldonia-Nex",
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "logout": "Logout",
+    "login": "Login",
+    "register": "Register"
+  },
+  "nav": {
+    "home": "Home",
+    "gallery": "Gallery",
+    "community": "Community",
+    "events": "Events",
+    "marketplace": "Marketplace",
+    "profile": "Profile"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "currency": "Currency",
+    "timezone": "Timezone",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "privacy": "Privacy"
+  },
+  "user": {
+    "profile": "Profile",
+    "exp": "EXP",
+    "level": "Level",
+    "plan": "Plan",
+    "upgrade": "Upgrade"
+  },
+  "events": {
+    "title": "Events",
+    "create": "Create Event",
+    "myEvents": "My Events",
+    "upcoming": "Upcoming",
+    "past": "Past Events",
+    "name": "Event Name",
+    "description": "Description",
+    "date": "Date",
+    "venue": "Venue",
+    "capacity": "Capacity",
+    "price": "Price"
+  },
+  "plan": {
+    "free": "Free",
+    "premium": "Premium",
+    "pro": "Pro",
+    "limits": "Limits",
+    "eventsPerMonth": "Events per Month",
+    "maxCapacity": "Max Capacity",
+    "paidEventsAllowed": "Paid Events Allowed",
+    "currentPlan": "Current Plan",
+    "thisMonth": "Events Created This Month",
+    "remaining": "Remaining",
+    "unlimited": "Unlimited",
+    "limitReached": "Monthly creation limit reached"
+  },
+  "header": {
+    "search": "Search...",
+    "notifications": "Notifications",
+    "cart": "Cart",
+    "menu": "Menu"
+  }
+}

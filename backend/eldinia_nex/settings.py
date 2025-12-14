@@ -28,7 +28,7 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,172.16.0.2,0.0.0.0,*").split(",")
 
 
 # Application definition
@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "streaming.apps.StreamingConfig",
     "jobs.apps.JobsConfig",
     "gamification.apps.GamificationConfig",
+    "localization.apps.LocalizationConfig",
 ]
 
 MIDDLEWARE = [
@@ -267,13 +268,23 @@ CACHES = {  # type: ignore
 # Development: Use database sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
-# Celery configuration - Development setup (disabled)
-# CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
-# CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
-# CELERY_ACCEPT_CONTENT = ['json']
-# CELERY_TASK_SERIALIZER = 'json'
-# CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = TIME_ZONE
+# Celery configuration
+CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
+CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+# Celery Beat schedule for periodic tasks
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    'update-exchange-rates-daily': {
+        'task': 'localization.tasks.update_exchange_rates_task',
+        'schedule': crontab(hour=0, minute=0),  # Every day at midnight
+    },
+}
 
 # Email configuration
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

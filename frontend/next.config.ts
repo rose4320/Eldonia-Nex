@@ -1,4 +1,4 @@
-import type { NextConfig } from 'next'
+import type { NextConfig } from 'next';
 
 /** @type {import('next').NextConfig} */
 const nextConfig: NextConfig = {
@@ -34,6 +34,20 @@ const nextConfig: NextConfig = {
         port: '8000', 
         pathname: '/media/**',
       },
+      {
+        protocol: 'http',
+        hostname: '172.16.0.2',
+        port: '8000',
+        pathname: '/media/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
     ],
     formats: ['image/webp', 'image/avif'],
   },
@@ -49,4 +63,4 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+export default nextConfig;

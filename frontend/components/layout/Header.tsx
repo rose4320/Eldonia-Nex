@@ -2,7 +2,22 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React, { useState } from 'react'
+
+// ロケールコードマッピング
+const localeMap: Record<string, string> = {
+  'JA': 'ja',
+  'EN': 'en',
+  'ZH': 'zh-CN',
+  'KO': 'ko',
+}
+
+const displayToLocale = (display: string): string => localeMap[display] || 'ja'
+const localeToDisplay = (locale: string): string => {
+  const entry = Object.entries(localeMap).find(([, v]) => v === locale)
+  return entry ? entry[0] : 'JA'
+}
 
 // UI/UX設計書準拠：ヘッダーコンポーネントプロパティ
 interface HeaderProps {
@@ -58,10 +73,35 @@ const Header: React.FC<HeaderProps> = ({
   cartAmount = 0,
   notificationCount = 0
 }) => {
+  const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState('JA')
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false)
   const [showTitle, setShowTitle] = useState(true)
+
+  // 現在のロケールをURLから取得
+  const currentLocale = pathname?.split('/')[1] || 'ja'
+  const selectedLanguage = localeToDisplay(currentLocale)
+
+  // 言語変更時のリダイレクト処理（フルページリロードで翻訳を適用）
+  const handleLanguageChange = (langDisplay: string) => {
+    const newLocale = displayToLocale(langDisplay)
+    
+    if (newLocale === currentLocale) {
+      setIsLangMenuOpen(false)
+      return
+    }
+    
+    // URLのロケール部分を置換
+    const segments = pathname?.split('/') || []
+    if (segments.length > 1) {
+      segments[1] = newLocale
+    }
+    const newPath = segments.join('/') || `/${newLocale}`
+    
+    setIsLangMenuOpen(false)
+    // フルページリロードでサーバーコンポーネントを再レンダリング
+    window.location.href = newPath
+  }
 
   // ウィンドウサイズ監視とタイトル表示制御
   React.useEffect(() => {
@@ -98,10 +138,10 @@ const Header: React.FC<HeaderProps> = ({
     <header className="fixed top-0 left-0 right-0 bg-gray-900/95 backdrop-blur-md shadow-lg w-full z-50">
       <div className="w-[90%] max-w-7xl mx-auto">
         {/* モバイル用レイアウト（0-767px） */}
-        <div className="flex! md:hidden! items-center justify-between min-h-[88px] px-4">
+        <div className="flex md:hidden items-center justify-between min-h-[88px] px-4">
           {/* 左：ロゴのみ（クリックでトップへ） */}
           <div className="flex items-center">
-            <Link href="/" className="transition-transform hover:scale-105 duration-200">
+            <Link href={`/${currentLocale}`} className="transition-transform hover:scale-105 duration-200">
               <LogoComponent />
             </Link>
           </div>
@@ -119,10 +159,10 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* タブレット用レイアウト（768px-1023px） */}
-        <div className="hidden! md:grid! lg:hidden! grid-cols-[15%_60%_25%] items-center gap-3 min-h-[88px] px-4">
+        <div className="hidden md:grid lg:hidden grid-cols-[15%_60%_25%] items-center gap-3 min-h-[88px] px-4">
           {/* 左カラム（15%）：ロゴのみ（クリックでトップへ） */}
           <div className="flex items-center justify-center">
-            <Link href="/" className="transition-transform hover:scale-105 duration-200">
+            <Link href={`/${currentLocale}`} className="transition-transform hover:scale-105 duration-200">
               <LogoComponent />
             </Link>
           </div>
@@ -140,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({
               ].map(({ key, label, href }) => (
                 <a
                   key={key}
-                  href={href}
+                  href={`/${currentLocale}${href}`}
                   className="relative group"
                   style={{
                     fontFamily: 'var(--font-inter), Inter, sans-serif',
@@ -211,10 +251,7 @@ const Header: React.FC<HeaderProps> = ({
                           <button
                             key={lang}
                             className="block w-full text-left px-2 py-1.5 text-xs text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                            onClick={() => {
-                              setSelectedLanguage(lang)
-                              setIsLangMenuOpen(false)
-                            }}
+                            onClick={() => handleLanguageChange(lang)}
                             style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
                           >
                             {lang}
@@ -253,12 +290,10 @@ const Header: React.FC<HeaderProps> = ({
                   {/* ユーザープロフィール */}
                   <button className="flex items-center space-x-1 p-1 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:scale-105">
                     {user.avatar ? (
-                      <Image
+                      <img
                         src={user.avatar}
                         alt={`${user.name}のアバター`}
-                        width={24}
-                        height={24}
-                        className="rounded-full ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
+                        className="w-6 h-6 rounded-full object-cover ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
                       />
                     ) : (
                       <div 
@@ -326,10 +361,7 @@ const Header: React.FC<HeaderProps> = ({
                           <button
                             key={lang}
                             className="block w-full text-left px-2 py-1.5 text-xs text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
-                            onClick={() => {
-                              setSelectedLanguage(lang)
-                              setIsLangMenuOpen(false)
-                            }}
+                            onClick={() => handleLanguageChange(lang)}
                             style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
                           >
                             {lang}
@@ -349,7 +381,7 @@ const Header: React.FC<HeaderProps> = ({
                     // ...existing code...
                   />
                   <Link 
-                    href="/plans"
+                    href={`/${currentLocale}/plans`}
                     className="text-white px-3 py-1 rounded-lg text-xs font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg block w-full h-full text-center"
                     style={{ 
                       background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
@@ -365,16 +397,16 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* デスクトップ用レイアウト（1024px以上） */}
-        <div className="hidden! lg:grid! grid-cols-[30%_40%_30%] items-center gap-4 min-h-[88px] px-4 lg:px-6">
+        <div className="hidden lg:grid grid-cols-[30%_40%_30%] items-center gap-4 min-h-[88px] px-4 lg:px-6">
           {/* 左カラム（30%）：ブランドセクション（クリックでトップへ） */}
           <div className="flex items-center space-x-4">
-            <Link href="/" className="transition-transform hover:scale-105 duration-200">
+            <Link href={`/${currentLocale}`} className="transition-transform hover:scale-105 duration-200">
               <LogoComponent />
             </Link>
             
             {/* 1070px以下でタイトル文字を非表示 */}
             {showTitle && (
-              <Link href="/" className="transition-colors hover:opacity-80 duration-200">
+              <Link href={`/${currentLocale}`} className="transition-colors hover:opacity-80 duration-200">
                 <div className="flex flex-col">
                   <h1 className="brand-title" style={{ 
                     fontFamily: 'var(--font-pt-serif), "PT Serif", serif',
@@ -407,7 +439,7 @@ const Header: React.FC<HeaderProps> = ({
             ].map(({ key, label, href }) => (
               <a
                 key={key}
-                href={href}
+                href={`/${currentLocale}${href}`}
                 className="font-semibold text-sm tracking-wider transition-all duration-200 relative group hover:scale-105"
                 style={{
                   fontFamily: 'var(--font-inter), Inter, sans-serif',
@@ -492,7 +524,7 @@ const Header: React.FC<HeaderProps> = ({
                           key={lang}
                           className="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
                           onClick={() => {
-                            setSelectedLanguage(lang)
+                            handleLanguageChange(lang)
                             setIsLangMenuOpen(false)
                           }}
                           style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
@@ -531,15 +563,13 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
 
                 {/* ユーザープロフィール */}
-                <Link href="/dashboard">
+                <Link href={`/${currentLocale}/dashboard`}>
                   <button className="flex items-center space-x-1 p-1.5 rounded-lg hover:bg-gray-800 transition-all duration-200 hover:scale-105">
                     {user.avatar ? (
-                      <Image
+                      <img
                         src={user.avatar}
                         alt={`${user.name}のアバター`}
-                        width={28}
-                        height={28}
-                        className="rounded-full ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
+                        className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-600 hover:ring-purple-400 transition-all duration-200"
                       />
                     ) : (
                       <div 
@@ -619,7 +649,7 @@ const Header: React.FC<HeaderProps> = ({
                           key={lang}
                           className="block w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-purple-400 transition-colors first:rounded-t-lg last:rounded-b-lg"
                           onClick={() => {
-                            setSelectedLanguage(lang)
+                            handleLanguageChange(lang)
                             setIsLangMenuOpen(false)
                           }}
                           style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
@@ -632,7 +662,7 @@ const Header: React.FC<HeaderProps> = ({
                 </div>
 
                 <Link 
-                  href="/signin"
+                  href={`/${currentLocale}/signin`}
                   className="text-gray-300 hover:text-purple-400 text-sm font-semibold px-3 py-1.5 border border-gray-600 rounded-lg hover:border-purple-500 transition-all duration-200 hover:scale-105"
                   style={{ fontFamily: 'var(--font-noto-sans-jp), \"Noto Sans JP\", sans-serif' }}
                   passHref
@@ -643,7 +673,7 @@ const Header: React.FC<HeaderProps> = ({
                   // ...existing code...
                 />
                 <Link 
-                  href="/plans"
+                  href={`/${currentLocale}/plans`}
                   className="text-white bg-linear-to-r from-purple-600 to-purple-400 px-3 py-1.5 border border-gray-600 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105 hover:shadow-lg block text-center hover:border-purple-500"
                   style={{ 
                     fontFamily: 'var(--font-noto-sans-jp), \"Noto Sans JP\", sans-serif'
@@ -672,12 +702,10 @@ const Header: React.FC<HeaderProps> = ({
               <div className="px-6 py-6 border-b border-gray-700 bg-linear-to-r from-gray-850 to-gray-800">
                 <div className="flex items-center space-x-4 mb-4">
                   {user.avatar ? (
-                    <Image
+                    <img
                       src={user.avatar}
                       alt={`${user.name}のアバター`}
-                      width={48}
-                      height={48}
-                      className="rounded-full ring-3 ring-purple-400 shadow-lg"
+                      className="w-12 h-12 rounded-full object-cover ring-3 ring-purple-400 shadow-lg"
                     />
                   ) : (
                     <div 
@@ -747,7 +775,7 @@ const Header: React.FC<HeaderProps> = ({
                     // ...existing code...
                   />
                   <Link 
-                    href="/plans"
+                    href={`/${currentLocale}/plans`}
                     className="w-full text-white px-5 py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 block text-center"
                     style={{ 
                       background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
@@ -837,7 +865,7 @@ const Header: React.FC<HeaderProps> = ({
                           key={lang}
                           className="block w-full text-left px-5 py-4 text-sm text-gray-300 hover:bg-gray-600 hover:text-purple-400 transition-all duration-200 group"
                           onClick={() => {
-                            setSelectedLanguage(lang)
+                            handleLanguageChange(lang)
                             setIsLangMenuOpen(false)
                           }}
                           style={{ 
@@ -875,7 +903,7 @@ const Header: React.FC<HeaderProps> = ({
                 ].map(({ label, href, icon, color }) => (
                   <a
                     key={label}
-                    href={href}
+                    href={`/${currentLocale}${href}`}
                     className="flex items-center space-x-4 text-gray-300 hover:text-white font-semibold py-4 px-4 rounded-xl transition-all duration-200 hover:bg-gray-700/50 group hover:shadow-lg hover:scale-105"
                     style={{ 
                       fontFamily: 'var(--font-inter), Inter, sans-serif',

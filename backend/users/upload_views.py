@@ -113,3 +113,4 @@ class DeleteAvatarView(View):
                 {"error": f"削除中にエラーが発生しました: {str(e)}"}, status=500
             )
 
+
