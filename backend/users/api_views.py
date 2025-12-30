@@ -1,8 +1,12 @@
 """
 Users API Views
 """
+# pyright: reportMissingTypeStubs=false, reportMissingImports=false, reportUnknownMemberType=false, reportUnknownArgumentType=false, reportUnknownVariableType=false, reportUnknownParameterType=false
+
+from typing import Any
 
 from django.contrib.auth import authenticate, get_user_model
+from django.core.exceptions import ObjectDoesNotExist
 
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -22,7 +26,7 @@ class CustomLoginView(APIView):
 
     permission_classes = []
 
-    def post(self, request):
+    def post(self, request: Any):
         """ログイン処理（username or email + password）"""
         username_or_email = request.data.get("username", "")
         password = request.data.get("password", "")
@@ -50,7 +54,7 @@ class CustomLoginView(APIView):
             )
 
         # トークンを取得または作成
-        token, created = Token.objects.get_or_create(user=user)
+        token, _created = Token.objects.get_or_create(user=user)  # type: ignore[attr-defined]
 
         return Response({"token": token.key, "user_id": user.pk, "username": user.username, "email": user.email})
 
@@ -61,7 +65,7 @@ class CurrentUserView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request: Any):
         """ログインユーザーの情報を返す"""
         user = request.user
 
@@ -92,7 +96,7 @@ class ProfileUpdateView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request):
+    def patch(self, request: Any):
         """プロフィールを更新する"""
         user = request.user
 
@@ -150,7 +154,7 @@ class SubscriptionUpdateView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request):
+    def patch(self, request: Any):
         """プランを変更する"""
         user = request.user
         new_plan = request.data.get("subscription_plan")
@@ -189,14 +193,15 @@ class LogoutView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def post(self, request: Any):
         """トークンを削除してログアウト"""
-        try:
-            # ユーザーのトークンを削除
-            request.user.auth_token.delete()
-            return Response({"detail": "ログアウトしました"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        # トークンが無いケースを明示的に扱う
+        token = getattr(request.user, "auth_token", None)
+        if token is None:
+            return Response({"detail": "ログイン中ではありません"}, status=status.HTTP_400_BAD_REQUEST)
+
+        token.delete()
+        return Response({"detail": "ログアウトしました"}, status=status.HTTP_200_OK)
 
 
 class UserAddressView(APIView):
@@ -205,33 +210,34 @@ class UserAddressView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request: Any):
         """住所情報を取得"""
         try:
             address = UserAddress.objects.get(user=request.user)
-            return Response(
-                {
-                    "id": address.id,
-                    "country_code": address.country_code,
-                    "country_name": address.country_name,
-                    "postal_code": address.postal_code,
-                    "state_province": address.state_province,
-                    "city": address.city,
-                    "address_line1": address.address_line1,
-                    "address_line2": address.address_line2,
-                    "full_address": address.full_address,
-                    "latitude": str(address.latitude) if address.latitude else None,
-                    "longitude": str(address.longitude) if address.longitude else None,
-                    "address_type": address.address_type,
-                    "is_primary": address.is_primary,
-                }
-            )
-        except UserAddress.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response(None)
 
-    def patch(self, request):
+        return Response(
+            {
+                "id": address.id,
+                "country_code": address.country_code,
+                "country_name": address.country_name,
+                "postal_code": address.postal_code,
+                "state_province": address.state_province,
+                "city": address.city,
+                "address_line1": address.address_line1,
+                "address_line2": address.address_line2,
+                "full_address": address.full_address,
+                "latitude": str(address.latitude) if address.latitude else None,
+                "longitude": str(address.longitude) if address.longitude else None,
+                "address_type": address.address_type,
+                "is_primary": address.is_primary,
+            }
+        )
+
+    def patch(self, request: Any):
         """住所情報を更新（なければ作成）"""
-        address, created = UserAddress.objects.get_or_create(user=request.user)
+        address, _created = UserAddress.objects.get_or_create(user=request.user)
 
         fields = [
             "country_code",
@@ -278,7 +284,7 @@ class UserSkillsView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request: Any):
         """スキル一覧を取得"""
         skills = UserSkill.objects.filter(user=request.user)
         return Response(
@@ -298,7 +304,7 @@ class UserSkillsView(APIView):
             ]
         )
 
-    def post(self, request):
+    def post(self, request: Any):
         """スキルを追加"""
         skill = UserSkill.objects.create(
             user=request.user,
@@ -331,11 +337,11 @@ class UserSkillDetailView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request, skill_id):
+    def patch(self, request: Any, skill_id: int):
         """スキルを更新"""
         try:
             skill = UserSkill.objects.get(id=skill_id, user=request.user)
-        except UserSkill.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response({"detail": "スキルが見つかりません"}, status=status.HTTP_404_NOT_FOUND)
 
         fields = [
@@ -356,14 +362,15 @@ class UserSkillDetailView(APIView):
         skill.save()
         return Response({"detail": "スキルを更新しました"})
 
-    def delete(self, request, skill_id):
+    def delete(self, request: Any, skill_id: int):
         """スキルを削除"""
         try:
             skill = UserSkill.objects.get(id=skill_id, user=request.user)
-            skill.delete()
-            return Response({"detail": "スキルを削除しました"})
-        except UserSkill.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response({"detail": "スキルが見つかりません"}, status=status.HTTP_404_NOT_FOUND)
+
+        skill.delete()
+        return Response({"detail": "スキルを削除しました"})
 
 
 class UserDetailView(APIView):
@@ -372,45 +379,46 @@ class UserDetailView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request: Any):
         """詳細情報を取得"""
         try:
             detail = UserDetail.objects.get(user=request.user)
-            return Response(
-                {
-                    "id": detail.id,
-                    "first_name_kanji": detail.first_name_kanji,
-                    "last_name_kanji": detail.last_name_kanji,
-                    "first_name_kana": detail.first_name_kana,
-                    "last_name_kana": detail.last_name_kana,
-                    "occupation": detail.occupation,
-                    "company_name": detail.company_name,
-                    "company_position": detail.company_position,
-                    "education": detail.education,
-                    "education_status": detail.education_status,
-                    "income_range": detail.income_range,
-                    "interests": detail.interests,
-                    "self_introduction": detail.self_introduction,
-                    "desired_work_types": detail.desired_work_types,
-                    "desired_hourly_rate_min": (
-                        str(detail.desired_hourly_rate_min) if detail.desired_hourly_rate_min else None
-                    ),
-                    "desired_hourly_rate_max": (
-                        str(detail.desired_hourly_rate_max) if detail.desired_hourly_rate_max else None
-                    ),
-                    "available_hours_per_week": detail.available_hours_per_week,
-                    "is_remote_available": detail.is_remote_available,
-                    "is_identity_verified": detail.is_identity_verified,
-                    "has_signed_nda": detail.has_signed_nda,
-                    "notes": detail.notes,
-                }
-            )
-        except UserDetail.DoesNotExist:
+        except ObjectDoesNotExist:
             return Response(None)
 
-    def patch(self, request):
+        return Response(
+            {
+                "id": detail.id,
+                "first_name_kanji": detail.first_name_kanji,
+                "last_name_kanji": detail.last_name_kanji,
+                "first_name_kana": detail.first_name_kana,
+                "last_name_kana": detail.last_name_kana,
+                "occupation": detail.occupation,
+                "company_name": detail.company_name,
+                "company_position": detail.company_position,
+                "education": detail.education,
+                "education_status": detail.education_status,
+                "income_range": detail.income_range,
+                "interests": detail.interests,
+                "self_introduction": detail.self_introduction,
+                "desired_work_types": detail.desired_work_types,
+                "desired_hourly_rate_min": (
+                    str(detail.desired_hourly_rate_min) if detail.desired_hourly_rate_min else None
+                ),
+                "desired_hourly_rate_max": (
+                    str(detail.desired_hourly_rate_max) if detail.desired_hourly_rate_max else None
+                ),
+                "available_hours_per_week": detail.available_hours_per_week,
+                "is_remote_available": detail.is_remote_available,
+                "is_identity_verified": detail.is_identity_verified,
+                "has_signed_nda": detail.has_signed_nda,
+                "notes": detail.notes,
+            }
+        )
+
+    def patch(self, request: Any):
         """詳細情報を更新（なければ作成）"""
-        detail, created = UserDetail.objects.get_or_create(user=request.user)
+        detail, _created = UserDetail.objects.get_or_create(user=request.user)
 
         fields = [
             "first_name_kanji",
@@ -461,14 +469,14 @@ class UserFullProfileView(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request: Any):
         """ユーザーの全情報（基本情報、住所、スキル、詳細）を取得"""
         user = request.user
 
         # 住所
-        try:
-            address = UserAddress.objects.get(user=user)
-            address_data = {
+        address = UserAddress.objects.filter(user=user).first()
+        address_data = (
+            {
                 "country_code": address.country_code,
                 "country_name": address.country_name,
                 "postal_code": address.postal_code,
@@ -478,8 +486,9 @@ class UserFullProfileView(APIView):
                 "address_line2": address.address_line2,
                 "full_address": address.full_address,
             }
-        except UserAddress.DoesNotExist:
-            address_data = None
+            if address
+            else None
+        )
 
         # スキル
         skills = UserSkill.objects.filter(user=user)
@@ -495,9 +504,9 @@ class UserFullProfileView(APIView):
         ]
 
         # 詳細
-        try:
-            detail = UserDetail.objects.get(user=user)
-            detail_data = {
+        detail = UserDetail.objects.filter(user=user).first()
+        detail_data = (
+            {
                 "first_name_kanji": detail.first_name_kanji,
                 "last_name_kanji": detail.last_name_kanji,
                 "first_name_kana": detail.first_name_kana,
@@ -507,8 +516,9 @@ class UserFullProfileView(APIView):
                 "education": detail.education,
                 "is_identity_verified": detail.is_identity_verified,
             }
-        except UserDetail.DoesNotExist:
-            detail_data = None
+            if detail
+            else None
+        )
 
         return Response(
             {
