@@ -9,9 +9,7 @@ from .models import User
 
 
 @receiver(post_save, sender=User)
-def attach_referral_on_signup(
-    sender: type, instance: Any, created: bool, **kwargs: Any
-) -> None:
+def attach_referral_on_signup(sender: type, instance: Any, created: bool, **kwargs: Any) -> None:
     """If a new user has `referral_code_used`, attach them to the referrer.
 
     This allows registration flows that accept a referral code string to set
@@ -37,9 +35,7 @@ def attach_referral_on_signup(
 
 
 @receiver(post_save, sender=User)
-def sync_artwork_denorm_on_user_update(
-    sender: type, instance: Any, **kwargs: Any
-) -> None:
+def sync_artwork_denorm_on_user_update(sender: type, instance: Any, **kwargs: Any) -> None:
     """Keep Artwork.denormalized creator fields in sync when a User changes.
 
     This updates all artworks created by the user to reflect the latest

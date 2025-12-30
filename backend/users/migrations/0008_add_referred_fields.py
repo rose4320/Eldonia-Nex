@@ -1,3 +1,4 @@
+# flake8: noqa
 """Add referred_by and referral_code_used to User and backfill from referrals."""
 from __future__ import annotations
 

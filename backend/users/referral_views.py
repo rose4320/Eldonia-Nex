@@ -39,9 +39,7 @@ class ReferralCodeView(View):
 
             # 紹介統計を取得
             total_referrals = Referral.objects.filter(referrer=user).count()
-            active_referrals = Referral.objects.filter(
-                referrer=user, referred_user__is_active=True
-            ).count()
+            active_referrals = Referral.objects.filter(referrer=user, referred_user__is_active=True).count()
 
             # 報酬計算（TODO: 実際の報酬システムに応じて調整）
             total_rewards = total_referrals * 500  # 1紹介あたり500ポイント
@@ -65,9 +63,7 @@ class ReferralCodeView(View):
             )
 
         except Exception as e:
-            return JsonResponse(
-                {"error": f"紹介コード取得中にエラーが発生しました: {str(e)}"}, status=500
-            )
+            return JsonResponse({"error": f"紹介コード取得中にエラーが発生しました: {str(e)}"}, status=500)
 
 
 class ReferralListView(View):
@@ -87,9 +83,7 @@ class ReferralListView(View):
                 return JsonResponse({"error": "ユーザーが見つかりません"}, status=404)
 
             # 紹介したユーザーを取得
-            referrals = Referral.objects.filter(referrer=user).select_related(
-                "referred_user"
-            )
+            referrals = Referral.objects.filter(referrer=user).select_related("referred_user")
 
             # データを整形
             referral_list = []
@@ -110,7 +104,4 @@ class ReferralListView(View):
             return JsonResponse({"referrals": referral_list, "count": len(referral_list)}, status=200)
 
         except Exception as e:
-            return JsonResponse(
-                {"error": f"紹介リスト取得中にエラーが発生しました: {str(e)}"}, status=500
-            )
-
+            return JsonResponse({"error": f"紹介リスト取得中にエラーが発生しました: {str(e)}"}, status=500)

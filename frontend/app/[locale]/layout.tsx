@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import Layout from "../../components/layout/Layout";
 import { AuthProvider } from "../context/AuthContext";
 import { TranslationProvider } from "../context/TranslationContext";
-import "../globals.css";
-
 // メッセージファイルをインポート
 import enMessages from '../../messages/en.json';
 import jaMessages from '../../messages/ja.json';

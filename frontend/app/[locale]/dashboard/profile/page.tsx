@@ -84,10 +84,6 @@ export default function ProfileEditPage() {
         }
       }
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'profile/page.tsx:handleSubmit',message:'Sending profile update',data:{display_name:formData.display_name,avatar_url:uploadedAvatarUrl,email:formData.email,API_BASE_URL},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-      // #endregion
-
       // プロフィール更新APIを呼び出し
       const res = await fetch(`${API_BASE_URL}/users/me/profile/`, {
         method: "PATCH",
@@ -104,10 +100,6 @@ export default function ProfileEditPage() {
         })
       });
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'profile/page.tsx:handleSubmit:response',message:'Profile API response',data:{ok:res.ok,status:res.status},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-      // #endregion
-
       if (res.ok) {
         setMessage({ type: "success", text: "プロフィールを更新しました！" });
         // ローカルストレージのユーザー情報も更新
@@ -119,9 +111,6 @@ export default function ProfileEditPage() {
             userData.avatar_url = uploadedAvatarUrl;
             userData.email = formData.email;
             localStorage.setItem('eldonia_user', JSON.stringify(userData));
-            // #region agent log
-            fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'profile/page.tsx:localStorage',message:'Updated localStorage',data:{avatar_url:uploadedAvatarUrl},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H3'})}).catch(()=>{});
-            // #endregion
           } catch {}
         }
         // 1秒後にダッシュボードにリダイレクト

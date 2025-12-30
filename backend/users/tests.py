@@ -51,9 +51,7 @@ class ReferralSignupTest(TestCase):
         ref = Referral.objects.create(referrer=referrer, referral_code="REFCODE123")
 
         # create new user using the referral code
-        new_user = User.objects.create_user(
-            username="charlie", password="pw", referral_code_used="REFCODE123"
-        )
+        new_user = User.objects.create_user(username="charlie", password="pw", referral_code_used="REFCODE123")
 
         # refresh
         new_user.refresh_from_db()

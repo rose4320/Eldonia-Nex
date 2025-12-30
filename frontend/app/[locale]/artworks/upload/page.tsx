@@ -29,6 +29,18 @@ export default function ArtworkUploadPage() {
     }
   }, [user, loading, router]);
 
+  // APIベースURLを動的に決定（ポート8000想定）
+  const getApiBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname;
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:8000/api/v1';
+      }
+      return `http://${hostname}:8000/api/v1`;
+    }
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -42,8 +54,8 @@ export default function ArtworkUploadPage() {
         const formDataForUpload = new FormData();
         formDataForUpload.append("file", artworkFile);
         formDataForUpload.append("user_id", user?.id.toString() || "");
-        
-        const uploadRes = await fetch("http://localhost:8001/api/v1/artworks/upload-image/", {
+        const API_BASE_URL = getApiBaseUrl();
+        const uploadRes = await fetch(`${API_BASE_URL}/artworks/upload-image/`, {
           method: "POST",
           credentials: "include",
           body: formDataForUpload
@@ -53,14 +65,15 @@ export default function ArtworkUploadPage() {
           const uploadData = await uploadRes.json();
           uploadedImageUrl = uploadData.url;
         } else {
-          setMessage({ type: "error", text: "画像のアップロードに失敗しました。" });
+          setMessage({ type: "error", text: "メディアのアップロードに失敗しました。" });
           setIsSubmitting(false);
           return;
         }
       }
 
       // 作品投稿
-      const res = await fetch("http://localhost:8001/api/v1/artworks/create/", {
+      const API_BASE_URL = getApiBaseUrl();
+      const res = await fetch(`${API_BASE_URL}/artworks/create/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -79,7 +92,7 @@ export default function ArtworkUploadPage() {
         })
       });
 
-      if (res.ok) {
+        if (res.ok) {
         setMessage({ type: "success", text: "作品を投稿しました！ギャラリーに表示されます。" });
         setTimeout(() => router.push("/gallery"), 2000);
       } else {

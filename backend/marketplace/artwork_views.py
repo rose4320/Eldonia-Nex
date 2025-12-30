@@ -12,7 +12,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from common.security import FileSecurityChecker
-from marketplace.models import Artwork, Category
+from marketplace.models import Artwork, Category, Comment
 from users.models import User
 
 
@@ -228,14 +228,22 @@ class CreateArtworkView(View):
                 defaults={"description": category_name}
             )
 
-            # 作品を作成
+            file_url = data.get("image_url", "")  # フロント側のキー名に合わせて受け取る
+            price_value = data.get("price", 0) or 0
+            try:
+                # Decimal互換へ安全にキャスト
+                price_value = float(price_value)
+            except (TypeError, ValueError):
+                return JsonResponse({"error": "価格は数値で指定してください"}, status=400)
+
+            # 作品を作成（Artworkの実フィールドに合わせる）
             artwork = Artwork.objects.create(
                 title=data.get("title"),
                 description=data.get("description", ""),
-                image_url=data.get("image_url", ""),
-                price=data.get("price", 0),
-                is_for_sale=data.get("is_for_sale", False),
-                is_featured=data.get("is_featured", False),
+                file_url=file_url,
+                thumbnail_url=file_url,
+                price=price_value,
+                is_free=price_value == 0,
                 creator=user,
                 category=category,
                 status="published"  # 公開状態
@@ -287,10 +295,12 @@ class ArtworkListView(View):
                     "id": artwork.id,
                     "title": artwork.title,
                     "description": artwork.description,
-                    "image_url": artwork.image_url,
+                    "image_url": artwork.thumbnail_url or artwork.file_url,
+                    "file_url": artwork.file_url,
                     "price": float(artwork.price),
-                    "is_for_sale": artwork.is_for_sale,
-                    "is_featured": artwork.is_featured,
+                    "is_for_sale": not artwork.is_free,
+                    "is_free": artwork.is_free,
+                    "is_featured": getattr(artwork, "is_featured", False),
                     "creator": {
                         "id": artwork.creator.id,
                         "username": artwork.creator.username,
@@ -298,7 +308,7 @@ class ArtworkListView(View):
                     },
                     "category": artwork.category.name if artwork.category else "その他",
                     "tags": [tag.name for tag in artwork.tags.all()],
-                    "likes_count": artwork.likes.count(),
+                    "likes_count": getattr(artwork, "like_count", 0),
                     "views": artwork.view_count,
                     "created_at": artwork.created_at.isoformat(),
                 })
@@ -310,3 +320,56 @@ class ArtworkListView(View):
                 {"error": f"作品一覧取得中にエラーが発生しました: {str(e)}"}, status=500
             )
 
+
+class ArtworkCommentView(View):
+    """作品コメントAPI（既存Commentモデルを使用）"""
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request: HttpRequest, *args: Any, **kwargs: Any) -> Any:
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, artwork_id: int):
+        try:
+            comments = Comment.objects.filter(artwork_id=artwork_id)
+            payload = [
+                {
+                    "id": c.id,
+                    "name": c.user.display_name if c.user else (c.user.username if c.user else "ゲスト"),
+                    "text": c.content,
+                    "created_at": c.created_at.isoformat(),
+                }
+                for c in comments
+            ]
+            return JsonResponse({"comments": payload}, status=200)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    def post(self, request, artwork_id: int):
+        try:
+            import json
+
+            data = json.loads(request.body or "{}")
+            text = data.get("text", "").strip()
+            if not text:
+                return JsonResponse({"error": "コメント本文が必要です"}, status=400)
+            try:
+                artwork = Artwork.objects.get(id=artwork_id)
+            except Artwork.DoesNotExist:
+                return JsonResponse({"error": "作品が見つかりません"}, status=404)
+            comment = Comment.objects.create(
+                artwork=artwork,
+                content=text,
+            )
+            return JsonResponse(
+                {
+                    "id": comment.id,
+                    "name": comment.user.display_name if comment.user else (comment.user.username if comment.user else "ゲスト"),
+                    "text": comment.content,
+                    "created_at": comment.created_at.isoformat(),
+                },
+                status=201,
+            )
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "無効なJSON形式です"}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": f"コメント登録中にエラーが発生しました: {str(e)}"}, status=500)

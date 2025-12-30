@@ -94,8 +94,8 @@ WSGI_APPLICATION = "eldinia_nex.wsgi.application"
 
 # Database Configuration - Multi-Environment Support
 # 環境変数で簡単に切り替え可能: 'sqlite' | 'postgresql' | 'aurora'
-
-DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
+# 開発環境では Docker Compose の Postgres を使うためデフォルトを postgresql に変更
+DATABASE_TYPE = os.getenv("DATABASE_TYPE", "postgresql")
 
 if DATABASE_TYPE == "sqlite":
     # Current: SQLite (開発中)
@@ -114,7 +114,8 @@ elif DATABASE_TYPE == "postgresql":
             "USER": os.getenv("POSTGRES_USER", "postgres"),
             "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres123"),
             "HOST": os.getenv("POSTGRES_HOST", "localhost"),
-            "PORT": os.getenv("POSTGRES_PORT", "5432"),
+            # docker-compose.dev.yml maps host 5433 -> container 5432 for dev
+            "PORT": os.getenv("POSTGRES_PORT", "5433"),
             "OPTIONS": {
                 "connect_timeout": 10,
             },
@@ -269,8 +270,8 @@ CACHES = {  # type: ignore
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # Celery configuration
-CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
-CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6379')}/0"
+CELERY_BROKER_URL = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6380')}/0"
+CELERY_RESULT_BACKEND = f"redis://{os.getenv('REDIS_HOST', 'localhost')}:{os.getenv('REDIS_PORT', '6380')}/0"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

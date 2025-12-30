@@ -16,14 +16,16 @@ Including another URLconf
 """
 from typing import List
 
-from api.events.views import UserPlanLimitsView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.urls import include, path
+
+from api.events.views import UserPlanLimitsView
 from marketplace.artwork_views import (
+    ArtworkCommentView,
     ArtworkListView,
     CreateArtworkView,
     UploadArtworkImageView,
@@ -159,7 +161,8 @@ def api_root(request: HttpRequest):
         "status": "operational",
     }
     
-    return render(request, 'api_root.html', context)
+    # ブラウザからのアクセスでも JSON を返すように変更（テンプレート未配置による 500 回避）
+    return JsonResponse(context, json_dumps_params={"ensure_ascii": False, "indent": 2})
 
 
 
@@ -192,6 +195,7 @@ urlpatterns: List[object] = [
     path("api/v1/artworks/upload-image/", UploadArtworkImageView.as_view(), name="upload_artwork_image"),
     path("api/v1/artworks/create/", CreateArtworkView.as_view(), name="create_artwork"),
     path("api/v1/artworks/list/", ArtworkListView.as_view(), name="artwork_list"),
+    path("api/v1/artworks/<int:artwork_id>/comments/", ArtworkCommentView.as_view(), name="artwork_comments"),
     # ポートフォリオAPI
     path("api/v1/portfolios/", PortfolioListView.as_view(), name="portfolio_list"),
     path("api/v1/portfolios/<int:portfolio_id>/", PortfolioDetailView.as_view(), name="portfolio_detail"),
