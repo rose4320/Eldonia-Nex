@@ -69,7 +69,7 @@ def api_health_check(request: HttpRequest) -> JsonResponse:
         {
             "status": "healthy",
             "message": "Eldonia-Nex Django API is running",
-            "version": "1.0.0",
+            "version": "0.5.1",
             "environment": "development" if settings.DEBUG else "production",
             "ssr_ready": True,
         }
@@ -88,7 +88,7 @@ def api_root(request: HttpRequest):
             {
                 "message": "🎨 Eldonia-Nex API へようこそ",
                 "description": "クリエイターのための創作プラットフォーム",
-                "version": "1.0.0",
+                "version": "0.5.1",
                 "environment": "development" if settings.DEBUG else "production",
                 "documentation": f"{base_url}/admin/",
                 "endpoints": {
@@ -128,7 +128,7 @@ def api_root(request: HttpRequest):
     context = {
         "message": "🎨 Eldonia-Nex API へようこそ",
         "description": "クリエイターのための創作プラットフォーム",
-        "version": "1.0.0",
+        "version": "0.5.1",
         "environment": "development" if settings.DEBUG else "production",
         "documentation": f"{base_url}/admin/",
         "endpoints": {
