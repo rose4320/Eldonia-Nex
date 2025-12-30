@@ -2,7 +2,7 @@
 Eldonia-Nex Backend Application
 """
 
-__version__ = "0.4.0"
+__version__ = "0.5.1"
 
 # This will make sure the app is always imported when
 # Django starts so that shared_task will use this app.
