@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -28,18 +29,14 @@ class User(AbstractUser):
         ("suspended", "Suspended"),
         ("deleted", "Deleted"),
     ]
-    account_status = models.CharField(
-        max_length=20, choices=ACCOUNT_STATUS_CHOICES, default="active"
-    )
+    account_status = models.CharField(max_length=20, choices=ACCOUNT_STATUS_CHOICES, default="active")
 
     SUBSCRIPTION_TYPE_CHOICES = [
         ("free", "Free"),
         ("premium", "Premium"),
         ("pro", "Pro"),
     ]
-    subscription_type = models.CharField(
-        max_length=20, choices=SUBSCRIPTION_TYPE_CHOICES, default="free"
-    )
+    subscription_type = models.CharField(max_length=20, choices=SUBSCRIPTION_TYPE_CHOICES, default="free")
     # subscription_plan stored as VARCHAR(20) per DB design doc (plan id like 'free','standard','pro','business')
     subscription_plan = models.CharField(max_length=20, default="free")
     # compatibility field `subscription` requested in docs/usage — mirrors subscription_plan (backfilled)
@@ -97,14 +94,10 @@ class User(AbstractUser):
 class UserProfile(models.Model):
     """拡張プロフィール（skills, socials 等を JSON で保持）"""
 
-    user = models.OneToOneField(
-        "users.User", on_delete=models.CASCADE, related_name="profile"
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     skills = models.JSONField(null=True, blank=True)
     portfolio_url = models.URLField(max_length=500, blank=True)
-    hourly_rate = models.DecimalField(
-        max_digits=10, decimal_places=2, null=True, blank=True
-    )
+    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     available_hours = models.IntegerField(null=True, blank=True)
     timezone = models.CharField(max_length=50, blank=True)
     languages = models.JSONField(null=True, blank=True)
@@ -121,11 +114,10 @@ class UserProfile(models.Model):
 
 class UserAddress(models.Model):
     """ユーザー住所詳細テーブル"""
+
     objects = models.Manager()
 
-    user = models.OneToOneField(
-        "users.User", on_delete=models.CASCADE, related_name="address"
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="address")
     # 国コード (ISO 3166-1 alpha-2)
     country_code = models.CharField(max_length=2, null=True, blank=True)
     country_name = models.CharField(max_length=100, null=True, blank=True)
@@ -169,11 +161,10 @@ class UserAddress(models.Model):
 
 class UserSkill(models.Model):
     """ユーザースキル詳細テーブル（正規化版）"""
+
     objects = models.Manager()
 
-    user = models.ForeignKey(
-        "users.User", on_delete=models.CASCADE, related_name="user_skills"
-    )
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="user_skills")
     # スキル名
     skill_name = models.CharField(max_length=100)
     # スキルカテゴリ
@@ -226,11 +217,10 @@ class UserSkill(models.Model):
 
 class UserDetail(models.Model):
     """ユーザー詳細情報テーブル"""
+
     objects = models.Manager()
 
-    user = models.OneToOneField(
-        "users.User", on_delete=models.CASCADE, related_name="detail"
-    )
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="detail")
     # 氏名（本名）
     first_name_kanji = models.CharField(max_length=50, null=True, blank=True)
     last_name_kanji = models.CharField(max_length=50, null=True, blank=True)
@@ -286,6 +276,7 @@ class UserDetail(models.Model):
 
 class Plan(models.Model):
     """Service subscription plan (pricing & features)."""
+
     objects = models.Manager()
 
     name = models.CharField(max_length=100)
@@ -298,9 +289,7 @@ class Plan(models.Model):
         ("yearly", "Yearly"),
         ("one_time", "One-time"),
     ]
-    billing_cycle = models.CharField(
-        max_length=20, choices=BILLING_CHOICES, default="monthly"
-    )
+    billing_cycle = models.CharField(max_length=20, choices=BILLING_CHOICES, default="monthly")
     features = models.JSONField(null=True, blank=True)
     trial_days = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)

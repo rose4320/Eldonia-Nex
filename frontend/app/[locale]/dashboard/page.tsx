@@ -101,6 +101,8 @@ function DashboardPageInner() {
     tools_used: '',
     visibility: 'public',
   });
+  const [editingPortfolioId, setEditingPortfolioId] = useState<number | null>(null);
+  const [myArtworks, setMyArtworks] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<TabType>(initialTab);
   const [isLoading, setIsLoading] = useState(true);
   const [referralCode, setReferralCode] = useState<string>("");
@@ -119,6 +121,7 @@ function DashboardPageInner() {
       fetchUserData();
       fetchReferralData();
       fetchMyPortfolios();
+      fetchMyArtworks();
     }
   }, [user, loading, router, currentLocale]);
 
@@ -139,12 +142,48 @@ function DashboardPageInner() {
     }
   };
 
+  const fetchMyArtworks = async () => {
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'fetchMyArtworks start',data:{userId:user?.id,username:user?.username},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    try {
+      const API_BASE_URL = getApiBaseUrl();
+      const res = await fetch(`${API_BASE_URL}/artworks/list/`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        // #region agent log
+        fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'artworks fetched',data:{count:(data.artworks||[]).length,keys: data.artworks && data.artworks.length>0 ? Object.keys(data.artworks[0]).slice(0,5):[]},timestamp:Date.now()})}).catch(()=>{});
+        // #endregion
+        if (user) {
+          const mine = (data.artworks || []).filter(
+            (a: any) => a.creator?.id === user.id || a.creator?.username === user.username
+          );
+          // #region agent log
+          fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'filtered mine',data:{mineCount:mine.length},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          setMyArtworks(mine);
+        } else {
+          // #region agent log
+          fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'no user, set all',data:{count:(data.artworks||[]).length},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          setMyArtworks(data.artworks || []);
+        }
+      }
+    } catch (error) {
+      console.error('Artworks fetch error:', error);
+    }
+  };
+
   const createPortfolio = async () => {
     try {
       const authToken = localStorage.getItem('authToken');
       const API_BASE_URL = getApiBaseUrl();
-      const res = await fetch(`${API_BASE_URL}/portfolios/me/`, {
-        method: 'POST',
+      const method = editingPortfolioId ? 'PATCH' : 'POST';
+      const url = editingPortfolioId
+        ? `${API_BASE_URL}/portfolios/me/${editingPortfolioId}/`
+        : `${API_BASE_URL}/portfolios/me/`;
+      const res = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Token ${authToken}`,
@@ -163,6 +202,7 @@ function DashboardPageInner() {
       });
       if (res.ok) {
         setShowPortfolioForm(false);
+        setEditingPortfolioId(null);
         setPortfolioForm({ title: '', description: '', work_type: 'illustration', thumbnail_url: '', external_url: '', tags: '', tools_used: '', visibility: 'public' });
         fetchMyPortfolios();
       }
@@ -198,17 +238,8 @@ function DashboardPageInner() {
         credentials: "include"
       });
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dashboard:fetchUserData',message:'Profile API response',data:{ok:profileRes.ok,status:profileRes.status},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-      // #endregion
-
       if (profileRes.ok) {
         const profileData = await profileRes.json();
-
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dashboard:fetchUserData',message:'Profile data received',data:{subscription:profileData.subscription,level:profileData.level},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H2'})}).catch(()=>{});
-        // #endregion
-
         // APIレスポンスをprofile形式に変換
         setProfile({
           display_name: profileData.display_name,
@@ -369,10 +400,6 @@ function DashboardPageInner() {
     };
     return badges[subscription as keyof typeof badges] || badges.free;
   };
-
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'dashboard:subscriptionCheck',message:'Subscription values',data:{profile_subscription:profile?.subscription,user_subscription:user?.subscription,profile_exists:!!profile},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
-  // #endregion
 
   const subscriptionBadge = getSubscriptionBadge(profile?.subscription || user?.subscription || "free");
 
@@ -999,7 +1026,7 @@ function DashboardPageInner() {
                   onClick={() => setShowPortfolioForm(!showPortfolioForm)}
                   className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
                 >
-                  {showPortfolioForm ? '✕ 閉じる' : '＋ 新規作成'}
+                  {showPortfolioForm ? '✕ 閉じる' : editingPortfolioId ? '編集をやめる' : '＋ 新規作成'}
                 </button>
               </div>
 
@@ -1123,12 +1150,33 @@ function DashboardPageInner() {
                       <p className="text-gray-400 text-sm mb-2 line-clamp-2">{p.description || '説明なし'}</p>
                       <div className="flex justify-between items-center text-xs text-gray-500">
                         <span>👁 {p.view_count} ❤️ {p.like_count}</span>
-                        <button
-                          onClick={() => deletePortfolio(p.id)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          削除
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingPortfolioId(p.id);
+                              setPortfolioForm({
+                                title: p.title || '',
+                                description: p.description || '',
+                                work_type: p.work_type || 'illustration',
+                                thumbnail_url: p.thumbnail_url || '',
+                                external_url: '',
+                                tags: '',
+                                tools_used: '',
+                                visibility: p.visibility || 'public',
+                              });
+                              setShowPortfolioForm(true);
+                            }}
+                            className="text-blue-400 hover:text-blue-300"
+                          >
+                            編集
+                          </button>
+                          <button
+                            onClick={() => deletePortfolio(p.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            削除
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1147,6 +1195,41 @@ function DashboardPageInner() {
                   </button>
                 </div>
               )}
+
+            {/* 投稿作品（ギャラリー）表示 */}
+            {myArtworks.length > 0 && (
+              <div className="mt-10">
+                <h3 className="text-xl font-bold text-purple-200 mb-4">🖼 投稿作品（ギャラリー）</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {myArtworks.map((a) => (
+                    <div key={a.id} className="bg-gray-800/60 rounded-xl overflow-hidden border border-gray-700/60">
+                      <div className="aspect-video bg-gray-700/50 relative">
+                        {a.image_url ? (
+                          <img src={a.image_url} alt={a.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🎬</div>
+                        )}
+                        <span className="absolute top-2 left-2 px-2 py-1 rounded-full bg-indigo-600/80 text-white text-xs">ギャラリー</span>
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <h4 className="text-white font-semibold line-clamp-1">{a.title}</h4>
+                        <p className="text-gray-400 text-sm line-clamp-2">{a.description || '説明なし'}</p>
+                        <p className="text-xs text-gray-500">カテゴリ: {a.category}</p>
+                        <div className="flex justify-between items-center text-xs text-gray-500">
+                          <span>👁 {a.views || 0} ❤️ {a.likes_count || 0}</span>
+                          <button
+                            onClick={() => router.push(`/ja/gallery/category/${a.category}/${a.id}`)}
+                            className="text-indigo-400 hover:text-indigo-300"
+                          >
+                            詳細
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             </div>
           )}
         </div>
@@ -1592,9 +1675,6 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
 
     try {
       const authToken = localStorage.getItem('authToken');
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PlanChangeTab:confirmPlanChange',message:'API call start',data:{selectedPlan,authToken:authToken?.slice(0,10)+'...',API_BASE_URL},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'A'})}).catch(()=>{});
-      // #endregion
       const response = await fetch(`${API_BASE_URL}/users/me/subscription/`, {
         method: 'PATCH',
         headers: {
@@ -1605,15 +1685,8 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
         body: JSON.stringify({ subscription_plan: selectedPlan }),
       });
 
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PlanChangeTab:confirmPlanChange',message:'API response',data:{status:response.status,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'B'})}).catch(()=>{});
-      // #endregion
-
       if (response.ok) {
         const data = await response.json();
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PlanChangeTab:confirmPlanChange',message:'API success',data:{responseData:data},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'C'})}).catch(()=>{});
-        // #endregion
         setMessage({ type: 'success', text: `✅ プランを「${plans.find(p => p.id === selectedPlan)?.name}」に変更しました！` });
         // ユーザー情報を更新（ページリロードなし）
         const updatedUser = { ...user, subscription: selectedPlan };
@@ -1624,16 +1697,10 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
         }, 2000);
       } else {
         const errorData = await response.json().catch(() => ({}));
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PlanChangeTab:confirmPlanChange',message:'API error',data:{status:response.status,errorData},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'D'})}).catch(()=>{});
-        // #endregion
         setMessage({ type: 'error', text: errorData.detail || 'プランの変更に失敗しました。' });
       }
     } catch (error) {
       console.error('Plan change error:', error);
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PlanChangeTab:confirmPlanChange',message:'Exception',data:{error:String(error)},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
-      // #endregion
       setMessage({ type: 'error', text: 'サーバーエラーが発生しました。' });
     } finally {
       setIsChanging(false);

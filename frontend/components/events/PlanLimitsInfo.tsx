@@ -45,9 +45,9 @@ export default function PlanLimitsInfo() {
 
   if (loading) {
     return (
-      <div className="bg-blue-50 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-700 rounded-xl p-4 animate-pulse">
-        <div className="h-6 bg-blue-200 dark:bg-blue-700 rounded w-3/4 mb-2"></div>
-        <div className="h-4 bg-blue-200 dark:bg-blue-700 rounded w-1/2"></div>
+      <div className="p-4 border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/30 dark:border-blue-700 rounded-xl animate-pulse">
+        <div className="w-3/4 h-6 mb-2 bg-blue-200 rounded dark:bg-blue-700"></div>
+        <div className="w-1/2 h-4 bg-blue-200 rounded dark:bg-blue-700"></div>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function PlanLimitsInfo() {
         : 'bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700'
     }`}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <h3 className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">
           <span>💎</span>
           {t('currentPlan')}
         </h3>
@@ -104,14 +104,14 @@ export default function PlanLimitsInfo() {
               {limits.events_created_this_month} / {limits.max_events_per_month}
             </span>
           </div>
-          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+          <div className="w-full h-3 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-700">
             <div
               className={`h-full ${getProgressColor()} transition-all duration-300`}
               style={{ width: `${Math.min((limits.events_created_this_month / limits.max_events_per_month) * 100, 100)}%` }}
             ></div>
           </div>
           {isLimitReached && (
-            <p className="text-sm text-red-600 dark:text-red-400 mt-2 font-semibold">
+            <p className="mt-2 text-sm font-semibold text-red-600 dark:text-red-400">
               ⚠️ {t('limitReached')}
             </p>
           )}
@@ -142,11 +142,11 @@ export default function PlanLimitsInfo() {
 
       {/* アップグレード促進 */}
       {limits.subscription_plan === 'free' && (
-        <div className="mt-4 pt-4 border-t-2 border-blue-300 dark:border-blue-700">
-          <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+        <div className="pt-4 mt-4 border-t-2 border-blue-300 dark:border-blue-700">
+          <p className="mb-3 text-sm text-gray-700 dark:text-gray-300">
             より多くのイベントを作成したいですか？
           </p>
-          <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-105">
+          <button className="w-full px-4 py-2 font-bold text-white transition-all duration-200 transform rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 hover:scale-105">
             {t('upgrade')}
           </button>
         </div>

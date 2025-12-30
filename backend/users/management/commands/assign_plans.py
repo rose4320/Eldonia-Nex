@@ -55,11 +55,7 @@ class Command(BaseCommand):
         self.stdout.write(f"Total users: {total}. Users to update: {len(to_update)}")
 
         if not apply_changes:
-            self.stdout.write(
-                self.style.WARNING(
-                    "Dry-run: no changes applied. Rerun with --apply to commit."
-                )
-            )
+            self.stdout.write(self.style.WARNING("Dry-run: no changes applied. Rerun with --apply to commit."))
             return
 
         # apply updates in a transaction

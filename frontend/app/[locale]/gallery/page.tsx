@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname, useRouter } from 'next/navigation'
 import React, { useEffect, useMemo, useState } from 'react'
 import PageHero from '../../../components/common/PageHero'
 
@@ -15,156 +16,136 @@ interface Artwork {
   likes: number
   views: number
   imageUrl: string
+  fileUrl?: string
   tags: string[]
   description: string
-  fileFormat: string
-  fileSize: string
-  license: string
-  rating: number
-  reviewCount: number
+  fileFormat?: string
+  fileSize?: string
+  license?: string
+  rating?: number
+  reviewCount?: number
 }
 
 interface FilterState {
   search: string
   category: string
-  priceRange: string
   sortBy: string
 }
 
 const Gallery: React.FC = () => {
+  const router = useRouter()
+  const pathname = usePathname() || '/ja/gallery'
+  const currentLocale = pathname.split('/')[1] || 'ja'
   const [artworks, setArtworks] = useState<Artwork[]>([])
   const [filters, setFilters] = useState<FilterState>({
     search: '',
     category: 'すべて',
-    priceRange: 'すべて',
     sortBy: '人気順'
   })
   const [loading, setLoading] = useState(true)
   const [redirectTo, setRedirectTo] = useState<string | null>(null)
 
-  // モックデータ
-  useEffect(() => {
-    const mockArtworks: Artwork[] = [
-      {
-        id: '1',
-        title: '美しい夕焼けの風景',
-        author: 'クリエーター太郎',
-        authorLevel: 25,
-        category: '写真',
-        price: 1000,
-        isFree: false,
-        likes: 456,
-        views: 1234,
-        imageUrl: '/api/placeholder/300/200',
-        tags: ['風景', '夕焼け', '写真'],
-        description: '山から撮影した夕焼けの美しい風景です。',
-        fileFormat: 'JPEG (4K)',
-        fileSize: '8.5MB',
-        license: '商用利用可',
-        rating: 4.8,
-        reviewCount: 123
-      },
-      {
-        id: '2',
-        title: 'デジタルアート作品',
-        author: 'アーティスト花子',
-        authorLevel: 30,
-        category: 'イラスト',
-        price: 0,
-        isFree: true,
-        likes: 789,
-        views: 2345,
-        imageUrl: '/api/placeholder/300/200',
-        tags: ['デジタルアート', 'イラスト', 'ファンタジー'],
-        description: 'ファンタジー世界をイメージしたデジタルイラスト。',
-        fileFormat: 'PNG',
-        fileSize: '12.3MB',
-        license: '個人利用のみ',
-        rating: 4.9,
-        reviewCount: 87
-      },
-      {
-        id: '3',
-        title: '3Dモデリング作品',
-        author: '3Dクリエーター',
-        authorLevel: 28,
-        category: '3D',
-        price: 2500,
-        isFree: false,
-        likes: 234,
-        views: 567,
-        imageUrl: '/api/placeholder/300/200',
-        tags: ['3D', 'モデリング', 'キャラクター'],
-        description: 'オリジナルキャラクターの3Dモデル。',
-        fileFormat: 'OBJ',
-        fileSize: '45.2MB',
-        license: '商用利用可',
-        rating: 4.7,
-        reviewCount: 45
-      },
-      {
-        id: '4',
-        title: 'アニメ風イラスト',
-        author: 'イラストレーター',
-        authorLevel: 22,
-        category: 'イラスト',
-        price: 500,
-        isFree: false,
-        likes: 567,
-        views: 1890,
-        imageUrl: '/api/placeholder/300/200',
-        tags: ['アニメ', 'イラスト', 'キャラクター'],
-        description: 'アニメスタイルのオリジナルキャラクター。',
-        fileFormat: 'PNG',
-        fileSize: '5.7MB',
-        license: '商用利用可',
-        rating: 4.6,
-        reviewCount: 78
-      },
-      {
-        id: '5',
-        title: 'ポートレート写真',
-        author: 'フォトグラファー',
-        authorLevel: 24,
-        category: '写真',
-        price: 0,
-        isFree: true,
-        likes: 678,
-        views: 2134,
-        imageUrl: '/api/placeholder/300/200',
-        tags: ['ポートレート', '写真', '人物'],
-        description: 'プロフェッショナルなポートレート写真。',
-        fileFormat: 'JPEG',
-        fileSize: '15.2MB',
-        license: '個人利用のみ',
-        rating: 4.8,
-        reviewCount: 92
-      },
-      {
-        id: '6',
-        title: '自然音楽コレクション',
-        author: '音楽プロデューサー',
-        authorLevel: 26,
-        category: '音楽',
-        price: 3000,
-        isFree: false,
-        likes: 345,
-        views: 890,
-        imageUrl: '/api/placeholder/300/200',
-        tags: ['音楽', '自然', 'ヒーリング'],
-        description: '自然の音を取り入れたヒーリングミュージック。',
-        fileFormat: 'MP3',
-        fileSize: '67.8MB',
-        license: '商用利用可',
-        rating: 4.9,
-        reviewCount: 156
+  // APIベースURLを動的に決定
+  const getApiBaseUrl = () => {
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:8000/api/v1'
       }
-    ]
+      return `http://${hostname}:8000/api/v1`
+    }
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+  }
 
-    setTimeout(() => {
-      setArtworks(mockArtworks)
-      setLoading(false)
-    }, 500)
+  // 画像/メディアURLを絶対URLへ補正
+  const getFullMediaUrl = (url?: string) => {
+    if (!url) return ''
+    if (url.startsWith('http://') || url.startsWith('https://')) return url
+    if (typeof window !== 'undefined') {
+      const hostname = window.location.hostname
+      const backendHost =
+        hostname === 'localhost' || hostname === '127.0.0.1'
+          ? 'http://localhost:8000'
+          : `http://${hostname}:8000`
+      return `${backendHost}${url.startsWith('/') ? url : `/${url}`}`
+    }
+    return url
+  }
+
+  const isImageUrl = (url?: string) => {
+    if (!url) return false
+    return /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(url.split('?')[0])
+  }
+
+  const isVideoUrl = (url?: string) => {
+    if (!url) return false
+    return /\.(mp4|mov|avi|mkv|webm|flv)$/i.test(url.split('?')[0])
+  }
+
+  const slugify = (text: string) =>
+    text
+      .toString()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .toLowerCase()
+
+  // 作品一覧を取得
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      try {
+        const API_BASE_URL = getApiBaseUrl()
+        const res = await fetch(`${API_BASE_URL}/artworks/list/`, { cache: 'no-store' })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        // 重複（同じfileUrl/imageUrl）を排除しつつ整形
+        const seen = new Set<string>()
+        const apiArtworks: Artwork[] = []
+        ;(data.artworks || []).forEach((a: any) => {
+          const id = String(a.id)
+          const rawImage = a.image_url || a.thumbnail_url
+          const rawFile = a.file_url
+          const key = (rawFile || rawImage || id || '').toString()
+          if (seen.has(key)) return
+          seen.add(key)
+
+          apiArtworks.push({
+            id,
+            title: a.title || 'Untitled',
+            author: a.creator?.display_name || a.creator?.username || 'Unknown',
+            authorLevel: 1,
+            category: a.category || 'その他',
+            price: Number(a.price || 0),
+            isFree: !!a.is_free || Number(a.price || 0) === 0,
+            likes: a.likes_count || 0,
+            views: a.views || 0,
+            imageUrl: (() => {
+              if (rawImage && isImageUrl(rawImage)) return getFullMediaUrl(rawImage)
+              if (rawFile && isImageUrl(rawFile)) return getFullMediaUrl(rawFile)
+              if (rawFile && isVideoUrl(rawFile)) return '/api/placeholder/300/200'
+              return '/api/placeholder/300/200'
+            })(),
+            fileUrl: getFullMediaUrl(rawFile),
+            tags: a.tags || [],
+            description: a.description || '',
+            fileFormat: '',
+            fileSize: '',
+            license: '',
+            rating: 0,
+            reviewCount: 0,
+          })
+        })
+        setArtworks(apiArtworks)
+      } catch (error) {
+        // フォールバック：既存モック（何も取得できない場合のみ）
+        setArtworks([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchArtworks()
   }, [])
 
   // フィルタリング・ソート処理（useMemoで最適化）
@@ -176,19 +157,7 @@ const Gallery: React.FC = () => {
 
       const matchesCategory = filters.category === 'すべて' || artwork.category === filters.category
 
-      const matchesPrice = (() => {
-        switch (filters.priceRange) {
-          case 'すべて': return true
-          case '無料': return artwork.isFree
-          case '有料': return !artwork.isFree
-          case '¥0-1000': return artwork.price <= 1000
-          case '¥1000-5000': return artwork.price > 1000 && artwork.price <= 5000
-          case '¥5000以上': return artwork.price > 5000
-          default: return true
-        }
-      })()
-
-      return matchesSearch && matchesCategory && matchesPrice
+          return matchesSearch && matchesCategory
     })
 
     // ソート処理
@@ -199,10 +168,6 @@ const Gallery: React.FC = () => {
         return filtered.sort((a, b) => parseInt(b.id) - parseInt(a.id))
       case '評価順':
         return filtered.sort((a, b) => b.rating - a.rating)
-      case '価格の安い順':
-        return filtered.sort((a, b) => a.price - b.price)
-      case '価格の高い順':
-        return filtered.sort((a, b) => b.price - a.price)
       default:
         return filtered
     }
@@ -212,40 +177,17 @@ const Gallery: React.FC = () => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
-  const formatPrice = (price: number, isFree: boolean) => {
-    if (isFree) return '無料'
-    return `¥${price.toLocaleString()}`
-  }
+  const formatPrice = () => '無料'
 
   const getArtworkRoute = (category: string, id: string) => {
-    switch (category) {
-      case 'イラスト':
-      case '写真':
-        return `/artwork/image?id=${id}`
-      case '音楽':
-        return `/artwork/music?id=${id}`
-      case '動画':
-        return `/artwork/video?id=${id}`
-      case '創作物':
-        return `/artwork/novel?id=${id}`
-      case '3D':
-        return `/artwork/image?id=${id}`
-      default:
-        return `/artwork/image?id=${id}`
-    }
+    const slug = slugify(category || 'other')
+    return `/${currentLocale}/gallery/category/${slug}/${id}`
   }
 
   const handleArtworkClick = (artwork: typeof artworks[0]) => {
     const route = getArtworkRoute(artwork.category, artwork.id)
-    setRedirectTo(route)
+    router.push(route)
   }
-
-  // リダイレクト処理
-  useEffect(() => {
-    if (redirectTo) {
-      window.location.href = redirectTo
-    }
-  }, [redirectTo])
 
   const handleButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation() // カードクリックイベントを防ぐ
@@ -331,33 +273,7 @@ const Gallery: React.FC = () => {
             </div>
           </div>
 
-          {/* 第三行：価格フィルタ */}
-          <div className="mb-4">
-            <div className="text-gray-300">
-              <span className="mr-4">価格:</span>
-              <div className="inline-flex flex-wrap gap-2">
-                {[
-                  { label: '無料', value: '無料' },
-                  { label: '有料', value: '有料' },
-                  { label: '¥0-1000', value: '¥0-1000' },
-                  { label: '¥1000-5000', value: '¥1000-5000' },
-                  { label: '¥5000以上', value: '¥5000以上' }
-                ].map((price) => (
-                  <button
-                    key={price.value}
-                    onClick={() => handleFilterChange('priceRange', price.value)}
-                    className={`px-3 py-1 border rounded-lg text-sm transition-all duration-300 backdrop-blur-sm ${
-                      filters.priceRange === price.value
-                        ? 'bg-indigo-500/80 text-white border-indigo-400/50 shadow-lg shadow-indigo-500/25'
-                        : 'border-gray-600/40 text-gray-300 hover:bg-gray-700/50 hover:border-gray-500/50'
-                    }`}
-                  >
-                    {price.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* 第三行：価格フィルタ（基本無料のため非表示） */}
 
           {/* 第四行：タグ例示 */}
           <div className="text-gray-300">
@@ -382,22 +298,53 @@ const Gallery: React.FC = () => {
                 onClick={() => handleArtworkClick(artwork)}
               >
                 {/* 画像エリア */}
-                <div className="aspect-4/3 relative overflow-hidden">
-                  {/* 背景画像 */}
-                  <img 
-                    src={`https://picsum.photos/seed/${artwork.id}/400/300`}
-                    alt={artwork.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
+                <div className="relative overflow-hidden aspect-[4/3] min-h-[180px]">
+                  {/* 背景画像 / 動画サムネイル */}
+                  {(() => {
+                    const fallback = `https://picsum.photos/seed/${artwork.id}/400/300`
+                    const src =
+                      artwork.imageUrl && artwork.imageUrl.trim() !== ''
+                        ? artwork.imageUrl
+                        : fallback
+
+                    if (artwork.fileUrl && isVideoUrl(artwork.fileUrl)) {
+                      // 動画の場合は静止画（最初のフレーム相当）を表示
+                      return (
+                        <video
+                          src={`${artwork.fileUrl}#t=0.1`}
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          muted
+                          playsInline
+                          preload="metadata"
+                          loop
+                          controls={false}
+                          aria-label={artwork.title}
+                          poster={src}
+                        />
+                      )
+                    }
+
+                    return (
+                      <img
+                        src={src}
+                        alt={artwork.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = fallback
+                        }}
+                      />
+                    )
+                  })()}
                   {/* オーバーレイグラデーション */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                   {/* カテゴリバッジ */}
                   <div className="absolute top-2 left-2 px-2 py-1 bg-indigo-600/80 text-white text-xs rounded-full backdrop-blur-sm">
                     {artwork.category}
                   </div>
-                  {/* 価格バッジ */}
+                  {/* 価格バッジ（基本無料） */}
                   <div className="absolute top-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded-full backdrop-blur-sm font-medium">
-                    {artwork.isFree ? '無料' : `¥${artwork.price.toLocaleString()}`}
+                    無料
                   </div>
                 </div>
                 

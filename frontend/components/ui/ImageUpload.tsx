@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -17,9 +17,20 @@ export default function ImageUpload({
   recommendedSize = "400x400px"
 }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>(currentImageUrl);
+  const [previewType, setPreviewType] = useState<"image" | "video" | "other">("image");
+  const [fileName, setFileName] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // オブジェクトURLをクリーンアップ
+  useEffect(() => {
+    return () => {
+      if (preview && preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    };
+  }, [preview]);
 
   const validateFile = (file: File): boolean => {
     // ファイルタイプチェック（全メディア対応）
@@ -59,14 +70,24 @@ export default function ImageUpload({
       return;
     }
 
-    // プレビュー用のURLを生成
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const previewUrl = reader.result as string;
-      setPreview(previewUrl);
-      onImageChange(file, previewUrl);
-    };
-    reader.readAsDataURL(file);
+    setFileName(file.name);
+
+    const objectUrl = URL.createObjectURL(file);
+
+    if (file.type.startsWith("image/")) {
+      setPreview(objectUrl);
+      setPreviewType("image");
+      onImageChange(file, objectUrl);
+    } else if (file.type.startsWith("video/")) {
+      setPreview(objectUrl);
+      setPreviewType("video");
+      onImageChange(file, objectUrl);
+    } else {
+      setPreview("");
+      setPreviewType("other");
+      onImageChange(file, "");
+      URL.revokeObjectURL(objectUrl);
+    }
   };
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,7 +139,7 @@ export default function ImageUpload({
             : "border-purple-500/50 bg-gray-950/50"
         }`}
       >
-        {preview ? (
+        {previewType === "image" && preview ? (
           <div className="space-y-4">
             {/* プレビュー画像 */}
             <div className="flex justify-center">
@@ -144,6 +165,58 @@ export default function ImageUpload({
                 className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
               >
                 📷 変更
+              </button>
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                🗑️ 削除
+              </button>
+            </div>
+          </div>
+        ) : previewType === "video" && preview ? (
+          <div className="space-y-3">
+            <div className="flex justify-center">
+              <video
+                src={preview}
+                controls
+                className="w-72 rounded-xl border-2 border-purple-500/60 shadow-xl"
+              />
+            </div>
+            <div className="text-purple-300 text-xs">{fileName}</div>
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                ファイルを変更
+              </button>
+              <button
+                type="button"
+                onClick={handleRemove}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                🗑️ 削除
+              </button>
+            </div>
+          </div>
+        ) : fileName ? (
+          <div className="space-y-3">
+            <div className="text-purple-200 font-semibold text-sm">
+              📄 {fileName}
+            </div>
+            <div className="text-purple-400 text-xs">
+              この形式はプレビュー表示を行わずにアップロードします
+            </div>
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+              >
+                ファイルを変更
               </button>
               <button
                 type="button"

@@ -1,8 +1,6 @@
 """画像アップロード用のビューとユーティリティ"""
 
-import os
 import uuid
-from pathlib import Path
 from typing import Any
 
 from django.conf import settings
@@ -58,9 +56,7 @@ class UploadAvatarView(View):
             # ファイルの取得
             uploaded_file = request.FILES.get("file")
             if not uploaded_file:
-                return JsonResponse(
-                    {"error": "ファイルが選択されていません"}, status=400
-                )
+                return JsonResponse({"error": "ファイルが選択されていません"}, status=400)
 
             # バリデーション
             is_valid, error_message = self.validate_file(uploaded_file)
@@ -82,14 +78,10 @@ class UploadAvatarView(View):
                 # 本番環境: フルURL
                 file_url = default_storage.url(saved_path)
 
-            return JsonResponse(
-                {"message": "画像をアップロードしました", "url": file_url}, status=200
-            )
+            return JsonResponse({"message": "画像をアップロードしました", "url": file_url}, status=200)
 
         except Exception as e:
-            return JsonResponse(
-                {"error": f"アップロード中にエラーが発生しました: {str(e)}"}, status=500
-            )
+            return JsonResponse({"error": f"アップロード中にエラーが発生しました: {str(e)}"}, status=500)
 
 
 class DeleteAvatarView(View):
@@ -109,8 +101,5 @@ class DeleteAvatarView(View):
             return JsonResponse({"message": "画像を削除しました"}, status=200)
 
         except Exception as e:
-            return JsonResponse(
-                {"error": f"削除中にエラーが発生しました: {str(e)}"}, status=500
-            )
-
+            return JsonResponse({"error": f"削除中にエラーが発生しました: {str(e)}"}, status=500)
 
