@@ -71,4 +71,41 @@ def give_referral_rebate(
     except Exception:
         # Best-effort: do not raise from signals
         return
-        return
+
+
+@receiver(post_save)
+def award_exp_on_artwork_creation(
+    sender: Any, instance: Any, created: bool, **kwargs: Any
+) -> None:
+    """Award EXP to the creator when a new Artwork is created."""
+    try:
+        from .models import Artwork
+
+        if not created:
+            return
+
+        if not isinstance(instance, Artwork):
+            return
+
+        user = instance.creator
+        if not user:
+            return
+
+        # Award EXP (e.g., 50 EXP per artwork)
+        exp_gain = 50
+        user.total_exp += exp_gain
+
+        # Level up logic: Level = 1 + floor(total_exp / 100)
+        # Example: 0-99 -> Lv1, 100-199 -> Lv2
+        current_level = user.current_level
+        new_level = 1 + (user.total_exp // 100)
+
+        if new_level > current_level:
+            user.current_level = new_level
+            # In a real app, we might create a notification here
+
+        user.save(update_fields=["total_exp", "current_level"])
+
+    except Exception as e:
+        # print(f"Error awarding EXP: {e}")
+        pass

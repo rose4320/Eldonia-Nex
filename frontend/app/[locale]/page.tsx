@@ -17,12 +17,12 @@ export const metadata: Metadata = {
 // Django APIからシステム状況取得（SSR）
 async function getSystemStatus() {
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'
-  
+
   try {
     // タイムアウト設定付きfetch
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 3000) // 3秒タイムアウト
-    
+
     const res = await fetch(`${API_URL}/health/`, {
       cache: 'no-store',
       signal: controller.signal,
@@ -31,13 +31,13 @@ async function getSystemStatus() {
         'Accept': 'application/json',
       },
     })
-    
+
     clearTimeout(timeoutId)
-    
+
     if (!res.ok) {
       throw new Error(`HTTP ${res.status}: ${res.statusText}`)
     }
-    
+
     const data = await res.json()
     return {
       status: 'healthy',
@@ -49,7 +49,7 @@ async function getSystemStatus() {
   } catch (error: unknown) {
     const err = error as Error
     console.warn('Django API connection error:', err.message)
-    
+
     let message = 'Could not connect to backend'
     if (err.name === 'AbortError') {
       message = 'Backend connection timeout (3s)'
@@ -58,9 +58,9 @@ async function getSystemStatus() {
     } else if (err.message.includes('HTTP')) {
       message = `Backend error: ${err.message}`
     }
-    
-    return { 
-      status: 'error', 
+
+    return {
+      status: 'error',
       message,
       ssr_ready: false,
       timestamp: new Date().toISOString(),
@@ -69,9 +69,32 @@ async function getSystemStatus() {
   }
 }
 
+// 公開設定の取得
+async function getPublicSettings() {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api/v1'
+  try {
+    const res = await fetch(`${API_URL}/settings/public/`, { cache: 'no-store' })
+    if (res.ok) {
+      const data = await res.json()
+      // 配列形式（DRFのListAPIView、ページネーション対応済みの可能性あり）
+      const settings = data.results || data
+      return {
+        weekly_challenge: settings.find((s: any) => s.key === 'CHALLENGE_WEEKLY')?.value,
+        monthly_challenge: settings.find((s: any) => s.key === 'CHALLENGE_MONTHLY')?.value,
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to fetch public settings:', e)
+  }
+  return { weekly_challenge: null, monthly_challenge: null }
+}
+
 // Eldonia-Nex メインページ（SSR）
 export default async function EldoniaNexHomePage() {
-  const systemStatus = await getSystemStatus()
+  const [systemStatus, challenges] = await Promise.all([
+    getSystemStatus(),
+    getPublicSettings()
+  ])
 
-  return <HomeContent systemStatus={systemStatus} />
+  return <HomeContent systemStatus={systemStatus} challenges={challenges} />
 }

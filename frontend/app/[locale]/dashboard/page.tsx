@@ -52,8 +52,8 @@ const getFullAvatarUrl = (avatarUrl: string | undefined): string | undefined => 
   // 相対パスの場合はバックエンドのURLを付加
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
-    const backendHost = hostname === 'localhost' || hostname === '127.0.0.1' 
-      ? 'http://localhost:8000' 
+    const backendHost = hostname === 'localhost' || hostname === '127.0.0.1'
+      ? 'http://localhost:8000'
       : `http://${hostname}:8000`;
     return `${backendHost}${avatarUrl}`;
   }
@@ -66,7 +66,7 @@ function DashboardPageInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentLocale = pathname?.split('/')[1] || 'ja';
-  
+
   // URLパラメータからタブを取得（例: ?tab=referral）
   const tabParam = searchParams.get('tab');
   const validTabs = ["overview", "profile", "settings", "referral", "activity", "events", "plan", "portfolio"] as const;
@@ -75,7 +75,7 @@ function DashboardPageInner() {
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [stats, setStats] = useState<UserStats | null>(null);
-  
+
   // ポートフォリオ関連
   interface PortfolioItem {
     id: number;
@@ -143,34 +143,30 @@ function DashboardPageInner() {
   };
 
   const fetchMyArtworks = async () => {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'fetchMyArtworks start',data:{userId:user?.id,username:user?.username},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     try {
+      const authToken = localStorage.getItem('authToken');
+      if (!authToken) {
+        console.log('No auth token found');
+        setMyArtworks([]);
+        return;
+      }
+
       const API_BASE_URL = getApiBaseUrl();
-      const res = await fetch(`${API_BASE_URL}/artworks/list/`, { cache: 'no-store' });
+      const res = await fetch(`${API_BASE_URL}/artworks/me/`, {
+        cache: 'no-store',
+        headers: { 'Authorization': `Token ${authToken}` }
+      });
+
       if (res.ok) {
         const data = await res.json();
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'artworks fetched',data:{count:(data.artworks||[]).length,keys: data.artworks && data.artworks.length>0 ? Object.keys(data.artworks[0]).slice(0,5):[]},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        if (user) {
-          const mine = (data.artworks || []).filter(
-            (a: any) => a.creator?.id === user.id || a.creator?.username === user.username
-          );
-          // #region agent log
-          fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'filtered mine',data:{mineCount:mine.length},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
-          setMyArtworks(mine);
-        } else {
-          // #region agent log
-          fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'H1',location:'dashboard/page.tsx:fetchMyArtworks',message:'no user, set all',data:{count:(data.artworks||[]).length},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
-          setMyArtworks(data.artworks || []);
-        }
+        setMyArtworks(data.artworks || []);
+      } else {
+        console.error('Failed to fetch my artworks:', res.status);
+        setMyArtworks([]);
       }
     } catch (error) {
       console.error('Artworks fetch error:', error);
+      setMyArtworks([]);
     }
   };
 
@@ -242,6 +238,9 @@ function DashboardPageInner() {
         const profileData = await profileRes.json();
         // APIレスポンスをprofile形式に変換
         setProfile({
+          id: user?.id || 0,
+          email: user?.email || '',
+          date_joined: new Date().toISOString(),
           display_name: profileData.display_name,
           username: profileData.username,
           bio: '',
@@ -256,10 +255,12 @@ function DashboardPageInner() {
 
       // 統計取得（ダミーデータ）
       setStats({
-        followers: 0,
-        following: 0,
-        works: 0,
+        artworks_count: 0,
+        followers_count: 0,
+        following_count: 0,
         likes_received: 0,
+        total_views: 0,
+        revenue_total: 0
       });
     } catch (error) {
       console.error("ユーザーデータの取得に失敗:", error);
@@ -330,17 +331,17 @@ function DashboardPageInner() {
 
   const generateReferralCodeLocally = () => {
     if (!user) return;
-    
+
     const code = `ELDONIA-${user.username.toUpperCase()}-${user.id}`;
     setReferralCode(code);
-    
+
     // ダミー統計（開発用）
     setReferralStats({
       totalReferrals: 0,
       activeReferrals: 0,
       totalRewards: 0
     });
-    
+
     const referralUrl = `${window.location.origin}/${currentLocale}/register?ref=${code}`;
     generateQRCode(referralUrl);
   };
@@ -509,11 +510,10 @@ function DashboardPageInner() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? "bg-gradient-to-r from-purple-600 to-purple-400 text-white shadow-lg"
-                    : "text-purple-300 hover:text-white hover:bg-gray-800"
-                }`}
+                className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${activeTab === tab.id
+                  ? "bg-gradient-to-r from-purple-600 to-purple-400 text-white shadow-lg"
+                  : "text-purple-300 hover:text-white hover:bg-gray-800"
+                  }`}
               >
                 <span className="mr-2">{tab.icon}</span>
                 {tab.label}
@@ -527,7 +527,7 @@ function DashboardPageInner() {
           {activeTab === "overview" && (
             <div>
               <h2 className="text-3xl font-bold text-purple-100 mb-6 font-pt-serif">📊 アクティビティ概要</h2>
-              
+
               {/* クイックアクション - 5列グリッド */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
                 <button
@@ -669,19 +669,126 @@ function DashboardPageInner() {
                       + 新規投稿
                     </button>
                   </div>
-                  
-                  {/* 作品グリッド（将来的にAPIから取得） */}
+
+                  {/* 作品グリッド（APIから取得） */}
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {/* ダミー作品カード */}
-                    <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 text-center">
-                      <div className="aspect-square bg-gray-700/50 rounded-lg mb-2 flex items-center justify-center">
-                        <span className="text-4xl text-gray-500">🖼️</span>
+                    {myArtworks.length > 0 ? (
+                      myArtworks.map((artwork: any) => (
+                        <div key={artwork.id} className="bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 text-center relative group">
+                          <div className="aspect-square bg-gray-700/50 rounded-lg mb-2 overflow-hidden relative">
+                            {/* 画像表示 */}
+                            {(() => {
+                              const url = artwork.thumbnail_url || artwork.image_url || artwork.file_url;
+                              if (!url) return <div className="w-full h-full flex items-center justify-center text-4xl">🎨</div>;
+
+                              let fullUrl = url;
+                              if (!url.startsWith('http')) {
+                                let backendHost = 'http://localhost:8000';
+                                if (typeof window !== 'undefined') {
+                                  const hostname = window.location.hostname;
+                                  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+                                    backendHost = `http://${hostname}:8000`;
+                                  }
+                                }
+                                fullUrl = `${backendHost}${url.startsWith('/') ? url : `/${url}`}`;
+                              }
+
+                              const isVideo = /\.(mp4|webm|ogg|mov)$/i.test(fullUrl);
+
+                              if (isVideo) {
+                                return (
+                                  <video
+                                    src={fullUrl}
+                                    className="w-full h-full object-cover"
+                                    controls={false} // ホバーで再生などを実装してもよいが、一旦静止画代わりの表示
+                                    muted
+                                    loop
+                                    playsInline
+                                    onMouseOver={(e) => e.currentTarget.play()}
+                                    onMouseOut={(e) => {
+                                      e.currentTarget.pause();
+                                      e.currentTarget.currentTime = 0;
+                                    }}
+                                  />
+                                );
+                              }
+
+                              return (
+                                <img
+                                  src={fullUrl}
+                                  alt={artwork.title}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.style.display = 'none';
+                                    const parent = e.currentTarget.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-4xl">🎨</div>';
+                                    }
+                                  }}
+                                />
+                              );
+                            })()}
+
+
+
+                            {/* オーバーレイアクション */}
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              <button
+                                onClick={async () => {
+                                  if (confirm('削除してもよろしいですか？')) {
+                                    try {
+                                      const authToken = localStorage.getItem('authToken');
+                                      const API_BASE_URL = getApiBaseUrl();
+                                      const res = await fetch(`${API_BASE_URL}/artworks/${artwork.id}/`, {
+                                        method: 'DELETE',
+                                        headers: { 'Authorization': `Token ${authToken}` }
+                                      });
+                                      if (res.ok) {
+                                        alert('削除しました');
+                                        fetchMyArtworks();
+                                      } else {
+                                        const errorData = await res.json().catch(() => ({}));
+                                        alert(`削除に失敗しました: ${errorData.error || res.statusText}`);
+                                      }
+                                    } catch (error) {
+                                      console.error('Delete error:', error);
+                                      alert('削除中にエラーが発生しました');
+                                    }
+                                  }
+                                }}
+                                className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700" title="削除"
+                              >
+                                🗑️
+                              </button>
+                              <button
+                                onClick={() => {
+                                  // 編集ページへ遷移
+                                  window.location.href = `/ja/artworks/upload?id=${artwork.id}`;
+                                }}
+                                className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700" title="編集"
+                              >
+                                ✏️
+                              </button>
+                            </div>
+                          </div>
+                          <h4 className="font-semibold text-purple-100 truncate">{artwork.title}</h4>
+                          <p className="text-xs text-gray-400">{new Date(artwork.created_at).toLocaleDateString()}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="col-span-full bg-gray-800/50 rounded-lg p-3 border border-gray-700/50 text-center">
+                        <div className="aspect-square bg-gray-700/50 rounded-lg mb-2 flex items-center justify-center mx-auto w-24 h-24">
+                          <span className="text-4xl text-gray-500">🖼️</span>
+                        </div>
+                        <p className="text-xs text-gray-400">作品はまだありません</p>
                       </div>
-                      <p className="text-xs text-gray-400">作品はまだありません</p>
-                    </div>
+                    )}
                   </div>
-                  
-                  <p className="text-purple-300 text-sm mt-4">最初の作品を投稿しましょう！</p>
+
+                  {myArtworks.length === 0 && (
+                    <p className="text-purple-300 text-sm mt-4">最初の作品を投稿しましょう！</p>
+                  )}
                 </div>
 
                 {/* 登録済みイベント */}
@@ -739,7 +846,7 @@ function DashboardPageInner() {
             <div>
               <h2 className="text-3xl font-bold text-purple-100 mb-6 font-pt-serif">👤 プロフィール設定</h2>
               <p className="text-purple-300 mb-6">プロフィール情報を編集できます</p>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button
                   onClick={() => router.push(`/${currentLocale}/dashboard/profile`)}
@@ -778,11 +885,10 @@ function DashboardPageInner() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-purple-400 min-w-[100px]">プラン:</span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-bold ${
-                      user?.subscription === "free" ? "bg-gray-600" :
+                    <span className={`px-3 py-1 rounded-full text-sm font-bold ${user?.subscription === "free" ? "bg-gray-600" :
                       user?.subscription === "premium" ? "bg-green-600" :
-                      "bg-yellow-600"
-                    }`}>
+                        "bg-yellow-600"
+                      }`}>
                       {user?.subscription?.toUpperCase() || "FREE"}
                     </span>
                   </div>
@@ -831,7 +937,7 @@ function DashboardPageInner() {
                     <h3 className="text-xl font-bold text-purple-100 mb-4 flex items-center gap-2">
                       <span>🔑</span> あなたの紹介コード
                     </h3>
-                    
+
                     <div className="bg-gray-950 rounded-lg p-4 mb-4">
                       <p className="text-2xl font-mono font-bold text-center text-purple-300 break-all">
                         {referralCode || "読み込み中..."}
@@ -1139,9 +1245,8 @@ function DashboardPageInner() {
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🎨</div>
                       )}
-                      <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs ${
-                        p.visibility === 'public' ? 'bg-green-600' : p.visibility === 'unlisted' ? 'bg-yellow-600' : 'bg-gray-600'
-                      } text-white`}>
+                      <span className={`absolute top-2 right-2 px-2 py-0.5 rounded-full text-xs ${p.visibility === 'public' ? 'bg-green-600' : p.visibility === 'unlisted' ? 'bg-yellow-600' : 'bg-gray-600'
+                        } text-white`}>
                         {p.visibility === 'public' ? '公開' : p.visibility === 'unlisted' ? '限定' : '非公開'}
                       </span>
                     </div>
@@ -1196,45 +1301,45 @@ function DashboardPageInner() {
                 </div>
               )}
 
-            {/* 投稿作品（ギャラリー）表示 */}
-            {myArtworks.length > 0 && (
-              <div className="mt-10">
-                <h3 className="text-xl font-bold text-purple-200 mb-4">🖼 投稿作品（ギャラリー）</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {myArtworks.map((a) => (
-                    <div key={a.id} className="bg-gray-800/60 rounded-xl overflow-hidden border border-gray-700/60">
-                      <div className="aspect-video bg-gray-700/50 relative">
-                        {a.image_url ? (
-                          <img src={a.image_url} alt={a.title} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🎬</div>
-                        )}
-                        <span className="absolute top-2 left-2 px-2 py-1 rounded-full bg-indigo-600/80 text-white text-xs">ギャラリー</span>
-                      </div>
-                      <div className="p-4 space-y-2">
-                        <h4 className="text-white font-semibold line-clamp-1">{a.title}</h4>
-                        <p className="text-gray-400 text-sm line-clamp-2">{a.description || '説明なし'}</p>
-                        <p className="text-xs text-gray-500">カテゴリ: {a.category}</p>
-                        <div className="flex justify-between items-center text-xs text-gray-500">
-                          <span>👁 {a.views || 0} ❤️ {a.likes_count || 0}</span>
-                          <button
-                            onClick={() => router.push(`/ja/gallery/category/${a.category}/${a.id}`)}
-                            className="text-indigo-400 hover:text-indigo-300"
-                          >
-                            詳細
-                          </button>
+              {/* 投稿作品（ギャラリー）表示 */}
+              {myArtworks.length > 0 && (
+                <div className="mt-10">
+                  <h3 className="text-xl font-bold text-purple-200 mb-4">🖼 投稿作品（ギャラリー）</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {myArtworks.map((a) => (
+                      <div key={a.id} className="bg-gray-800/60 rounded-xl overflow-hidden border border-gray-700/60">
+                        <div className="aspect-video bg-gray-700/50 relative">
+                          {a.image_url ? (
+                            <img src={a.image_url} alt={a.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-4xl opacity-30">🎬</div>
+                          )}
+                          <span className="absolute top-2 left-2 px-2 py-1 rounded-full bg-indigo-600/80 text-white text-xs">ギャラリー</span>
+                        </div>
+                        <div className="p-4 space-y-2">
+                          <h4 className="text-white font-semibold line-clamp-1">{a.title}</h4>
+                          <p className="text-gray-400 text-sm line-clamp-2">{a.description || '説明なし'}</p>
+                          <p className="text-xs text-gray-500">カテゴリ: {a.category}</p>
+                          <div className="flex justify-between items-center text-xs text-gray-500">
+                            <span>👁 {a.views || 0} ❤️ {a.likes_count || 0}</span>
+                            <button
+                              onClick={() => router.push(`/ja/gallery/category/${a.category}/${a.id}`)}
+                              className="text-indigo-400 hover:text-indigo-300"
+                            >
+                              詳細
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 
@@ -1296,19 +1401,19 @@ function EventCreateTab() {
 
       // Events API エンドポイント
       // ブラウザのホスト名を使用してAPIのベースURLを動的に決定
-  const getApiBaseUrl = () => {
-    if (typeof window !== 'undefined') {
-      const hostname = window.location.hostname;
-      // localhostまたは127.0.0.1の場合はそのまま使用、それ以外は同じホストのポート8000を使用
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return 'http://localhost:8000/api/v1';
-      }
-      return `http://${hostname}:8000/api/v1`;
-    }
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
-  };
-  const API_BASE_URL = getApiBaseUrl();
-      
+      const getApiBaseUrl = () => {
+        if (typeof window !== 'undefined') {
+          const hostname = window.location.hostname;
+          // localhostまたは127.0.0.1の場合はそのまま使用、それ以外は同じホストのポート8000を使用
+          if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return 'http://localhost:8000/api/v1';
+          }
+          return `http://${hostname}:8000/api/v1`;
+        }
+        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      };
+      const API_BASE_URL = getApiBaseUrl();
+
       const response = await fetch(`${API_BASE_URL}/events/create/`, {
         method: 'POST',
         headers: {
@@ -1327,15 +1432,15 @@ function EventCreateTab() {
         }, 1500);
       } else if (response.status === 403) {
         const errorData = await response.json();
-        setMessage({ 
-          type: 'error', 
-          text: errorData.detail || 'プラン制限によりイベントを作成できません。' 
+        setMessage({
+          type: 'error',
+          text: errorData.detail || 'プラン制限によりイベントを作成できません。'
         });
       } else {
         const errorData = await response.json();
-        setMessage({ 
-          type: 'error', 
-          text: errorData.detail || 'イベントの作成に失敗しました。' 
+        setMessage({
+          type: 'error',
+          text: errorData.detail || 'イベントの作成に失敗しました。'
         });
       }
     } catch (error) {
@@ -1349,14 +1454,13 @@ function EventCreateTab() {
   return (
     <div>
       <h2 className="text-3xl font-bold text-purple-100 mb-6 font-pt-serif">🎉 イベントを作成</h2>
-      
+
       {/* メッセージ */}
       {message && (
-        <div className={`mb-6 p-4 rounded-xl ${
-          message.type === 'success'
-            ? 'bg-green-900/30 border-2 border-green-500/50 text-green-200'
-            : 'bg-red-900/30 border-2 border-red-500/50 text-red-200'
-        }`}>
+        <div className={`mb-6 p-4 rounded-xl ${message.type === 'success'
+          ? 'bg-green-900/30 border-2 border-green-500/50 text-green-200'
+          : 'bg-red-900/30 border-2 border-red-500/50 text-red-200'
+          }`}>
           {message.text}
         </div>
       )}
@@ -1365,7 +1469,7 @@ function EventCreateTab() {
         {/* 基本情報 */}
         <div className="bg-gray-900/50 rounded-xl p-6">
           <h3 className="text-xl font-semibold text-purple-200 mb-4">📋 基本情報</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-purple-200 mb-2">
@@ -1441,7 +1545,7 @@ function EventCreateTab() {
         {/* 日時 */}
         <div className="bg-gray-900/50 rounded-xl p-6">
           <h3 className="text-xl font-semibold text-purple-200 mb-4">📅 開催日時</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-purple-200 mb-2">
@@ -1501,7 +1605,7 @@ function EventCreateTab() {
         {/* 会場情報 */}
         <div className="bg-gray-900/50 rounded-xl p-6">
           <h3 className="text-xl font-semibold text-purple-200 mb-4">🏢 会場情報</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-purple-200 mb-2">
@@ -1570,7 +1674,7 @@ function EventCreateTab() {
         {/* 参加費 */}
         <div className="bg-gray-900/50 rounded-xl p-6">
           <h3 className="text-xl font-semibold text-purple-200 mb-4">💰 参加費</h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <input
@@ -1669,7 +1773,7 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
 
   const confirmPlanChange = async () => {
     if (!selectedPlan) return;
-    
+
     setIsChanging(true);
     setMessage(null);
 
@@ -1735,14 +1839,13 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
   return (
     <div>
       <h2 className="text-3xl font-bold text-purple-100 mb-6 font-pt-serif">💎 プラン変更</h2>
-      
+
       {/* メッセージ */}
       {message && (
-        <div className={`mb-6 p-4 rounded-xl ${
-          message.type === 'success'
-            ? 'bg-green-900/30 border-2 border-green-500/50 text-green-200'
-            : 'bg-red-900/30 border-2 border-red-500/50 text-red-200'
-        }`}>
+        <div className={`mb-6 p-4 rounded-xl ${message.type === 'success'
+          ? 'bg-green-900/30 border-2 border-green-500/50 text-green-200'
+          : 'bg-red-900/30 border-2 border-red-500/50 text-red-200'
+          }`}>
           {message.text}
         </div>
       )}
@@ -1774,7 +1877,7 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
           </div>
         </div>
       )}
-      
+
       {/* 現在のプラン */}
       <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-xl p-6 mb-8 border-2 border-purple-500/30">
         <div className="flex items-center justify-between">
@@ -1795,11 +1898,10 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
       <h3 className="text-xl font-semibold text-purple-200 mb-4">📋 利用可能なプラン</h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {plans.map((plan) => (
-          <div 
+          <div
             key={plan.id}
-            className={`bg-gray-800/60 rounded-xl p-5 border ${getBorderStyle(plan.id)} transition-all relative ${
-              plan.id === currentPlan ? 'ring-2 ring-purple-500' : ''
-            }`}
+            className={`bg-gray-800/60 rounded-xl p-5 border ${getBorderStyle(plan.id)} transition-all relative ${plan.id === currentPlan ? 'ring-2 ring-purple-500' : ''
+              }`}
           >
             {plan.badge && (
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
@@ -1825,13 +1927,13 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
                 <li key={i}>✓ {f}</li>
               ))}
             </ul>
-            <button 
+            <button
               onClick={() => handlePlanChange(plan.id)}
               disabled={plan.id === currentPlan || isChanging}
               className={`w-full py-2 rounded-lg font-semibold transition-all ${getButtonStyle(plan.id)}`}
             >
-              {plan.id === currentPlan ? '現在のプラン' : 
-               plans.findIndex(p => p.id === plan.id) < plans.findIndex(p => p.id === currentPlan) ? 'ダウングレード' : 'アップグレード'}
+              {plan.id === currentPlan ? '現在のプラン' :
+                plans.findIndex(p => p.id === plan.id) < plans.findIndex(p => p.id === currentPlan) ? 'ダウングレード' : 'アップグレード'}
             </button>
           </div>
         ))}
@@ -1844,7 +1946,7 @@ function PlanChangeTab({ user, currentLocale }: { user: { subscription?: string 
           有料プランを解約すると、現在の請求期間終了後にFreeプランに変更されます。
           ストレージ制限を超えている場合、一部のファイルにアクセスできなくなる可能性があります。
         </p>
-        <button 
+        <button
           onClick={() => handlePlanChange('free')}
           disabled={currentPlan === 'free' || isChanging}
           className="text-red-400 hover:text-red-300 text-sm underline disabled:opacity-50 disabled:cursor-not-allowed"

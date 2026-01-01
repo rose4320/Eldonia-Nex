@@ -25,6 +25,8 @@ export type User = {
   exp?: number;
   fan_count?: number;
   preferred_language?: string;
+  is_staff?: boolean;
+  is_superuser?: boolean;
 };
 
 // Context型
@@ -54,7 +56,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       try {
         const authToken = localStorage.getItem("authToken");
-        
+
         if (authToken) {
           // トークンが存在する場合、バックエンドで検証
           const response = await fetch(`${getApiBaseUrl()}/users/me/`, {
@@ -91,7 +93,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // ログイン（バックエンドAPI統合）
   const login = async (usernameOrEmail: string, password: string) => {
     setLoading(true);
-    
+
     try {
       // バックエンドAPIにログインリクエストを送信
       const response = await fetch(`${getApiBaseUrl()}/login/`, {
@@ -111,10 +113,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
-      
+
       // トークンを保存
       localStorage.setItem('authToken', data.token);
-      
+
       // ユーザー情報を取得（トークンを使用）
       const userResponse = await fetch(`${getApiBaseUrl()}/users/me/`, {
         headers: {
@@ -146,10 +148,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // ログアウト
   const logout = async () => {
     setLoading(true);
-    
+
     try {
       const authToken = localStorage.getItem('authToken');
-      
+
       if (authToken) {
         // バックエンドにログアウトリクエストを送信（オプション）
         await fetch(`${getApiBaseUrl()}/logout/`, {
@@ -161,7 +163,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           // ログアウトAPIがなくてもローカルのクリーンアップは実行
         });
       }
-      
+
       setUser(null);
       localStorage.removeItem("eldonia_user");
       localStorage.removeItem("authToken");
@@ -179,7 +181,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // 新規登録（バックエンドAPI統合）
   const register = async (username: string, email: string, password: string) => {
     setLoading(true);
-    
+
     try {
       const response = await fetch(`${getApiBaseUrl()}/register/`, {
         method: 'POST',
@@ -199,11 +201,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       const data = await response.json();
-      
+
       // 登録成功後、自動的にログイン
       if (data.token) {
         localStorage.setItem('authToken', data.token);
-        
+
         // ユーザー情報を取得
         const userResponse = await fetch(`${getApiBaseUrl()}/users/me/`, {
           headers: {

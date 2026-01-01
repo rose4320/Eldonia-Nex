@@ -26,8 +26,10 @@ from django.urls import include, path
 from api.events.views import UserPlanLimitsView
 from marketplace.artwork_views import (
     ArtworkCommentView,
+    ArtworkDetailView,
     ArtworkListView,
     CreateArtworkView,
+    MyArtworksView,
     UploadArtworkImageView,
 )
 from marketplace.portfolio_views import (
@@ -195,6 +197,8 @@ urlpatterns: List[object] = [
     path("api/v1/artworks/upload-image/", UploadArtworkImageView.as_view(), name="upload_artwork_image"),
     path("api/v1/artworks/create/", CreateArtworkView.as_view(), name="create_artwork"),
     path("api/v1/artworks/list/", ArtworkListView.as_view(), name="artwork_list"),
+    path("api/v1/artworks/me/", MyArtworksView.as_view(), name="my_artworks"),
+    path("api/v1/artworks/<int:artwork_id>/", ArtworkDetailView.as_view(), name="artwork_detail"),
     path("api/v1/artworks/<int:artwork_id>/comments/", ArtworkCommentView.as_view(), name="artwork_comments"),
     # ポートフォリオAPI
     path("api/v1/portfolios/", PortfolioListView.as_view(), name="portfolio_list"),
@@ -207,6 +211,10 @@ urlpatterns: List[object] = [
     path("api/v1/events/", include('api.events.urls')),
     # Localization API
     path("api/v1/localization/", include('localization.urls')),
+    # Core Settings API
+    path("api/v1/settings/", include('core_settings.urls')),
+    # Admin User Management API
+    path("api/v1/users/admin/", include('users.urls')),
 ]
 
 # Development: Static/Media files

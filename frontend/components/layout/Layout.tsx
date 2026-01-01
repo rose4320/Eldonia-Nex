@@ -40,8 +40,8 @@ const Layout: React.FC<LayoutProps> = ({
     // 相対パスの場合はバックエンドのURLを付加
     if (typeof window !== 'undefined') {
       const hostname = window.location.hostname;
-      const backendHost = hostname === 'localhost' || hostname === '127.0.0.1' 
-        ? 'http://localhost:8000' 
+      const backendHost = hostname === 'localhost' || hostname === '127.0.0.1'
+        ? 'http://localhost:8000'
         : `http://${hostname}:8000`;
       return `${backendHost}${avatarUrl}`;
     }
@@ -51,7 +51,7 @@ const Layout: React.FC<LayoutProps> = ({
   // #region agent log
   React.useEffect(() => {
     const fullAvatarUrl = getFullAvatarUrl(user?.avatar_url);
-    fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'Layout.tsx:useEffect',message:'User data in Layout',data:{hasUser:!!user,avatar_url:user?.avatar_url,fullAvatarUrl,username:user?.username,display_name:user?.display_name},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'H1'})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/2148f5d5-b79c-45af-b96a-f0f3df0f7982', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'Layout.tsx:useEffect', message: 'User data in Layout', data: { hasUser: !!user, avatar_url: user?.avatar_url, fullAvatarUrl, username: user?.username, display_name: user?.display_name }, timestamp: Date.now(), sessionId: 'debug-session', hypothesisId: 'H1' }) }).catch(() => { });
   }, [user]);
   // #endregion
   const hideFooterPaths = [
@@ -67,31 +67,32 @@ const Layout: React.FC<LayoutProps> = ({
   }, [pageTitle])
 
   return (
-      <div className={`min-h-screen flex flex-col bg-gray-900 text-gray-100 ${className}`}>
-        {/* Header (固定88px) */}
-        {showHeader && (
-          <Header
-            {...headerProps}
-            isAuthenticated={!!user}
-            user={user ? {
-              name: user.display_name || user.username,
-              level: user.level || 1,
-              currentExp: user.exp || 0,
-              maxExp: 100,
-              avatar: getFullAvatarUrl(user.avatar_url)
-            } : undefined}
-          />
-        )}
-        {/* Main Content (可変) */}
-        <main
-          className={`flex-1 min-h-screen ${shouldHideFooter ? 'pt-0' : 'pt-[95px]'}`}
-          style={{ minHeight: 'calc(100vh - 64px - 320px)' }}
-        >
-          {children}
-        </main>
-        {/* Footer (最小320px) */}
-        {(!shouldHideFooter && showFooter) && <Footer {...footerProps} />}
-      </div>
+    <div className={`min-h-screen flex flex-col bg-gray-900 text-gray-100 ${className}`}>
+      {/* Header (固定88px) */}
+      {showHeader && (
+        <Header
+          {...headerProps}
+          isAuthenticated={!!user}
+          isStaff={user?.is_staff}
+          user={user ? {
+            name: user.display_name || user.username,
+            level: user.level || 1,
+            currentExp: user.exp || 0,
+            maxExp: 100,
+            avatar: getFullAvatarUrl(user.avatar_url)
+          } : undefined}
+        />
+      )}
+      {/* Main Content (可変) */}
+      <main
+        className={`flex-1 min-h-screen ${shouldHideFooter ? 'pt-0' : 'pt-[95px]'}`}
+        style={{ minHeight: 'calc(100vh - 64px - 320px)' }}
+      >
+        {children}
+      </main>
+      {/* Footer (最小320px) */}
+      {(!shouldHideFooter && showFooter) && <Footer {...footerProps} />}
+    </div>
   )
 }
 

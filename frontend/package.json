@@ -1,6 +1,6 @@
 {
   "name": "eldonia-nex-frontend",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Eldonia-Nex Frontend - Creative Platform with SSR",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@types/qrcode": "^1.5.6",
-    "next": "14.2.28",
+    "next": "15.0.0",
     "next-intl": "^3.26.0",
     "qrcode": "^1.5.4",
     "react": "18.3.1",
@@ -25,7 +25,7 @@
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.20",
     "eslint": "^8",
-    "eslint-config-next": "14.2.28",
+    "eslint-config-next": "15.0.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "5.7.2"

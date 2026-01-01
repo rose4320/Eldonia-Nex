@@ -12,8 +12,9 @@
     "streamingDesc": "Stream your creative process in real-time",
     "marketplace": "Marketplace",
     "marketplaceDesc": "Monetize your work through sales",
-    "gamification": "Gamification",
     "gamificationDesc": "Level up by earning EXP",
+    "weeklyChallenge": "Weekly Challenge",
+    "monthlyChallenge": "Monthly Challenge",
     "startNow": "Get Started"
   },
   "common": {
