@@ -82,6 +82,11 @@ const Gallery: React.FC = () => {
     return /\.(mp4|mov|avi|mkv|webm|flv)$/i.test(url.split('?')[0])
   }
 
+  const isAudioUrl = (url?: string) => {
+    if (!url) return false
+    return /\.(mp3|wav|ogg|flac|aac|m4a)$/i.test(url.split('?')[0])
+  }
+
   const slugify = (text: string) =>
     text
       .toString()
@@ -103,40 +108,39 @@ const Gallery: React.FC = () => {
         // 重複（同じfileUrl/imageUrl）を排除しつつ整形
         const seen = new Set<string>()
         const apiArtworks: Artwork[] = []
-        ;(data.artworks || []).forEach((a: any) => {
-          const id = String(a.id)
-          const rawImage = a.image_url || a.thumbnail_url
-          const rawFile = a.file_url
-          const key = (rawFile || rawImage || id || '').toString()
-          if (seen.has(key)) return
-          seen.add(key)
+          ; (data.artworks || []).forEach((a: any) => {
+            const id = String(a.id)
+            const rawImage = a.image_url || a.thumbnail_url
+            const rawFile = a.file_url
+            const key = (rawFile || rawImage || id || '').toString()
+            if (seen.has(key)) return
+            seen.add(key)
 
-          apiArtworks.push({
-            id,
-            title: a.title || 'Untitled',
-            author: a.creator?.display_name || a.creator?.username || 'Unknown',
-            authorLevel: 1,
-            category: a.category || 'その他',
-            price: Number(a.price || 0),
-            isFree: !!a.is_free || Number(a.price || 0) === 0,
-            likes: a.likes_count || 0,
-            views: a.views || 0,
-            imageUrl: (() => {
-              if (rawImage && isImageUrl(rawImage)) return getFullMediaUrl(rawImage)
-              if (rawFile && isImageUrl(rawFile)) return getFullMediaUrl(rawFile)
-              if (rawFile && isVideoUrl(rawFile)) return '/api/placeholder/300/200'
-              return '/api/placeholder/300/200'
-            })(),
-            fileUrl: getFullMediaUrl(rawFile),
-            tags: a.tags || [],
-            description: a.description || '',
-            fileFormat: '',
-            fileSize: '',
-            license: '',
-            rating: 0,
-            reviewCount: 0,
+            apiArtworks.push({
+              id,
+              title: a.title || 'Untitled',
+              author: a.creator?.display_name || a.creator?.username || 'Unknown',
+              authorLevel: 1,
+              category: a.category || 'その他',
+              price: Number(a.price || 0),
+              isFree: !!a.is_free || Number(a.price || 0) === 0,
+              likes: a.likes_count || 0,
+              views: a.views || 0,
+              imageUrl: (() => {
+                if (rawImage && isImageUrl(rawImage)) return getFullMediaUrl(rawImage)
+                if (rawFile && isImageUrl(rawFile)) return getFullMediaUrl(rawFile)
+                return '' // フォールバックはレンダリング時に処理
+              })(),
+              fileUrl: getFullMediaUrl(rawFile),
+              tags: a.tags || [],
+              description: a.description || '',
+              fileFormat: '',
+              fileSize: '',
+              license: '',
+              rating: 0,
+              reviewCount: 0,
+            })
           })
-        })
         setArtworks(apiArtworks)
       } catch (error) {
         // フォールバック：既存モック（何も取得できない場合のみ）
@@ -152,12 +156,12 @@ const Gallery: React.FC = () => {
   const filteredArtworks = useMemo(() => {
     const filtered = artworks.filter(artwork => {
       const matchesSearch = artwork.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          artwork.author.toLowerCase().includes(filters.search.toLowerCase()) ||
-                          artwork.tags.some(tag => tag.toLowerCase().includes(filters.search.toLowerCase()))
+        artwork.author.toLowerCase().includes(filters.search.toLowerCase()) ||
+        artwork.tags.some(tag => tag.toLowerCase().includes(filters.search.toLowerCase()))
 
       const matchesCategory = filters.category === 'すべて' || artwork.category === filters.category
 
-          return matchesSearch && matchesCategory
+      return matchesSearch && matchesCategory
     })
 
     // ソート処理
@@ -167,7 +171,7 @@ const Gallery: React.FC = () => {
       case '新着順':
         return filtered.sort((a, b) => parseInt(b.id) - parseInt(a.id))
       case '評価順':
-        return filtered.sort((a, b) => b.rating - a.rating)
+        return filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0))
       default:
         return filtered
     }
@@ -177,7 +181,10 @@ const Gallery: React.FC = () => {
     setFilters(prev => ({ ...prev, [key]: value }))
   }
 
-  const formatPrice = () => '無料'
+  const formatPrice = (price: number, isFree: boolean) => {
+    if (isFree || price === 0) return '無料'
+    return `¥${price.toLocaleString()}`
+  }
 
   const getArtworkRoute = (category: string, id: string) => {
     const slug = slugify(category || 'other')
@@ -207,14 +214,14 @@ const Gallery: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-900">
       <div className="container mx-auto px-6 py-8 max-w-7xl">
-        
+
         {/* ヒーローセクション - PageHeroコンポーネント使用 */}
         <PageHero
           title="GALLERY"
           subtitle="Realm of Creative Wonders"
           backgroundOpacity={5}
         />
-        
+
         {/* UI/UX設計書準拠：フィルター・検索バー */}
         <div className="border border-gray-600/30 rounded-xl p-6 mb-8 bg-gray-800/60 backdrop-blur-md shadow-2xl">
           {/* 第一行：検索ボックス + フィルター + ソート */}
@@ -231,11 +238,11 @@ const Gallery: React.FC = () => {
                 🔍
               </button>
             </div>
-            
+
             <button className="px-4 py-2 border border-gray-600/40 rounded-lg text-gray-300 hover:bg-gray-700/50 backdrop-blur-sm transition-all duration-300 hover:border-gray-500/50">
               フィルター
             </button>
-            
+
             <select
               value={filters.sortBy}
               onChange={(e) => handleFilterChange('sortBy', e.target.value)}
@@ -258,11 +265,10 @@ const Gallery: React.FC = () => {
                   <React.Fragment key={category}>
                     <button
                       onClick={() => handleFilterChange('category', category)}
-                      className={`px-3 py-1 rounded-lg text-sm transition-all duration-300 backdrop-blur-sm ${
-                        filters.category === category
-                          ? 'bg-indigo-500/80 text-white shadow-lg shadow-indigo-500/25'
-                          : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-                      }`}
+                      className={`px-3 py-1 rounded-lg text-sm transition-all duration-300 backdrop-blur-sm ${filters.category === category
+                        ? 'bg-indigo-500/80 text-white shadow-lg shadow-indigo-500/25'
+                        : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                        }`}
                     >
                       {category}
                     </button>
@@ -292,8 +298,8 @@ const Gallery: React.FC = () => {
           {/* 作品グリッド（5列レイアウト） */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-6">
             {filteredArtworks.map((artwork) => (
-              <div 
-                key={artwork.id} 
+              <div
+                key={artwork.id}
                 className="group border border-gray-600/20 rounded-xl overflow-hidden bg-gray-800/60 backdrop-blur-sm hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 hover:-translate-y-2 cursor-pointer"
                 onClick={() => handleArtworkClick(artwork)}
               >
@@ -307,23 +313,63 @@ const Gallery: React.FC = () => {
                         ? artwork.imageUrl
                         : fallback
 
+                    // 動画プレビュー
                     if (artwork.fileUrl && isVideoUrl(artwork.fileUrl)) {
-                      // 動画の場合は静止画（最初のフレーム相当）を表示
                       return (
                         <video
-                          src={`${artwork.fileUrl}#t=0.1`}
-                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          src={`${artwork.fileUrl}#t=0.1`} // 0.1秒目をサムネイルとして使用
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           muted
                           playsInline
                           preload="metadata"
                           loop
                           controls={false}
-                          aria-label={artwork.title}
-                          poster={src}
+                          poster={artwork.imageUrl || undefined}
+                          onMouseOver={(e) => {
+                            e.currentTarget.play().catch(() => { })
+                          }}
+                          onMouseOut={(e) => {
+                            e.currentTarget.pause()
+                            e.currentTarget.currentTime = 0
+                          }}
                         />
                       )
                     }
 
+                    // 音声プレビュー（波形アニメーション風）
+                    if (artwork.fileUrl && isAudioUrl(artwork.fileUrl)) {
+                      return (
+                        <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-gray-900 to-indigo-900 flex flex-col items-center justify-center p-6 group-hover:scale-105 transition-transform duration-500">
+                          <div className="w-24 h-24 rounded-full bg-black/30 flex items-center justify-center mb-4 relative overflow-hidden ring-2 ring-indigo-500/50">
+                            {src !== fallback ? (
+                              <img src={src} className="w-full h-full object-cover opacity-80" alt="Album Art" />
+                            ) : (
+                              <span className="text-4xl">🎵</span>
+                            )}
+                            {/* Playing indicator overlay */}
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="text-white">▶️</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-1 h-8 items-end justify-center w-full px-8">
+                            {[...Array(5)].map((_, i) => (
+                              <div key={i} className={`w-2 bg-indigo-500/80 rounded-t-sm transition-all duration-300 group-hover:animate-pulse`} style={{ height: `${30 + Math.random() * 70}%`, animationDelay: `${i * 0.1}s` }}></div>
+                            ))}
+                          </div>
+                          <audio src={artwork.fileUrl} className="hidden group-hover:block absolute bottom-0 w-0 h-0"
+                            onMouseOver={(e) => {
+                              // Note: Audio autoplay on hover usually blocked by browsers without interaction, 
+                              // but we can try or at least show visual feedback.
+                              // Ideally we'd play a snippet.
+                            }}
+                          />
+                        </div>
+                      )
+                    }
+
+                    // TODO: 3Dモデルなどの対応もここに追加可能
+
+                    // 通常画像
                     return (
                       <img
                         src={src}
@@ -347,12 +393,12 @@ const Gallery: React.FC = () => {
                     無料
                   </div>
                 </div>
-                
+
                 {/* 作品情報 */}
                 <div className="p-4 text-sm border-t border-gray-600/30 bg-gray-800/80 backdrop-blur-sm">
                   <h3 className="font-medium text-gray-100 mb-2 truncate group-hover:text-indigo-300 transition-colors">{artwork.title}</h3>
                   <p className="text-gray-400 mb-3 text-xs group-hover:text-gray-300 transition-colors">by {artwork.author}</p>
-                  
+
                   <div className="flex items-center justify-between text-xs text-gray-500/80 mb-3 group-hover:text-gray-400 transition-colors">
                     <span className="flex items-center gap-1">
                       <span className="opacity-70">👤</span>
@@ -363,14 +409,14 @@ const Gallery: React.FC = () => {
                       {artwork.likes}
                     </span>
                   </div>
-                  
+
                   <div className="text-sm font-medium text-indigo-400/90 mb-4 group-hover:text-indigo-300 transition-colors">
                     {formatPrice(artwork.price, artwork.isFree)}
                   </div>
 
                   {/* アクションボタン */}
                   <div className="flex flex-col gap-2">
-                    <button 
+                    <button
                       className="w-full px-3 py-2 bg-purple-600/80 backdrop-blur-sm text-white text-xs rounded-lg hover:bg-purple-600 hover:shadow-lg hover:shadow-purple-500/25 transition-all duration-300 border border-purple-500/20 group-hover:border-purple-400/50"
                       onClick={handleButtonClick}
                     >
@@ -378,7 +424,7 @@ const Gallery: React.FC = () => {
                         👥 <span>ファン登録</span>
                       </span>
                     </button>
-                    <button 
+                    <button
                       className="w-full px-3 py-2 bg-green-600/80 backdrop-blur-sm text-white text-xs rounded-lg hover:bg-green-600 hover:shadow-lg hover:shadow-green-500/25 transition-all duration-300 border border-green-500/20 group-hover:border-green-400/50"
                       onClick={handleButtonClick}
                     >
@@ -398,7 +444,7 @@ const Gallery: React.FC = () => {
               <div className="text-6xl mb-4 opacity-50">🔍</div>
               <p className="text-gray-400 mb-6 text-lg">検索条件に一致する作品が見つかりませんでした</p>
               <button
-                onClick={() => setFilters({ search: '', category: 'すべて', priceRange: 'すべて', sortBy: '人気順' })}
+                onClick={() => setFilters({ search: '', category: 'すべて', sortBy: '人気順' })}
                 className="px-6 py-3 bg-indigo-500/80 backdrop-blur-sm text-white rounded-lg hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-500/25 transition-all duration-300 border border-indigo-400/30"
               >
                 フィルターをリセット

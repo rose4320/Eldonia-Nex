@@ -8,17 +8,27 @@ from typing import Any
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 
-from rest_framework import status
+from rest_framework import status, viewsets, permissions
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import UserAddress, UserDetail, UserSkill
+from .serializers import UserManagementSerializer
 
 # Use the project user model dynamically
 User = get_user_model()
+
+
+class UserManagementViewSet(viewsets.ModelViewSet):
+    """管理者用ユーザー管理API"""
+    queryset = User.objects.all().order_by('-created_at')
+    serializer_class = UserManagementSerializer
+    permission_classes = [IsAdminUser]
+    filterset_fields = ['username', 'email', 'subscription']
+    search_fields = ['username', 'email', 'display_name']
 
 
 class CustomLoginView(APIView):
@@ -86,6 +96,8 @@ class CurrentUserView(APIView):
                 "exp": getattr(user, "total_exp", 0),
                 "fan_count": getattr(user, "fan_count", 0),
                 "preferred_language": getattr(user, "preferred_language", "ja"),
+                "is_staff": user.is_staff,
+                "is_superuser": user.is_superuser,
             }
         )
 

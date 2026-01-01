@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "jobs.apps.JobsConfig",
     "gamification.apps.GamificationConfig",
     "localization.apps.LocalizationConfig",
+    "core_settings.apps.CoreSettingsConfig",
 ]
 
 MIDDLEWARE = [

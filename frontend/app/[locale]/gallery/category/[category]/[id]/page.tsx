@@ -1,10 +1,10 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { use, useEffect, useMemo, useState } from 'react';
 
 interface Props {
-  params: { locale: string; category: string; id: string }
+  params: Promise<{ locale: string; category: string; id: string }>
 }
 
 const getApiBaseUrl = () =>
@@ -21,6 +21,7 @@ const getFullMediaUrl = (url?: string) => {
 };
 
 export default function ArtworkDetailPage({ params }: Props) {
+  const { id, locale, category } = use(params);
   const router = useRouter();
   const [artwork, setArtwork] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -33,15 +34,12 @@ export default function ArtworkDetailPage({ params }: Props) {
     const fetchData = async () => {
       try {
         const API_BASE_URL = getApiBaseUrl();
-        const res = await fetch(`${API_BASE_URL}/artworks/list/`, {
+        const res = await fetch(`${API_BASE_URL}/artworks/${id}/`, {
           cache: 'no-store',
         });
         if (!res.ok) throw new Error('failed');
         const data = await res.json();
-        const found = (data.artworks || []).find(
-          (a: any) => String(a.id) === params.id
-        );
-        setArtwork(found || null);
+        setArtwork(data || null);
       } catch (_) {
         setArtwork(null);
       } finally {
@@ -49,24 +47,24 @@ export default function ArtworkDetailPage({ params }: Props) {
       }
     };
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   // ローカルステータスのみ復元（コメントはAPI共有）
   useEffect(() => {
-    const fanKey = `artwork_fan_${params.id}`;
-    const groupKey = `artwork_group_${params.id}`;
+    const fanKey = `artwork_fan_${id}`;
+    const groupKey = `artwork_group_${id}`;
     const savedFan = typeof window !== 'undefined' ? localStorage.getItem(fanKey) : null;
     const savedGroup = typeof window !== 'undefined' ? localStorage.getItem(groupKey) : null;
     setIsFan(savedFan === '1');
     setIsGroupRequested(savedGroup === '1');
-  }, [params.id]);
+  }, [id]);
 
   // コメントをAPIから取得
   useEffect(() => {
     const fetchComments = async () => {
       try {
         const API_BASE_URL = getApiBaseUrl();
-        const res = await fetch(`${API_BASE_URL}/artworks/${params.id}/comments/`, { cache: 'no-store' });
+        const res = await fetch(`${API_BASE_URL}/artworks/${id}/comments/`, { cache: 'no-store' });
         if (!res.ok) return;
         const data = await res.json();
         setComments(data.comments || []);
@@ -75,7 +73,7 @@ export default function ArtworkDetailPage({ params }: Props) {
       }
     };
     fetchComments();
-  }, [params.id]);
+  }, [id]);
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,7 +86,7 @@ export default function ArtworkDetailPage({ params }: Props) {
     const name = defaultName;
     try {
       const API_BASE_URL = getApiBaseUrl();
-      const res = await fetch(`${API_BASE_URL}/artworks/${params.id}/comments/`, {
+      const res = await fetch(`${API_BASE_URL}/artworks/${id}/comments/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, text: commentForm.text.trim() }),
@@ -107,7 +105,7 @@ export default function ArtworkDetailPage({ params }: Props) {
     const next = !isFan;
     setIsFan(next);
     if (typeof window !== 'undefined') {
-      localStorage.setItem(`artwork_fan_${params.id}`, next ? '1' : '0');
+      localStorage.setItem(`artwork_fan_${id}`, next ? '1' : '0');
     }
   };
 
@@ -115,7 +113,7 @@ export default function ArtworkDetailPage({ params }: Props) {
     const next = !isGroupRequested;
     setIsGroupRequested(next);
     if (typeof window !== 'undefined') {
-      localStorage.setItem(`artwork_group_${params.id}`, next ? '1' : '0');
+      localStorage.setItem(`artwork_group_${id}`, next ? '1' : '0');
     }
   };
 
@@ -222,21 +220,19 @@ export default function ArtworkDetailPage({ params }: Props) {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={toggleFan}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    isFan
-                      ? 'bg-purple-600 text-white hover:bg-purple-700'
-                      : 'bg-gray-700 text-gray-100 hover:bg-gray-600'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${isFan
+                    ? 'bg-purple-600 text-white hover:bg-purple-700'
+                    : 'bg-gray-700 text-gray-100 hover:bg-gray-600'
+                    }`}
                 >
                   {isFan ? '✅ ファン登録済み' : '🫶 ファン登録'}
                 </button>
                 <button
                   onClick={toggleGroup}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                    isGroupRequested
-                      ? 'bg-green-600 text-white hover:bg-green-700'
-                      : 'bg-gray-700 text-gray-100 hover:bg-gray-600'
-                  }`}
+                  className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${isGroupRequested
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-gray-700 text-gray-100 hover:bg-gray-600'
+                    }`}
                 >
                   {isGroupRequested ? '✅ グループ申請済み' : '🤝 グループ申請'}
                 </button>
@@ -268,9 +264,9 @@ export default function ArtworkDetailPage({ params }: Props) {
               {comments.length === 0 && (
                 <p className="text-gray-400 text-sm">まだコメントはありません。</p>
               )}
-            {comments.map((c, idx) => (
+              {comments.map((c, idx) => (
                 <div
-                key={`${c.id || idx}-${c.createdAt}-${idx}`}
+                  key={`${c.id || idx}-${c.createdAt}-${idx}`}
                   className="p-3 rounded-lg bg-gray-900 border border-gray-700"
                 >
                   <div className="flex items-center justify-between text-xs text-gray-400 mb-1">

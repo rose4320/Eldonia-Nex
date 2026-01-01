@@ -1,0 +1,18 @@
+# Project Rules
+
+You must follow the project rules and requirements defined in `eldonia.md`.
+The content of `eldonia.md` is the source of truth for this project.
+
+## Key Directives
+- **Vision**: Enable all creators to express freely and earn fairly.
+- **Tech Stack**: Next.js 15+ (App Router), Django 5.1+, PostgreSQL 17+, Docker.
+- **Development Rules**: 
+  - Backend commands must be run in `backend/`.
+  - Frontend commands must be run in `frontend/`.
+- **Subscription Plans**:
+  - Free: 10% commission
+  - Standard: 10% commission
+  - Pro: 10% commission
+  - Business: 10% commission
+
+Refer to `eldonia.md` in the root directory for full project details and requirements.

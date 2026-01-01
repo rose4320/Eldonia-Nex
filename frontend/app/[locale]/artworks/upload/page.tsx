@@ -2,26 +2,45 @@
 
 import { useAuth } from "@/app/context/AuthContext";
 import ImageUpload from "@/components/ui/ImageUpload";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 
-export default function ArtworkUploadPage() {
+function ArtworkForm() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get('id');
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [artworkFile, setArtworkFile] = useState<File | null>(null);
+  const [isLoadingData, setIsLoadingData] = useState(false);
 
   const [formData, setFormData] = useState({
-    title: "",
+    title: searchParams.get('title') || "",
     description: "",
     image_url: "",
     category: "",
-    tags: "",
+    tags: searchParams.get('tags') || "",
     price: "",
     is_for_sale: false,
     is_featured: false,
   });
+
+  // Handle query parameter changes (optional if needed for real-time update)
+  useEffect(() => {
+    if (!editId) {
+      const qTitle = searchParams.get('title');
+      const qTags = searchParams.get('tags');
+      if (qTitle || qTags) {
+        setFormData(prev => ({
+          ...prev,
+          title: qTitle || prev.title,
+          tags: qTags || prev.tags
+        }));
+      }
+    }
+  }, [searchParams, editId]);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -41,6 +60,46 @@ export default function ArtworkUploadPage() {
     return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
   };
 
+  // 編集モードの場合、データ取得
+  useEffect(() => {
+    if (editId && user) {
+      setIsLoadingData(true);
+      const fetchArtwork = async () => {
+        try {
+          const API_BASE_URL = getApiBaseUrl();
+          const authToken = localStorage.getItem('authToken');
+          const res = await fetch(`${API_BASE_URL}/artworks/${editId}/`, {
+            headers: { 'Authorization': `Token ${authToken}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setFormData({
+              title: data.title || "",
+              description: data.description || "",
+              image_url: data.image_url || data.file_url || "",
+              category: data.category === "その他" ? "other" : (data.category || ""), // カテゴリのマッピングが必要かも
+              tags: Array.isArray(data.tags) ? data.tags.join(", ") : "",
+              price: data.price ? String(data.price) : "",
+              is_for_sale: data.is_for_sale || false,
+              is_featured: data.is_featured || false,
+            });
+            // カテゴリのマッピング簡易対応（サーバーから返る名前が日本語の場合など考慮が必要だが、今回は既存valueに合わせる前提）
+            // 注意: data.categoryが日本語名で返ってくる場合、valueと一致しない可能性がある。
+            // 必要ならカテゴリ一覧APIからIDで引くなどすべきだが、ここでは文字列の一致を期待、または手動設定を促す。
+          } else {
+            setMessage({ type: "error", text: "作品データの取得に失敗しました。" });
+          }
+        } catch (error) {
+          console.error("Fetch error:", error);
+          setMessage({ type: "error", text: "データの読み込みに失敗しました。" });
+        } finally {
+          setIsLoadingData(false);
+        }
+      };
+      fetchArtwork();
+    }
+  }, [editId, user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -49,15 +108,18 @@ export default function ArtworkUploadPage() {
     try {
       // ファイルがある場合は先にアップロード
       let uploadedImageUrl = formData.image_url;
-      
+      const API_BASE_URL = getApiBaseUrl();
+      const authToken = localStorage.getItem('authToken');
+
       if (artworkFile) {
         const formDataForUpload = new FormData();
         formDataForUpload.append("file", artworkFile);
         formDataForUpload.append("user_id", user?.id.toString() || "");
-        const API_BASE_URL = getApiBaseUrl();
+
         const uploadRes = await fetch(`${API_BASE_URL}/artworks/upload-image/`, {
           method: "POST",
-          credentials: "include",
+          credentials: "include", // 必要に応じて
+          headers: { 'Authorization': `Token ${authToken}` }, // Tokenが必要な場合
           body: formDataForUpload
         });
 
@@ -71,18 +133,23 @@ export default function ArtworkUploadPage() {
         }
       }
 
-      // 作品投稿
-      const API_BASE_URL = getApiBaseUrl();
-      const res = await fetch(`${API_BASE_URL}/artworks/create/`, {
-        method: "POST",
+      // 作品投稿 または 更新
+      const url = editId ? `${API_BASE_URL}/artworks/${editId}/` : `${API_BASE_URL}/artworks/create/`;
+      const method = editId ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method: method,
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Token ${authToken}`
         },
         credentials: "include",
         body: JSON.stringify({
           title: formData.title,
           description: formData.description,
           image_url: uploadedImageUrl,
+          // image_urlが空の場合は更新しないなどの制御はバックエンド任せだが、PATCHなら部分更新可。
+          // ただし今回は全項目送っている。
           category: formData.category,
           tags: formData.tags.split(",").map(tag => tag.trim()).filter(tag => tag),
           price: formData.price ? parseFloat(formData.price) : 0,
@@ -92,12 +159,12 @@ export default function ArtworkUploadPage() {
         })
       });
 
-        if (res.ok) {
-        setMessage({ type: "success", text: "作品を投稿しました！ギャラリーに表示されます。" });
-        setTimeout(() => router.push("/gallery"), 2000);
+      if (res.ok) {
+        setMessage({ type: "success", text: editId ? "作品を更新しました！" : "作品を投稿しました！ギャラリーに表示されます。" });
+        setTimeout(() => router.push("/dashboard"), 2000); // 編集・投稿後はダッシュボードへ戻るのが自然
       } else {
         const error = await res.json();
-        setMessage({ type: "error", text: error.message || "投稿に失敗しました。" });
+        setMessage({ type: "error", text: error.message || (editId ? "更新に失敗しました。" : "投稿に失敗しました。") });
       }
     } catch (error) {
       console.error("作品投稿エラー:", error);
@@ -117,7 +184,7 @@ export default function ArtworkUploadPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
       setFormData({
@@ -132,7 +199,7 @@ export default function ArtworkUploadPage() {
     }
   };
 
-  if (loading || !user) {
+  if (loading || !user || isLoadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-950 to-purple-950">
         <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
@@ -152,17 +219,20 @@ export default function ArtworkUploadPage() {
             >
               <span>←</span> ダッシュボードに戻る
             </button>
-            <h1 className="text-4xl font-bold text-purple-100 font-pt-serif">🎨 作品アップロード</h1>
-            <p className="text-purple-300 mt-2">あなたの作品をギャラリーに投稿しましょう</p>
+            <h1 className="text-4xl font-bold text-purple-100 font-pt-serif">
+              {editId ? "✏️ 作品を編集" : "🎨 作品アップロード"}
+            </h1>
+            <p className="text-purple-300 mt-2">
+              {editId ? "作品の情報を更新します" : "あなたの作品をギャラリーに投稿しましょう"}
+            </p>
           </div>
 
           {/* メッセージ */}
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
-              message.type === "success" 
-                ? "bg-green-900/50 border-2 border-green-500 text-green-200" 
-                : "bg-red-900/50 border-2 border-red-500 text-red-200"
-            }`}>
+            <div className={`mb-6 p-4 rounded-lg ${message.type === "success"
+              ? "bg-green-900/50 border-2 border-green-500 text-green-200"
+              : "bg-red-900/50 border-2 border-red-500 text-red-200"
+              }`}>
               <p className="font-semibold">{message.text}</p>
             </div>
           )}
@@ -350,19 +420,18 @@ export default function ArtworkUploadPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !formData.title || !formData.category || (!artworkFile && !formData.image_url)}
-                className={`flex-1 bg-gradient-to-r from-purple-600 to-purple-400 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 shadow-lg ${
-                  isSubmitting || !formData.title || !formData.category || (!artworkFile && !formData.image_url)
-                    ? "opacity-50 cursor-not-allowed" 
-                    : "hover:from-purple-700 hover:to-purple-500 hover:shadow-xl"
-                }`}
+                className={`flex-1 bg-gradient-to-r from-purple-600 to-purple-400 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-200 shadow-lg ${isSubmitting || !formData.title || !formData.category || (!artworkFile && !formData.image_url)
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:from-purple-700 hover:to-purple-500 hover:shadow-xl"
+                  }`}
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    投稿中...
+                    {editId ? "更新中..." : "投稿中..."}
                   </span>
                 ) : (
-                  "🚀 作品を投稿"
+                  editId ? "🔄 作品を更新" : "🚀 作品を投稿"
                 )}
               </button>
             </div>
@@ -383,4 +452,13 @@ export default function ArtworkUploadPage() {
     </div>
   );
 }
+
+export default function ArtworkUploadPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-900"><div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-500"></div></div>}>
+      <ArtworkForm />
+    </Suspense>
+  );
+}
+
 

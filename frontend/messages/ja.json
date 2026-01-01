@@ -12,8 +12,9 @@
     "streamingDesc": "リアルタイムで創作過程を配信",
     "marketplace": "マーケットプレイス",
     "marketplaceDesc": "作品販売で収益化を実現",
-    "gamification": "ゲーミフィケーション",
     "gamificationDesc": "EXP獲得でレベルアップ",
+    "weeklyChallenge": "今週のお題",
+    "monthlyChallenge": "今月のお題",
     "startNow": "今すぐ始める"
   },
   "common": {
