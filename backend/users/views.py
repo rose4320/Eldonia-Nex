@@ -11,19 +11,40 @@ from .models import Plan, User
 @method_decorator(csrf_exempt, name="dispatch")
 class RegisterUserView(View):
     def post(self, request: HttpRequest):
+        import uuid as uuid_module
         try:
             data = json.loads(request.body)
-            username = data.get("username")
-            password = data.get("password")
             email = data.get("email")
+            password = data.get("password")
+            
+            # Validation
+            if not email or not password:
+                return JsonResponse({"error": "Email and password are required"}, status=400)
+            
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({"error": "Email already registered"}, status=400)
+            
+            # Auto-generate username from email
+            base_username = email.split('@')[0][:20]
+            username = f"{base_username}_{str(uuid_module.uuid4())[:8]}"
+            
+            # Ensure username is unique
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}_{str(uuid_module.uuid4())[:8]}"
+            
             plan = data.get("plan", "free")
             plan_obj = Plan.objects.filter(slug=plan).first()
             if not plan_obj:
-                return JsonResponse({"error": "Invalid plan"}, status=400)
+                # Default to free plan if specified plan not found
+                plan_obj = Plan.objects.filter(slug="free").first()
+                if not plan_obj:
+                    return JsonResponse({"error": "No plan available"}, status=400)
+            
             user = User.objects.create_user(username=username, password=password, email=email)
             user.subscription = plan_obj.slug
             user.save()
-            return JsonResponse({"status": "ok", "user_id": user.id, "plan": plan_obj.slug})
+            return JsonResponse({"status": "ok", "user_id": user.id, "plan": plan_obj.slug, "username": username})
         except (ValueError, KeyError, TypeError) as e:
             return JsonResponse({"error": str(e)}, status=400)
 

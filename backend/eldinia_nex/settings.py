@@ -116,7 +116,7 @@ elif DATABASE_TYPE == "postgresql":
             "PASSWORD": os.getenv("POSTGRES_PASSWORD", "postgres123"),
             "HOST": os.getenv("POSTGRES_HOST", "localhost"),
             # docker-compose.dev.yml maps host 5433 -> container 5432 for dev
-            "PORT": os.getenv("POSTGRES_PORT", "5433"),
+            "PORT": os.getenv("POSTGRES_PORT", "5434"),
             "OPTIONS": {
                 "connect_timeout": 10,
             },
