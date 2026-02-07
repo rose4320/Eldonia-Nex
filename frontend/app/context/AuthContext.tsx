@@ -51,43 +51,86 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   // ページロード時に認証状態確認（トークンで検証）
+  // SSR時は実行しない
   useEffect(() => {
+    // SSR時はスキップ
+    if (typeof window === 'undefined') {
+      setLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+
     const fetchUser = async () => {
-      setLoading(true);
       try {
         const authToken = localStorage.getItem("authToken");
 
-        if (authToken) {
-          // トークンが存在する場合、バックエンドで検証
-          const response = await fetch(`${getApiBaseUrl()}/users/me/`, {
-            headers: {
-              'Authorization': `Token ${authToken}`,
-            },
-          });
-
-          if (response.ok) {
-            const userData = await response.json();
-            setUser(userData);
-            localStorage.setItem("eldonia_user", JSON.stringify(userData));
-          } else {
-            // トークンが無効な場合はクリア
-            localStorage.removeItem("authToken");
-            localStorage.removeItem("eldonia_user");
+        if (!authToken) {
+          if (isMounted) {
             setUser(null);
+            setLoading(false);
           }
+          return;
+        }
+
+        // トークンが存在する場合、バックエンドで検証
+        const apiUrl = getApiBaseUrl();
+        if (!apiUrl) {
+          // SSR時はスキップ
+          if (isMounted) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        const response = await fetch(`${apiUrl}/users/me/`, {
+          headers: {
+            'Authorization': `Token ${authToken}`,
+          },
+        });
+
+        if (!isMounted) return;
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+          localStorage.setItem("eldonia_user", JSON.stringify(userData));
         } else {
+          // トークンが無効な場合はクリア
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("eldonia_user");
           setUser(null);
         }
       } catch (error) {
         console.error('Auth check error:', error);
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("eldonia_user");
-        setUser(null);
+        if (isMounted) {
+          // ネットワークエラーの場合でもローカルストレージからユーザー情報を復元
+          try {
+            const storedUser = localStorage.getItem("eldonia_user");
+            if (storedUser) {
+              setUser(JSON.parse(storedUser));
+            } else {
+              localStorage.removeItem("authToken");
+              setUser(null);
+            }
+          } catch {
+            localStorage.removeItem("authToken");
+            localStorage.removeItem("eldonia_user");
+            setUser(null);
+          }
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
+
     fetchUser();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // ログイン（バックエンドAPI統合）

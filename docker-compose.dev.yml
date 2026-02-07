@@ -13,7 +13,7 @@ services:
       POSTGRES_PASSWORD: eldonia_pass
       POSTGRES_HOST_AUTH_METHOD: trust # 開発環境用: trust認証
     ports:
-      - "5433:5432" # 本番用と競合を避けるため5433ポート
+      - "5434:5432" # 本番用、開発用(5433)と競合を避けるため5434ポート
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
       - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
