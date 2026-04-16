@@ -11,6 +11,7 @@ type FileCardProps = {
   onRename: (newName: string) => void;
   onDragStart?: (file: any) => void;
   onDrop?: (file: any) => void;
+  draggable?: boolean;
 };
 function FileCard(props: FileCardProps) {
   const { file, onDelete, onRename } = props;

@@ -1,278 +1,492 @@
 @import "tailwindcss";
 
-/* UI/UX設計書準拠：CSS変数定義 */
+/* ============================================================
+   Eldonia-Nex Design System
+   ロゴ：黒地に金の魔法陣 + ENモノグラム
+   テーマ：ダーク・ファンタジー × ゴールドラグジュアリー
+   ============================================================ */
+
 @layer base {
   :root {
-    /* フォントファミリー（UI/UX設計書準拠） */
-    --font-brand: var(--font-pt-serif);
+    /* ── フォント ── */
+    --font-brand:   var(--font-pt-serif);
     --font-primary: var(--font-noto-sans-jp), var(--font-inter), sans-serif;
-    --font-code: var(--font-jetbrains-mono), "Fira Code", monospace;
+    --font-code:    var(--font-jetbrains-mono), "Fira Code", monospace;
 
-    /* プライマリカラー */
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #a5b4fc;
+    /* ── ゴールドパレット（ロゴ準拠） ── */
+    --gold-100: #FEF9E7;
+    --gold-200: #FDE68A;
+    --gold-300: #FCD34D;
+    --gold-400: #FBBF24;
+    --gold-500: #F59E0B;
+    --gold-600: #D97706;
+    --gold-700: #B45309;
+    --gold-800: #92400E;
 
-    /* セカンダリカラー */
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
-    --info: #3b82f6;
+    /* ── ブランドグラデーション（ロゴの金色） ── */
+    --brand-gradient:        linear-gradient(180deg, #FCD34D 0%, #F97316 100%);
+    --brand-gradient-h:      linear-gradient(90deg,  #FCD34D 0%, #F97316 100%);
+    --brand-gradient-shine:  linear-gradient(135deg, #FEF9E7 0%, #FCD34D 30%, #F97316 70%, #B45309 100%);
+    --brand-gradient-subtle: linear-gradient(180deg, rgba(252,211,77,.15) 0%, rgba(249,115,22,.08) 100%);
 
-    /* ダークモード（デフォルトテーマ） */
-    --background: #111827;
-    --foreground: #f9fafb;
-    --bg-primary: #111827;
-    --bg-secondary: #1f2937;
-    --surface: #374151;
-    --text-primary: #f9fafb;
-    --text-secondary: #d1d5db;
-    --border: #4b5563;
+    /* ── 背景色（純黒に近いダーク） ── */
+    --bg-void:      #080808;
+    --bg-deep:      #0C0C0E;
+    --bg-primary:   #111114;
+    --bg-secondary: #18181C;
+    --bg-elevated:  #1E1E24;
+    --bg-card:      #22222A;
+    --bg-hover:     #2A2A34;
 
-    /* ブランドグラデーション（必須） */
-    --brand-gradient: linear-gradient(180deg, #fcd34d 0%, #f97316 100%);
+    /* ── テキスト ── */
+    --text-primary:   #F5F0E8;
+    --text-secondary: #C9C0B0;
+    --text-muted:     #7A7060;
+    --text-disabled:  #3D3830;
 
-    /* 固定サイジング */
-    --header-height: 88px;
-    --footer-min-height: 320px;
-    --container-max-width: 1200px;
-    --border-radius: 8px;
+    /* ── ボーダー（金のルーン文字風） ── */
+    --border-subtle:  rgba(252, 211, 77, 0.08);
+    --border-default: rgba(252, 211, 77, 0.18);
+    --border-strong:  rgba(252, 211, 77, 0.35);
+    --border-glow:    rgba(252, 211, 77, 0.6);
+
+    /* ── グロー・シャドウ ── */
+    --glow-gold:    0 0 20px rgba(252, 211, 77, 0.25), 0 0 60px rgba(249, 115, 22, 0.15);
+    --glow-gold-sm: 0 0 8px  rgba(252, 211, 77, 0.3);
+    --glow-gold-lg: 0 0 40px rgba(252, 211, 77, 0.2), 0 0 100px rgba(249, 115, 22, 0.1);
+    --shadow-card:  0 4px 24px rgba(0,0,0,.6), 0 1px 4px rgba(0,0,0,.8);
+    --shadow-float: 0 20px 60px rgba(0,0,0,.7), 0 4px 16px rgba(0,0,0,.8);
+
+    /* ── レイアウト ── */
+    --header-height:        88px;
+    --footer-min-height:    320px;
+    --container-max-width:  1280px;
+    --radius-sm:   6px;
+    --radius-md:   12px;
+    --radius-lg:   20px;
+    --radius-xl:   32px;
+
+    /* ── アクセントカラー ── */
+    --accent-purple: #8B5CF6;
+    --accent-blue:   #3B82F6;
+    --accent-green:  #10B981;
+    --accent-red:    #EF4444;
+
+    /* ── レガシー互換 ── */
+    --primary:       #6366F1;
+    --background:    var(--bg-primary);
+    --foreground:    var(--text-primary);
+    --border:        var(--border-default);
+    --surface:       var(--bg-elevated);
     --exp-bar-height: 6px;
   }
 }
 
-/* デフォルトフォント設定 */
+/* ── ベーススタイル ── */
 @layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
-    font-family: var(--font-noto-sans-jp), var(--font-inter), sans-serif;
+    background:  var(--bg-primary);
+    color:       var(--text-primary);
+    font-family: var(--font-primary);
+    line-height: 1.6;
+  }
+
+  /* スクロールバーカスタマイズ */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track  { background: var(--bg-deep); }
+  ::-webkit-scrollbar-thumb  {
+    background: linear-gradient(180deg, #FCD34D, #F97316);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #FCD34D; }
+
+  /* 選択テキスト */
+  ::selection {
+    background: rgba(252, 211, 77, 0.25);
+    color: #FCD34D;
   }
 }
 
-/* UI/UX設計書準拠：カスタムコンポーネント */
+/* ── テーマ定義 ── */
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans:  var(--font-noto-sans-jp), var(--font-inter);
+  --font-mono:  var(--font-jetbrains-mono);
+  --font-brand: var(--font-pt-serif);
+}
+
+/* ============================================================
+   コンポーネントスタイル
+   ============================================================ */
 @layer components {
-  /* ブランドテキスト専用スタイル（必須） */
+
+  /* ── ブランドテキスト ── */
   .brand-title {
-    font-family: var(--font-pt-serif), "PT Serif", serif;
-    font-size: 32px;
-    font-weight: 700;
-    background: var(--brand-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin: 0;
-    line-height: 1.2;
+    font-family: var(--font-pt-serif), "PT Serif", serif !important;
+    font-weight: 700 !important;
+    background: var(--brand-gradient) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin: 0 !important;
+    line-height: 1.15 !important;
   }
-
   .brand-subtitle {
-    font-family: var(--font-pt-serif), "PT Serif", serif;
-    font-size: 24px;
-    font-weight: 400;
+    font-family: var(--font-pt-serif), "PT Serif", serif !important;
+    font-weight: 400 !important;
+    background: var(--brand-gradient) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  /* ── ゴールドグロー付きテキスト ── */
+  .gold-text {
+    background: var(--brand-gradient-shine);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 8px rgba(252,211,77,.4));
+  }
+  .gold-text-subtle {
     background: var(--brand-gradient);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin: 0;
-    line-height: 1.2;
   }
 
-  /* ヘッダー専用スタイル（フル幅対応） */
+  /* ── カードスタイル ── */
+  .card-dark {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease;
+  }
+  .card-dark:hover {
+    border-color: var(--border-default);
+    box-shadow: var(--shadow-card), var(--glow-gold-sm);
+    transform: translateY(-2px);
+  }
+  .card-gold {
+    background: linear-gradient(135deg, rgba(252,211,77,.05) 0%, rgba(249,115,22,.03) 100%);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    transition: all .3s ease;
+  }
+  .card-gold:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-float), var(--glow-gold);
+    background: linear-gradient(135deg, rgba(252,211,77,.1) 0%, rgba(249,115,22,.06) 100%);
+    transform: translateY(-4px);
+  }
+
+  /* ── ボタン ── */
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .75rem 2rem;
+    background: var(--brand-gradient);
+    color: #111;
+    font-weight: 700;
+    font-family: var(--font-pt-serif), serif;
+    letter-spacing: .04em;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: all .3s ease;
+    box-shadow: 0 4px 16px rgba(249,115,22,.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-gold::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.25), transparent);
+    transition: left .4s ease;
+  }
+  .btn-gold:hover::before { left: 100%; }
+  .btn-gold:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(249,115,22,.5), var(--glow-gold);
+  }
+
+  .btn-outline-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .75rem 2rem;
+    background: transparent;
+    color: #FCD34D;
+    font-weight: 600;
+    font-family: var(--font-pt-serif), serif;
+    letter-spacing: .04em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    cursor: pointer;
+    transition: all .3s ease;
+  }
+  .btn-outline-gold:hover {
+    background: rgba(252,211,77,.08);
+    border-color: var(--border-glow);
+    box-shadow: var(--glow-gold-sm);
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    padding: .6rem 1.5rem;
+    background: rgba(255,255,255,.04);
+    color: var(--text-secondary);
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all .25s ease;
+  }
+  .btn-ghost:hover {
+    background: rgba(255,255,255,.08);
+    color: var(--text-primary);
+    border-color: var(--border-default);
+  }
+
+  /* ── 魔法陣デコレーション ── */
+  .magic-circle {
+    position: relative;
+  }
+  .magic-circle::before,
+  .magic-circle::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .magic-circle::before {
+    inset: -2px;
+    border: 1px solid var(--border-default);
+    animation: rotateSlow 20s linear infinite;
+  }
+  .magic-circle::after {
+    inset: -6px;
+    border: 1px solid var(--border-subtle);
+    animation: rotateSlow 40s linear infinite reverse;
+  }
+
+  /* ── ヘッダーコンテナ ── */
   .header-container {
     display: grid;
     grid-template-columns: 30% 40% 30%;
     align-items: center;
     gap: 24px;
     min-height: var(--header-height);
+    width: 90%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 16px 0;
+  }
+
+  /* ── EXPバー ── */
+  .exp-bar {
     width: 100%;
-    max-width: none;
-    margin: 0;
-    padding: 16px 24px;
+    height: var(--exp-bar-height);
+    background: rgba(252,211,77,.1);
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(252,211,77,.15);
+  }
+  .exp-bar-fill {
+    height: 100%;
+    background: var(--brand-gradient-h);
+    border-radius: 3px;
+    transition: width .5s ease-out;
+    box-shadow: 0 0 6px rgba(252,211,77,.4);
   }
 
-  /* ブランドタイポグラフィ強化（必須スタイル） */
-  .brand-title {
-    font-family: var(--font-pt-serif), "PT Serif", serif !important;
-    font-size: 32px !important;
-    font-weight: 700 !important;
-    background: linear-gradient(180deg, #fcd34d 0%, #f97316 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    margin: 0 !important;
-    line-height: 1.2 !important;
-    text-shadow: 0 2px 4px rgba(252, 211, 77, 0.3);
+  /* ── セクション区切り（ルーン風ライン） ── */
+  .rune-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+  }
+  .rune-divider::before,
+  .rune-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-strong), transparent);
   }
 
-  .brand-subtitle {
-    font-family: var(--font-pt-serif), "PT Serif", serif !important;
-    font-size: 24px !important;
-    font-weight: 400 !important;
-    background: linear-gradient(180deg, #fcd34d 0%, #f97316 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    background-clip: text !important;
-    margin: 0 !important;
-    line-height: 1.2 !important;
+  /* ── グロウバッジ ── */
+  .badge-gold {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    padding: .25rem .75rem;
+    background: rgba(252,211,77,.12);
+    border: 1px solid var(--border-default);
+    border-radius: 999px;
+    color: #FCD34D;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
   }
-  @media (max-width: 767px) {
-    .header-container {
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-    }
+
+  /* ── 入力フィールド ── */
+  .input-dark {
+    width: 100%;
+    padding: .75rem 1rem;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    font-size: .875rem;
+    transition: border-color .25s ease, box-shadow .25s ease;
+    outline: none;
+  }
+  .input-dark::placeholder { color: var(--text-muted); }
+  .input-dark:focus {
+    border-color: var(--border-strong);
+    box-shadow: var(--glow-gold-sm);
+  }
+
+  /* ── グリッドパターン背景 ── */
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(rgba(252,211,77,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(252,211,77,.03) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .bg-radial-gold {
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(252,211,77,.12) 0%, transparent 70%);
+  }
+  .bg-radial-subtle {
+    background: radial-gradient(ellipse 60% 40% at 50% 50%, rgba(249,115,22,.06) 0%, transparent 70%);
+  }
+
+  /* ── パーティクル風の星 ── */
+  .star-field {
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, rgba(252,211,77,.6) 0%, transparent 0%),
+      radial-gradient(1px 1px at 30% 60%, rgba(252,211,77,.4) 0%, transparent 0%),
+      radial-gradient(1px 1px at 55% 35%, rgba(252,211,77,.5) 0%, transparent 0%),
+      radial-gradient(1px 1px at 75% 80%, rgba(252,211,77,.3) 0%, transparent 0%),
+      radial-gradient(1px 1px at 90% 15%, rgba(252,211,77,.5) 0%, transparent 0%),
+      radial-gradient(1.5px 1.5px at 20% 85%, rgba(249,115,22,.5) 0%, transparent 0%),
+      radial-gradient(1.5px 1.5px at 65% 10%, rgba(249,115,22,.4) 0%, transparent 0%),
+      radial-gradient(1px 1px at 85% 50%, rgba(252,211,77,.3) 0%, transparent 0%);
   }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-noto-sans-jp), var(--font-inter);
-  --font-mono: var(--font-jetbrains-mono);
-  --font-brand: var(--font-pt-serif);
+/* ============================================================
+   アニメーション
+   ============================================================ */
+@keyframes rotateSlow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes floatY {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+@keyframes glowPulse {
+  0%, 100% { opacity: .6; filter: drop-shadow(0 0 6px rgba(252,211,77,.4)); }
+  50%       { opacity: 1;  filter: drop-shadow(0 0 16px rgba(252,211,77,.8)); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(32px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(.85); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(30px, -40px) scale(1.05); }
+  66%       { transform: translate(-20px, 20px) scale(.95); }
+}
+@keyframes runeRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0); }
+  50%       { opacity: 1; transform: scale(1); }
+}
+@keyframes gradientShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes counterUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ダークモード優先設定 */
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+/* ── ユーティリティ ── */
+.animate-float         { animation: floatY 4s ease-in-out infinite; }
+.animate-glow-pulse    { animation: glowPulse 2.5s ease-in-out infinite; }
+.animate-fade-in-up    { animation: fadeInUp .6s ease-out forwards; }
+.animate-fade-in-left  { animation: fadeInLeft .6s ease-out forwards; }
+.animate-fade-in-right { animation: fadeInRight .6s ease-out forwards; }
+.animate-scale-in      { animation: scaleIn .5s ease-out forwards; }
+.animate-rune-rotate   { animation: runeRotate 30s linear infinite; }
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
 }
 
-/* ブランドテキスト専用スタイル（必須） */
-.brand-title {
-  font-family: var(--font-brand);
-  font-size: 32px;
-  font-weight: 700;
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.brand-subtitle {
-  font-family: var(--font-brand);
-  font-size: 24px;
-  font-weight: 400;
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin: 0;
-  line-height: 1.2;
-}
-
-/* EXPバー専用スタイル */
-.exp-bar {
-  width: 100%;
-  height: var(--exp-bar-height);
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: calc(var(--exp-bar-height) / 2);
-  overflow: hidden;
-}
-
-.exp-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  border-radius: calc(var(--exp-bar-height) / 2);
-  transition: width 0.3s ease;
-}
-
-/* ヘッダー専用スタイル */
-.header-container {
-  display: grid;
-  grid-template-columns: 30% 40% 30%;
-  align-items: center;
-  gap: 24px;
-  min-height: var(--header-height);
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: 16px 24px;
-}
-
-/* EXPバー専用スタイル（改良版） */
-.exp-bar {
-  width: 100%;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid rgba(99, 102, 241, 0.2);
-}
-
-.exp-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #6366f1, #8b5cf6, #3b82f6);
-  border-radius: 4px;
-  transition: width 0.5s ease-out;
-  box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
-}
-
-/* レスポンシブ対応 */
+/* ── レスポンシブ ── */
 @media (max-width: 1023px) {
   .header-container {
     grid-template-columns: 1fr auto;
     gap: 16px;
-    padding: 12px 20px;
   }
 }
-
 @media (max-width: 767px) {
   .header-container {
     grid-template-columns: 1fr auto;
     gap: 12px;
-    padding: 8px 16px;
     min-height: 72px;
   }
-
-  .brand-title {
-    font-size: 24px !important;
-  }
-
-  .brand-subtitle {
-    font-size: 18px !important;
-  }
-}
-
-/* ナビゲーション強化 */
-.nav-item-enhanced {
-  font-family: var(--font-inter), Inter, sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-  position: relative;
-  padding: 8px 0;
-}
-
-.nav-item-enhanced:hover {
-  transform: translateY(-1px);
-}
-
-.nav-item-enhanced::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #8b5cf6, #3b82f6);
-  transition: width 0.3s ease;
-}
-
-.nav-item-enhanced:hover::after {
-  width: 100%;
-}
-
-/* タイポグラフィー統一 */
-.typography-primary {
-  font-family: var(--font-noto-sans-jp), "Noto Sans JP", var(--font-inter),
-    Inter, sans-serif;
-}
-
-.typography-brand {
-  font-family: var(--font-pt-serif), "PT Serif", serif;
-}
-
-.typography-code {
-  font-family: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  .brand-title  { font-size: 24px !important; }
+  .brand-subtitle { font-size: 18px !important; }
 }

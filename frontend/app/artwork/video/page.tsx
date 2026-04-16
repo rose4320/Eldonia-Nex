@@ -334,4 +334,8 @@ const VideoDetailPage: React.FC = () => {
   )
 }
 
-export default VideoDetailPage
+const __Inner_page = VideoDetailPage
+import { Suspense } from 'react'
+export default function Page() {
+  return <Suspense><__Inner_page /></Suspense>
+}
