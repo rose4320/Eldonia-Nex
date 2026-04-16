@@ -373,4 +373,8 @@ const NovelDetailPage: React.FC = () => {
   )
 }
 
-export default NovelDetailPage
+const __Inner_page = NovelDetailPage
+import { Suspense } from 'react'
+export default function Page() {
+  return <Suspense><__Inner_page /></Suspense>
+}

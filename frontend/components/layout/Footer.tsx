@@ -3,154 +3,364 @@
 import Image from 'next/image'
 import React from 'react'
 
-// UI/UX設計書準拠：フッターコンポーネント
-interface FooterProps {
-  showTechStack?: boolean
-  showSiteMap?: boolean
-  showPartners?: boolean
-  compactMode?: boolean
-}
+/* ============================================================
+   Eldonia-Nex Footer — 黒×金ファンタジーデザイン
+   ============================================================ */
 
-const Footer: React.FC<FooterProps> = ({
-  showTechStack = true,
-  showSiteMap = true,
-  showPartners = true,
-  compactMode = false
-}) => {
-  // TODO: compactMode機能は将来実装予定
-  console.log('compactMode:', compactMode); // 一時的な使用
-  
+const SITE_LINKS = [
+  { label: 'ギャラリー',   href: '/gallery' },
+  { label: 'コミュニティ', href: '/community' },
+  { label: 'イベント',     href: '/events' },
+  { label: 'マーケット',   href: '/marketplace' },
+  { label: 'お仕事',       href: '/jobs' },
+  { label: 'ライブ配信',   href: '/streaming' },
+]
+
+const SUPPORT_LINKS = [
+  { label: 'ヘルプセンター', href: '/help' },
+  { label: 'よくある質問',   href: '/faq' },
+  { label: 'お問い合わせ',   href: '/contact' },
+  { label: '利用規約',       href: '/terms' },
+  { label: 'プライバシー',   href: '/privacy' },
+  { label: 'ガイドライン',   href: '/guidelines' },
+]
+
+const SOCIAL = [
+  { icon: '𝕏',  label: 'X (Twitter)', href: 'https://twitter.com',   color: '#F5F0E8' },
+  { icon: 'in', label: 'Discord',      href: 'https://discord.com',   color: '#5865F2' },
+  { icon: '▶',  label: 'YouTube',      href: 'https://youtube.com',   color: '#FF0000' },
+  { icon: '📷', label: 'Instagram',    href: 'https://instagram.com', color: '#E1306C' },
+]
+
+const PLANS = ['FREE', 'STANDARD', 'PRO', 'BUSINESS']
+
+const Footer: React.FC = () => {
   return (
-    <footer className="bg-linear-to-r from-gray-900 to-purple-900 text-white py-16">
-      <div className="container mx-auto px-6 max-w-7xl">
-        {/* 第一段：ブランド・SNS */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <Image 
-              src="/assets/logo/eldonia-nex-logo.png" 
-              alt="Eldonia-Nex Logo" 
-              width={48}
-              height={48}
-              className="object-contain"
-            />
-            <h4 className="brand-title text-4xl">Eldonia-Nex</h4>
+    <footer
+      className="relative overflow-hidden"
+      style={{ background: '#080808', borderTop: '1px solid rgba(252,211,77,.12)' }}
+    >
+      {/* 上部グラデーション境界 */}
+      <div
+        className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: 'linear-gradient(90deg, transparent, rgba(252,211,77,.4), rgba(249,115,22,.3), transparent)' }}
+      />
+
+      {/* 背景装飾: 魔法陣リング */}
+      <div
+        className="absolute pointer-events-none"
+        style={{
+          width: '600px', height: '600px',
+          bottom: '-200px', left: '50%',
+          transform: 'translateX(-50%)',
+          opacity: .025,
+        }}
+      >
+        {[260, 200, 140, 80].map((r, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full border"
+            style={{
+              width: `${r * 2}px`, height: `${r * 2}px`,
+              top: '50%', left: '50%',
+              transform: `translate(-50%, -50%)`,
+              borderColor: '#FCD34D',
+              animation: `runeRotate ${25 + i * 7}s linear infinite ${i % 2 === 0 ? '' : 'reverse'}`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* グリッドパターン */}
+      <div className="absolute inset-0 bg-grid-pattern opacity-20 pointer-events-none" />
+
+      {/* ── メインコンテンツ ── */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-16 pb-8">
+
+        {/* ── 第1段: ブランド + ニュースレター ── */}
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 mb-14">
+          {/* ブランド */}
+          <div className="flex flex-col gap-4 max-w-sm">
+            <div className="flex items-center gap-3">
+              <div
+                className="w-12 h-12 relative shrink-0"
+                style={{ filter: 'drop-shadow(0 0 12px rgba(252,211,77,.5))' }}
+              >
+                <Image
+                  src="/assets/logo/eldonia-nex-logo.png"
+                  alt="Eldonia-Nex"
+                  fill
+                  sizes="48px"
+                  className="object-contain"
+                />
+              </div>
+              <span
+                className="text-3xl font-bold"
+                style={{
+                  fontFamily: 'var(--font-pt-serif), serif',
+                  background: 'linear-gradient(180deg, #FCD34D 0%, #F97316 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  filter: 'drop-shadow(0 2px 6px rgba(252,211,77,.3))',
+                }}
+              >
+                Eldonia-Nex
+              </span>
+            </div>
+            <p
+              className="text-sm leading-relaxed"
+              style={{
+                color: 'rgba(200,190,175,.55)',
+                fontFamily: 'var(--font-noto-sans-jp), sans-serif',
+              }}
+            >
+              すべてのクリエイターが自由に表現し、<br />
+              正当な評価と収益を得られる世界の実現
+            </p>
+            {/* SNS */}
+            <div className="flex items-center gap-3 mt-1">
+              {SOCIAL.map(s => (
+                <a
+                  key={s.label}
+                  href={s.href}
+                  aria-label={s.label}
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 hover:scale-110"
+                  style={{
+                    background: 'rgba(255,255,255,.04)',
+                    border: '1px solid rgba(252,211,77,.1)',
+                    color: 'rgba(200,180,140,.6)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'rgba(252,211,77,.3)'
+                    e.currentTarget.style.color = s.color
+                    e.currentTarget.style.boxShadow = `0 4px 12px ${s.color}30`
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'rgba(252,211,77,.1)'
+                    e.currentTarget.style.color = 'rgba(200,180,140,.6)'
+                    e.currentTarget.style.boxShadow = 'none'
+                  }}
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
           </div>
-          
-          {/* SNSリンク */}
-          <div className="flex items-center justify-center space-x-6">
-            <a href="https://facebook.com" className="text-blue-400 hover:text-blue-300 transition-colors text-2xl" aria-label="Facebook">
-              📘
-            </a>
-            <a href="https://twitter.com" className="text-blue-400 hover:text-blue-300 transition-colors text-2xl" aria-label="Twitter">
-              🐦
-            </a>
-            <a href="https://instagram.com" className="text-pink-400 hover:text-pink-300 transition-colors text-2xl" aria-label="Instagram">
-              📷
-            </a>
-            <a href="https://youtube.com" className="text-red-400 hover:text-red-300 transition-colors text-2xl" aria-label="YouTube">
-              📺
-            </a>
+
+          {/* ニュースレター */}
+          <div
+            className="rounded-2xl p-6 w-full lg:max-w-md"
+            style={{
+              background: 'linear-gradient(135deg, rgba(252,211,77,.05) 0%, rgba(249,115,22,.03) 100%)',
+              border: '1px solid rgba(252,211,77,.15)',
+            }}
+          >
+            <div
+              className="text-sm font-semibold tracking-[.12em] uppercase mb-1"
+              style={{ fontFamily: 'var(--font-pt-serif), serif', color: 'rgba(252,211,77,.7)' }}
+            >
+              Newsletter
+            </div>
+            <p
+              className="text-xs mb-4"
+              style={{ color: 'rgba(200,180,140,.5)', fontFamily: 'var(--font-noto-sans-jp), sans-serif' }}
+            >
+              最新のクリエイター情報・イベントをお届けします
+            </p>
+            <div className="flex gap-2">
+              <input
+                type="email"
+                placeholder="your@email.com"
+                className="flex-1 px-4 py-2.5 rounded-lg text-sm outline-none transition-all duration-300"
+                style={{
+                  background: 'rgba(255,255,255,.05)',
+                  border: '1px solid rgba(252,211,77,.12)',
+                  color: 'rgba(245,240,232,.8)',
+                  fontFamily: 'var(--font-pt-serif), serif',
+                }}
+                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(252,211,77,.35)' }}
+                onBlur={e  => { e.currentTarget.style.borderColor = 'rgba(252,211,77,.12)' }}
+              />
+              <button
+                className="px-4 py-2.5 rounded-lg text-xs font-bold transition-all duration-300 hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, #FCD34D, #F97316)',
+                  color: '#111',
+                  fontFamily: 'var(--font-pt-serif), serif',
+                  letterSpacing: '.04em',
+                  boxShadow: '0 2px 10px rgba(249,115,22,.3)',
+                }}
+              >
+                登録
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* 第二段：3カラム情報 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 ml-0 md:ml-48">
-          {/* 技術スタック */}
-          {showTechStack && (
-            <div className="px-4 py-2 text-center md:text-left lg:relative">
-              <h5 className="text-lg font-bold mb-4 text-yellow-400 lg:-ml-48">🛠️ 技術スタック</h5>
-              <div className="space-y-2 text-sm text-gray-300 inline-block md:block max-w-xs md:transform md:-translate-x-48 lg:relative lg:left-12 lg:text-left lg:transform-none">
-                <div>
-                  <h6 className="font-semibold text-white mb-2">Frontend:</h6>
-                  <div className="space-y-1">
-                    <div>⚛️ React 18.3+</div>
-                    <div>⚡ Next.js 15.0+</div>
-                    <div>🎨 TypeScript 5.7+</div>
-                    <div>💨 Tailwind CSS</div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <h6 className="font-semibold text-white mb-2">Backend:</h6>
-                  <div className="space-y-1">
-                    <div>🟢 Node.js 22 LTS</div>
-                    <div>� Django 5.1+</div>
-                    <div>�🐘 PostgreSQL 17+</div>
-                    <div>⚡ Redis 7.4+</div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <h6 className="font-semibold text-white mb-2">Infrastructure:</h6>
-                  <div className="space-y-1">
-                    <div>☁️ AWS/Azure</div>
-                    <div>🐳 Docker 27.3+</div>
-                    <div>♾️ Kubernetes</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+        {/* ── 区切り線 ── */}
+        <div
+          className="mb-12"
+          style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(252,211,77,.15), transparent)' }}
+        />
+
+        {/* ── 第2段: リンク3カラム ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
 
           {/* サイトマップ */}
-          {showSiteMap && (
-            <div className="px-6 py-2 text-center md:text-left lg:relative">
-              <h5 className="text-lg font-bold mb-4 text-blue-400 lg:-ml-48">🗺️ サポート</h5>
-              <div className="space-y-2 text-sm text-gray-300 inline-block md:block max-w-xs md:transform md:-translate-x-48 lg:relative lg:left-12 lg:text-left lg:transform-none">
-                  <div className="space-y-1">
-                    <a href="/contact" className="block hover:text-purple-400 transition-colors">� お問い合わせ</a>
-                    <a href="/faq" className="block hover:text-purple-400 transition-colors">❓ よくある質問</a>
-                    <a href="/help" className="block hover:text-purple-400 transition-colors">� ヘルプセンター</a>
-                    <a href="/tutorials" className="block hover:text-purple-400 transition-colors">🎓 チュートリアル</a>
-                    <a href="/community-support" className="block hover:text-purple-400 transition-colors">� コミュニティサポート</a>
-                    <a href="/feedback" className="block hover:text-purple-400 transition-colors">� フィードバック</a>
-                    <a href="/terms" className="block hover:text-purple-400 transition-colors">� 利用規約</a>
-                    <a href="/privacy" className="block hover:text-purple-400 transition-colors">� プライバシーポリシー</a>
-                    <a href="/guidelines" className="block hover:text-purple-400 transition-colors">� ガイドライン</a>
-                    <a href="/api-docs" className="block hover:text-purple-400 transition-colors">⚡ API ドキュメント</a>
-                  </div>
-              </div>
-            </div>
-          )}
+          <div>
+            <h5
+              className="text-xs font-bold tracking-[.2em] uppercase mb-4"
+              style={{
+                fontFamily: 'var(--font-pt-serif), serif',
+                background: 'linear-gradient(180deg, #FCD34D, #F97316)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Platform
+            </h5>
+            <ul className="space-y-2.5">
+              {SITE_LINKS.map(l => (
+                <li key={l.label}>
+                  <a
+                    href={l.href}
+                    className="text-sm transition-all duration-200"
+                    style={{ color: 'rgba(200,180,140,.5)', fontFamily: 'var(--font-noto-sans-jp), sans-serif' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#FCD34D'; e.currentTarget.style.paddingLeft = '4px' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,180,140,.5)'; e.currentTarget.style.paddingLeft = '0' }}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
-          {/* 協力パートナー */}
-          {showPartners && (
-            <div className="px-6 py-2 text-center md:text-left lg:relative">
-              <h5 className="text-lg font-bold mb-4 text-green-400 lg:-ml-48">🤝 協力パートナー</h5>
-              <div className="space-y-2 text-sm text-gray-300 inline-block md:block max-w-xs md:transform md:-translate-x-48 lg:relative lg:left-12 lg:text-left lg:transform-none">
-                <div>
-                  <h6 className="font-semibold text-white mb-2">企業パートナー:</h6>
-                  <div className="space-y-1">
-                    <div>🏢 テック株式会社</div>
-                    <div>🎨 クリエイト合同会社</div>
-                    <div>💻 デザインスタジオZ</div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <h6 className="font-semibold text-white mb-2">個人開発者:</h6>
-                  <div className="space-y-1">
-                    <div>👤 田中 太郎 (UI/UX)</div>
-                    <div>👤 佐藤 花子 (Backend)</div>
-                    <div>👤 山田 次郎 (DevOps)</div>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <h6 className="font-semibold text-white mb-2">技術アドバイザー:</h6>
-                  <div className="space-y-1">
-                    <div>👤 鈴木 三郎 (AI/ML)</div>
-                    <div>👤 高橋 四子 (Security)</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* サポート */}
+          <div>
+            <h5
+              className="text-xs font-bold tracking-[.2em] uppercase mb-4"
+              style={{
+                fontFamily: 'var(--font-pt-serif), serif',
+                background: 'linear-gradient(180deg, #FCD34D, #F97316)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Support
+            </h5>
+            <ul className="space-y-2.5">
+              {SUPPORT_LINKS.map(l => (
+                <li key={l.label}>
+                  <a
+                    href={l.href}
+                    className="text-sm transition-all duration-200"
+                    style={{ color: 'rgba(200,180,140,.5)', fontFamily: 'var(--font-noto-sans-jp), sans-serif' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#FCD34D'; e.currentTarget.style.paddingLeft = '4px' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,180,140,.5)'; e.currentTarget.style.paddingLeft = '0' }}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* プラン */}
+          <div>
+            <h5
+              className="text-xs font-bold tracking-[.2em] uppercase mb-4"
+              style={{
+                fontFamily: 'var(--font-pt-serif), serif',
+                background: 'linear-gradient(180deg, #FCD34D, #F97316)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Plans
+            </h5>
+            <ul className="space-y-2.5">
+              {PLANS.map(p => (
+                <li key={p}>
+                  <a
+                    href="/pricing"
+                    className="text-sm font-semibold transition-all duration-200 flex items-center gap-2"
+                    style={{ color: 'rgba(200,180,140,.5)', fontFamily: 'var(--font-pt-serif), serif' }}
+                    onMouseEnter={e => { e.currentTarget.style.color = '#FCD34D' }}
+                    onMouseLeave={e => { e.currentTarget.style.color = 'rgba(200,180,140,.5)' }}
+                  >
+                    <span style={{ color: 'rgba(252,211,77,.3)' }}>✦</span> {p}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* 技術スタック */}
+          <div>
+            <h5
+              className="text-xs font-bold tracking-[.2em] uppercase mb-4"
+              style={{
+                fontFamily: 'var(--font-pt-serif), serif',
+                background: 'linear-gradient(180deg, #FCD34D, #F97316)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Tech Stack
+            </h5>
+            <ul className="space-y-2">
+              {[
+                ['⚛', 'React 19 / Next.js 16'],
+                ['🐍', 'Django 5.1'],
+                ['🐘', 'PostgreSQL 17'],
+                ['🐳', 'Docker'],
+              ].map(([icon, name]) => (
+                <li key={name} className="flex items-center gap-2 text-xs" style={{ color: 'rgba(200,180,140,.4)', fontFamily: 'var(--font-pt-serif), serif' }}>
+                  <span>{icon}</span>{name}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {/* コピーライト */}
-        <div className="text-center border-t border-gray-600 pt-8">
-          <p className="text-gray-400 mb-2">
+        {/* ── 区切り線 ── */}
+        <div
+          className="mb-8"
+          style={{ height: '1px', background: 'linear-gradient(90deg, transparent, rgba(252,211,77,.1), transparent)' }}
+        />
+
+        {/* ── 第3段: コピーライト ── */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p
+            className="text-xs"
+            style={{
+              color: 'rgba(200,180,140,.3)',
+              fontFamily: 'var(--font-pt-serif), serif',
+              letterSpacing: '.04em',
+            }}
+          >
             © 2025 Eldonia-Nex. All rights reserved.
           </p>
-          <p className="text-gray-500 text-sm">
-            Made with ❤️ by Creative Technology Team
+          <p
+            className="text-xs flex items-center gap-1.5"
+            style={{ color: 'rgba(200,180,140,.25)', fontFamily: 'var(--font-pt-serif), serif' }}
+          >
+            Made with
+            <span style={{ color: 'rgba(252,211,77,.4)', animation: 'glowPulse 3s ease-in-out infinite' }}>✦</span>
+            by Creative Technology Team
+          </p>
+          {/* ルーンテキスト装飾 */}
+          <p
+            className="text-xs tracking-[.3em]"
+            style={{ color: 'rgba(252,211,77,.12)', fontFamily: 'var(--font-pt-serif), serif' }}
+          >
+            ᛖᛚᛞᚩᚾᛁᚪ ᚾᛖᚷ
           </p>
         </div>
       </div>
