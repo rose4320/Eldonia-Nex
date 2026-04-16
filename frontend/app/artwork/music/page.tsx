@@ -379,4 +379,8 @@ const MusicDetailPage: React.FC = () => {
   )
 }
 
-export default MusicDetailPage
+const __Inner_page = MusicDetailPage
+import { Suspense } from 'react'
+export default function Page() {
+  return <Suspense><__Inner_page /></Suspense>
+}

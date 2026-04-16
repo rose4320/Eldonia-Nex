@@ -484,4 +484,9 @@ const ImageDetailPage: React.FC = () => {
   )
 }
 
-export default ImageDetailPage
+const __Inner_page = ImageDetailPage
+
+import { Suspense } from 'react'
+export default function Page() {
+  return <Suspense><__Inner_page /></Suspense>
+}
