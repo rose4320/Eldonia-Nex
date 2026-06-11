@@ -1,0 +1,35 @@
+name: Run Codex Subagent
+
+on:
+    workflow_dispatch:
+        inputs:
+            agent:
+                description: "Agent name (e.g. Explore)"
+                required: true
+                default: "Explore"
+            prompt:
+                description: "Prompt to send to Codex"
+                required: true
+            thoroughness:
+                description: "quick|medium|thorough"
+                required: false
+                default: "quick"
+
+jobs:
+    run-codex:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: "3.x"
+            - name: Run Codex subagent
+              env:
+                  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+              run: |
+                  python scripts/run_codex_subagent.py \
+                    --agent "${{ github.event.inputs.agent }}" \
+                    --prompt "${{ github.event.inputs.prompt }}" \
+                    --thoroughness "${{ github.event.inputs.thoroughness }}" \
+                    --output codex_result.txt
