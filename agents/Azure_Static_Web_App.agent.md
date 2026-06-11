@@ -13,3 +13,5 @@
 **出力**: `azure-static-web-apps` 用の `workflow` テンプレート、`az staticwebapp` コマンドの手順。
 
 **注意**: 実際にデプロイする前に GitHub Actions のシークレット（`AZURE_STATIC_WEB_APPS_API_TOKEN` 等）を用意してください。
+
+**推奨モデル**: OpenAI Codex（実行環境が対応する場合）。

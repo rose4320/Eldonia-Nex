@@ -9,3 +9,5 @@
 - `thoroughness`: `quick|medium|thorough`
 
 **注意**: 読み取り専用のサブエージェントです。ファイルを書き換えないでください。
+
+**推奨モデル**: OpenAI Codex（実行環境が対応する場合）。
