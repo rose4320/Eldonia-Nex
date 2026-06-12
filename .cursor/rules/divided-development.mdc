@@ -1,0 +1,48 @@
+---
+description: Eldonia-Nex 分担開発 — エージェント役割と作業フロー
+alwaysApply: true
+---
+
+# 分担開発ワークフロー
+
+## 現行スタック（優先）
+
+- **Frontend**: ルート `src/`（Next.js 16 + Supabase SSR）
+- **Backend/DB**: `supabase/migrations/` + RLS（Django `backend/` は明示指示時のみ）
+- **デザイン**: `agents/UI_UX_Designer.agent.md`（Dark Fantasy / 黒×金）
+
+## エージェント分担
+
+| 役割 | 定義 | 担当範囲 |
+|------|------|----------|
+| Request_Intake | 要望の構造化 | ユーザー指示 → タスク分解・優先度 |
+| Project_Producer | 企画・推進 | ロードマップ、依存関係、完了条件 |
+| UI_UX_Designer | デザイン | 色・フォント・コンポーネント規約 |
+| Frontend_Manager | FE 実装 | `src/app/`, `src/components/`, `src/lib/` |
+| Backend_Manager | BE/DB | `supabase/migrations/`, `src/types/database.ts` |
+| Support_Desk_Manager | サポート | `src/app/help/`, チケット・FAQ |
+| Shop_Manager | SHOP | `src/app/shop/`, `agents/Shop_Manager.agent.md` |
+| Events_Manager | EVENTS | `src/app/events/`, `agents/Events_Manager.agent.md` |
+| Community_Manager | COMMUNITY | `src/app/community/`, `agents/Community_Manager.agent.md` |
+| Works_Manager | WORKS | `src/app/works/`, `agents/Works_Manager.agent.md` |
+| Explore | 調査 | 読み取り専用のコード探索 |
+
+## 作業手順（各タスク）
+
+1. **Intake** — 要望を分類し、担当エージェントを決める
+2. **Plan** — 変更ファイル・マイグレーション要否を明示
+3. **Implement** — 担当範囲のみ編集（UI/UX 規約に従う）
+4. **Verify** — `npm run lint` + `npm run build`（必要なら `manage.py check`）
+5. **Report** — 担当エージェント名・変更概要・次タスクを日本語で報告
+
+## サブエージェント利用
+
+- 広範探索 → `explore` サブエージェント
+- 独立した FE/BE 作業 → 可能なら並列 `Task` で分担
+- 大きな機能は 1 モジュールずつ（GALLEY → SHOP → EVENTS …）
+
+## 禁止・注意
+
+- 機密（API キー）をコミット・エージェントプロンプトに含めない
+- 旧 `frontend/` を触るのは明示指示がある場合のみ
+- デバッグログ（`#region agent log`）を残さない

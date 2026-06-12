@@ -24,6 +24,14 @@ jobs:
               uses: actions/setup-python@v4
               with:
                   python-version: "3.x"
+                        - name: Validate OPENAI_API_KEY secret
+                            env:
+                                    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+                            run: |
+                                    if [ -z "${OPENAI_API_KEY}" ]; then
+                                        echo "ERROR: OPENAI_API_KEY secret is not set. Add it in Settings > Secrets and variables > Actions." >&2
+                                        exit 1
+                                    fi
             - name: Run Codex subagent
               env:
                   OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -33,3 +41,9 @@ jobs:
                     --prompt "${{ github.event.inputs.prompt }}" \
                     --thoroughness "${{ github.event.inputs.thoroughness }}" \
                     --output codex_result.txt
+                        - name: Upload Codex result artifact
+                            if: always()
+                            uses: actions/upload-artifact@v4
+                            with:
+                                    name: codex-result
+                                    path: codex_result.txt

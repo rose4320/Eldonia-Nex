@@ -1,0 +1,14 @@
+drop policy if exists "job_applications_insert" on public.job_applications;
+drop policy if exists "job_applications_select" on public.job_applications;
+drop policy if exists "job_listings_insert" on public.job_listings;
+drop policy if exists "job_listings_select" on public.job_listings;
+drop policy if exists "portfolios_manage_own" on public.portfolios;
+drop policy if exists "portfolios_select" on public.portfolios;
+drop table if exists public.job_applications;
+drop trigger if exists job_listings_set_updated_at on public.job_listings;
+drop table if exists public.job_listings;
+drop trigger if exists portfolios_set_updated_at on public.portfolios;
+drop table if exists public.portfolios;
+drop type if exists public.portfolio_visibility;
+drop type if exists public.job_status;
+drop type if exists public.job_type;

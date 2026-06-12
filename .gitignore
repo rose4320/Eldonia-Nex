@@ -14,7 +14,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+/lib/
 lib64/
 parts/
 sdist/
@@ -322,6 +322,8 @@ Desktop.ini
 *.webp
 
 # Exception: Keep essential frontend assets
+!public/
+!public/**
 !frontend/public/**/*.png
 !frontend/public/**/*.jpg
 !frontend/public/**/*.jpeg
