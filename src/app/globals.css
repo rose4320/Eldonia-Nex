@@ -1,0 +1,705 @@
+@import "tailwindcss";
+
+:root {
+  --eldonia-black: #000000;
+  --eldonia-surface: #050505;
+  --eldonia-surface-elevated: #0c0c0c;
+  --eldonia-surface-hover: #141414;
+  --eldonia-gold: #c9a84c;
+  --eldonia-gold-light: #e8d5a3;
+  --eldonia-gold-dark: #8a6d1f;
+  --eldonia-gold-muted: #6b5a2a;
+  --eldonia-text: #e8d5a3;
+  --eldonia-text-muted: #9a8b6a;
+  --eldonia-text-dim: #5c5340;
+  --eldonia-border: rgba(201, 168, 76, 0.28);
+  --eldonia-border-strong: rgba(201, 168, 76, 0.55);
+  --background: var(--eldonia-black);
+  --foreground: var(--eldonia-text);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-eldonia-black: var(--eldonia-black);
+  --color-eldonia-surface: var(--eldonia-surface);
+  --color-eldonia-surface-elevated: var(--eldonia-surface-elevated);
+  --color-eldonia-surface-hover: var(--eldonia-surface-hover);
+  --color-eldonia-gold: var(--eldonia-gold);
+  --color-eldonia-gold-light: var(--eldonia-gold-light);
+  --color-eldonia-gold-dark: var(--eldonia-gold-dark);
+  --color-eldonia-gold-muted: var(--eldonia-gold-muted);
+  --color-eldonia-text: var(--eldonia-text);
+  --color-eldonia-text-muted: var(--eldonia-text-muted);
+  --color-eldonia-text-dim: var(--eldonia-text-dim);
+  --font-display: var(--font-cinzel);
+  --font-body: var(--font-noto-serif-jp);
+}
+
+body {
+  background: var(--eldonia-black);
+  color: var(--eldonia-text);
+  font-family: var(--font-noto-serif-jp), serif;
+}
+
+.font-display {
+  font-family: var(--font-cinzel), serif;
+}
+
+/* ── Page shell ── */
+.eldonia-page {
+  display: flex;
+  min-height: 100%;
+  flex: 1;
+  flex-direction: column;
+  background-color: var(--eldonia-black);
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(232, 213, 163, 0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 10%, rgba(201, 168, 76, 0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 60%, rgba(232, 213, 163, 0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 80%, rgba(201, 168, 76, 0.12) 0%, transparent 100%),
+    radial-gradient(ellipse at 50% 0%, rgba(201, 168, 76, 0.06) 0%, transparent 60%);
+  color: var(--eldonia-text);
+}
+
+.eldonia-main {
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  width: 100%;
+  max-width: 72rem;
+  flex: 1;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2.5rem 1.5rem;
+}
+
+.eldonia-main-narrow {
+  max-width: 64rem;
+}
+
+/* ── Typography ── */
+.eldonia-eyebrow {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold);
+}
+
+.eldonia-heading {
+  font-family: var(--font-cinzel), serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: linear-gradient(180deg, var(--eldonia-gold-light) 0%, var(--eldonia-gold) 55%, var(--eldonia-gold-dark) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eldonia-heading-sm {
+  font-size: 1.5rem;
+}
+
+.eldonia-heading-lg {
+  font-size: 2.25rem;
+  line-height: 1.2;
+}
+
+.eldonia-heading-xl {
+  font-size: 2.75rem;
+  line-height: 1.15;
+}
+
+.eldonia-subtitle {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--eldonia-text-muted);
+}
+
+.eldonia-body {
+  color: var(--eldonia-text-muted);
+  line-height: 1.75;
+}
+
+.eldonia-link {
+  color: var(--eldonia-gold);
+  transition: color 0.2s;
+}
+
+.eldonia-link:hover {
+  color: var(--eldonia-gold-light);
+}
+
+/* ── Decorative divider (logo motif) ── */
+.eldonia-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--eldonia-gold-muted);
+}
+
+.eldonia-divider::before,
+.eldonia-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--eldonia-border-strong) 50%,
+    transparent 100%
+  );
+}
+
+.eldonia-divider-gem {
+  width: 6px;
+  height: 6px;
+  rotate: 45deg;
+  border: 1px solid var(--eldonia-gold);
+  background: var(--eldonia-gold-dark);
+  flex-shrink: 0;
+}
+
+/* ── Cards & surfaces ── */
+.eldonia-card {
+  border-radius: 0.75rem;
+  border: 1px solid var(--eldonia-border);
+  background: linear-gradient(
+    165deg,
+    rgba(12, 12, 12, 0.95) 0%,
+    rgba(5, 5, 5, 0.98) 100%
+  );
+  padding: 1.5rem;
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.04);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.eldonia-card:hover {
+  border-color: var(--eldonia-border-strong);
+  box-shadow: 0 0 32px rgba(201, 168, 76, 0.08);
+}
+
+.eldonia-card-interactive {
+  cursor: pointer;
+}
+
+.eldonia-card-dashed {
+  border-style: dashed;
+  border-color: var(--eldonia-border);
+  background: transparent;
+}
+
+/* ── Buttons ── */
+.eldonia-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-gold-dark);
+  background: linear-gradient(180deg, var(--eldonia-gold) 0%, var(--eldonia-gold-dark) 100%);
+  padding: 0.625rem 1.25rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eldonia-black);
+  transition: filter 0.2s, box-shadow 0.2s;
+}
+
+.eldonia-btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 0 16px rgba(201, 168, 76, 0.35);
+}
+
+.eldonia-btn-primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.eldonia-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background: transparent;
+  padding: 0.625rem 1.25rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold-light);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.eldonia-btn-secondary:hover {
+  background: rgba(201, 168, 76, 0.08);
+  border-color: var(--eldonia-gold);
+}
+
+.eldonia-btn-ghost {
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--eldonia-text-muted);
+  transition: color 0.2s, background 0.2s;
+}
+
+.eldonia-btn-ghost:hover {
+  color: var(--eldonia-gold);
+  background: rgba(201, 168, 76, 0.06);
+}
+
+/* ── Form controls ── */
+.eldonia-input,
+.eldonia-textarea,
+.eldonia-select {
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  color: var(--eldonia-text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.eldonia-input:focus,
+.eldonia-textarea:focus,
+.eldonia-select:focus {
+  border-color: var(--eldonia-gold);
+  box-shadow: 0 0 0 2px rgba(201, 168, 76, 0.15);
+}
+
+.eldonia-label {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold-muted);
+}
+
+.eldonia-hint {
+  font-size: 0.75rem;
+  color: var(--eldonia-text-dim);
+}
+
+/* ── Header / Footer ── */
+.eldonia-header {
+  border-bottom: 1px solid var(--eldonia-border);
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.eldonia-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface);
+}
+
+.eldonia-nav-link {
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eldonia-text-muted);
+  transition: color 0.2s, background 0.2s;
+}
+
+.eldonia-nav-link:hover {
+  color: var(--eldonia-gold);
+  background: rgba(201, 168, 76, 0.06);
+}
+
+.eldonia-nav-link-active {
+  color: var(--eldonia-gold-light);
+  border: 1px solid var(--eldonia-border);
+  background: rgba(201, 168, 76, 0.1);
+}
+
+/* ── Badges ── */
+.eldonia-badge {
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.eldonia-badge-ready {
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  background: rgba(201, 168, 76, 0.12);
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-badge-pending {
+  border: 1px solid var(--eldonia-border);
+  background: transparent;
+  color: var(--eldonia-text-dim);
+}
+
+/* ── Alerts ── */
+.eldonia-alert-error {
+  border-radius: 0.375rem;
+  border: 1px solid rgba(180, 60, 60, 0.4);
+  background: rgba(80, 20, 20, 0.3);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #e8a0a0;
+}
+
+.eldonia-alert-success {
+  border-radius: 0.375rem;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(201, 168, 76, 0.08);
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--eldonia-gold-light);
+}
+
+/* ── Shop (Amazon-style × Eldonia) ── */
+.eldonia-shop-toolbar {
+  border-bottom: 1px solid var(--eldonia-border);
+  background: linear-gradient(180deg, rgba(12, 12, 12, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+}
+
+.eldonia-shop-search {
+  display: flex;
+  flex: 1;
+  max-width: 42rem;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border-strong);
+}
+
+.eldonia-shop-search-input {
+  flex: 1;
+  border: none;
+  background: var(--eldonia-surface);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  color: var(--eldonia-text);
+  outline: none;
+}
+
+.eldonia-shop-search-btn {
+  border: none;
+  background: linear-gradient(180deg, var(--eldonia-gold) 0%, var(--eldonia-gold-dark) 100%);
+  padding: 0 1.25rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--eldonia-black);
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.eldonia-shop-search-btn:hover {
+  filter: brightness(1.08);
+}
+
+.eldonia-product-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface-elevated);
+  padding: 0.75rem;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.eldonia-product-card:hover {
+  border-color: var(--eldonia-border-strong);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.1);
+  transform: translateY(-2px);
+}
+
+.eldonia-product-thumb {
+  display: flex;
+  aspect-ratio: 1;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border);
+  background: linear-gradient(145deg, rgba(20, 20, 20, 1) 0%, rgba(5, 5, 5, 1) 100%);
+  font-size: 2.5rem;
+}
+
+.eldonia-buy-box {
+  border-radius: 0.75rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background: linear-gradient(165deg, rgba(12, 12, 12, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+  padding: 1.25rem;
+  box-shadow: 0 0 32px rgba(201, 168, 76, 0.06);
+}
+
+.eldonia-badge-nexus-prime {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  background: rgba(201, 168, 76, 0.12);
+  padding: 0.125rem 0.5rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-badge-nexus-choice {
+  display: inline-block;
+  border-radius: 0.25rem;
+  background: rgba(201, 168, 76, 0.18);
+  padding: 0.125rem 0.5rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--eldonia-black);
+}
+
+.eldonia-badge-bestseller {
+  display: inline-block;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold);
+}
+
+.eldonia-star {
+  color: var(--eldonia-gold);
+}
+
+.eldonia-star-empty {
+  color: var(--eldonia-gold-muted);
+}
+
+.eldonia-shop-sidebar {
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface-elevated);
+  padding: 1rem;
+}
+
+.eldonia-shop-hero-card {
+  min-width: 16rem;
+  flex: 1;
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.08) 0%, rgba(5, 5, 5, 0.95) 60%);
+  padding: 1.25rem;
+}
+
+/* ── Events (Ticketmaster-style × Eldonia) ── */
+.eldonia-events-toolbar {
+  border-bottom: 1px solid var(--eldonia-border);
+  background: linear-gradient(180deg, rgba(12, 12, 12, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+}
+
+.eldonia-events-search {
+  display: flex;
+  flex: 1;
+  max-width: 42rem;
+  overflow: hidden;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border-strong);
+}
+
+.eldonia-events-search-input {
+  flex: 1;
+  border: none;
+  background: var(--eldonia-surface);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.9375rem;
+  color: var(--eldonia-text);
+  outline: none;
+}
+
+.eldonia-events-search-btn {
+  border: none;
+  background: linear-gradient(180deg, var(--eldonia-gold) 0%, var(--eldonia-gold-dark) 100%);
+  padding: 0 1.25rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--eldonia-black);
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+
+.eldonia-events-search-btn:hover {
+  filter: brightness(1.08);
+}
+
+.eldonia-events-sidebar {
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface-elevated);
+  padding: 1rem;
+}
+
+.eldonia-events-hero-card {
+  min-width: 16rem;
+  flex: 1;
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: linear-gradient(135deg, rgba(138, 109, 31, 0.12) 0%, rgba(5, 5, 5, 0.95) 55%);
+  padding: 1.25rem;
+}
+
+.eldonia-event-card {
+  display: block;
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface-elevated);
+  padding: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.eldonia-event-card:hover {
+  border-color: var(--eldonia-border-strong);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.1);
+  transform: translateY(-2px);
+}
+
+.eldonia-event-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background: rgba(201, 168, 76, 0.06);
+  padding: 0.5rem;
+}
+
+.eldonia-event-thumb {
+  display: flex;
+  width: 5rem;
+  height: 5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border);
+  background: linear-gradient(145deg, rgba(20, 20, 20, 1) 0%, rgba(5, 5, 5, 1) 100%);
+  font-size: 2rem;
+}
+
+.eldonia-ticket-box {
+  border-radius: 0.75rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background: linear-gradient(165deg, rgba(12, 12, 12, 0.98) 0%, rgba(5, 5, 5, 1) 100%);
+  padding: 1.25rem;
+  box-shadow: 0 0 32px rgba(201, 168, 76, 0.06);
+}
+
+.eldonia-badge-sold-out {
+  display: inline-block;
+  border-radius: 0.25rem;
+  border: 1px solid rgba(180, 60, 60, 0.4);
+  background: rgba(80, 20, 20, 0.3);
+  padding: 0.125rem 0.5rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e8a0a0;
+}
+
+/* ── Community ── */
+.eldonia-community-toolbar,
+.eldonia-works-toolbar {
+  border-bottom: 1px solid var(--eldonia-border);
+  background: rgba(5, 5, 5, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.eldonia-community-search,
+.eldonia-works-search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.eldonia-community-search-input,
+.eldonia-works-search-input {
+  flex: 1;
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: var(--eldonia-text);
+}
+
+.eldonia-community-search-btn,
+.eldonia-works-search-btn {
+  border-radius: 0.375rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background: rgba(201, 168, 76, 0.08);
+  padding: 0.5rem 1rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold-muted);
+}
+
+.eldonia-board-card,
+.eldonia-thread-card,
+.eldonia-job-card {
+  display: block;
+  border-radius: 0.5rem;
+  border: 1px solid var(--eldonia-border);
+  background: var(--eldonia-surface-elevated);
+  padding: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.eldonia-board-card:hover,
+.eldonia-thread-card:hover,
+.eldonia-job-card:hover {
+  border-color: var(--eldonia-border-strong);
+  box-shadow: 0 0 24px rgba(201, 168, 76, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ── Auth panel ── */
+.eldonia-auth-panel {
+  width: 100%;
+  max-width: 28rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background: linear-gradient(165deg, #0c0c0c 0%, #050505 100%);
+  padding: 2rem;
+  box-shadow: 0 0 48px rgba(201, 168, 76, 0.06);
+}

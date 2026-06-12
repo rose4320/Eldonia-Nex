@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import CommentsSection from '../../../components/artwork/CommentsSection'
 import ReviewsSection from '../../../components/artwork/ReviewsSection'
 import PageHero from '../../../components/common/PageHero'
@@ -484,4 +484,21 @@ const ImageDetailPage: React.FC = () => {
   )
 }
 
-export default ImageDetailPage
+function ImageDetailLoading() {
+  return (
+    <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-400 mx-auto mb-4"></div>
+        <p className="text-gray-300">作品を読み込み中...</p>
+      </div>
+    </div>
+  )
+}
+
+export default function ImageDetailPageRoute() {
+  return (
+    <Suspense fallback={<ImageDetailLoading />}>
+      <ImageDetailPage />
+    </Suspense>
+  )
+}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
 import PageHero from '../../../components/common/PageHero'
 import PlaceholderImage from '../../../components/common/PlaceholderImage'
 import { MusicArtwork } from '../../../types/artwork'
@@ -379,4 +379,16 @@ const MusicDetailPage: React.FC = () => {
   )
 }
 
-export default MusicDetailPage
+export default function MusicDetailPageRoute() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <p className="text-gray-300">読み込み中...</p>
+        </div>
+      }
+    >
+      <MusicDetailPage />
+    </Suspense>
+  )
+}

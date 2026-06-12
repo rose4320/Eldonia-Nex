@@ -59,6 +59,14 @@ python manage.py migrate --noinput
 echo "✅ データベース準備完了"
 cd ..
 
+# 自動スーパーユーザー作成（非対話）
+echo "🔧 非対話的スーパーユーザー作成を試行します..."
+python backend/scripts/create_superuser.py || echo "⚠️ スーパーユーザー作成スクリプトをスキップしました"
+
+# 自動承認（開発用）
+echo "🔐 自動承認 (auto_approve) を実行しています..."
+python backend/manage.py auto_approve || echo "⚠️ auto_approve を実行できませんでした"
+
 # Node.js依存関係確認
 cd frontend/
 if [ ! -d "node_modules" ]; then

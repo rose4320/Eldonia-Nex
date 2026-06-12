@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
 import PageHero from '../../../components/common/PageHero'
 import { VideoArtwork } from '../../../types/artwork'
 // import { Comment, Review, ReviewStats } from '../../../types/artwork' // 将来のコメント・レビュー機能用
@@ -334,4 +334,16 @@ const VideoDetailPage: React.FC = () => {
   )
 }
 
-export default VideoDetailPage
+export default function VideoDetailPageRoute() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <p className="text-gray-300">読み込み中...</p>
+        </div>
+      }
+    >
+      <VideoDetailPage />
+    </Suspense>
+  )
+}

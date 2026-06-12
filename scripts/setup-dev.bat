@@ -39,10 +39,17 @@ python manage.py makemigrations
 python manage.py migrate
 
 REM スーパーユーザーの作成（オプション）
-set /p create_superuser="🤔 スーパーユーザーを作成しますか？ (y/N): "
-if /i "%create_superuser%"=="y" (
-    python manage.py createsuperuser
+REM 非対話的にスーパーユーザーを作成（環境変数があれば更新）
+if defined SUPERVISOR_CREATE_SUPERUSER (
+    python manage.py shell -c "import runpy; runpy.run_path('scripts/create_superuser.py')"
+) else (
+    REM デフォルトで作成スクリプトを呼ぶ
+    python scripts/create_superuser.py || echo Skipped superuser creation
 )
+
+REM 自動承認（開発用）を実行
+echo 🔐 自動承認を実行しています (development auto-approve)...
+python manage.py auto_approve || echo Auto-approve failed or skipped
 
 cd ..
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import PageHero from '../../../components/common/PageHero'
 import PlaceholderImage from '../../../components/common/PlaceholderImage'
 import { NovelArtwork } from '../../../types/artwork'
@@ -373,4 +373,16 @@ const NovelDetailPage: React.FC = () => {
   )
 }
 
-export default NovelDetailPage
+export default function NovelDetailPageRoute() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <p className="text-gray-300">読み込み中...</p>
+        </div>
+      }
+    >
+      <NovelDetailPage />
+    </Suspense>
+  )
+}

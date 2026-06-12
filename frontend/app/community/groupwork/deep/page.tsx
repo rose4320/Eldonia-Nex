@@ -253,7 +253,6 @@ const DeepGroupWorkPage: React.FC = () => {
                     setWorkspaceFiles(newFiles);
                     setDraggedFile(null);
                   }}
-                  draggable
                 />
               ))
             ) : (
