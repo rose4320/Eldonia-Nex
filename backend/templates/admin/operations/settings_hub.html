@@ -1,0 +1,55 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  <h1>{{ title }}</h1>
+  <p class="ops-lead">決まっている設定値を確認し、各カテゴリから編集できます。重要な変更は管理人パスワードが必要です。</p>
+</header>
+
+<div class="ops-settings-grid">
+  <a class="ops-settings-card ops-settings-card-primary" href="{% url 'admin:ops_subscription_plans' %}">
+    <h2>💴 サブスク料金</h2>
+    <ul class="ops-current-list">
+      <li>Free = （{{ plan_prices.free|default:0 }}）円</li>
+      <li>Standard = （{{ plan_prices.standard|default:800 }}）円</li>
+      <li>Pro = （{{ plan_prices.pro|default:1500 }}）円</li>
+    </ul>
+    <span class="ops-menu-cta">編集する →</span>
+  </a>
+
+  <a class="ops-settings-card" href="{% url 'admin:ops_fee_settings' %}">
+    <h2>💰 手数料・還元率</h2>
+    <ul class="ops-current-list">
+      <li>マーケット = （{{ fee_values.marketplace_fee_percent|default:'10' }}）%</li>
+      <li>紹介還元 = （{{ fee_values.referral_rebate_percent|default:'10' }}）%</li>
+      <li>Stripe = （{{ fee_values.stripe_fee_percent|default:'3.6' }}）%</li>
+    </ul>
+    <span class="ops-menu-cta">編集する →</span>
+  </a>
+
+  <a class="ops-settings-card" href="{% url 'admin:ops_plan_details' %}">
+    <h2>📋 プラン詳細</h2>
+    <ul class="ops-current-list">
+      {% for slug, row in plan_details.items %}
+        <li>{{ row.label }} 試用（{{ row.trial_days }}）日 · {% if row.is_active %}公開{% else %}停止{% endif %}</li>
+      {% endfor %}
+    </ul>
+    <span class="ops-menu-cta">編集する →</span>
+  </a>
+
+  <a class="ops-settings-card" href="{% url 'admin:ops_quest_settings' %}">
+    <h2>⚔️ Quest 設定</h2>
+    {% if quest_actions %}
+      <ul class="ops-current-list">
+        {% for row in quest_actions|slice:":3" %}
+          <li>{{ row.description }} = EXP（{{ row.base_exp }}）</li>
+        {% endfor %}
+        {% if quest_actions|length > 3 %}<li>…他 {{ quest_actions|length|add:"-3" }} 件</li>{% endif %}
+      </ul>
+    {% else %}
+      <p class="ops-muted-inline">Quest が未登録です（上級メニューから追加）</p>
+    {% endif %}
+    <span class="ops-menu-cta">編集する →</span>
+  </a>
+</div>
+{% endblock %}

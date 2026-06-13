@@ -1,0 +1,41 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  <p class="ops-step">ステップ {{ step }} / 2</p>
+  <h1>{{ title }}</h1>
+  <p class="ops-lead">各項目の <strong>（　）</strong> 内の数字（%）だけを編集してください。</p>
+</header>
+
+<form method="post" class="ops-card">
+  {% csrf_token %}
+  <ul class="ops-plan-list">
+    {% for group in form.field_groups %}
+      <li class="ops-setting-row">
+        <div class="ops-setting-main">
+          <strong>{{ group.label }}</strong>
+          <span class="ops-muted">{{ group.help }}</span>
+        </div>
+        <div class="ops-setting-input">
+          <span>（</span>
+          {{ group.field }}
+          <span>）{{ group.unit }}</span>
+        </div>
+        {% if group.field.errors %}<p class="ops-error">{{ group.field.errors.0 }}</p>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="ops-actions">
+    <button type="submit" class="ops-btn ops-btn-primary">確認画面へ →</button>
+    <a class="ops-btn ops-btn-ghost" href="{% url 'admin:ops_settings_hub' %}">キャンセル</a>
+  </div>
+</form>
+
+<aside class="ops-help">
+  <h2>💡 入力例</h2>
+  <ul>
+    <li>10 と入力 → <strong>（10）%</strong></li>
+    <li>3.6 と入力 → <strong>（3.6）%</strong></li>
+  </ul>
+</aside>
+{% endblock %}

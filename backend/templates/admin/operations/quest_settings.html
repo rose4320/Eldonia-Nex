@@ -1,0 +1,39 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  {% if step %}<p class="ops-step">ステップ {{ step }} / 2</p>{% endif %}
+  <h1>{{ title }}</h1>
+  <p class="ops-lead">Quest の EXP と 1日上限は <strong>（　）</strong> の数字だけ編集できます。</p>
+</header>
+
+{% if empty %}
+  <section class="ops-card ops-empty">
+    <p>Quest（ExpAction）がまだ登録されていません。</p>
+    <a class="ops-btn ops-btn-primary" href="{% url 'admin:gamification_expaction_changelist' %}">上級メニューで Quest を追加 →</a>
+  </section>
+{% else %}
+  <form method="post" class="ops-card">
+    {% csrf_token %}
+    <ul class="ops-plan-list">
+      {% for group in form.field_groups %}
+        <li class="ops-setting-row ops-setting-row-wide">
+          <div class="ops-setting-main">
+            <strong>{{ group.description }}</strong>
+            <code class="ops-code">{{ group.action_type }}</code>
+          </div>
+          <div class="ops-setting-fields">
+            <span class="ops-inline-field">EXP（ {{ group.exp }} ）</span>
+            <span class="ops-inline-field">1日（ {{ group.daily }} ）回</span>
+            <label class="ops-toggle">{{ group.active }} 有効</label>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="ops-actions">
+      <button type="submit" class="ops-btn ops-btn-primary">確認画面へ →</button>
+      <a class="ops-btn ops-btn-ghost" href="{% url 'admin:ops_settings_hub' %}">キャンセル</a>
+    </div>
+  </form>
+{% endif %}
+{% endblock %}

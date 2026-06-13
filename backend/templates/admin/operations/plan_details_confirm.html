@@ -1,0 +1,34 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  <p class="ops-step">ステップ {{ step }} / 2</p>
+  <h1>{{ title }}</h1>
+  <p class="ops-lead ops-lead-warn">⚠️ プラン公開状態の変更はユーザーに影響します。管理人パスワードを入力してください。</p>
+</header>
+
+<section class="ops-card">
+  <table class="ops-table">
+    <thead><tr><th>プラン</th><th>試用（変更前→後）</th><th>公開</th></tr></thead>
+    <tbody>
+      {% for row in preview %}
+        <tr class="{% if row.changed %}ops-row-changed{% endif %}">
+          <td>{{ row.label }}</td>
+          <td>（{{ row.trial_before }}）日 → <strong>（{{ row.trial_after }}）日</strong></td>
+          <td>{% if row.active_before %}公開{% else %}停止{% endif %} → <strong>{% if row.active_after %}公開{% else %}停止{% endif %}</strong></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<form method="post" class="ops-card">
+  {% csrf_token %}
+  {{ form.admin_password.label_tag }} {{ form.admin_password }}
+  <label class="ops-checkbox">{{ form.confirm_understand }} {{ form.confirm_understand.label }}</label>
+  <div class="ops-actions">
+    <button type="submit" class="ops-btn ops-btn-danger">この内容で更新する</button>
+    <a class="ops-btn ops-btn-ghost" href="{{ back_url }}">← 戻って修正</a>
+  </div>
+</form>
+{% endblock %}

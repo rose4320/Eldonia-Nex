@@ -40,10 +40,12 @@ class User(AbstractUser):
     subscription_type = models.CharField(
         max_length=20, choices=SUBSCRIPTION_TYPE_CHOICES, default="free"
     )
-    # subscription_plan stored as VARCHAR(20) per DB design doc (plan id like 'free','standard','pro','business')
-    subscription_plan = models.CharField(max_length=20, default="free")
-    # compatibility field `subscription` requested in docs/usage — mirrors subscription_plan (backfilled)
-    subscription = models.CharField(max_length=20, default="free")
+    # 正: Plan.slug と連動（free / standard / pro など）
+    subscription_plan = models.CharField(
+        max_length=20, default="free", verbose_name="サブスクプラン"
+    )
+    # 互換用 — subscription_plan と同じ値を save() で自動同期（Admin では非表示）
+    subscription = models.CharField(max_length=20, default="free", editable=False)
     # who referred this user (optional)
     referred_by_user = models.ForeignKey(
         "self",
@@ -73,6 +75,12 @@ class User(AbstractUser):
             models.Index(fields=["subscription_plan"]),
             models.Index(fields=["subscription"]),
         ]
+
+    def save(self, *args, **kwargs):
+        plan = (self.subscription_plan or "free").strip() or "free"
+        self.subscription_plan = plan
+        self.subscription = plan
+        super().save(*args, **kwargs)
 
 
 class UserProfile(models.Model):
@@ -129,6 +137,23 @@ class Plan(models.Model):
 
     def __str__(self) -> str:
         return f"{self.name} ({self.currency} {self.price})"
+
+
+class OpsSetting(models.Model):
+    """運用パネルから編集するプラットフォーム設定（手数料率など）"""
+
+    key = models.CharField(max_length=100, unique=True)
+    value = models.CharField(max_length=255)
+    label = models.CharField(max_length=200, blank=True)
+    category = models.CharField(max_length=50, default="general")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = "ops_settings"
+        ordering = ["category", "key"]
+
+    def __str__(self) -> str:
+        return f"{self.key}={self.value}"
 
 
 """Users models module.

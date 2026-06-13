@@ -9,18 +9,15 @@ from django.dispatch import receiver
 def give_referral_rebate(
     sender: Any, instance: Any, created: bool, **kwargs: Any
 ) -> None:
-    """When an Order is completed, give 10% rebate to the referrer if present.
+    """When an Order is completed, give rebate to the referrer if present.
 
-    Behavior:
-    - Only run for `Order` instances with status == 'completed'.
-    - Determine referrer from `user.referred_by_user` or the `Referral` table.
-    - Use `ReferralTrack.order_id` to ensure idempotency per order (don't pay twice).
-    - Create a `Transaction` for the referrer with 10% of the order total.
+    Rebate rate is configured in the operations settings panel.
     """
     # only care about completed orders
     try:
         from .models import Order as OrderModel  # type: ignore
         from .models import Referral, ReferralTrack, Transaction
+        from users.operations.settings_service import get_referral_rebate_percent
 
         # ensure handler only acts on Order instances
         if not isinstance(instance, OrderModel):
@@ -60,7 +57,7 @@ def give_referral_rebate(
             order_id=instance.id,
         )
 
-        rebate = instance.total_amount * Decimal("0.10")
+        rebate = instance.total_amount * get_referral_rebate_percent() / Decimal("100")
         Transaction.objects.create(
             user=referrer,
             transaction_type="referral_reward",
