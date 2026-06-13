@@ -1,0 +1,19 @@
+﻿docker-compose : time="2026-06-12T04:50:51+09:00" level=warning msg="C:\\eldoni
+a-nex\\docker-compose.dev.yml: the attribute `version` is obsolete, it will be 
+ignored, please remove it to avoid potential confusion"
+発生場所 C:\eldonia-nex\verify_full_stack.ps1:7 文字:1
++ docker-compose -f docker-compose.dev.yml ps 2>&1 | Out-File docker_co ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (time="2026-06-1...tial confusion" 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+NAME                      IMAGE                                                  COMMAND                   SERVICE           CREATED         STATUS                   PORTS
+eldonia_elasticsearch     docker.elastic.co/elasticsearch/elasticsearch:8.11.0   "/bin/tini -- /usr/l窶ｦ"   elasticsearch     5 months ago    Up 4 minutes             0.0.0.0:9200->9200/tcp, [::]:9200->9200/tcp
+eldonia_kibana            docker.elastic.co/kibana/kibana:8.11.0                 "/bin/tini -- /usr/l窶ｦ"   kibana            5 months ago    Up 4 minutes             0.0.0.0:5601->5601/tcp, [::]:5601->5601/tcp
+eldonia_mailhog           mailhog/mailhog:v1.0.1                                 "MailHog"                 mailhog           5 months ago    Up 4 minutes             0.0.0.0:1025->1025/tcp, [::]:1025->1025/tcp, 0.0.0.0:8025->8025/tcp, [::]:8025->8025/tcp
+eldonia_minio             minio/minio:RELEASE.2023-11-01T01-57-10Z               "/usr/bin/docker-ent窶ｦ"   minio             5 months ago    Up 4 minutes             0.0.0.0:9000-9001->9000-9001/tcp, [::]:9000-9001->9000-9001/tcp
+eldonia_pgadmin           dpage/pgadmin4:7.8                                     "/entrypoint.sh"          pgadmin           5 months ago    Up 4 minutes             0.0.0.0:5050->80/tcp, [::]:5050->80/tcp
+eldonia_postgres_dev      postgres:15-alpine                                     "docker-entrypoint.s窶ｦ"   postgres          4 minutes ago   Up 4 minutes (healthy)   0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+eldonia_redis_commander   rediscommander/redis-commander:latest                  "/usr/bin/dumb-init 窶ｦ"   redis-commander   5 months ago    Up 4 minutes (healthy)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+eldonia_redis_dev         redis:7.4-alpine                                       "docker-entrypoint.s窶ｦ"   redis             2 months ago    Up 4 minutes             0.0.0.0:6380->6379/tcp, [::]:6380->6379/tcp
