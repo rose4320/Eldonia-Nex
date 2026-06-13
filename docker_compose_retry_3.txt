@@ -1,0 +1,29 @@
+﻿docker-compose : time="2026-06-12T04:46:37+09:00" level=warning msg="C:\\eldonia-nex\\docker-compose.dev.yml: the attri
+bute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+発生場所 C:\eldonia-nex\background_retry_docker.ps1:7 文字:9
++         docker-compose -f docker-compose.dev.yml up -d 2>&1 | Out-Fil ...
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (time="2026-06-1...tial confusion":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+time="2026-06-12T04:46:37+09:00" level=warning msg="Found orphan containers ([eldonia_frontend eldonia_celery_worker el
+donia_celery_beat eldonia_backend]) for this project. If you removed or renamed this service in your compose file, you 
+can run this command with the --remove-orphans flag to clean it up."
+ Container eldonia_postgres_dev  Recreate
+ Container eldonia_postgres_dev  Recreated
+ Container eldonia_mailhog  Starting
+ Container eldonia_minio  Starting
+ Container eldonia_elasticsearch  Starting
+ Container eldonia_redis_dev  Starting
+ Container eldonia_postgres_dev  Starting
+ Container eldonia_redis_dev  Started
+ Container eldonia_redis_commander  Starting
+ Container eldonia_postgres_dev  Started
+ Container eldonia_pgadmin  Starting
+ Container eldonia_minio  Started
+ Container eldonia_elasticsearch  Started
+ Container eldonia_kibana  Starting
+ Container eldonia_mailhog  Started
+ Container eldonia_redis_commander  Started
+ Container eldonia_pgadmin  Started
+ Container eldonia_kibana  Started

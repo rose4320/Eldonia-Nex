@@ -1,0 +1,15 @@
+﻿docker-compose : time="2026-06-12T04:40:40+09:00" level=warning msg="C:\\eldoni
+a-nex\\docker-compose.dev.yml: the attribute `version` is obsolete, it will be 
+ignored, please remove it to avoid potential confusion"
+発生場所 C:\eldonia-nex\collect_health_and_logs.ps1:7 文字:1
++ docker-compose -f docker-compose.dev.yml ps 2>&1 | Out-File docker_co ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (time="2026-06-1...tial confusion" 
+   :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+request returned 500 Internal Server Error for API route and version http://%2F
+%2F.%2Fpipe%2FdockerDesktopLinuxEngine/v1.51/containers/json?filters=%7B%22labe
+l%22%3A%7B%22com.docker.compose.config-hash%22%3Atrue%2C%22com.docker.compose.o
+neoff%3DFalse%22%3Atrue%2C%22com.docker.compose.project%3Deldonia-nex%22%3Atrue
+%7D%7D, check if the server supports the requested API version

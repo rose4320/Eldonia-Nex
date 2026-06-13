@@ -1,0 +1,10 @@
+﻿CONTAINER ID   IMAGE                                                  STATUS                        NAMES
+30da77d22e6b   postgres:15-alpine                                     Up About a minute (healthy)   eldonia_postgres_dev
+8075302bca0c   redis:7.4-alpine                                       Up About a minute             eldonia_redis_dev
+acca5cd543ab   dpage/pgadmin4:7.8                                     Up About a minute             eldonia_pgadmin
+3a5e22de4793   docker.elastic.co/kibana/kibana:8.11.0                 Up About a minute             eldonia_kibana
+f05d4c3fc676   rediscommander/redis-commander:latest                  Up About a minute (healthy)   eldonia_redis_commander
+f259d4fc46de   minio/minio:RELEASE.2023-11-01T01-57-10Z               Up About a minute             eldonia_minio
+220dea0a4c83   mailhog/mailhog:v1.0.1                                 Up About a minute             eldonia_mailhog
+1efe0c4668fd   docker.elastic.co/elasticsearch/elasticsearch:8.11.0   Up About a minute             eldonia_elasticsearch
+e29d5df091ac   ambassador/telepresence-docker-runtime:1.0.5           Up About a minute             ambassador_telepresence-docker-extension-desktop-extension-service

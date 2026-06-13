@@ -1,0 +1,200 @@
+﻿[2025-06-28T07:28:30.816603100Z][com.docker.backend.exe][I] (e5839b18) 1f87bfb3-BackendAPI S<-C e348b574-GoBackendClient-CSharp bind: {"HasServerTimestamp":false,"content":"LinuxWSL2Engine failed to start: timeout waiting for WSL integration","docker":"failed to start","error":"{\"type\":\"*errordef.UnhandledError\",\"component\":\"nativeserver\",\"genericError\":{\"type\":\"*errors.errorString\",\"description\":\"fatal\"},\"originalError\":{\"type\":\"*errors.errorString\",\"description\":\"timeout waiting for WSL integration\"}}","timestamp":0}
+[2025-06-28T07:28:30.847685500Z][com.docker.backend.exe][I] 1f87bfb3-BackendAPI /engine/state --> [2025-06-28T16:28:30.817124600+09:00] (96a00cad) engine failed to start : LinuxWSL2Engine failed to start: timeout waiting for WSL integration
+[2025-06-28T07:28:30.886277300Z][com.docker.backend.exe][I] sending to gui: 1751095710817124600 (from server) docker: failed to start (LinuxWSL2Engine failed to start: timeout waiting for WSL integration) 
+[2025-06-28T07:28:30.913835600Z][com.docker.backend.exe][I] (1666747c) 38c35ad4-BackendCMD C->S CSharpAPI POST /docker: {"state":"failed to start"}
+[2025-06-28T07:28:31.017746000Z][IPCServer][I] (1666747c) 34fcc17f-CSharpAPI S<-C 38c35ad4-BackendCMD POST /docker
+github.com/docker/pinata/common/pkg/gui.(*guiClient).SendDockerState(0xc000e055e0, {0xc000f8aa60?, 0x23299c8?})
+	github.com/docker/pinata/common/pkg/gui/state.go:15 +0x70
+github.com/docker/pinata/common/cmd/com.docker.backend/internal/vm.(*manager).HandleEvent(0xc0005026e0, {0x184d244572f700f8, 0x1, {0xc000e531d0, 0x44}, {0xc000f8aa60, 0xf}, {0x0, 0x0}, {0x0, ...}, ...})
+	github.com/docker/pinata/common/cmd/com.docker.backend/internal/vm/manager.go:363 +0x105
+github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events.(*Handler).PushEvent(0xc000116a50, {0x184d244572f700f8, 0x1, {0xc000e531d0, 0x44}, {0xc000f8aa60, 0xf}, {0x0, 0x0}, {0x0, ...}, ...})
+	github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events/events.go:84 +0x2b5
+github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events.(*Handler).Push(0xc000116a50, {0x264d938, 0xc000891ba0})
+	github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events/events.go:55 +0x225
+[2025-06-28T07:28:31.098769300Z][IPCServer][I] (1666747c) 34fcc17f-CSharpAPI S->C 38c35ad4-BackendCMD POST /docker (81ms): OK
+[2025-06-28T07:28:31.099764700Z][com.docker.backend.exe][I] (1666747c) 38c35ad4-BackendCMD C<-S 34fcc17f-CSharpAPI POST /docker (195.4621ms): OK
+[2025-06-28T07:28:31.100330100Z][com.docker.backend.exe.state][I] backend state changed to failed to start (LinuxWSL2Engine failed to start: timeout waiting for WSL integration)
+[2025-06-28T07:28:31.130797300Z][com.docker.backend.exe][I] sending track event: desktopState
+[2025-06-28T07:28:31.130797300Z][com.docker.backend.exe][I] sending track event: eventUpdateFailure
+[2025-06-28T07:28:31.174531400Z][com.docker.backend.exe][I] setting auto start true
+[2025-06-28T07:28:31.192794600Z][com.docker.backend.exe][I] settings write: {"acceptCanaryUpdates":false,"activeOrganizationName":"","allowExperimentalFeatures":true,"analyticsEnabled":true,"autoDownloadUpdates":false,"autoStart":true,"containerTerminal":"integrated","cpus":6,"credentialHelper":"docker-credential-wincred.exe","customWslDistroDir":"","dataFolder":"C:\\ProgramData\\DockerDesktop\\vm-data","deprecatedCgroupv1":false,"disableHardwareAcceleration":false,"disableTips":false,"disableUpdate":false,"diskSizeMiB":65536,"diskTRIM":true,"displayRestartDialog":true,"displaySwitchWinLinContainers":false,"displayed18362Deprecation":false,"displayedElectronPopup":[],"displayedWelcomeSurvey":true,"dockerBinInstallPath":"system","enableDefaultDockerSocket":true,"enableIntegrationWithDefaultWslDistro":true,"enableSegmentDebug":false,"enhancedContainerIsolation":false,"exposeDockerAPIOnTCP2375":true,"extensionsEnabled":true,"filesharingDirectories":[],"integratedWslDistros":[],"kubernetesEnabled":true,"kubernetesInitialInstallPerformed":true,"lastLoginDate":0,"latestBannerKey":"","licenseTermsVersion":2,"lifecycleTimeoutSeconds":600,"memoryMiB":2048,"networkType":"gvisor","noWindowsContainers":false,"onlyMarketplaceExtensions":false,"openUIOnStartupDisabled":false,"overrideProxyExclude":"","overrideProxyHttp":"","overrideProxyHttps":"","proxyHttpMode":"s...m","requireVmnetd":false,"runWinServiceInWslMode":false,"settingsVersion":27,"showExtensionsSystemContainers":false,"showKubernetesSystemContainers":false,"showMacInstall":false,"skipUpdateToWSLPrompt":true,"skipWSLMountPerfWarning":false,"socksProxyPort":0,"swapMiB":1024,"swarmFederationExplicitlyLoggedOut":false,"themeSource":"system","tipLastId":"float64","tipLastViewedTime":1750837849180,"updateAvailableTime":1750837847628,"updateHostsFile":false,"updateInstallTime":0,"useBackgroundIndexing":true,"useContainerdSnapshotter":false,"useCredentialHelper":true,"useGrpcfuse":true,"useNightlyBuildUpdates":false,"useVirtualizationFramework":false,"useVirtualizationFrameworkRosetta":false,"useVirtualizationFrameworkVirtioFS":false,"useVpnkit":true,"useWindowsContainers":false,"vpnKitMaxPortIdleTime":"float64","vpnKitTransparentProxy":false,"vpnkitCIDR":"1...4","wslEnableGrpcfuse":false,"wslEngineEnabled":true}
+[2025-06-28T07:28:31.203621600Z][IPCClient][I] (bc01b4e0) e348b574-GoBackendClient-CSharp C->S BackendAPI GET /settings
+[2025-06-28T07:28:31.205617200Z][com.docker.backend.exe][I] (bc01b4e0) 1f87bfb3-BackendAPI S<-C e348b574-GoBackendClient-CSharp GET /settings
+[2025-06-28T07:28:31.220103500Z][com.docker.backend.exe][I] ****** detected defects ******
+[2025-06-28T07:28:31.220103500Z][com.docker.backend.exe][I] received entries: 0
+[2025-06-28T07:28:31.221101300Z][com.docker.backend.exe][I] tracked components:  
+[2025-06-28T07:28:31.221101300Z][com.docker.backend.exe][I] settings get: {"acceptCanaryUpdates":false,"activeOrganizationName":"","allowExperimentalFeatures":true,"analyticsEnabled":true,"autoDownloadUpdates":false,"autoStart":true,"containerTerminal":"integrated","cpus":6,"credentialHelper":"docker-credential-wincred.exe","customWslDistroDir":"","dataFolder":"C:\\ProgramData\\DockerDesktop\\vm-data","deprecatedCgroupv1":false,"disableHardwareAcceleration":false,"disableTips":false,"disableUpdate":false,"diskSizeMiB":65536,"diskTRIM":true,"displayRestartDialog":true,"displaySwitchWinLinContainers":false,"displayed18362Deprecation":false,"displayedElectronPopup":[],"displayedWelcomeSurvey":true,"dockerBinInstallPath":"system","enableDefaultDockerSocket":true,"enableIntegrationWithDefaultWslDistro":true,"enableSegmentDebug":false,"enhancedContainerIsolation":false,"exposeDockerAPIOnTCP2375":true,"extensionsEnabled":true,"filesharingDirectories":[],"integratedWslDistros":[],"kubernetesEnabled":true,"kubernetesInitialInstallPerformed":true,"lastLoginDate":0,"latestBannerKey":"","licenseTermsVersion":2,"lifecycleTimeoutSeconds":600,"memoryMiB":2048,"networkType":"gvisor","noWindowsContainers":false,"onlyMarketplaceExtensions":false,"openUIOnStartupDisabled":false,"overrideProxyExclude":"","overrideProxyHttp":"","overrideProxyHttps":"","proxyHttpMode":"s...m","requireVmnetd":false,"runWinServiceInWslMode":false,"settingsVersion":27,"showExtensionsSystemContainers":false,"showKubernetesSystemContainers":false,"showMacInstall":false,"skipUpdateToWSLPrompt":true,"skipWSLMountPerfWarning":false,"socksProxyPort":0,"swapMiB":1024,"swarmFederationExplicitlyLoggedOut":false,"themeSource":"system","tipLastId":"float64","tipLastViewedTime":1750837849180,"updateAvailableTime":1750837847628,"updateHostsFile":false,"updateInstallTime":0,"useBackgroundIndexing":true,"useContainerdSnapshotter":false,"useCredentialHelper":true,"useGrpcfuse":true,"useNightlyBuildUpdates":false,"useVirtualizationFramework":false,"useVirtualizationFrameworkRosetta":false,"useVirtualizationFrameworkVirtioFS":false,"useVpnkit":true,"useWindowsContainers":false,"vpnKitMaxPortIdleTime":"float64","vpnKitTransparentProxy":false,"vpnkitCIDR":"1...4","wslEnableGrpcfuse":false,"wslEngineEnabled":true}
+[2025-06-28T07:28:31.233921300Z][com.docker.backend.exe][I] ****** no detected defects ******
+[2025-06-28T07:28:31.238177900Z][com.docker.backend.exe][I] (e5839b18) 1f87bfb3-BackendAPI S->C e348b574-GoBackendClient-CSharp POST /events (447.4332ms): {"HasServerTimestamp":true,"content":"LinuxWSL2Engine failed to start: timeout waiting for WSL integration","docker":"failed to start","error":"{\"type\":\"*errordef.UnhandledError\",\"component\":\"nativeserver\",\"genericError\":{\"type\":\"*errors.errorString\",\"description\":\"fatal\"},\"originalError\":{\"type\":\"*errors.errorString\",\"description\":\"timeout waiting for WSL integration\"}}","timestamp":0}
+[2025-06-28T07:28:31.239176800Z][com.docker.backend.exe][I] (bc01b4e0) 1f87bfb3-BackendAPI S->C e348b574-GoBackendClient-CSharp GET /settings (32.5607ms): {"acceptCanaryUpdates":false,"activeOrganizationName":"","allowExperimentalFeatures":true,"analyticsEnabled":true,"autoDownloadUpdates":false,"autoStart":true,"containerTerminal":"integrated","cpus":6,"credentialHelper":"docker-credential-wincred.exe","customWslDistroDir":"","dataFolder":"C:\\ProgramData\\DockerDesktop\\vm-data","deprecatedCgroupv1":false,"disableHardwareAcceleration":false,"disableTips":false,"disableUpdate":false,"diskSizeMiB":65536,"diskTRIM":true,"displayRestartDialog":true,"displaySwitchWinLinContainers":false,"displayed18362Deprecation":false,"displayedElectronPopup":[],"displayedWelcomeSurvey":true,"dockerBinInstallPath":"system","enableDefaultDockerSocket":true,"enableIntegrationWithDefaultWslDistro":true,"enableSegmentDebug":false,"enhancedContainerIsolation":false,"exposeDockerAPIOnTCP2375":true,"extensionsEnabled":true,"filesharingDirectories":[],"integratedWslDistros":[],"kubernetesEnabled":true,"kubernetesInitialInstallPerformed":true,"lastLoginDate":0,"latestBannerKey":"","licenseTermsVersion":2,"lifecycleTimeoutSeconds":600,"memoryMiB":2048,"networkType":"gvisor","noWindowsContainers":false,"onlyMarketplaceExtensions":false,"openUIOnStartupDisabled":false,"overrideProxyExclude":"","overrideProxyHttp":"","overrideProxyHttps":"","proxyHttpMode":"s...m","requireVmnetd":false,"runWinServiceInWslMode":false,"settingsVersion":27,"showExtensionsSystemContainers":false,"showKubernetesSystemContainers":false,"showMacInstall":false,"skipUpdateToWSLPrompt":true,"skipWSLMountPerfWarning":false,"socksProxyPort":0,"swapMiB":1024,"swarmFederationExplicitlyLoggedOut":false,"themeSource":"system","tipLastId":"float64","tipLastViewedTime":1750837849180,"updateAvailableTime":1750837847628,"updateHostsFile":false,"updateInstallTime":0,"useBackgroundIndexing":true,"useContainerdSnapshotter":false,"useCredentialHelper":true,"useGrpcfuse":true,"useNightlyBuildUpdates":false,"useVirtualizationFramework":false,"useVirtualizationFrameworkRosetta":false,"useVirtualizationFrameworkVirtioFS":false,"useVpnkit":true,"useWindowsContainers":false,"vpnKitMaxPortIdleTime":"float64","vpnKitTransparentProxy":false,"vpnkitCIDR":"1...4","wslEnableGrpcfuse":false,"wslEngineEnabled":true}
+[2025-06-28T07:28:31.246723200Z][IPCClient][I] (e5839b18) e348b574-GoBackendClient-CSharp C<-S 1f87bfb3-BackendAPI POST /events (457ms): {"timestamp":0,"HasServerTimestamp":true,"content":"LinuxWSL2Engine failed to start: timeout waiting for WSL integration","docker":"failed to start","error":"{\"type\":\"*errordef.UnhandledError\",\"component\":\"nativeserver\",\"genericError\":{\"type\":\"*errors.errorString\",\"description\":\"fatal\"},\"originalError\":{\"type\":\"*errors.errorString\",\"description\":\"timeout waiting for WSL integration\"}}"}
+[2025-06-28T07:28:31.247722900Z][EngineStateMachine][D] sending state Docker.ApiServices.StateMachines.FailedToStartState to state change sink
+[2025-06-28T07:28:31.248721600Z][IPCClient][I] (bc01b4e0) e348b574-GoBackendClient-CSharp C<-S 1f87bfb3-BackendAPI GET /settings (45ms): {"swarmFederationExplicitlyLoggedOut":false,"integratedWslDistros":[],"enableIntegrationWithDefaultWslDistro":true,"skipUpdateToWSLPrompt":true,"skipWSLMountPerfWarning":false,"displaySwitchWinLinContainers":false,"displayed18362Deprecation":false,"settingsVersion":27,"autoStart":true,"activeOrganizationName":"","useCredentialHelper":true,"credentialHelper":"docker-credential-wincred.exe","disableTips":false,"tipLastViewedTime":1750837849180,"tipLastId":"...","updateAvailableTime":1750837847628,"updateInstallTime":0,"disableUpdate":false,"openUIOnStartupDisabled":false,"analyticsEnabled":true,"displayedWelcomeSurvey":true,"disableHardwareAcceleration":false,"displayRestartDialog":true,"displayedElectronPopup":[],"latestBannerKey":"","acceptCanaryUpdates":false,"useNightlyBuildUpdates":false,"autoDownloadUpdates":false,"lastLoginDate":0,"themeSource":"system","containerTerminal":"integrated","allowExperimentalFeatures":true,"enableSegmentDebug":false,"dataFolder":"C:\\ProgramData\\DockerDesktop\\vm-data","memoryMiB":2048,"swapMiB":1024,"cpus":6,"diskSizeMiB":65536,"diskTRIM":true,"vpnkitCIDR":"...","socksProxyPort":0,"proxyHttpMode":"system","overrideProxyHttp":"...","overrideProxyHttps":"...","overrideProxyExclude":"...","filesharingDirectories":[],"kubernetesEnabled":true,"showKubernetesSystemContainers":false,"kubernetesInitialInstallPerformed":true,"useVirtualizationFramework":false,"useVirtualizationFrameworkVirtioFS":false,"useVirtualizationFrameworkRosetta":false,"useGrpcfuse":true,"networkType":"gvisor","useVpnkit":true,"vpnKitMaxPortIdleTime":"...","vpnKitTransparentProxy":false,"useWindowsContainers":false,"noWindowsContainers":false,"wslEngineEnabled":true,"wslEnableGrpcfuse":false,"runWinServiceInWslMode":false,"customWslDistroDir":"","licenseTermsVersion":2,"deprecatedCgroupv1":false,"useContainerdSnapshotter":false,"lifecycleTimeoutSeconds":600,"exposeDockerAPIOnTCP2375":true,"enhancedContainerIsolation":false,"showMacInstall":false,"extensionsEnabled":true,"onlyMarketplaceExtensions":false,"showExtensionsSystemContainers":false,"useBackgroundIndexing":true,"dockerBinInstallPath":"system","enableDefaultDockerSocket":true,"updateHostsFile":false,"requireVmnetd":false}
+[2025-06-28T07:28:31.249723300Z][IPCClient][I] (41ebf627) e348b574-GoBackendClient-CSharp C->S BackendAPI GET /settings
+[2025-06-28T07:28:31.249723300Z][com.docker.backend.exe][I] (41ebf627) 1f87bfb3-BackendAPI S<-C e348b574-GoBackendClient-CSharp GET /settings
+[2025-06-28T07:28:31.250721500Z][com.docker.backend.exe][I] (41ebf627) 1f87bfb3-BackendAPI S->C e348b574-GoBackendClient-CSharp GET /settings (998.2ﾂｵs): {"acceptCanaryUpdates":false,"activeOrganizationName":"","allowExperimentalFeatures":true,"analyticsEnabled":true,"autoDownloadUpdates":false,"autoStart":true,"containerTerminal":"integrated","cpus":6,"credentialHelper":"docker-credential-wincred.exe","customWslDistroDir":"","dataFolder":"C:\\ProgramData\\DockerDesktop\\vm-data","deprecatedCgroupv1":false,"disableHardwareAcceleration":false,"disableTips":false,"disableUpdate":false,"diskSizeMiB":65536,"diskTRIM":true,"displayRestartDialog":true,"displaySwitchWinLinContainers":false,"displayed18362Deprecation":false,"displayedElectronPopup":[],"displayedWelcomeSurvey":true,"dockerBinInstallPath":"system","enableDefaultDockerSocket":true,"enableIntegrationWithDefaultWslDistro":true,"enableSegmentDebug":false,"enhancedContainerIsolation":false,"exposeDockerAPIOnTCP2375":true,"extensionsEnabled":true,"filesharingDirectories":[],"integratedWslDistros":[],"kubernetesEnabled":true,"kubernetesInitialInstallPerformed":true,"lastLoginDate":0,"latestBannerKey":"","licenseTermsVersion":2,"lifecycleTimeoutSeconds":600,"memoryMiB":2048,"networkType":"gvisor","noWindowsContainers":false,"onlyMarketplaceExtensions":false,"openUIOnStartupDisabled":false,"overrideProxyExclude":"","overrideProxyHttp":"","overrideProxyHttps":"","proxyHttpMode":"s...m","requireVmnetd":false,"runWinServiceInWslMode":false,"settingsVersion":27,"showExtensionsSystemContainers":false,"showKubernetesSystemContainers":false,"showMacInstall":false,"skipUpdateToWSLPrompt":true,"skipWSLMountPerfWarning":false,"socksProxyPort":0,"swapMiB":1024,"swarmFederationExplicitlyLoggedOut":false,"themeSource":"system","tipLastId":"float64","tipLastViewedTime":1750837849180,"updateAvailableTime":1750837847628,"updateHostsFile":false,"updateInstallTime":0,"useBackgroundIndexing":true,"useContainerdSnapshotter":false,"useCredentialHelper":true,"useGrpcfuse":true,"useNightlyBuildUpdates":false,"useVirtualizationFramework":false,"useVirtualizationFrameworkRosetta":false,"useVirtualizationFrameworkVirtioFS":false,"useVpnkit":true,"useWindowsContainers":false,"vpnKitMaxPortIdleTime":"float64","vpnKitTransparentProxy":false,"vpnkitCIDR":"1...4","wslEnableGrpcfuse":false,"wslEngineEnabled":true}
+[2025-06-28T07:28:31.255239800Z][EngineStateMachine][D] State Docker.ApiServices.StateMachines.FailedToStartState sent to state change sink
+[2025-06-28T07:28:31.280666800Z][Engines][E] Start failed with timeout waiting for WSL integration
+   場所 Docker.Engines.WSL2.LinuxWSL2Engine.<DoStartAsync>d__10.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\WSL2\LinuxWSL2Engine.cs:行 93
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.TaskExtensions.<WrapAsyncInCancellationException>d__0.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\TaskExtensions.cs:行 29
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.StartTransition.<DoRunAsync>d__7.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\StartTransition.cs:行 79
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 Docker.ApiServices.StateMachines.StartTransition.<DoRunAsync>d__7.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\StartTransition.cs:行 108
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.EngineStateMachine.<StartAsync>d__17.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\EngineStateMachine.cs:行 97
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.Engines.Engines.<StartAsync>d__25.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\Engines.cs:行 126)
+[2025-06-28T07:28:31.280666800Z][IPCClient][I] (41ebf627) e348b574-GoBackendClient-CSharp C<-S 1f87bfb3-BackendAPI GET /settings (30ms): {"swarmFederationExplicitlyLoggedOut":false,"integratedWslDistros":[],"enableIntegrationWithDefaultWslDistro":true,"skipUpdateToWSLPrompt":true,"skipWSLMountPerfWarning":false,"displaySwitchWinLinContainers":false,"displayed18362Deprecation":false,"settingsVersion":27,"autoStart":true,"activeOrganizationName":"","useCredentialHelper":true,"credentialHelper":"docker-credential-wincred.exe","disableTips":false,"tipLastViewedTime":1750837849180,"tipLastId":"...","updateAvailableTime":1750837847628,"updateInstallTime":0,"disableUpdate":false,"openUIOnStartupDisabled":false,"analyticsEnabled":true,"displayedWelcomeSurvey":true,"disableHardwareAcceleration":false,"displayRestartDialog":true,"displayedElectronPopup":[],"latestBannerKey":"","acceptCanaryUpdates":false,"useNightlyBuildUpdates":false,"autoDownloadUpdates":false,"lastLoginDate":0,"themeSource":"system","containerTerminal":"integrated","allowExperimentalFeatures":true,"enableSegmentDebug":false,"dataFolder":"C:\\ProgramData\\DockerDesktop\\vm-data","memoryMiB":2048,"swapMiB":1024,"cpus":6,"diskSizeMiB":65536,"diskTRIM":true,"vpnkitCIDR":"...","socksProxyPort":0,"proxyHttpMode":"system","overrideProxyHttp":"...","overrideProxyHttps":"...","overrideProxyExclude":"...","filesharingDirectories":[],"kubernetesEnabled":true,"showKubernetesSystemContainers":false,"kubernetesInitialInstallPerformed":true,"useVirtualizationFramework":false,"useVirtualizationFrameworkVirtioFS":false,"useVirtualizationFrameworkRosetta":false,"useGrpcfuse":true,"networkType":"gvisor","useVpnkit":true,"vpnKitMaxPortIdleTime":"...","vpnKitTransparentProxy":false,"useWindowsContainers":false,"noWindowsContainers":false,"wslEngineEnabled":true,"wslEnableGrpcfuse":false,"runWinServiceInWslMode":false,"customWslDistroDir":"","licenseTermsVersion":2,"deprecatedCgroupv1":false,"useContainerdSnapshotter":false,"lifecycleTimeoutSeconds":600,"exposeDockerAPIOnTCP2375":true,"enhancedContainerIsolation":false,"showMacInstall":false,"extensionsEnabled":true,"onlyMarketplaceExtensions":false,"showExtensionsSystemContainers":false,"useBackgroundIndexing":true,"dockerBinInstallPath":"system","enableDefaultDockerSocket":true,"updateHostsFile":false,"requireVmnetd":false}
+[2025-06-28T07:28:31.291657800Z][IPCServer][I] (00ce0983) 34fcc17f-CSharpAPI S->C 38c35ad4-BackendCMD POST /engine/start (677071ms): OK
+[2025-06-28T07:28:31.531157100Z][Engines][E] Start failed with timeout waiting for WSL integration
+   場所 Docker.Engines.WSL2.LinuxWSL2Engine.<DoStartAsync>d__10.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\WSL2\LinuxWSL2Engine.cs:行 93
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.TaskExtensions.<WrapAsyncInCancellationException>d__0.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\TaskExtensions.cs:行 29
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.StartTransition.<DoRunAsync>d__7.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\StartTransition.cs:行 79
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 Docker.ApiServices.StateMachines.StartTransition.<DoRunAsync>d__7.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\StartTransition.cs:行 108
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 Docker.Engines.Engines.<WaitCurrentTransitionsAsync>d__31.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\Engines.cs:行 292
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.Engines.Engines.<StartAsync>d__25.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\Engines.cs:行 116)
+[2025-06-28T07:28:31.531157100Z][IPCServer][I] (00ce0983-2) 34fcc17f-CSharpAPI S->C 38c35ad4-BackendCMD POST /engine/start (377201ms): OK
+[2025-06-28T07:28:31.532158900Z][Engines][E] Start failed with timeout waiting for WSL integration
+   場所 Docker.Engines.WSL2.LinuxWSL2Engine.<DoStartAsync>d__10.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\WSL2\LinuxWSL2Engine.cs:行 93
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.TaskExtensions.<WrapAsyncInCancellationException>d__0.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\TaskExtensions.cs:行 29
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.ApiServices.StateMachines.StartTransition.<DoRunAsync>d__7.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\StartTransition.cs:行 79
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 Docker.ApiServices.StateMachines.StartTransition.<DoRunAsync>d__7.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.ApiServices\StateMachines\StartTransition.cs:行 108
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 Docker.Engines.Engines.<WaitCurrentTransitionsAsync>d__31.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\Engines.cs:行 292
+--- 直前に例外がスローされた場所からのスタック トレースの終わり ---
+   場所 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   場所 System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   場所 Docker.Engines.Engines.<StartAsync>d__25.MoveNext() 場所 C:\workspaces\PR-21718\src\github.com\docker\pinata\win\src\Docker.Engines\Engines.cs:行 116)
+[2025-06-28T07:28:31.532158900Z][IPCServer][I] (00ce0983-3) 34fcc17f-CSharpAPI S->C 38c35ad4-BackendCMD POST /engine/start (76179ms): OK
+[2025-06-28T07:28:31.533239900Z][com.docker.backend.exe][I] (00ce0983-3) 38c35ad4-BackendCMD C<-S 34fcc17f-CSharpAPI POST /engine/start (1m16.2166436s): OK
+[2025-06-28T07:28:31.545703600Z][com.docker.backend.exe][I] ipc.NewClient: c9936368-RootlessManager -> \\.\pipe\dockerBackendV2 com.docker.service
+[2025-06-28T07:28:31.546289500Z][com.docker.backend.exe][I] (5f5b8dcf) c9936368-RootlessManager C->S com.docker.service GET /ping
+[2025-06-28T07:28:31.632269400Z][com.docker.backend.exe][W] (5f5b8dcf) c9936368-RootlessManager C<-S NoResponse GET /ping (85.9799ms): Get "http://ipc/ping": open \\.\pipe\dockerBackendV2: The system cannot find the file specified.
+[2025-06-28T07:28:31.632269400Z][com.docker.backend.exe.state][I] overwriting desktop state error: LinuxWSL2Engine failed to start: timeout waiting for WSL integration
+[2025-06-28T07:28:31.633269200Z][com.docker.backend.exe][I] sending track event: desktopState
+[2025-06-28T07:28:31.633269200Z][com.docker.backend.exe][I] (12b76ab2) 3c41a4e3-PauseHDL C->S procd POST /unpause
+[2025-06-28T07:28:31.638270000Z][com.docker.backend.exe][W] (12b76ab2) 3c41a4e3-PauseHDL C<-S NoResponse POST /unpause (4.0011ms): Post "http://ipc/unpause": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:31.638270000Z][com.docker.backend.exe][I] (12b76ab2-1) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:31.639269200Z][com.docker.backend.exe][W] (12b76ab2-1) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (0s): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:32.647782700Z][com.docker.backend.exe][I] (12b76ab2-2) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:32.648366000Z][com.docker.backend.exe][W] (12b76ab2-2) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (583.3ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:33.662898000Z][com.docker.backend.exe][I] (12b76ab2-3) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:33.663457700Z][com.docker.backend.exe][W] (12b76ab2-3) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (559.7ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:34.671419200Z][com.docker.backend.exe][I] (12b76ab2-4) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:34.672119000Z][com.docker.backend.exe][W] (12b76ab2-4) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (699.8ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:35.684025700Z][com.docker.backend.exe][I] (12b76ab2-5) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:35.684657900Z][com.docker.backend.exe][W] (12b76ab2-5) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (632.2ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:36.686722900Z][com.docker.backend.exe][I] (12b76ab2-6) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:36.696484100Z][com.docker.backend.exe][W] (12b76ab2-6) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (9.7612ms): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:37.700365600Z][com.docker.backend.exe][I] (12b76ab2-7) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:37.700957800Z][com.docker.backend.exe][W] (12b76ab2-7) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (592.2ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:38.714348300Z][com.docker.backend.exe][I] (12b76ab2-8) 3c41a4e3-PauseHDL C->S procd GET /ping
+[2025-06-28T07:28:38.715346800Z][com.docker.backend.exe][W] (12b76ab2-8) 3c41a4e3-PauseHDL C<-S NoResponse GET /ping (998.5ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerProcd: The system cannot find the file specified.
+[2025-06-28T07:28:38.723251500Z][com.docker.backend.exe][I] supervisor - stop backend processes
+[2025-06-28T07:28:38.724352900Z][com.docker.backend.exe][I] supervisor - stop engine
+[2025-06-28T07:28:38.724352900Z][com.docker.backend.exe][I] shutting down 3 tasks
+[2025-06-28T07:28:38.726685600Z][com.docker.backend.exe][I] (ba95e0ef) 38c35ad4-BackendCMD C->S CSharpAPI POST /engine/stop
+[2025-06-28T07:28:38.733309400Z][com.docker.backend.exe][I] shutdown group 0/0: [com.docker.extensions.exe with pid: 13196 com.docker.dev-envs.exe with pid: 15616 com.docker.build.exe with pid: 20588]
+[2025-06-28T07:28:38.775875000Z][IPCServer][I] (ba95e0ef) 34fcc17f-CSharpAPI S<-C 38c35ad4-BackendCMD POST /engine/stop
+github.com/docker/pinata/common/pkg/gui.(*guiClient).StopAsync(0xc0001fc180?)
+	github.com/docker/pinata/common/pkg/gui/client_windows.go:30 +0x3f
+github.com/docker/pinata/common/cmd/com.docker.backend/supervisor.(*Supervisor).stopEngine(0xc000502160, {0x0, 0x0})
+	github.com/docker/pinata/common/cmd/com.docker.backend/supervisor/supervisor_windows.go:49 +0x16e
+github.com/docker/pinata/common/cmd/com.docker.backend/supervisor.(*Supervisor).Stop(0xc000502160)
+	github.com/docker/pinata/common/cmd/com.docker.backend/supervisor/supervisor.go:124 +0xd7
+main.run.func5()
+	github.com/docker/pinata/common/cmd/com.docker.backend/main.go:297 +0x1d
+main.run({0x2631cf0, 0xc00019a010})
+	github.com/docker/pinata/common/cmd/com.docker.backend/main.go:305 +0xe3f
+main.main()
+	github.com/docker/pinata/common/cmd/com.docker.backend/main.go:76 +0x2b
+[2025-06-28T07:28:38.781107300Z][com.docker.backend.exe][E] com.docker.dev-envs.exe with pid: 15616 shutdown with exit code 1
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [common/cmd/com.docker.backend/supervisor/tasks.(*Task).start.func1()
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [	common/cmd/com.docker.backend/supervisor/tasks/task.go:339 +0x265
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [common/cmd/com.docker.backend/supervisor/tasks.(*Task).start
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [	common/cmd/com.docker.backend/supervisor/tasks/task.go:307 +0x9bb
+[2025-06-28T07:28:38.781640000Z][com.docker.backend.exe][E] com.docker.extensions.exe with pid: 13196 shutdown with exit code 1
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [common/cmd/com.docker.backend/supervisor/tasks.(*Task).start.func1()
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [	common/cmd/com.docker.backend/supervisor/tasks/task.go:339 +0x265
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [common/cmd/com.docker.backend/supervisor/tasks.(*Task).start
+[2025-06-28T07:28:38.787998800Z][GoBackendProcess][I] [	common/cmd/com.docker.backend/supervisor/tasks/task.go:307 +0x9bb
+[2025-06-28T07:28:38.787202900Z][com.docker.backend.exe][I] all 3 tasks shutdown
+[2025-06-28T07:28:38.787998800Z][com.docker.backend.exe][E] com.docker.build.exe with pid: 20588 shutdown with exit code 1
+[2025-06-28T07:28:38.801146500Z][GoBackendProcess][I] [common/cmd/com.docker.backend/supervisor/tasks.(*Task).start.func1()
+[2025-06-28T07:28:38.801651100Z][GoBackendProcess][I] [	common/cmd/com.docker.backend/supervisor/tasks/task.go:339 +0x265
+[2025-06-28T07:28:38.801651100Z][GoBackendProcess][I] [common/cmd/com.docker.backend/supervisor/tasks.(*Task).start
+[2025-06-28T07:28:38.801651100Z][GoBackendProcess][I] [	common/cmd/com.docker.backend/supervisor/tasks/task.go:307 +0x9bb
+[2025-06-28T07:28:38.912735500Z][EngineStateMachine][I] sending state event to backend: stopped
+[2025-06-28T07:28:38.945494700Z][IPCClient][I] (49aca35f) e348b574-GoBackendClient-CSharp C->S BackendAPI POST /events: {"timestamp":0,"content":"LinuxWSL2Engine is stopped","docker":"stopped","kubernetes":null,"error":null}
+[2025-06-28T07:28:38.946373400Z][com.docker.backend.exe][I] (49aca35f) 1f87bfb3-BackendAPI S<-C e348b574-GoBackendClient-CSharp POST /events
+[2025-06-28T07:28:38.946878400Z][com.docker.backend.exe][I] (49aca35f) 1f87bfb3-BackendAPI S<-C e348b574-GoBackendClient-CSharp bind: {"HasServerTimestamp":false,"content":"LinuxWSL2Engine is stopped","docker":"stopped","timestamp":0}
+[2025-06-28T07:28:38.947411000Z][com.docker.backend.exe][I] sending to gui: 1751095718947411000 (from server) docker: stopped (LinuxWSL2Engine is stopped) 
+[2025-06-28T07:28:38.947411000Z][com.docker.backend.exe][I] 1f87bfb3-BackendAPI /engine/state --> [2025-06-28T16:28:38.947411000+09:00] (6ba2928b) engine stopped : LinuxWSL2Engine is stopped
+[2025-06-28T07:28:38.947938300Z][com.docker.backend.exe][I] (fa6616bd) 38c35ad4-BackendCMD C->S CSharpAPI POST /docker: {"state":"stopped"}
+[2025-06-28T07:28:38.983121300Z][IPCServer][I] (fa6616bd) 34fcc17f-CSharpAPI S<-C 38c35ad4-BackendCMD POST /docker
+github.com/docker/pinata/common/pkg/gui.(*guiClient).SendDockerState(0xc000e055e0, {0xc0010c3f40?, 0x23299c8?})
+	github.com/docker/pinata/common/pkg/gui/state.go:15 +0x70
+github.com/docker/pinata/common/cmd/com.docker.backend/internal/vm.(*manager).HandleEvent(0xc0005026e0, {0x184d244757915438, 0x1, {0xc0009bc8a0, 0x1a}, {0xc0010c3f40, 0x7}, {0x0, 0x0}, {0x0, ...}, ...})
+	github.com/docker/pinata/common/cmd/com.docker.backend/internal/vm/manager.go:363 +0x105
+github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events.(*Handler).PushEvent(0xc000116a50, {0x184d244757915438, 0x1, {0xc0009bc8a0, 0x1a}, {0xc0010c3f40, 0x7}, {0x0, 0x0}, {0x0, ...}, ...})
+	github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events/events.go:84 +0x2b5
+github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events.(*Handler).Push(0xc000116a50, {0x264d938, 0xc0008cfa00})
+	github.com/docker/pinata/common/cmd/com.docker.backend/internal/handlers/events/events.go:55 +0x225
+[2025-06-28T07:28:38.984036400Z][IPCServer][I] (fa6616bd) 34fcc17f-CSharpAPI S->C 38c35ad4-BackendCMD POST /docker (0ms): OK
+[2025-06-28T07:28:38.984542800Z][com.docker.backend.exe][I] (fa6616bd) 38c35ad4-BackendCMD C<-S 34fcc17f-CSharpAPI POST /docker (37.1318ms): OK
+[2025-06-28T07:28:38.985112800Z][com.docker.backend.exe.state][I] backend state changed to stopped (LinuxWSL2Engine is stopped)
+[2025-06-28T07:28:38.985691200Z][com.docker.backend.exe][I] (49aca35f) 1f87bfb3-BackendAPI S->C e348b574-GoBackendClient-CSharp POST /events (38.7394ms): {"HasServerTimestamp":true,"content":"LinuxWSL2Engine is stopped","docker":"stopped","timestamp":0}
+[2025-06-28T07:28:38.997902500Z][IPCClient][I] (49aca35f) e348b574-GoBackendClient-CSharp C<-S 1f87bfb3-BackendAPI POST /events (51ms): {"timestamp":0,"HasServerTimestamp":true,"content":"LinuxWSL2Engine is stopped","docker":"stopped"}
+[2025-06-28T07:28:38.997902500Z][EngineStateMachine][D] sending state Docker.ApiServices.StateMachines.StoppedState to state change sink
+[2025-06-28T07:28:38.997902500Z][EngineStateMachine][D] State Docker.ApiServices.StateMachines.StoppedState sent to state change sink
+[2025-06-28T07:28:38.997902500Z][IPCServer][I] (ba95e0ef) 34fcc17f-CSharpAPI S->C 38c35ad4-BackendCMD POST /engine/stop (221ms): OK
+[2025-06-28T07:28:38.999240000Z][com.docker.backend.exe][I] (ba95e0ef) 38c35ad4-BackendCMD C<-S 34fcc17f-CSharpAPI POST /engine/stop (272.5544ms): OK
+[2025-06-28T07:28:39.001322800Z][com.docker.backend.exe][I] socketforwarder: stopping
+[2025-06-28T07:28:39.051220000Z][com.docker.backend.exe][I] socketforwarder: context has been cancelled
+[2025-06-28T07:28:39.054165300Z][com.docker.backend.exe][I] ipc.NewClient: 05958303-ServiceStopper -> \\.\pipe\dockerBackendV2 com.docker.service
+[2025-06-28T07:28:39.054714700Z][com.docker.backend.exe][I] (ffb880ca) 05958303-ServiceStopper C->S com.docker.service GET /ping
+[2025-06-28T07:28:39.055220600Z][com.docker.backend.exe][W] (ffb880ca) 05958303-ServiceStopper C<-S NoResponse GET /ping (505.9ﾂｵs): Get "http://ipc/ping": open \\.\pipe\dockerBackendV2: The system cannot find the file specified.
+[2025-06-28T07:28:39.056288600Z][com.docker.backend.exe][I] checking service must run: wslEngineEnabled = true, runWinServiceInWslMode = false, useWindowsContainers = false, serviceIsRunning = false
+[2025-06-28T07:28:39.079831900Z][GoBackendClient][E] HttpOS Client: Exception:Reached end of stream before finding a line seperator
+[2025-06-28T07:28:39.107855800Z][GoBackendProcess][I] C:\Program Files\Docker\Docker\resources\com.docker.backend.exe -native-api exited with code 0
+[2025-06-28T07:28:39.108864100Z][GoBackendProcess][I] backend process exited with code 0
+[2025-06-28T07:28:40.107723600Z][EngineStateListener][D] received state Docker.ApiServices.StateMachines.StartTransition from LinuxWSL2
+[2025-06-28T07:28:40.132244900Z][EngineStateNotificationRecorder][D] Registered state {"State":"starting","Mode":"linux","date":1751095720}
+[2025-06-28T07:28:40.144246700Z][EngineStateListener][D] received state Docker.ApiServices.StateMachines.FailedToStartState from LinuxWSL2
+[2025-06-28T07:28:40.144246700Z][EngineStateNotificationRecorder][D] Registered state {"State":"failed to start","Mode":"linux","date":1751095720}
+[2025-06-28T07:28:41.519548700Z][EngineStateListener][D] received state Docker.ApiServices.StateMachines.StoppedState from LinuxWSL2
+[2025-06-28T07:28:41.519548700Z][EngineStateNotificationRecorder][D] Registered state {"State":"stopped","Mode":"linux","date":1751095721}
+[2025-06-28T07:28:41.535313200Z][CliInstaller][I] Detaching C:\Program Files\Docker\Docker\Docker Desktop Installer.exe install -package docker:pre-downloaded --confirm --auto-close-and-start-app
