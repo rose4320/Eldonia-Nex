@@ -8,7 +8,8 @@ alwaysApply: true
 ## 現行スタック（優先）
 
 - **Frontend**: ルート `src/`（Next.js 16 + Supabase SSR）
-- **Backend/DB**: `supabase/migrations/` + RLS（Django `backend/` は明示指示時のみ）
+- **Backend/DB**: `supabase/migrations/` + RLS（ユーザー向けアプリ）
+- **Django 運用**: `backend/` + `/admin/` — 料金・財務・広告受注等（`Django_Manager`、Backend_Manager と協議）
 - **デザイン**: `agents/UI_UX_Designer.agent.md`（Dark Fantasy / 黒×金）
 
 ## エージェント分担
@@ -19,7 +20,8 @@ alwaysApply: true
 | Project_Producer | 企画・推進 | ロードマップ、依存関係、完了条件 |
 | UI_UX_Designer | デザイン | 色・フォント・コンポーネント規約 |
 | Frontend_Manager | FE 実装 | `src/app/`, `src/components/`, `src/lib/` |
-| Backend_Manager | BE/DB | `supabase/migrations/`, `src/types/database.ts` |
+| Backend_Manager | BE/DB（Supabase） | `supabase/migrations/`, `src/types/database.ts`, API Routes |
+| Django_Manager | Django 運用 | `backend/`, `/admin/`, 料金・財務・広告設定（Backend_Manager と協議） |
 | Support_Desk_Manager | サポート | `src/app/help/`, チケット・FAQ |
 | Shop_Manager | SHOP | `src/app/shop/`, `agents/Shop_Manager.agent.md` |
 | Events_Manager | EVENTS | `src/app/events/`, `agents/Events_Manager.agent.md` |
@@ -32,7 +34,7 @@ alwaysApply: true
 1. **Intake** — 要望を分類し、担当エージェントを決める
 2. **Plan** — 変更ファイル・マイグレーション要否を明示
 3. **Implement** — 担当範囲のみ編集（UI/UX 規約に従う）
-4. **Verify** — `npm run lint` + `npm run build`（必要なら `manage.py check`）
+4. **Verify** — `npm run lint` + `npm run build`（Django 変更時は `manage.py check` + Admin 確認）
 5. **Report** — 担当エージェント名・変更概要・次タスクを日本語で報告
 
 ## サブエージェント利用

@@ -1,0 +1,38 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  {% if step %}<p class="ops-step">ステップ {{ step }} / 2</p>{% endif %}
+  <h1>{{ title }}</h1>
+  <p class="ops-lead">
+    プラン名の横の <strong>（　）</strong> の数字だけを変えてください。
+    保存すると Free / Standard / Pro の料金がまとめて更新されます。
+  </p>
+</header>
+
+<form method="post" class="ops-card">
+  {% csrf_token %}
+  <ul class="ops-plan-list">
+    {% for field in form %}
+      <li class="ops-plan-row">
+        <span class="ops-plan-label">{{ field.label }} = （</span>
+        {{ field }}
+        <span class="ops-plan-label">）円 / 月</span>
+        {% if field.errors %}<p class="ops-error">{{ field.errors.0 }}</p>{% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="ops-actions">
+    <button type="submit" class="ops-btn ops-btn-primary">確認画面へ →</button>
+    <a class="ops-btn ops-btn-ghost" href="{% url 'admin:ops_settings_hub' %}">キャンセル</a>
+  </div>
+</form>
+
+<aside class="ops-help">
+  <h2>💡 ヒント</h2>
+  <ul>
+    <li>数字は半角で入力（例: 800）</li>
+    <li>次の画面で変更内容を確認し、<strong>管理人パスワード</strong>が必要です</li>
+  </ul>
+</aside>
+{% endblock %}

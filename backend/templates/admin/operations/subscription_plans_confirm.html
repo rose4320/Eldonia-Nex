@@ -1,0 +1,40 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  <p class="ops-step">ステップ {{ step }} / 2</p>
+  <h1>{{ title }}</h1>
+  <p class="ops-lead ops-lead-warn">⚠️ 重要な変更です。内容をよく読んでから、管理人パスワードを入力してください。</p>
+</header>
+
+<section class="ops-card">
+  <h2 class="ops-subtitle">変更内容</h2>
+  <table class="ops-table">
+    <thead><tr><th>プラン</th><th>変更前</th><th>→</th><th>変更後</th></tr></thead>
+    <tbody>
+      {% for row in preview %}
+        <tr class="{% if row.changed %}ops-row-changed{% endif %}">
+          <td>{{ row.label }}</td>
+          <td>（{{ row.before }}）円</td>
+          <td>→</td>
+          <td><strong>（{{ row.after }}）円</strong></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+
+<form method="post" class="ops-card">
+  {% csrf_token %}
+  <h2 class="ops-subtitle">管理人パスワード確認</h2>
+  <label class="ops-field-label" for="{{ form.admin_password.id_for_label }}">{{ form.admin_password.label }}</label>
+  {{ form.admin_password }}
+  {% if form.admin_password.errors %}<p class="ops-error">{{ form.admin_password.errors.0 }}</p>{% endif %}
+  <label class="ops-checkbox">{{ form.confirm_understand }} {{ form.confirm_understand.label }}</label>
+  {% if form.confirm_understand.errors %}<p class="ops-error">{{ form.confirm_understand.errors.0 }}</p>{% endif %}
+  <div class="ops-actions">
+    <button type="submit" class="ops-btn ops-btn-danger">この内容で更新する</button>
+    <a class="ops-btn ops-btn-ghost" href="{{ back_url|default:'#' }}">← 戻って修正</a>
+  </div>
+</form>
+{% endblock %}

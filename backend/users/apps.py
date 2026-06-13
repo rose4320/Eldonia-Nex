@@ -10,3 +10,6 @@ class UsersConfig(AppConfig):
             from . import signals  # noqa: F401
         except Exception:
             pass
+        from .admin_hooks import register_operations_admin_urls
+
+        register_operations_admin_urls()

@@ -1,0 +1,220 @@
+{% extends "admin/index.html" %}
+{% load static i18n %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'admin/css/eldonia-ops.css' %}">
+{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'admin/js/eldonia-dashboard.js' %}" defer></script>
+{% endblock %}
+
+{% block content %}
+{% with d=ops_dashboard u=d.users s=d.sales f=d.fees r=d.referrals q=d.quest %}
+<div class="ops-dashboard" id="ops-dashboard" data-stats-url="{{ ops_stats_url|default:'/admin/operations/dashboard-stats/' }}">
+
+  <header class="ops-dash-header">
+    <div>
+      <p class="ops-dash-eyebrow">Nexus Operations Console</p>
+      <h1>運用ダッシュボード</h1>
+      <p class="ops-dash-lead">リアルタイム指標・手数料・Quest・紹介還元をここで確認・操作できます。</p>
+    </div>
+    <div class="ops-dash-meta">
+      <span class="ops-live-dot" aria-hidden="true"></span>
+      <span>最終更新 <strong id="ops-updated-at">{{ d.updated_at|date:"H:i:s" }}</strong></span>
+      <button type="button" class="ops-btn ops-btn-ghost ops-btn-sm" id="ops-refresh-btn">↻ 更新</button>
+    </div>
+  </header>
+
+  {# ── KPI カード ── #}
+  <section class="ops-kpi-grid" aria-label="主要指標">
+    <article class="ops-kpi-card ops-kpi-blue">
+      <p class="ops-kpi-label">👥 ユーザー総数</p>
+      <p class="ops-kpi-value" data-metric="users.total">{{ u.total|default:0 }}</p>
+      <p class="ops-kpi-sub">有効 <strong data-metric="users.active">{{ u.active }}</strong> · 今日 +<strong data-metric="users.new_today">{{ u.new_today }}</strong></p>
+    </article>
+    <article class="ops-kpi-card ops-kpi-green">
+      <p class="ops-kpi-label">⚡ 24h アクティブ</p>
+      <p class="ops-kpi-value" data-metric="users.online_24h">{{ u.online_24h|default:0 }}</p>
+      <p class="ops-kpi-sub">7日間新規 <strong data-metric="users.new_7d">{{ u.new_7d }}</strong> 人</p>
+    </article>
+    <article class="ops-kpi-card ops-kpi-amber">
+      <p class="ops-kpi-label">💴 今月売上（GMV）</p>
+      <p class="ops-kpi-value"><span data-metric="sales.gmv_month">¥{{ s.gmv_month }}</span></p>
+      <p class="ops-kpi-sub">今日 ¥<strong data-metric="sales.gmv_today">{{ s.gmv_today }}</strong> · 注文 <strong data-metric="sales.orders_today">{{ s.orders_today }}</strong></p>
+    </article>
+    <article class="ops-kpi-card ops-kpi-purple">
+      <p class="ops-kpi-label">📈 売上指数</p>
+      <p class="ops-kpi-value"><span data-metric="sales.sales_index">{{ s.sales_index }}</span></p>
+      <p class="ops-kpi-sub">前月比（100＝同水準）· 完了 <strong data-metric="sales.orders_completed">{{ s.orders_completed }}</strong> 件</p>
+    </article>
+  </section>
+
+  {# ── クイック操作 ── #}
+  <section class="ops-section">
+    <h2 class="ops-section-title">⚡ クイック操作</h2>
+    <div class="ops-quick-grid">
+      <a class="ops-quick-card ops-quick-primary" href="{% url 'admin:ops_settings_hub' %}">
+        <span>⚙️</span><strong>設定一覧</strong><small>料金・手数料・Quest</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:ops_subscription_plans' %}">
+        <span>💴</span><strong>サブスク料金</strong><small>Free / Standard / Pro</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:ops_fee_settings' %}">
+        <span>💰</span><strong>手数料・還元</strong><small>紹介料 {{ r.rebate_rate }}</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:ops_quest_settings' %}">
+        <span>⚔️</span><strong>Quest 設定</strong><small>EXP / 1日上限</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:ops_plan_details' %}">
+        <span>📋</span><strong>プラン詳細</strong><small>試用期間・公開</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:users_user_changelist' %}">
+        <span>👥</span><strong>ユーザー管理</strong><small>プラン割当</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:marketplace_order_changelist' %}">
+        <span>🛒</span><strong>注文・売上</strong><small>保留 {{ s.orders_pending }} 件</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:marketplace_transaction_changelist' %}">
+        <span>💳</span><strong>取引履歴</strong><small>手数料・還元</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:marketplace_referral_changelist' %}">
+        <span>🎁</span><strong>紹介コード</strong><small>還元管理</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:gamification_achievement_changelist' %}">
+        <span>🏆</span><strong>実績・バッジ</strong><small>Achievement</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:streaming_livestream_changelist' %}">
+        <span>📺</span><strong>ライブ配信</strong><small>投げ銭</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:marketplace_artwork_changelist' %}">
+        <span>🖼️</span><strong>作品管理</strong><small>GALLEY</small>
+      </a>
+    </div>
+  </section>
+
+  {# ── 詳細パネル 3列 ── #}
+  <div class="ops-panel-grid">
+
+    <section class="ops-panel ops-panel-fees">
+      <h2 class="ops-section-title">💰 手数料・還元率</h2>
+      <table class="ops-mini-table">
+        <thead><tr><th>項目</th><th>率</th><th>今月（概算/実績）</th></tr></thead>
+        <tbody>
+          {% for item in d.fee_rates %}
+            <tr>
+              <td>
+                <strong>{{ item.label }}</strong>
+                <span class="ops-muted">{{ item.note }}</span>
+              </td>
+              <td><span class="ops-badge">{{ item.rate }}</span></td>
+              <td>
+                {% if item.key == "marketplace" %}¥{{ f.marketplace_mtd }}
+                {% elif item.key == "stripe" %}¥{{ f.stripe_mtd }}
+                {% elif item.key == "referral_rebate" %}¥{{ f.referral_paid_mtd }}
+                {% else %}—{% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"><strong>今月 手数料・還元 合計（概算）</strong></td>
+            <td><strong data-metric="fees.estimated_total_mtd">¥{{ f.estimated_total_mtd }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <section class="ops-panel ops-panel-referral">
+      <h2 class="ops-section-title">🎁 ユーザー還元（紹介料）</h2>
+      <ul class="ops-stat-list">
+        <li><span>還元率</span><strong>{{ r.rebate_rate }}</strong></li>
+        <li><span>累計支払</span><strong data-metric="referrals.total_paid">¥{{ r.total_paid }}</strong></li>
+        <li><span>今月支払</span><strong data-metric="referrals.paid_month">¥{{ r.paid_month }}</strong></li>
+        <li><span>支払回数</span><strong data-metric="referrals.count_paid">{{ r.count_paid }}</strong></li>
+        <li><span>有効紹介コード</span><strong data-metric="referrals.active_codes">{{ r.active_codes }}</strong></li>
+        <li><span>コンバージョン</span><strong data-metric="referrals.conversions">{{ r.conversions }}</strong></li>
+      </ul>
+      <a class="ops-panel-link" href="{% url 'admin:ops_fee_settings' %}">手数料・還元率を編集 →</a>
+      <a class="ops-panel-link" href="{% url 'admin:marketplace_referraltrack_changelist' %}">紹介トラッキングを見る →</a>
+    </section>
+
+    <section class="ops-panel ops-panel-quest">
+      <h2 class="ops-section-title">⚔️ Quest / 実績</h2>
+      <ul class="ops-stat-list">
+        <li><span>有効 Quest</span><strong data-metric="quest.active_actions">{{ q.active_actions }}</strong></li>
+        <li><span>有効 実績</span><strong data-metric="quest.active_achievements">{{ q.active_achievements }}</strong></li>
+        <li><span>今日の XP</span><strong data-metric="quest.xp_today">{{ q.xp_today|default:0 }}</strong></li>
+        <li><span>7日間 XP</span><strong data-metric="quest.xp_7d">{{ q.xp_7d|default:0 }}</strong></li>
+        <li><span>達成済み実績</span><strong data-metric="quest.achievements_completed">{{ q.achievements_completed }}</strong></li>
+      </ul>
+      {% if q.top_actions %}
+        <h3 class="ops-subheading">人気 Quest（7日）</h3>
+        <ul class="ops-rank-list">
+          {% for row in q.top_actions %}
+            <li><span>{{ row.label|default:row.action_type }}</span><strong>{{ row.count }} 回</strong></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      <a class="ops-panel-link" href="{% url 'admin:ops_quest_settings' %}">Quest 設定を編集 →</a>
+    </section>
+  </div>
+
+  {# ── プラン分布 ── #}
+  {% if u.by_plan %}
+  <section class="ops-section ops-plan-breakdown">
+    <h2 class="ops-section-title">📊 サブスクプラン分布</h2>
+    <div class="ops-plan-bars">
+      {% for row in u.by_plan %}
+        <div class="ops-plan-bar-row">
+          <span class="ops-plan-bar-label">{{ row.label }}</span>
+          <div class="ops-plan-bar-track"><div class="ops-plan-bar-fill" style="width: {% widthratio row.count u.total 100 %}%"></div></div>
+          <span class="ops-plan-bar-count">{{ row.count }} 人</span>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+
+<details class="ops-details">
+  <summary>その他の管理メニュー（詳細）</summary>
+  {% if app_list %}
+    {% for app in app_list %}
+      <div class="app-{{ app.app_label }} module">
+        <table>
+          <caption>
+            <a href="{{ app.app_url }}" class="section">{{ app.name }}</a>
+          </caption>
+          {% for model in app.models %}
+            <tr class="model-{{ model.object_name|lower }}">
+              {% if model.admin_url %}
+                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+              {% else %}
+                <th scope="row">{{ model.name }}</th>
+              {% endif %}
+              {% if model.add_url %}
+                <td><a href="{{ model.add_url }}" class="addlink">{% translate 'Add' %}</a></td>
+              {% else %}
+                <td></td>
+              {% endif %}
+              {% if model.admin_url %}
+                <td><a href="{{ model.admin_url }}" class="changelink">{% translate 'Change' %}</a></td>
+              {% else %}
+                <td></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>{% translate "You don't have permission to view or edit anything." %}</p>
+  {% endif %}
+</details>
+{% endwith %}
+{% endblock %}

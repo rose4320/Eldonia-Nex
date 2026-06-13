@@ -9,7 +9,8 @@
 - `Project_Producer.agent.md` — プロジェクト企画・推進
 - `UI_UX_Designer.agent.md` — UI/UX 設計支援
 - `Frontend_Manager.agent.md` — フロントエンド実装管理
-- `Backend_Manager.agent.md` — バックエンド実装管理
+- `Backend_Manager.agent.md` — バックエンド実装管理（Supabase 主）
+- `Django_Manager.agent.md` — Django Admin 運用（料金・財務・広告受注、Backend_Manager と協議）
 - `Accounting.agent.md` — 経理・費用管理
 - `Support_Desk_Manager.agent.md` — サポートデスク運用
 - `Shop_Manager.agent.md` — SHOP（Amazon 型 EC × Eldonia デザイン）
@@ -49,7 +50,8 @@ runSubagent({
   → 担当エージェント実装
        UI_UX_Designer … 見た目・コンポーネント規約
        Frontend_Manager … src/app, src/components
-       Backend_Manager … supabase/migrations, database.ts
+       Backend_Manager … supabase/migrations, database.ts, API Routes
+       Django_Manager … backend/, /admin/, 料金・財務・広告（Backend_Manager と協議）
        Support_Desk_Manager … src/app/help
        Shop_Manager … src/app/shop, src/components/shop
        Events_Manager … src/app/events, src/components/events
@@ -72,6 +74,7 @@ runSubagent({
 | — | COMMUNITY | 初期実装済 |
 | — | WORKS | 初期実装済 |
 | — | Stripe カート/決済 | 初期実装済（要 STRIPE_*  env） |
+| — | Django 運用コンソール | Admin 稼働・Django_Manager 定義済 |
 
-次の機能指示は「モジュール名 + やりたいこと」で OK（例: 「SHOP に商品一覧を追加」）。
+次の機能指示は「モジュール名 + やりたいこと」で OK（例: 「SHOP に商品一覧を追加」「Plan 料金を Admin で変更」）。
 
