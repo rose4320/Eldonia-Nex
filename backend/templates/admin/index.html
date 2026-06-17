@@ -57,7 +57,7 @@
     <h2 class="ops-section-title">⚡ クイック操作</h2>
     <div class="ops-quick-grid">
       <a class="ops-quick-card ops-quick-primary" href="{% url 'admin:ops_settings_hub' %}">
-        <span>⚙️</span><strong>設定一覧</strong><small>料金・手数料・Quest</small>
+        <span>⚙️</span><strong>設定一覧</strong><small>料金・手数料・EXP付与</small>
       </a>
       <a class="ops-quick-card" href="{% url 'admin:ops_subscription_plans' %}">
         <span>💴</span><strong>サブスク料金</strong><small>Free / Standard / Pro</small>
@@ -65,8 +65,8 @@
       <a class="ops-quick-card" href="{% url 'admin:ops_fee_settings' %}">
         <span>💰</span><strong>手数料・還元</strong><small>紹介料 {{ r.rebate_rate }}</small>
       </a>
-      <a class="ops-quick-card" href="{% url 'admin:ops_quest_settings' %}">
-        <span>⚔️</span><strong>Quest 設定</strong><small>EXP / 1日上限</small>
+      <a class="ops-quick-card" href="{% url 'admin:ops_exp_settings' %}">
+        <span>⚔️</span><strong>EXP付与設定</strong><small>操作別EXP / 1日上限</small>
       </a>
       <a class="ops-quick-card" href="{% url 'admin:ops_plan_details' %}">
         <span>📋</span><strong>プラン詳細</strong><small>試用期間・公開</small>
@@ -143,23 +143,23 @@
     </section>
 
     <section class="ops-panel ops-panel-quest">
-      <h2 class="ops-section-title">⚔️ Quest / 実績</h2>
+      <h2 class="ops-section-title">⚔️ EXP付与 / 実績</h2>
       <ul class="ops-stat-list">
-        <li><span>有効 Quest</span><strong data-metric="quest.active_actions">{{ q.active_actions }}</strong></li>
+        <li><span>有効 EXP付与</span><strong data-metric="quest.active_actions">{{ q.active_actions }}</strong></li>
         <li><span>有効 実績</span><strong data-metric="quest.active_achievements">{{ q.active_achievements }}</strong></li>
         <li><span>今日の XP</span><strong data-metric="quest.xp_today">{{ q.xp_today|default:0 }}</strong></li>
         <li><span>7日間 XP</span><strong data-metric="quest.xp_7d">{{ q.xp_7d|default:0 }}</strong></li>
         <li><span>達成済み実績</span><strong data-metric="quest.achievements_completed">{{ q.achievements_completed }}</strong></li>
       </ul>
       {% if q.top_actions %}
-        <h3 class="ops-subheading">人気 Quest（7日）</h3>
+        <h3 class="ops-subheading">人気EXPアクション（7日）</h3>
         <ul class="ops-rank-list">
           {% for row in q.top_actions %}
             <li><span>{{ row.label|default:row.action_type }}</span><strong>{{ row.count }} 回</strong></li>
           {% endfor %}
         </ul>
       {% endif %}
-      <a class="ops-panel-link" href="{% url 'admin:ops_quest_settings' %}">Quest 設定を編集 →</a>
+      <a class="ops-panel-link" href="{% url 'admin:ops_exp_settings' %}">EXP付与設定を編集 →</a>
     </section>
   </div>
 

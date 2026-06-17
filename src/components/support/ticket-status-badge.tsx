@@ -1,5 +1,6 @@
 import type { SupportTicketStatus } from "@/lib/support/constants";
-import { TICKET_STATUS_LABELS } from "@/lib/support/constants";
+import type { UiLocale } from "@/lib/i18n/locale";
+import { supportTicketStatusLabel } from "@/lib/i18n/taxonomy";
 
 const STATUS_STYLES: Record<SupportTicketStatus, string> = {
   open: "border-eldonia-gold/40 bg-eldonia-gold/10 text-eldonia-gold-light",
@@ -11,14 +12,13 @@ const STATUS_STYLES: Record<SupportTicketStatus, string> = {
 
 type TicketStatusBadgeProps = {
   status: SupportTicketStatus;
+  locale?: UiLocale;
 };
 
-export function TicketStatusBadge({ status }: TicketStatusBadgeProps) {
+export function TicketStatusBadge({ status, locale = "ja" }: TicketStatusBadgeProps) {
   return (
-    <span
-      className={`eldonia-badge border ${STATUS_STYLES[status]}`}
-    >
-      {TICKET_STATUS_LABELS[status]}
+    <span className={`eldonia-badge border ${STATUS_STYLES[status]}`}>
+      {supportTicketStatusLabel(status, locale)}
     </span>
   );
 }

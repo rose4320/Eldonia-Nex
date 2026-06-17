@@ -1,0 +1,84 @@
+{% extends "admin/operations/base_ops.html" %}
+
+{% block ops_content %}
+<header class="ops-header">
+  {% if step %}<p class="ops-step">ステップ {{ step }} / 2</p>{% endif %}
+  <h1>{{ title }}</h1>
+  <p class="ops-lead">
+    フロントエンドの 🔔 通知ベルと設定画面に表示される告知を送信します。
+    送信前に配信先件数を確認し、管理人パスワードが必要です。
+  </p>
+</header>
+
+<section class="ops-command-panel" aria-label="告知送信の操作サマリー">
+  <div class="ops-command-main">
+    <span class="ops-command-kicker">Broadcast Control</span>
+    <h2>対象を選んで安全に告知配信</h2>
+    <p>全ユーザー、クリエイター、個別メール宛に通知を送ります。確認画面で配信対象数を確認してから送信されます。</p>
+  </div>
+  <div class="ops-command-actions">
+    <a class="ops-action-chip" href="{% url 'admin:ops_settings_hub' %}">設定一覧へ</a>
+    <a class="ops-action-chip" href="{% url 'admin:index' %}">運用ダッシュボード</a>
+  </div>
+</section>
+
+<section class="ops-insight-grid" aria-label="設定のポイント">
+  <div class="ops-insight-card">
+    <span>配信先</span>
+    <strong>3種類</strong>
+    <small>全員 / クリエイター / 個別メール</small>
+  </div>
+  <div class="ops-insight-card">
+    <span>表示場所</span>
+    <strong>通知ベル</strong>
+    <small>ユーザー設定画面にも表示されます</small>
+  </div>
+  <div class="ops-insight-card ops-insight-warn">
+    <span>送信前確認</span>
+    <strong>必須</strong>
+    <small>件数と内容を確認してから配信</small>
+  </div>
+</section>
+
+<form method="post" class="ops-card">
+  {% csrf_token %}
+  <div class="ops-form-stack">
+    <div>
+      <label class="ops-field-label" for="{{ form.target.id_for_label }}">{{ form.target.label }}</label>
+      {{ form.target }}
+    </div>
+    <div>
+      <label class="ops-field-label" for="{{ form.target_email.id_for_label }}">{{ form.target_email.label }}</label>
+      {{ form.target_email }}
+      {% if form.target_email.errors %}<p class="ops-error">{{ form.target_email.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="ops-field-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+      {{ form.title }}
+      {% if form.title.errors %}<p class="ops-error">{{ form.title.errors.0 }}</p>{% endif %}
+    </div>
+    <div>
+      <label class="ops-field-label" for="{{ form.body.id_for_label }}">{{ form.body.label }}</label>
+      {{ form.body }}
+    </div>
+    <div>
+      <label class="ops-field-label" for="{{ form.href.id_for_label }}">{{ form.href.label }}</label>
+      {{ form.href }}
+      <p class="ops-muted-inline">例: /help/guides · /shop · 空欄可</p>
+    </div>
+  </div>
+  <div class="ops-actions">
+    <button type="submit" class="ops-btn ops-btn-primary">確認画面へ →</button>
+    <a class="ops-btn ops-btn-ghost" href="{% url 'admin:ops_settings_hub' %}">キャンセル</a>
+  </div>
+</form>
+
+<aside class="ops-help">
+  <h2>💡 ヒント</h2>
+  <ul>
+    <li>Supabase の全プロフィール、または is_creator=true のユーザーに一括配信できます</li>
+    <li>個別配信は Supabase Auth のメールアドレスで検索します</li>
+    <li>.env の SUPABASE_SERVICE_ROLE_KEY が必要です</li>
+  </ul>
+</aside>
+{% endblock %}

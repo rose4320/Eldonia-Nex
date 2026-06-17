@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { createClient } from "@/lib/supabase/client";
-import {
-  TICKET_CATEGORIES,
-  type SupportTicketCategory,
-} from "@/lib/support/constants";
+import { supportTicketCategoryLabel } from "@/lib/i18n/taxonomy";
+import { TICKET_CATEGORIES, type SupportTicketCategory } from "@/lib/support/constants";
 
 type ContactFormProps = {
   userId?: string;
@@ -20,6 +19,13 @@ export function ContactForm({
   defaultEmail = "",
 }: ContactFormProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const { forms } = useContent();
+  const contact = forms.contact;
+  const categories = TICKET_CATEGORIES.map((item) => ({
+    value: item.value,
+    label: supportTicketCategoryLabel(item.value, locale),
+  }));
   const [contactName, setContactName] = useState(defaultName);
   const [contactEmail, setContactEmail] = useState(defaultEmail);
   const [category, setCategory] = useState<SupportTicketCategory>("other");
@@ -48,7 +54,7 @@ export function ContactForm({
       .single();
 
     if (ticketError || !ticket) {
-      setError(ticketError?.message ?? "問い合わせの送信に失敗しました。");
+      setError(ticketError?.message ?? contact.errSave);
       setLoading(false);
       return;
     }
@@ -83,7 +89,7 @@ export function ContactForm({
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
           <label htmlFor="contact_name" className="eldonia-label">
-            お名前
+            {contact.name}
           </label>
           <input
             id="contact_name"
@@ -97,7 +103,7 @@ export function ContactForm({
         </div>
         <div className="flex flex-col gap-1">
           <label htmlFor="contact_email" className="eldonia-label">
-            メールアドレス
+            {contact.email}
           </label>
           <input
             id="contact_email"
@@ -113,17 +119,15 @@ export function ContactForm({
 
       <div className="flex flex-col gap-1">
         <label htmlFor="category" className="eldonia-label">
-          カテゴリ
+          {contact.category}
         </label>
         <select
           id="category"
           value={category}
-          onChange={(event) =>
-            setCategory(event.target.value as SupportTicketCategory)
-          }
+          onChange={(event) => setCategory(event.target.value as SupportTicketCategory)}
           className="eldonia-select"
         >
-          {TICKET_CATEGORIES.map((item) => (
+          {categories.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>
@@ -133,7 +137,7 @@ export function ContactForm({
 
       <div className="flex flex-col gap-1">
         <label htmlFor="subject" className="eldonia-label">
-          件名
+          {contact.subject}
         </label>
         <input
           id="subject"
@@ -148,7 +152,7 @@ export function ContactForm({
 
       <div className="flex flex-col gap-1">
         <label htmlFor="body" className="eldonia-label">
-          お問い合わせ内容
+          {contact.body}
         </label>
         <textarea
           id="body"
@@ -157,7 +161,7 @@ export function ContactForm({
           maxLength={5000}
           value={body}
           onChange={(event) => setBody(event.target.value)}
-          placeholder="状況・エラーメッセージ・再現手順などを具体的にご記入ください。"
+          placeholder={contact.bodyPlaceholder}
           className="eldonia-select"
         />
       </div>
@@ -165,7 +169,7 @@ export function ContactForm({
       {error && <p className="eldonia-alert-error">{error}</p>}
 
       <button type="submit" disabled={loading} className="eldonia-btn-primary w-fit">
-        {loading ? "送信中..." : "問い合わせを送信"}
+        {loading ? contact.submitting : contact.submit}
       </button>
     </form>
   );

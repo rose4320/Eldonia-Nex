@@ -1,10 +1,15 @@
-export const SHOP_REALMS = [
-  { value: "all", label: "すべての領域" },
-  { value: "apparel", label: "アパレル" },
-  { value: "digital", label: "デジタル" },
-  { value: "goods", label: "グッズ" },
-  { value: "tools", label: "クリエイターツール" },
-  { value: "books", label: "書籍・資料" },
+import type { UiLocale } from "@/lib/i18n/locale";
+import { formatYenPrice, shopRealmLabel } from "@/lib/i18n/taxonomy";
+
+export { shopRealmLabel as realmLabel };
+
+export const SHOP_REALM_VALUES = [
+  "all",
+  "apparel",
+  "digital",
+  "goods",
+  "tools",
+  "books",
 ] as const;
 
 export const CATEGORY_ICONS: Record<string, string> = {
@@ -15,16 +20,8 @@ export const CATEGORY_ICONS: Record<string, string> = {
   books: "📜",
 };
 
-const REALM_LABELS = Object.fromEntries(
-  SHOP_REALMS.filter((r) => r.value !== "all").map((r) => [r.value, r.label]),
-) as Record<string, string>;
-
-export function realmLabel(category: string): string {
-  return REALM_LABELS[category] ?? category;
-}
-
-export function formatPrice(yen: number): string {
-  return `¥${yen.toLocaleString("ja-JP")}`;
+export function formatPrice(yen: number, locale: UiLocale = "ja"): string {
+  return formatYenPrice(yen, locale);
 }
 
 export function discountPercent(

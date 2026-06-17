@@ -1,3 +1,5 @@
+import type { UiLocale } from "@/lib/i18n/locale";
+import { faqCategoryLabel, supportTicketCategoryLabel } from "@/lib/i18n/taxonomy";import { intlLocale } from "@/lib/i18n/content/messages";
 export type SupportTicketCategory =
   | "account"
   | "billing"
@@ -57,16 +59,15 @@ export const TICKET_PRIORITY_LABELS: Record<SupportTicketPriority, string> = {
   urgent: "緊急",
 };
 
-export function categoryLabel(value: string): string {
-  return (
-    TICKET_CATEGORIES.find((item) => item.value === value)?.label ??
-    FAQ_CATEGORIES.find((item) => item.value === value)?.label ??
-    value
-  );
+export function categoryLabel(value: string, locale: UiLocale = "ja"): string {
+  const fromTicket = supportTicketCategoryLabel(value, locale);
+  if (fromTicket !== value) return fromTicket;
+  const fromFaq = faqCategoryLabel(value, locale);
+  if (fromFaq !== value) return fromFaq;
+  return value;
 }
-
-export function formatDateTime(iso: string): string {
-  return new Intl.DateTimeFormat("ja-JP", {
+export function formatDateTime(iso: string, locale: UiLocale = "ja"): string {
+  return new Intl.DateTimeFormat(intlLocale(locale), {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -74,7 +75,6 @@ export function formatDateTime(iso: string): string {
     minute: "2-digit",
   }).format(new Date(iso));
 }
-
 export const HELP_LINKS = [
   {
     href: "/help/faq",

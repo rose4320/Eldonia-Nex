@@ -5,9 +5,13 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { OrderCard } from "@/components/commerce/order-card";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { getOrdersForUser } from "@/lib/commerce/get-orders";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function DashboardOrdersPage() {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const supabase = await createClient();
   const {
     data: { user },
@@ -24,22 +28,20 @@ export default async function DashboardOrdersPage() {
       <SiteHeader />
 
       <main className="eldonia-main">
-        <Link href="/dashboard" className="eldonia-link text-sm">
-          ← ダッシュボード
+        <Link href="/settings" className="eldonia-link text-sm">
+          {t.pages.dashboard.back}
         </Link>
         <section className="mt-4 space-y-2">
-          <p className="eldonia-eyebrow">Orders</p>
-          <h1 className="eldonia-heading eldonia-heading-sm">注文履歴</h1>
-          <p className="eldonia-body text-sm">Stripe 決済済みの注文一覧です。</p>
+          <h1 className="eldonia-heading eldonia-heading-sm">{t.pages.dashboard.ordersTitle}</h1>
         </section>
 
         <EldoniaDivider />
 
         {orders.length === 0 ? (
           <div className="eldonia-card-dashed px-8 py-16 text-center">
-            <p className="eldonia-body">注文履歴がありません。</p>
+            <p className="eldonia-body">{t.pages.dashboard.ordersEmpty}</p>
             <Link href="/shop" className="eldonia-link mt-4 inline-block text-sm">
-              SHOP を見る →
+              {t.shop.cartBrowseShop}
             </Link>
           </div>
         ) : (

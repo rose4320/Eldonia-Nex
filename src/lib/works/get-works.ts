@@ -1,6 +1,8 @@
+import type { UiLocale } from "@/lib/i18n/locale";
 import { createClient } from "@/lib/supabase/server";
 import type { JobListingWithPoster, Portfolio } from "@/types/database";
-import { SAMPLE_JOBS, SAMPLE_PORTFOLIO } from "./sample-data";
+import { getSampleJobs, getSamplePortfolio } from "./sample-data";
+import { localizeJobListing, localizeJobListings } from "./localize-job";
 
 type JobFilters = { q?: string; type?: string };
 
@@ -23,6 +25,7 @@ function filterJobs(jobs: JobListingWithPoster[], filters: JobFilters) {
 
 export async function getJobListings(
   filters: JobFilters = {},
+  locale: UiLocale = "ja",
 ): Promise<JobListingWithPoster[]> {
   try {
     const supabase = await createClient();
@@ -39,15 +42,21 @@ export async function getJobListings(
       .order("created_at", { ascending: false });
 
     if (!error && data?.length) {
-      return filterJobs(data as JobListingWithPoster[], filters);
+      return filterJobs(
+        localizeJobListings(data as JobListingWithPoster[], locale),
+        filters,
+      );
     }
   } catch {
     // fallback
   }
-  return filterJobs(SAMPLE_JOBS, filters);
+  return filterJobs(getSampleJobs(locale), filters);
 }
 
-export async function getJobListing(id: string): Promise<JobListingWithPoster | null> {
+export async function getJobListing(
+  id: string,
+  locale: UiLocale = "ja",
+): Promise<JobListingWithPoster | null> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -61,17 +70,22 @@ export async function getJobListing(id: string): Promise<JobListingWithPoster | 
       .eq("id", id)
       .single();
 
-    if (!error && data) return data as JobListingWithPoster;
+    if (!error && data) {
+      return localizeJobListing(data as JobListingWithPoster, locale);
+    }
   } catch {
     // fallback
   }
-  return SAMPLE_JOBS.find((j) => j.id === id) ?? null;
+  return getSampleJobs(locale).find((j) => j.id === id) ?? null;
 }
 
 export async function getPortfolioForUser(
   userId: string,
-  options?: { useSampleFallback?: boolean },
+  options?: { useSampleFallback?: boolean; locale?: UiLocale },
 ): Promise<Portfolio | null> {
+  const locale = options?.locale ?? "ja";
+  const sample = getSamplePortfolio(locale);
+
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -84,12 +98,12 @@ export async function getPortfolioForUser(
     if (!error && !data) {
       return options?.useSampleFallback === false
         ? null
-        : { ...SAMPLE_PORTFOLIO, user_id: userId };
+        : { ...sample, user_id: userId };
     }
   } catch {
     // fallback
   }
   return options?.useSampleFallback === false
     ? null
-    : { ...SAMPLE_PORTFOLIO, user_id: userId };
+    : { ...sample, user_id: userId };
 }

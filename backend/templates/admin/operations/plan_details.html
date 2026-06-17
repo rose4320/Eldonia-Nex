@@ -7,8 +7,83 @@
   <p class="ops-lead">試用期間は <strong>（　）日</strong> の数字だけ編集。公開/停止も設定できます。</p>
 </header>
 
-<form method="post" class="ops-card">
+<section class="ops-command-panel" aria-label="プラン詳細の操作サマリー">
+  <div class="ops-command-main">
+    <span class="ops-command-kicker">Plan Availability</span>
+    <h2>試用期間と公開状態を制御</h2>
+    <p>各プランの無料試用日数と公開/停止を設定します。料金変更とは分けて、提供可否だけを安全に切り替えられます。</p>
+  </div>
+  <div class="ops-command-actions">
+    <a class="ops-action-chip" href="{% url 'admin:ops_settings_hub' %}">設定一覧へ</a>
+    <a class="ops-action-chip" href="{% url 'admin:ops_subscription_plans' %}">料金設定</a>
+  </div>
+</section>
+
+<section class="ops-insight-grid" aria-label="設定のポイント">
+  <div class="ops-insight-card">
+    <span>試用期間</span>
+    <strong>0〜365日</strong>
+    <small>0日で試用なしになります</small>
+  </div>
+  <div class="ops-insight-card">
+    <span>公開状態</span>
+    <strong>公開 / 停止</strong>
+    <small>新規申込導線の制御に使います</small>
+  </div>
+  <div class="ops-insight-card ops-insight-warn">
+    <span>確認</span>
+    <strong>差分レビュー</strong>
+    <small>保存前に変更内容を確認します</small>
+  </div>
+</section>
+
+<details class="ops-add-panel">
+  <summary>＋ 新しいプランを追加</summary>
+  <form method="post" action="{% url 'admin:ops_subscription_plan_add' %}" class="ops-add-form">
+    {% csrf_token %}
+    <div class="ops-add-grid">
+      <label>{{ add_form.name.label }} {{ add_form.name }}</label>
+      <label>{{ add_form.slug.label }} {{ add_form.slug }}</label>
+      <label>{{ add_form.price.label }} {{ add_form.price }}</label>
+      <label>{{ add_form.trial_days.label }} {{ add_form.trial_days }}</label>
+      <label class="ops-checkbox">{{ add_form.is_active }} {{ add_form.is_active.label }}</label>
+    </div>
+    <p class="ops-muted-inline">追加後、サブスク料金とプラン詳細の両方に表示されます。</p>
+    <button type="submit" class="ops-btn ops-btn-primary">プランを追加</button>
+  </form>
+</details>
+
+<form method="post" class="ops-card" id="ops-plan-detail-form">
   {% csrf_token %}
+  <section class="ops-toolbelt" aria-label="プラン詳細のクイック操作">
+    <div class="ops-toolbelt-main">
+      <span class="ops-toolbelt-kicker">Quick Actions</span>
+      <h2>試用期間・公開状態の一括操作</h2>
+      <p>全プランの試用日数や公開状態をまとめて入力できます。キャンペーン切替時の作業ミスを減らします。</p>
+    </div>
+    <div class="ops-tool-grid">
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free_trial":"0","standard_trial":"0","pro_trial":"0"}'>
+        試用なし
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free_trial":"7","standard_trial":"7","pro_trial":"7"}'>
+        7日試用
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free_trial":"14","standard_trial":"14","pro_trial":"14"}'>
+        14日試用
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free_trial":"30","standard_trial":"30","pro_trial":"30"}'>
+        30日試用
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free_active":true,"standard_active":true,"pro_active":true}'>
+        全て公開
+      </button>
+      <button type="button" class="ops-tool-button ops-tool-danger" data-ops-fill='{"standard_active":false,"pro_active":false}'>
+        有料プラン停止
+      </button>
+      <button type="reset" class="ops-tool-button ops-tool-muted">入力前に戻す</button>
+    </div>
+  </section>
+
   <ul class="ops-plan-list">
     {% for group in form.field_groups %}
       <li class="ops-setting-row ops-setting-row-wide">

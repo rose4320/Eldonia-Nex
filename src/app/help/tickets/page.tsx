@@ -9,9 +9,13 @@ import {
   formatDateTime,
   type SupportTicketStatus,
 } from "@/lib/support/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function TicketsPage() {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const supabase = await createClient();
   const {
     data: { user },
@@ -34,26 +38,25 @@ export default async function TicketsPage() {
       <main className="eldonia-main">
         <section className="flex flex-wrap items-end justify-between gap-4">
           <div className="space-y-4">
-            <h1 className="eldonia-heading eldonia-heading-lg">マイチケット</h1>
-            <p className="eldonia-body text-sm">問い合わせ履歴とステータスを確認できます。</p>
+            <h1 className="eldonia-heading eldonia-heading-lg">{t.pages.help.ticketsTitle}</h1>
             <HelpNav current="/help/tickets" />
           </div>
           <Link
             href="/help/contact"
             className="eldonia-btn-primary"
           >
-            新規問い合わせ
+            {t.pages.help.ticketsNew}
           </Link>
         </section>
 
         {!tickets || tickets.length === 0 ? (
           <section className="eldonia-card eldonia-card-dashed px-8 py-16 text-center">
-            <p className="text-eldonia-text-muted">まだ問い合わせがありません。</p>
+            <p className="text-eldonia-text-muted">{t.pages.help.ticketsEmpty}</p>
             <Link
               href="/help/contact"
               className="mt-4 inline-block text-sm eldonia-link font-medium"
             >
-              お問い合わせを作成 →
+              {t.pages.help.ticketsNew} →
             </Link>
           </section>
         ) : (
@@ -69,11 +72,11 @@ export default async function TicketsPage() {
                       <p className="font-mono text-xs text-eldonia-text-dim">{ticket.ticket_number}</p>
                       <p className="mt-1 truncate font-medium text-eldonia-gold-light">{ticket.subject}</p>
                       <p className="mt-1 text-xs text-eldonia-text-muted">
-                        {categoryLabel(ticket.category)} · 更新{" "}
-                        {formatDateTime(ticket.updated_at)}
+                        {categoryLabel(ticket.category, locale)} · {t.pages.help.ticketsUpdated}{" "}
+                        {formatDateTime(ticket.updated_at, locale)}
                       </p>
                     </div>
-                    <TicketStatusBadge status={ticket.status as SupportTicketStatus} />
+                    <TicketStatusBadge status={ticket.status as SupportTicketStatus} locale={locale} />
                   </Link>
                 </li>
               ))}

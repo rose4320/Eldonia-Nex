@@ -20,11 +20,12 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
+from users.views import referral_program_status
 from .views import community_page
 
 
 # API Health Check
-def api_health_check(request):
+def api_health_check(_request):
     """Next.js SSR連携用ヘルスチェックAPI"""
     return JsonResponse(
         {
@@ -41,6 +42,7 @@ def api_health_check(request):
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/health/", api_health_check, name="api_health"),
+    path("api/v1/referrals/status/", referral_program_status, name="referral_program_status"),
     path("community/", community_page, name="community"),
     # path('api/v1/users/', include('users.urls')),
     # path('api/v1/content/', include('content.urls')),

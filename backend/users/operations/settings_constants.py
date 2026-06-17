@@ -57,3 +57,4 @@ PLAN_DETAIL_SLOTS = [
 SESSION_KEY_FEES = "pending_fee_settings"
 SESSION_KEY_QUEST = "pending_quest_settings"
 SESSION_KEY_PLAN_DETAILS = "pending_plan_details"
+SESSION_KEY_ANNOUNCEMENT = "pending_announcement"

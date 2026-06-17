@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type CommunityToolbarProps = { query?: string };
 
-export function CommunityToolbar({ query }: CommunityToolbarProps) {
+export async function CommunityToolbar({ query }: CommunityToolbarProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
+
   return (
     <div className="eldonia-community-toolbar">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-3">
@@ -14,16 +19,16 @@ export function CommunityToolbar({ query }: CommunityToolbarProps) {
             type="search"
             name="q"
             defaultValue={query ?? ""}
-            placeholder="掲示板を検索..."
+            placeholder={t.pages.community.toolbarSearch}
             className="eldonia-community-search-input"
-            aria-label="スレッド検索"
+            aria-label={t.pages.community.toolbarSearchAria}
           />
           <button type="submit" className="eldonia-community-search-btn">
-            検索
+            {t.common.search}
           </button>
         </form>
         <span className="eldonia-badge-nexus-prime shrink-0 text-[10px]">
-          翻訳 Nexus 対応
+          {t.pages.community.toolbarNexus}
         </span>
       </div>
     </div>

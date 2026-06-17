@@ -4,10 +4,14 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PortfolioForm } from "@/components/works/portfolio-form";
 import { WorksToolbar } from "@/components/works/works-toolbar";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioForUser } from "@/lib/works/get-works";
 
 export default async function PortfolioPage() {
+  const locale = await getUiLocale();
+  const pages = getContent(locale).pages;
   const supabase = await createClient();
   const {
     data: { user },
@@ -26,12 +30,10 @@ export default async function PortfolioPage() {
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-8">
         <Link href="/works" className="eldonia-link text-sm">
-          ← WORKS
+          {pages.works.back}
         </Link>
-        <h1 className="eldonia-heading eldonia-heading-lg mt-4">ポートフォリオ</h1>
-        <p className="eldonia-body mt-2 text-sm">
-          応募時に添付される公開プロフィール。EXP・称号・スキルを編集できます。
-        </p>
+        <h1 className="eldonia-heading eldonia-heading-lg mt-4">{pages.works.portfolioTitle}</h1>
+        <p className="eldonia-body mt-2 text-sm">{pages.works.portfolioLead}</p>
 
         <PortfolioForm userId={user.id} portfolio={portfolio} />
       </main>

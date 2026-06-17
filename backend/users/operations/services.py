@@ -4,6 +4,8 @@ from django.db import transaction
 
 from users.models import Plan
 
+# pylint: disable=no-member
+
 # 括弧内の金額だけ編集 → slug 単位で Plan を更新
 PLAN_PRICE_SLOTS = [
     {
@@ -33,6 +35,30 @@ PLAN_PRICE_SLOTS = [
 SESSION_KEY = "pending_subscription_plan_prices"
 
 
+def get_plan_price_slots() -> list[dict]:
+    """標準プラン + Django Adminで追加されたプランを料金編集対象にする。"""
+    slots = [dict(slot) for slot in PLAN_PRICE_SLOTS]
+    known = {slot["slug"] for slot in slots}
+    legacy = {
+        legacy
+        for slot in slots
+        for legacy in slot.get("legacy_slugs", [])
+    }
+    for plan in Plan.objects.exclude(slug__in=known | legacy).order_by(
+        "sort_order", "price", "slug"
+    ):
+        slots.append(
+            {
+                "slug": plan.slug,
+                "label": plan.name,
+                "display_name": plan.name,
+                "sort_order": plan.sort_order,
+                "default_yen": int(plan.price),
+            }
+        )
+    return slots
+
+
 def _find_plan(slug: str, legacy_slugs: list[str] | None = None) -> Plan | None:
     plan = Plan.objects.filter(slug=slug).first()
     if plan:
@@ -46,7 +72,7 @@ def _find_plan(slug: str, legacy_slugs: list[str] | None = None) -> Plan | None:
 
 def get_current_plan_prices() -> dict[str, int]:
     prices: dict[str, int] = {}
-    for slot in PLAN_PRICE_SLOTS:
+    for slot in get_plan_price_slots():
         plan = _find_plan(slot["slug"], slot.get("legacy_slugs"))
         if plan:
             prices[slot["slug"]] = int(plan.price)
@@ -57,7 +83,7 @@ def get_current_plan_prices() -> dict[str, int]:
 
 def build_preview(current: dict[str, int], new: dict[str, int]) -> list[dict]:
     rows = []
-    for slot in PLAN_PRICE_SLOTS:
+    for slot in get_plan_price_slots():
         slug = slot["slug"]
         rows.append(
             {
@@ -74,7 +100,7 @@ def build_preview(current: dict[str, int], new: dict[str, int]) -> list[dict]:
 @transaction.atomic
 def apply_plan_prices(prices: dict[str, int]) -> list[str]:
     updated_labels: list[str] = []
-    for slot in PLAN_PRICE_SLOTS:
+    for slot in get_plan_price_slots():
         slug = slot["slug"]
         yen = int(prices.get(slug, slot["default_yen"]))
         if yen < 0:

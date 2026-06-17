@@ -2,15 +2,20 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { JOB_TYPES } from "@/lib/works/constants";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
+import { jobTypeOptions } from "@/lib/i18n/taxonomy";
 import type { JobType } from "@/types/database";
 
 export function JobCreateForm() {
   const router = useRouter();
+  const locale = useLocale();
+  const { forms } = useContent();
+  const job = forms.job;
+  const jobTypes = jobTypeOptions(locale);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [jobType, setJobType] = useState<JobType>("freelance");
-  const [location, setLocation] = useState("リモート");
+  const [location, setLocation] = useState(job.remoteDefault);
   const [budgetMin, setBudgetMin] = useState("");
   const [budgetMax, setBudgetMax] = useState("");
   const [skillsText, setSkillsText] = useState("");
@@ -41,7 +46,7 @@ export function JobCreateForm() {
 
     const data = (await res.json()) as { ok?: boolean; error?: string; id?: string };
     if (!res.ok) {
-      setError(data.error ?? "求人の作成に失敗しました。");
+      setError(data.error ?? job.errSave);
       setLoading(false);
       return;
     }
@@ -55,12 +60,12 @@ export function JobCreateForm() {
 
   return (
     <form onSubmit={handleSubmit} className="eldonia-card space-y-4">
-      <h2 className="eldonia-label">求人を掲載</h2>
+      <h2 className="eldonia-label">{job.heading}</h2>
       <input
         type="text"
         required
         maxLength={120}
-        placeholder="タイトル"
+        placeholder={job.titlePh}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="eldonia-input"
@@ -68,7 +73,7 @@ export function JobCreateForm() {
       <textarea
         required
         rows={4}
-        placeholder="詳細"
+        placeholder={job.descPh}
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         className="eldonia-textarea"
@@ -78,7 +83,7 @@ export function JobCreateForm() {
         onChange={(e) => setJobType(e.target.value as JobType)}
         className="eldonia-input"
       >
-        {JOB_TYPES.map((t) => (
+        {jobTypes.map((t) => (
           <option key={t.value} value={t.value}>
             {t.label}
           </option>
@@ -86,7 +91,7 @@ export function JobCreateForm() {
       </select>
       <input
         type="text"
-        placeholder="場所"
+        placeholder={job.locationPh}
         value={location}
         onChange={(e) => setLocation(e.target.value)}
         className="eldonia-input"
@@ -95,7 +100,7 @@ export function JobCreateForm() {
         <input
           type="number"
           min={0}
-          placeholder="予算 min (円)"
+          placeholder={job.budgetMinPh}
           value={budgetMin}
           onChange={(e) => setBudgetMin(e.target.value)}
           className="eldonia-input"
@@ -103,7 +108,7 @@ export function JobCreateForm() {
         <input
           type="number"
           min={0}
-          placeholder="予算 max (円)"
+          placeholder={job.budgetMaxPh}
           value={budgetMax}
           onChange={(e) => setBudgetMax(e.target.value)}
           className="eldonia-input"
@@ -111,14 +116,14 @@ export function JobCreateForm() {
       </div>
       <input
         type="text"
-        placeholder="スキル（カンマ区切り）"
+        placeholder={job.skillsPh}
         value={skillsText}
         onChange={(e) => setSkillsText(e.target.value)}
         className="eldonia-input"
       />
       {error && <p className="eldonia-alert-error">{error}</p>}
       <button type="submit" disabled={loading} className="eldonia-btn-primary w-fit">
-        {loading ? "掲載中..." : "求人を掲載"}
+        {loading ? job.submitting : job.submit}
       </button>
     </form>
   );

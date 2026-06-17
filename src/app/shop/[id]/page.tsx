@@ -1,12 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ProductBuyBox } from "@/components/shop/product-buy-box";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { CATEGORY_ICONS, realmLabel } from "@/lib/shop/constants";
+import { getContent } from "@/lib/i18n/content/messages";
 import { getShopProduct } from "@/lib/shop/get-products";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 
 type ShopDetailPageProps = {
@@ -15,6 +18,8 @@ type ShopDetailPageProps = {
 
 export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
   const { id } = await params;
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const product = await getShopProduct(id);
 
   if (!product) {
@@ -31,6 +36,7 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
     product.profiles?.username ??
     "Eldonia Seller";
   const icon = CATEGORY_ICONS[product.category] ?? "◆";
+  const description = product.description ?? t.shop.descriptionPending;
 
   return (
     <div className="eldonia-page">
@@ -39,7 +45,7 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-8">
         <Link href="/shop" className="eldonia-link text-sm">
-          ← SHOP に戻る
+          {t.shop.backToShop}
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_22rem]">
@@ -62,16 +68,22 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
             </div>
 
             <section className="eldonia-card">
-              <h1 className="eldonia-heading eldonia-heading-sm">{product.title}</h1>
+              <ContentLine
+                text={product.title}
+                locale={locale}
+                as="h1"
+                className="eldonia-heading eldonia-heading-sm"
+                hintClassName="eldonia-localized-hint text-sm"
+              />
               <p className="mt-2 text-sm text-[var(--eldonia-text-muted)]">
-                出品: {sellerName}
+                {t.shop.seller}: {sellerName}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {product.is_bestseller && (
-                  <span className="eldonia-badge-bestseller">Realm Bestseller</span>
+                  <span className="eldonia-badge-bestseller">{t.pages.shop.badgeBestseller}</span>
                 )}
                 {product.is_nexus_choice && (
-                  <span className="eldonia-badge-nexus-choice">Nexus Choice</span>
+                  <span className="eldonia-badge-nexus-choice">{t.pages.shop.badgeChoice}</span>
                 )}
               </div>
 
@@ -79,10 +91,14 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
                 <EldoniaDivider />
               </div>
 
-              <h2 className="eldonia-label">About this treasure</h2>
-              <p className="eldonia-body mt-3 whitespace-pre-wrap text-sm">
-                {product.description ?? "説明は準備中です。"}
-              </p>
+              <h2 className="eldonia-label">{t.shop.aboutHeading}</h2>
+              <ContentLine
+                text={description}
+                locale={locale}
+                as="p"
+                className="eldonia-body mt-3 whitespace-pre-wrap text-sm"
+                hintClassName="eldonia-localized-hint text-xs"
+              />
 
               {product.tags.length > 0 && (
                 <ul className="mt-6 flex flex-wrap gap-2">
@@ -91,7 +107,7 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
                       key={tag}
                       className="rounded-full border border-[var(--eldonia-border)] px-3 py-1 text-xs text-[var(--eldonia-text-muted)]"
                     >
-                      #{tag}
+                      #<TagWithHint text={tag} locale={locale} />
                     </li>
                   ))}
                 </ul>
@@ -99,21 +115,25 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
             </section>
 
             <section className="eldonia-card">
-              <h2 className="eldonia-label">商品詳細</h2>
+              <h2 className="eldonia-label">{t.shop.detailsHeading}</h2>
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                 <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                  <dt className="text-[var(--eldonia-text-dim)]">領域</dt>
-                  <dd>{realmLabel(product.category)}</dd>
+                  <dt className="text-[var(--eldonia-text-dim)]">{t.shop.labelRealm}</dt>
+                  <dd>{realmLabel(product.category, locale)}</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                  <dt className="text-[var(--eldonia-text-dim)]">種別</dt>
+                  <dt className="text-[var(--eldonia-text-dim)]">{t.shop.labelType}</dt>
                   <dd>
-                    {product.product_type === "digital" ? "デジタル" : "物理"}
+                    {product.product_type === "digital"
+                      ? t.shop.typeDigital
+                      : t.shop.typePhysical}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                  <dt className="text-[var(--eldonia-text-dim)]">Nexus Prime</dt>
-                  <dd>{product.is_nexus_prime ? "対象" : "—"}</dd>
+                  <dt className="text-[var(--eldonia-text-dim)]">{t.shop.labelNexusPrime}</dt>
+                  <dd>
+                    {product.is_nexus_prime ? t.shop.nexusPrimeYes : t.shop.nexusPrimeNo}
+                  </dd>
                 </div>
               </dl>
             </section>

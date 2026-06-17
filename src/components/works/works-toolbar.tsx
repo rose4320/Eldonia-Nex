@@ -1,8 +1,13 @@
 import Link from "next/link";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type WorksToolbarProps = { query?: string; type?: string };
 
-export function WorksToolbar({ query, type = "all" }: WorksToolbarProps) {
+export async function WorksToolbar({ query, type = "all" }: WorksToolbarProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
+
   return (
     <div className="eldonia-works-toolbar">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-3">
@@ -15,19 +20,19 @@ export function WorksToolbar({ query, type = "all" }: WorksToolbarProps) {
             type="search"
             name="q"
             defaultValue={query ?? ""}
-            placeholder="求人・スキルを検索..."
+            placeholder={t.pages.works.toolbarSearch}
             className="eldonia-works-search-input"
-            aria-label="求人検索"
+            aria-label={t.pages.works.toolbarSearchAria}
           />
           <button type="submit" className="eldonia-works-search-btn">
-            検索
+            {t.common.search}
           </button>
         </form>
         <Link href="/works/portfolio" className="eldonia-btn-ghost shrink-0 text-xs">
-          ポートフォリオ
+          {t.pages.works.toolbarPortfolio}
         </Link>
         <Link href="/works/manage" className="eldonia-btn-ghost shrink-0 text-xs">
-          Guild 管理
+          {t.pages.works.toolbarManage}
         </Link>
       </div>
     </div>

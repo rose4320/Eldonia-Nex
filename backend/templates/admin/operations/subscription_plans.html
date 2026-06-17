@@ -10,8 +10,77 @@
   </p>
 </header>
 
-<form method="post" class="ops-card">
+<section class="ops-command-panel" aria-label="サブスク料金の操作サマリー">
+  <div class="ops-command-main">
+    <span class="ops-command-kicker">Subscription Pricing</span>
+    <h2>月額料金だけを安全に変更</h2>
+    <p>Free / Standard / Pro の括弧内の金額を更新します。次の確認画面で差分と管理人パスワードを確認してから反映されます。</p>
+  </div>
+  <div class="ops-command-actions">
+    <a class="ops-action-chip" href="{% url 'admin:ops_settings_hub' %}">設定一覧へ</a>
+    <a class="ops-action-chip" href="{% url 'admin:ops_plan_details' %}">プラン詳細</a>
+  </div>
+</section>
+
+<section class="ops-insight-grid" aria-label="設定のポイント">
+  <div class="ops-insight-card">
+    <span>編集対象</span>
+    <strong>月額料金</strong>
+    <small>税・決済手数料は別設定です</small>
+  </div>
+  <div class="ops-insight-card">
+    <span>反映タイミング</span>
+    <strong>確認後すぐ</strong>
+    <small>保存前に差分を確認できます</small>
+  </div>
+  <div class="ops-insight-card ops-insight-warn">
+    <span>注意</span>
+    <strong>0円も設定可能</strong>
+    <small>キャンペーン時以外は再確認してください</small>
+  </div>
+</section>
+
+<details class="ops-add-panel">
+  <summary>＋ 新しいサブスクプランを追加</summary>
+  <form method="post" action="{% url 'admin:ops_subscription_plan_add' %}" class="ops-add-form">
+    {% csrf_token %}
+    <div class="ops-add-grid">
+      <label>{{ add_form.name.label }} {{ add_form.name }}</label>
+      <label>{{ add_form.slug.label }} {{ add_form.slug }}</label>
+      <label>{{ add_form.price.label }} {{ add_form.price }}</label>
+      <label>{{ add_form.trial_days.label }} {{ add_form.trial_days }}</label>
+      <label class="ops-checkbox">{{ add_form.is_active }} {{ add_form.is_active.label }}</label>
+    </div>
+    <p class="ops-muted-inline">管理キーは英数字・ハイフン推奨です。例: creator-plus / enterprise</p>
+    <button type="submit" class="ops-btn ops-btn-primary">プランを追加</button>
+  </form>
+</details>
+
+<form method="post" class="ops-card" id="ops-subscription-form">
   {% csrf_token %}
+  <section class="ops-toolbelt" aria-label="サブスク料金のクイック操作">
+    <div class="ops-toolbelt-main">
+      <span class="ops-toolbelt-kicker">Quick Actions</span>
+      <h2>料金プリセット</h2>
+      <p>よく使う料金パターンをワンクリックで入力できます。入力後も個別に微調整できます。</p>
+    </div>
+    <div class="ops-tool-grid">
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"800","pro":"1500"}'>
+        標準 0 / 800 / 1500
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"980","pro":"1980"}'>
+        成長 0 / 980 / 1980
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"1200","pro":"2500"}'>
+        高単価 0 / 1200 / 2500
+      </button>
+      <button type="button" class="ops-tool-button ops-tool-danger" data-ops-fill='{"free":"0","standard":"0","pro":"0"}'>
+        全プラン 0円
+      </button>
+      <button type="reset" class="ops-tool-button ops-tool-muted">入力前に戻す</button>
+    </div>
+  </section>
+
   <ul class="ops-plan-list">
     {% for field in form %}
       <li class="ops-plan-row">

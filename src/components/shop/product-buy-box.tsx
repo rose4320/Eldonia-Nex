@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import {
   discountPercent,
@@ -16,6 +17,8 @@ type ProductBuyBoxProps = {
 };
 
 export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
+  const locale = useLocale();
+  const t = useContent().shop;
   const discount = discountPercent(product.price, product.compare_at_price);
   const inStock =
     product.product_type === "digital" ||
@@ -26,8 +29,8 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
     <div className="eldonia-buy-box sticky top-6 space-y-4">
       {product.compare_at_price && (
         <p className="text-sm text-[var(--eldonia-text-dim)]">
-          参考価格:{" "}
-          <span className="line-through">{formatPrice(product.compare_at_price)}</span>
+          {t.comparePrice}:{" "}
+          <span className="line-through">{formatPrice(product.compare_at_price, locale)}</span>
           {discount && (
             <span className="ml-2 text-[var(--eldonia-gold)]">-{discount}%</span>
           )}
@@ -35,26 +38,35 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
       )}
 
       <p className="font-display text-3xl text-[var(--eldonia-gold-light)]">
-        {formatPrice(product.price)}
+        {formatPrice(product.price, locale)}
       </p>
 
-      <StarRating rating={product.rating} reviewCount={product.review_count} size="md" />
+      <StarRating
+        rating={product.rating}
+        reviewCount={product.review_count}
+        size="md"
+        locale={locale}
+        ratingAria={t.ratingAria}
+      />
 
       <div className="space-y-2 border-t border-[var(--eldonia-border)] pt-4 text-sm">
         {product.is_nexus_prime && (
           <p className="eldonia-badge-nexus-prime">
-            <span aria-hidden>⚜</span> Nexus Prime 対象 — 送料無料・特典あり
+            <span aria-hidden>⚜</span> {t.nexusPrimeEligible}
           </p>
         )}
         <p className="text-[var(--eldonia-text-muted)]">
-          領域: {realmLabel(product.category)}
+          {t.labelRealm}: {realmLabel(product.category, locale)}
         </p>
         <p className="text-[var(--eldonia-text-muted)]">
-          種別: {product.product_type === "digital" ? "デジタル（即時ダウンロード）" : "物理商品"}
+          {t.labelType}:{" "}
+          {product.product_type === "digital" ? t.typeDigitalLong : t.typePhysicalLong}
         </p>
         {product.product_type === "physical" && product.stock_quantity !== null && (
           <p className={inStock ? "text-[var(--eldonia-gold-muted)]" : "eldonia-alert-error"}>
-            {inStock ? `在庫: 残り ${product.stock_quantity} 点` : "在庫切れ"}
+            {inStock
+              ? t.inStock(product.stock_quantity)
+              : t.outOfStock}
           </p>
         )}
       </div>
@@ -66,7 +78,7 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
             <AddToCartButton
               kind="shop"
               id={product.id}
-              label="今すぐ購入"
+              label={t.buyNow}
               disabled={!inStock}
               buyNow
               className="eldonia-btn-secondary w-full"
@@ -77,14 +89,12 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
             href={`/auth/login?redirect_to=/shop/${product.id}`}
             className="eldonia-btn-primary w-full text-center"
           >
-            ログインして購入
+            {t.loginToBuy}
           </Link>
         )}
       </div>
 
-      <p className="eldonia-hint text-center">
-        安全な決済 · Eldonia-Nex 出品者保護（準備中）
-      </p>
+      <p className="eldonia-hint text-center">{t.secureCheckout}</p>
     </div>
   );
 }

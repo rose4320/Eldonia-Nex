@@ -7,6 +7,8 @@ import { ShopSidebar } from "@/components/shop/shop-sidebar";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { getShopProducts } from "@/lib/shop/get-products";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { realmLabel } from "@/lib/shop/constants";
 
 type ShopPageProps = {
@@ -14,15 +16,17 @@ type ShopPageProps = {
 };
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const { q, category = "all" } = await searchParams;
   const products = await getShopProducts({ q, category });
 
   const heading =
     q?.trim()
-      ? `「${q.trim()}」の検索結果`
+      ? t.common.searchResults(q.trim())
       : category !== "all"
-        ? realmLabel(category)
-        : "Treasures of the Nexus";
+        ? realmLabel(category, locale)
+        : t.shop.heading;
 
   return (
     <div className="eldonia-page">
@@ -33,9 +37,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         <section className="space-y-2">
           <p className="eldonia-eyebrow">SHOP</p>
           <h1 className="eldonia-heading eldonia-heading-lg">{heading}</h1>
-          <p className="eldonia-body text-sm">
-            グッズ・デジタル商品を Amazon 型のレイアウトで。Eldonia-Nex 公式・クリエイター出品。
-          </p>
+          <p className="eldonia-body text-sm">{t.shop.lead}</p>
         </section>
 
         <EldoniaDivider />
@@ -49,20 +51,20 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="font-display text-sm tracking-wider text-[var(--eldonia-gold-muted)] uppercase">
-                  {products.length} 件の商品
+                  {t.common.countItems(products.length, t.shop.productUnit)}
                 </h2>
                 {(q || category !== "all") && (
                   <Link href="/shop" className="eldonia-link text-sm">
-                    フィルタをクリア
+                    {t.common.clearFilter}
                   </Link>
                 )}
               </div>
 
               {products.length === 0 ? (
                 <div className="eldonia-card-dashed rounded-xl px-8 py-16 text-center">
-                  <p className="eldonia-body">該当する商品がありません。</p>
+                  <p className="eldonia-body">{t.shop.empty}</p>
                   <Link href="/shop" className="eldonia-link mt-4 inline-block text-sm">
-                    すべての商品を見る →
+                    {t.shop.viewAll}
                   </Link>
                 </div>
               ) : (

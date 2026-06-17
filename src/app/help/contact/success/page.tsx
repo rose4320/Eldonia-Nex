@@ -2,15 +2,18 @@ import Link from "next/link";
 import { HelpNav } from "@/components/support/help-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { SLA_INFO } from "@/lib/support/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type SuccessPageProps = {
   searchParams: Promise<{ ticket?: string }>;
 };
 
 export default async function ContactSuccessPage({ searchParams }: SuccessPageProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const params = await searchParams;
-  const ticketNumber = params.ticket ?? "（番号を確認できません）";
+  const ticketNumber = params.ticket ?? t.pages.help.contactSuccessTicketMissing;
 
   return (
     <div className="eldonia-page">
@@ -20,24 +23,29 @@ export default async function ContactSuccessPage({ searchParams }: SuccessPagePr
         <section className="eldonia-card border-eldonia-gold/40 text-center">
           <p className="text-4xl">✅</p>
           <h1 className="mt-4 eldonia-heading eldonia-heading-sm">
-            お問い合わせを受け付けました
+            {t.pages.help.contactSuccessTitle}
           </h1>
           <p className="mt-3 eldonia-body text-sm">
-            チケット番号を控えておいてください。{SLA_INFO.firstResponse} に初回返信いたします。
+            {t.pages.help.contactSuccessLead}
           </p>
-          <p className="mt-6 rounded-lg bg-eldonia-surface-elevated px-4 py-3 font-mono font-display text-lg font-semibold tracking-wide text-eldonia-gold-light ring-1 ring-eldonia-gold/40">
+          <p className="eldonia-label mt-6">{t.pages.help.contactSuccessTicket}</p>
+          <p className="mt-2 rounded-lg bg-eldonia-surface-elevated px-4 py-3 font-mono font-display text-lg font-semibold tracking-wide text-eldonia-gold-light ring-1 ring-eldonia-gold/40">
             {ticketNumber}
           </p>
         </section>
 
         <section className="space-y-4 text-center eldonia-body text-sm">
-          <p>
-            アカウントをお持ちの方は{" "}
-            <Link href="/auth/login?redirect_to=/help/tickets" className="text-eldonia-gold hover:text-eldonia-gold-light">
-              ログイン
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/help/faq" className="text-eldonia-gold hover:text-eldonia-gold-light">
+              {t.pages.help.contactSuccessFaq}
             </Link>
-            すると「マイチケット」から履歴を確認できます。
-          </p>
+            <Link
+              href="/auth/login?redirect_to=/help/tickets"
+              className="text-eldonia-gold hover:text-eldonia-gold-light"
+            >
+              {t.pages.help.contactSuccessTickets}
+            </Link>
+          </div>
           <HelpNav current="/help/contact" />
         </section>
       </main>

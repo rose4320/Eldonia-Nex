@@ -7,6 +7,7 @@ import {
   jobStatusLabel,
   type JobApplicationWithApplicant,
 } from "@/lib/works/employer-types";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { jobTypeLabel } from "@/lib/works/constants";
 import type { JobListingWithPoster } from "@/types/database";
 
@@ -17,6 +18,9 @@ type EmployerDashboardProps = {
 
 export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const { forms } = useContent();
+  const employer = forms.employer;
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
   async function updateJobStatus(jobId: string, status: string) {
@@ -44,15 +48,15 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
   return (
     <div className="grid gap-8 lg:grid-cols-2">
       <section className="space-y-4">
-        <h2 className="eldonia-label">掲載中の求人 ({jobs.length})</h2>
+        <h2 className="eldonia-label">{employer.jobsHeading(jobs.length)}</h2>
         {jobs.length === 0 ? (
-          <p className="eldonia-body text-sm">まだ求人を掲載していません。</p>
+          <p className="eldonia-body text-sm">{employer.jobsEmpty}</p>
         ) : (
           jobs.map((job) => (
             <article key={job.id} className="eldonia-card space-y-2">
               <h3 className="font-display text-[var(--eldonia-gold-light)]">{job.title}</h3>
               <p className="text-xs text-[var(--eldonia-text-dim)]">
-                {jobTypeLabel(job.job_type)} · {jobStatusLabel(job.status)}
+                {jobTypeLabel(job.job_type, locale)} · {jobStatusLabel(job.status, locale)}
               </p>
               <div className="flex flex-wrap gap-2">
                 {job.status === "open" && (
@@ -62,7 +66,7 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
                     onClick={() => updateJobStatus(job.id, "closed")}
                     className="eldonia-btn-ghost text-xs"
                   >
-                    募集終了
+                    {employer.closeListing}
                   </button>
                 )}
                 {job.status !== "open" && (
@@ -72,7 +76,7 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
                     onClick={() => updateJobStatus(job.id, "open")}
                     className="eldonia-btn-ghost text-xs"
                   >
-                    再開
+                    {employer.reopenListing}
                   </button>
                 )}
               </div>
@@ -82,13 +86,13 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
       </section>
 
       <section className="space-y-4">
-        <h2 className="eldonia-label">応募 ({applications.length})</h2>
+        <h2 className="eldonia-label">{employer.appsHeading(applications.length)}</h2>
         {applications.length === 0 ? (
-          <p className="eldonia-body text-sm">応募はまだありません。</p>
+          <p className="eldonia-body text-sm">{employer.appsEmpty}</p>
         ) : (
           applications.map((app) => {
             const applicant =
-              app.profiles?.display_name ?? app.profiles?.username ?? "応募者";
+              app.profiles?.display_name ?? app.profiles?.username ?? employer.applicantFallback;
             const snapshot = app.portfolio_snapshot as {
               headline?: string;
               level?: number;
@@ -104,11 +108,11 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
                 <p className="eldonia-body line-clamp-3 text-sm">{app.cover_message}</p>
                 {snapshot && (
                   <p className="text-xs text-[var(--eldonia-text-dim)]">
-                    Portfolio: {snapshot.headline} · Lv.{snapshot.level} ·{" "}
-                    {snapshot.title_badge}
+                    {employer.portfolioSnapshotLabel}: {snapshot.headline} · Lv.
+                    {snapshot.level} · {snapshot.title_badge}
                   </p>
                 )}
-                <p className="text-xs">{applicationStatusLabel(app.status)}</p>
+                <p className="text-xs">{applicationStatusLabel(app.status, locale)}</p>
                 <div className="flex flex-wrap gap-2">
                   {(["reviewing", "accepted", "rejected"] as const).map((status) => (
                     <button
@@ -118,7 +122,7 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
                       onClick={() => updateApplicationStatus(app.id, status)}
                       className="eldonia-btn-ghost text-xs"
                     >
-                      {applicationStatusLabel(status)}
+                      {applicationStatusLabel(status, locale)}
                     </button>
                   ))}
                 </div>

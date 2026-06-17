@@ -1,13 +1,27 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { resolvePostLoginPath } from "@/lib/auth/redirect";
 import type { Database } from "@/types/database";
 
-const PROTECTED_PREFIXES = ["/dashboard", "/gallery/upload", "/help/tickets"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/settings",
+  "/gallery/upload",
+  "/help/tickets",
+  "/works/manage",
+  "/works/portfolio",
+];
 
 function isProtectedPath(pathname: string): boolean {
-  return PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
+  if (
+    PROTECTED_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    )
+  ) {
+    return true;
+  }
+
+  return /^\/community\/b\/[^/]+\/new$/.test(pathname);
 }
 
 export async function updateSession(request: NextRequest) {
@@ -39,6 +53,16 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+
+  if (user && pathname === "/auth/login") {
+    const redirectTo = resolvePostLoginPath(
+      request.nextUrl.searchParams.get("redirect_to"),
+    );
+    const home = request.nextUrl.clone();
+    home.pathname = redirectTo;
+    home.search = "";
+    return NextResponse.redirect(home);
+  }
 
   if (!user && isProtectedPath(pathname)) {
     const loginUrl = request.nextUrl.clone();

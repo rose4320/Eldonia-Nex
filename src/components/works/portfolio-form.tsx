@@ -2,8 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { createClient } from "@/lib/supabase/client";
-import { levelFromExp, PORTFOLIO_VISIBILITY } from "@/lib/works/constants";
+import { levelFromExp } from "@/lib/works/constants";
+import { portfolioVisibilityOptions } from "@/lib/i18n/taxonomy";
 import type { Portfolio, PortfolioVisibility } from "@/types/database";
 
 type PortfolioFormProps = {
@@ -13,11 +15,13 @@ type PortfolioFormProps = {
 
 export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const { forms } = useContent();
+  const copy = forms.portfolio;
+  const visibilityOptions = portfolioVisibilityOptions(locale);
   const [headline, setHeadline] = useState(portfolio?.headline ?? "");
   const [summary, setSummary] = useState(portfolio?.summary ?? "");
   const [skillsText, setSkillsText] = useState((portfolio?.skills ?? []).join(", "));
-  const [expPoints, setExpPoints] = useState(portfolio?.exp_points ?? 0);
-  const [titleBadge, setTitleBadge] = useState(portfolio?.title_badge ?? "Novice");
   const [visibility, setVisibility] = useState<PortfolioVisibility>(
     portfolio?.visibility ?? "public",
   );
@@ -26,7 +30,9 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const level = levelFromExp(expPoints);
+  const expPoints = portfolio?.exp_points ?? 0;
+  const level = portfolio?.level ?? levelFromExp(expPoints);
+  const titleBadge = portfolio?.title_badge ?? copy.novice;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,9 +52,6 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
         headline: headline.trim() || null,
         summary: summary.trim() || null,
         skills,
-        exp_points: Math.max(0, expPoints),
-        level: levelFromExp(Math.max(0, expPoints)),
-        title_badge: titleBadge.trim() || null,
         visibility,
         attach_on_apply: attachOnApply,
       },
@@ -61,7 +64,7 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
       return;
     }
 
-    setMessage("ポートフォリオを保存しました。");
+    setMessage(copy.saved);
     setLoading(false);
     router.refresh();
   }
@@ -69,12 +72,12 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
   return (
     <form onSubmit={handleSubmit} className="eldonia-card mt-8 space-y-4">
       <p className="eldonia-badge-nexus-prime w-fit">
-        Lv.{level} · {titleBadge || "Novice"}
+        Lv.{level} · {titleBadge || copy.novice}
       </p>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="headline" className="eldonia-label">
-          見出し
+          {copy.headline}
         </label>
         <input
           id="headline"
@@ -88,7 +91,7 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="summary" className="eldonia-label">
-          概要
+          {copy.summary}
         </label>
         <textarea
           id="summary"
@@ -102,7 +105,7 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="skills" className="eldonia-label">
-          スキル（カンマ区切り）
+          {copy.skills}
         </label>
         <input
           id="skills"
@@ -115,36 +118,26 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
-          <label htmlFor="exp" className="eldonia-label">
-            EXP
-          </label>
-          <input
-            id="exp"
-            type="number"
-            min={0}
-            value={expPoints}
-            onChange={(event) => setExpPoints(Number(event.target.value))}
-            className="eldonia-input"
-          />
+          <span className="eldonia-label">
+            {copy.exp}
+          </span>
+          <p className="eldonia-input pointer-events-none opacity-80">
+            {expPoints.toLocaleString()} EXP
+          </p>
         </div>
         <div className="flex flex-col gap-1">
-          <label htmlFor="title-badge" className="eldonia-label">
-            称号
-          </label>
-          <input
-            id="title-badge"
-            type="text"
-            maxLength={40}
-            value={titleBadge}
-            onChange={(event) => setTitleBadge(event.target.value)}
-            className="eldonia-input"
-          />
+          <span className="eldonia-label">
+            {copy.titleBadge}
+          </span>
+          <p className="eldonia-input pointer-events-none opacity-80">
+            {titleBadge}
+          </p>
         </div>
       </div>
 
       <div className="flex flex-col gap-1">
         <label htmlFor="visibility" className="eldonia-label">
-          公開範囲
+          {copy.visibility}
         </label>
         <select
           id="visibility"
@@ -152,7 +145,7 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
           onChange={(event) => setVisibility(event.target.value as PortfolioVisibility)}
           className="eldonia-input"
         >
-          {PORTFOLIO_VISIBILITY.map((option) => (
+          {visibilityOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
@@ -160,21 +153,21 @@ export function PortfolioForm({ userId, portfolio }: PortfolioFormProps) {
         </select>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-[var(--eldonia-text-muted)]">
+      <label className="flex items-center gap-2 text-sm text-eldonia-text-muted">
         <input
           type="checkbox"
           checked={attachOnApply}
           onChange={(event) => setAttachOnApply(event.target.checked)}
-          className="rounded border-[var(--eldonia-border)] accent-[var(--eldonia-gold)]"
+          className="rounded border-(--eldonia-border) accent-eldonia-gold"
         />
-        応募時にポートフォリオを自動添付
+        {copy.attachOnApply}
       </label>
 
       {error && <p className="eldonia-alert-error">{error}</p>}
       {message && <p className="eldonia-alert-success">{message}</p>}
 
       <button type="submit" disabled={loading} className="eldonia-btn-primary w-fit">
-        {loading ? "保存中..." : "保存する"}
+        {loading ? copy.saving : copy.submit}
       </button>
     </form>
   );

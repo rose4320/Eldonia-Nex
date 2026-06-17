@@ -38,6 +38,20 @@ export async function POST(request: Request) {
               : session.payment_intent?.id ?? null,
         })
         .eq("stripe_session_id", session.id);
+
+      if (session.metadata?.kind === "subscription_onboarding") {
+        await admin
+          .from("user_onboarding")
+          .update({
+            selected_plan:
+              session.metadata.plan_id === "standard" || session.metadata.plan_id === "pro"
+                ? session.metadata.plan_id
+                : "free",
+            payment_status: "completed",
+            stripe_session_id: session.id,
+          })
+          .eq("user_id", session.metadata.user_id);
+      }
     }
   }
 

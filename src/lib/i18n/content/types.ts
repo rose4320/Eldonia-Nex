@@ -1,0 +1,198 @@
+import type { PageMessages } from "@/lib/i18n/content/page-messages";
+import type { GuidesContent } from "@/lib/i18n/content/guides-messages";
+import type { FormsContent } from "@/lib/i18n/content/forms-messages";
+import type { SettingsUiContent } from "@/lib/i18n/content/settings-ui-messages";
+import type { EngagementContent } from "@/lib/i18n/content/engagement-messages";
+import type { SignupContent } from "@/lib/i18n/content/signup-messages";
+
+export type ModuleContent = {
+  name: string;
+  description: string;
+};
+
+export type HelpLinkContent = {
+  href: string;
+  title: string;
+  description: string;
+  icon: string;
+  requiresAuth: boolean;
+};
+
+export type ContentCatalog = {
+  common: {
+    available: string;
+    comingSoon: string;
+    search: string;
+    searchResults: (term: string) => string;
+    noResults: string;
+    clearFilter: string;
+    viewAll: string;
+    post: string;
+    loginToPost: string;
+    firstPost: string;
+    all: string;
+    countItems: (count: number, unit: string) => string;
+  };
+  chrome: {
+    searchPlaceholder: string;
+    searchSubmit: string;
+    login: string;
+    signup: string;
+    logout: string;
+    menu: string;
+    menuClose: string;
+    footerTech: string;
+    footerHelp: string;
+    footerPartners: string;
+    footerSitemap: string;
+    footerCopyright: string;
+    expNext: string;
+  };
+  home: {
+    eyebrow: string;
+    heroTitle: string;
+    heroBody: string;
+    ctaSettings: string;
+    ctaPostArtwork: string;
+    ctaSignup: string;
+    modules: ModuleContent[];
+  };
+  gallery: {
+    heading: string;
+    lead: string;
+    upload: string;
+    searchPlaceholder: string;
+    searchAria: string;
+    empty: string;
+    emptySearch: string;
+  };
+  shop: {
+    heading: string;
+    lead: string;
+    productUnit: string;
+    empty: string;
+    viewAll: string;
+    sidebarRealms: string;
+    searchPlaceholder: string;
+    searchAria: string;
+    searchSubmit: string;
+    cart: (count: number) => string;
+    backToShop: string;
+    seller: string;
+    aboutHeading: string;
+    descriptionPending: string;
+    detailsHeading: string;
+    labelRealm: string;
+    labelType: string;
+    labelNexusPrime: string;
+    typeDigital: string;
+    typePhysical: string;
+    typeDigitalLong: string;
+    typePhysicalLong: string;
+    nexusPrimeEligible: string;
+    nexusPrimeYes: string;
+    nexusPrimeNo: string;
+    comparePrice: string;
+    addToCart: string;
+    buyNow: string;
+    adding: string;
+    loginToBuy: string;
+    secureCheckout: string;
+    inStock: (count: number) => string;
+    outOfStock: string;
+    addToCartFailed: string;
+    checkoutFailed: string;
+    cartHeading: string;
+    cartEmpty: string;
+    cartBrowseShop: string;
+    cartRemove: string;
+    cartTotal: string;
+    cartLoginCheckout: string;
+    checkoutStripe: string;
+    checkoutLoading: string;
+    heroHeading: string;
+    featured: string;
+    ratingAria: (rating: number) => string;
+    instantDownload: string;
+    nexusPrimeBadge: string;
+  };
+  events: {
+    heading: string;
+    headingPast: string;
+    lead: string;
+    empty: string;
+    viewAll: string;
+    eventUnit: string;
+    sidebarRealms: string;
+    sidebarWhen: string;
+    whenUpcoming: string;
+    whenPast: string;
+    whenAll: string;
+    featured: string;
+  };
+  community: {
+    heading: string;
+    lead: string;
+    boardsHeading: string;
+    threadsHeading: string;
+    recentThreads: string;
+    empty: string;
+  };
+  works: {
+    heading: string;
+    lead: string;
+    empty: string;
+  };
+  lab: {
+    lead: string;
+    empty: string;
+  };
+  help: {
+    eyebrow: string;
+    heading: string;
+    lead: string;
+    ticketsLoginTitle: string;
+    ticketsLoginLead: string;
+    slaHeading: string;
+    slaFirstResponse: string;
+    slaHours: string;
+    slaEmail: string;
+    slaFirstResponseValue: string;
+    slaHoursValue: string;
+    links: HelpLinkContent[];
+  };
+  auth: {
+    loginTitle: string;
+    loginLead: string;
+    signupTitle: string;
+    signupLead: string;
+    email: string;
+    password: string;
+    loginSubmit: string;
+    loginLoading: string;
+    signupSubmit: string;
+    signupLoading: string;
+    noAccount: string;
+    hasAccount: string;
+    confirmEmailSent: string;
+    signupConfirmEmail: string;
+  };
+  settings: {
+    heading: string;
+    lead: string;
+  };
+  notFound: {
+    heading: string;
+    body: string;
+    home: string;
+    help: string;
+  };
+  pages: PageMessages;
+  guides: GuidesContent;
+  forms: FormsContent;
+  settingsUi: SettingsUiContent;
+  engagement: EngagementContent;
+  signup: SignupContent;
+};
+
+export type ContentKey = keyof ContentCatalog;

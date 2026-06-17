@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
+import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
 
 type ThreadReplyFormProps = {
@@ -11,6 +13,9 @@ type ThreadReplyFormProps = {
 
 export function ThreadReplyForm({ threadId, userId }: ThreadReplyFormProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const { pages } = useContent();
+  const community = pages.community;
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,19 +26,24 @@ export function ThreadReplyForm({ threadId, userId }: ThreadReplyFormProps) {
     setLoading(true);
 
     const supabase = createClient();
-    const { error: insertError } = await supabase.from("community_replies").insert({
-      thread_id: threadId,
-      author_id: userId,
-      body: body.trim(),
-      locale: "ja",
-    });
+    const { data, error: insertError } = await supabase
+      .from("community_replies")
+      .insert({
+        thread_id: threadId,
+        author_id: userId,
+        body: body.trim(),
+        locale,
+      })
+      .select("id")
+      .single();
 
-    if (insertError) {
-      setError(insertError.message);
+    if (insertError || !data) {
+      setError(insertError?.message ?? community.nexusErr);
       setLoading(false);
       return;
     }
 
+    await awardUserExp(supabase, "community.reply", data.id);
     setBody("");
     setLoading(false);
     router.refresh();
@@ -41,14 +51,14 @@ export function ThreadReplyForm({ threadId, userId }: ThreadReplyFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="eldonia-card mt-6 space-y-3">
-      <h3 className="eldonia-label">返信する</h3>
+      <h3 className="eldonia-label">{community.replyHeading}</h3>
       <textarea
         required
         rows={4}
         maxLength={4000}
         value={body}
         onChange={(event) => setBody(event.target.value)}
-        placeholder="メッセージを入力..."
+        placeholder={community.replyPlaceholder}
         className="eldonia-textarea"
       />
       {error && <p className="eldonia-alert-error">{error}</p>}
@@ -57,7 +67,7 @@ export function ThreadReplyForm({ threadId, userId }: ThreadReplyFormProps) {
         disabled={loading}
         className="eldonia-btn-primary w-fit disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "送信中..." : "返信を投稿"}
+        {loading ? community.replySubmitting : community.replySubmit}
       </button>
     </form>
   );

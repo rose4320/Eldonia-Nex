@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useContent } from "@/components/providers/locale-provider";
 
 type AddToCartButtonProps = {
   kind: "shop" | "event";
@@ -9,20 +10,21 @@ type AddToCartButtonProps = {
   label?: string;
   disabled?: boolean;
   className?: string;
-  /** 追加後に Stripe チェックアウトへ進む */
   buyNow?: boolean;
 };
 
 export function AddToCartButton({
   kind,
   id,
-  label = "カートに加える",
+  label,
   disabled,
   className = "eldonia-btn-primary w-full",
   buyNow = false,
 }: AddToCartButtonProps) {
   const router = useRouter();
+  const t = useContent().shop;
   const [loading, setLoading] = useState(false);
+  const buttonLabel = label ?? t.addToCart;
 
   async function handleClick() {
     setLoading(true);
@@ -37,7 +39,7 @@ export function AddToCartButton({
         const checkout = await fetch("/api/checkout", { method: "POST" });
         const data = (await checkout.json()) as { url?: string; error?: string };
         if (!checkout.ok || !data.url) {
-          alert(data.error ?? "チェックアウトに失敗しました。");
+          alert(data.error ?? t.checkoutFailed);
           return;
         }
         window.location.href = data.url;
@@ -46,7 +48,7 @@ export function AddToCartButton({
       router.push("/shop/cart");
       router.refresh();
     } catch {
-      alert("カートへの追加に失敗しました。");
+      alert(t.addToCartFailed);
     } finally {
       setLoading(false);
     }
@@ -59,7 +61,7 @@ export function AddToCartButton({
       disabled={disabled || loading}
       onClick={handleClick}
     >
-      {loading ? "追加中..." : label}
+      {loading ? t.adding : buttonLabel}
     </button>
   );
 }

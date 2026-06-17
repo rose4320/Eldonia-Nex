@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
 import {
   formatEventDate,
@@ -19,7 +20,9 @@ type EventTicketBoxProps = {
 };
 
 export function EventTicketBox({ event, isLoggedIn }: EventTicketBoxProps) {
-  const date = formatEventDate(event.starts_at);
+  const locale = useLocale();
+  const { pages, shop } = useContent();
+  const date = formatEventDate(event.starts_at, locale);
   const soldOut = isSoldOut(event.capacity, event.tickets_sold);
   const remaining = ticketsRemaining(event.capacity, event.tickets_sold);
   const past = isPastEvent(event.starts_at);
@@ -27,47 +30,48 @@ export function EventTicketBox({ event, isLoggedIn }: EventTicketBoxProps) {
   return (
     <div className="eldonia-ticket-box sticky top-6 space-y-4">
       <p className="font-display text-sm text-[var(--eldonia-gold-muted)] uppercase tracking-wider">
-        チケット
+        {pages.events.ticketHeading}
       </p>
 
       <p className="font-display text-3xl text-[var(--eldonia-gold-light)]">
-        {formatPrice(event.ticket_price)}
+        {formatPrice(event.ticket_price, locale)}
       </p>
 
       {event.compare_price && event.compare_price > event.ticket_price && (
         <p className="text-sm text-[var(--eldonia-text-dim)]">
-          通常: <span className="line-through">{formatPrice(event.compare_price)}</span>
+          {pages.events.ticketCompare}:{" "}
+          <span className="line-through">{formatPrice(event.compare_price, locale)}</span>
         </p>
       )}
 
       <div className="space-y-2 border-t border-[var(--eldonia-border)] pt-4 text-sm">
         <p className="text-[var(--eldonia-text-muted)]">{date.full}</p>
         <p className="text-[var(--eldonia-text-muted)]">
-          形式: {formatLabel(event.format)}
+          {pages.events.labelFormat}: {formatLabel(event.format, locale)}
         </p>
         <p className="text-[var(--eldonia-text-muted)]">
-          領域: {realmLabel(event.category)}
+          {pages.events.labelRealm}: {realmLabel(event.category, locale)}
         </p>
         {remaining !== null && (
           <p className={soldOut ? "eldonia-alert-error" : "text-[var(--eldonia-gold-muted)]"}>
-            {soldOut ? "完売 — Sold Out" : `残り ${remaining} 席`}
+            {soldOut ? pages.events.soldOutFull : shop.inStock(remaining)}
           </p>
         )}
         {event.is_nexus_verified && (
           <p className="eldonia-badge-nexus-prime w-fit">
-            <span aria-hidden>⚜</span> Nexus Verified Host
+            <span aria-hidden>⚜</span> {pages.events.badgeVerified}
           </p>
         )}
       </div>
 
       <div className="flex flex-col gap-2">
         {past ? (
-          <p className="eldonia-hint text-center">このイベントは終了しました</p>
+          <p className="eldonia-hint text-center">{pages.events.ticketPast}</p>
         ) : isLoggedIn ? (
           <AddToCartButton
             kind="event"
             id={event.id}
-            label="チケットを取得"
+            label={pages.events.ticketGet}
             disabled={soldOut}
           />
         ) : (
@@ -75,14 +79,12 @@ export function EventTicketBox({ event, isLoggedIn }: EventTicketBoxProps) {
             href={`/auth/login?redirect_to=/events/${event.id}`}
             className="eldonia-btn-primary w-full text-center"
           >
-            ログインしてチケット取得
+            {pages.events.ticketLogin}
           </Link>
         )}
       </div>
 
-      <p className="eldonia-hint text-center">
-        電子チケット · QR 入場（準備中）
-      </p>
+      <p className="eldonia-hint text-center">{pages.events.ticketQrNote}</p>
     </div>
   );
 }

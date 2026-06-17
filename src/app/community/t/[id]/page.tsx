@@ -8,6 +8,8 @@ import { ThreadReplyList } from "@/components/community/thread-reply-list";
 import { TranslationPanel } from "@/components/community/translation-panel";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { formatRelativeTime, LOCALE_LABELS } from "@/lib/community/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import {
   getCommunityReplies,
   getCommunityThread,
@@ -18,6 +20,8 @@ type ThreadPageProps = { params: Promise<{ id: string }> };
 
 export default async function CommunityThreadPage({ params }: ThreadPageProps) {
   const { id } = await params;
+  const locale = await getUiLocale();
+  const pages = getContent(locale).pages;
   const thread = await getCommunityThread(id);
 
   if (!thread) notFound();
@@ -28,7 +32,7 @@ export default async function CommunityThreadPage({ params }: ThreadPageProps) {
     data: { user },
   } = await supabase.auth.getUser();
   const author =
-    thread.profiles?.display_name ?? thread.profiles?.username ?? "匿名";
+    thread.profiles?.display_name ?? thread.profiles?.username ?? pages.anonymous;
 
   return (
     <div className="eldonia-page">
@@ -45,7 +49,7 @@ export default async function CommunityThreadPage({ params }: ThreadPageProps) {
 
         <article className="eldonia-card mt-6">
           {thread.is_pinned && (
-            <span className="eldonia-badge-bestseller mb-3 inline-block">Pinned</span>
+            <span className="eldonia-badge-bestseller mb-3 inline-block">{pages.pinned}</span>
           )}
           <h1 className="eldonia-heading eldonia-heading-sm">{thread.title}</h1>
           <p className="mt-2 text-xs text-[var(--eldonia-text-dim)]">
@@ -60,16 +64,15 @@ export default async function CommunityThreadPage({ params }: ThreadPageProps) {
         </article>
 
         <section className="mt-8">
-          <h2 className="eldonia-label mb-4">返信 ({replies.length})</h2>
+          <h2 className="eldonia-label mb-4">{pages.community.replies(replies.length)}</h2>
           <ThreadReplyList replies={replies} />
           {user ? (
             <ThreadReplyForm threadId={id} userId={user.id} />
           ) : (
             <p className="eldonia-body mt-6 text-center text-sm">
               <Link href={`/auth/login?redirect_to=/community/t/${id}`} className="eldonia-link">
-                ログイン
+                {pages.loginToAction(pages.community.loginToReply)}
               </Link>
-              して返信する
             </p>
           )}
         </section>

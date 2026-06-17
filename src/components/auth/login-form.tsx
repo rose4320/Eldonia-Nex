@@ -3,10 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useContent } from "@/components/providers/locale-provider";
 import { createClient } from "@/lib/supabase/client";
-import { sanitizeRedirectTo } from "@/lib/auth/redirect";
+import { resolvePostLoginPath } from "@/lib/auth/redirect";
 import {
   mapAuthError,
+  mapSupabaseAuthMessage,
   supabaseSetupMessage,
 } from "@/lib/supabase/env";
 
@@ -16,6 +18,7 @@ type LoginFormProps = {
 };
 
 export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
+  const t = useContent();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,13 +44,13 @@ export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
       });
 
       if (signInError) {
-        setError(signInError.message);
+        setError(mapSupabaseAuthMessage(signInError.message));
         setLoading(false);
         return;
       }
 
-      router.push(sanitizeRedirectTo(redirectTo));
       router.refresh();
+      window.location.assign(resolvePostLoginPath(redirectTo));
     } catch (caught) {
       setError(mapAuthError(caught));
       setLoading(false);
@@ -58,7 +61,7 @@ export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
     <form onSubmit={handleSubmit} className="flex w-full max-w-sm flex-col gap-4">
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="eldonia-label">
-          メールアドレス
+          {t.auth.email}
         </label>
         <input
           id="email"
@@ -73,7 +76,7 @@ export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="password" className="eldonia-label">
-          パスワード
+          {t.auth.password}
         </label>
         <input
           id="password"
@@ -93,16 +96,16 @@ export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
         disabled={loading || !supabaseConfigured}
         className="eldonia-btn-primary disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {loading ? "ログイン中..." : "ログイン"}
+        {loading ? t.auth.loginLoading : t.auth.loginSubmit}
       </button>
 
       <p className="text-center text-sm text-eldonia-text-muted">
-        アカウントをお持ちでない方は{" "}
+        {t.auth.noAccount}{" "}
         <Link
           href={`/auth/signup?redirect_to=${encodeURIComponent(redirectTo)}`}
           className="eldonia-link font-medium"
         >
-          新規登録
+          {t.chrome.signup}
         </Link>
       </p>
     </form>

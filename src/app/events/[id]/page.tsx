@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
 import { EventTicketBox } from "@/components/events/event-ticket-box";
 import { EventsToolbar } from "@/components/events/events-toolbar";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
@@ -12,6 +13,8 @@ import {
   realmLabel,
 } from "@/lib/events/constants";
 import { getEvent } from "@/lib/events/get-events";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 
 type EventDetailPageProps = {
@@ -20,6 +23,8 @@ type EventDetailPageProps = {
 
 export default async function EventDetailPage({ params }: EventDetailPageProps) {
   const { id } = await params;
+  const locale = await getUiLocale();
+  const pages = getContent(locale).pages;
   const event = await getEvent(id);
 
   if (!event) {
@@ -36,7 +41,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
     event.profiles?.username ??
     "Eldonia Host";
   const icon = CATEGORY_ICONS[event.category] ?? "◆";
-  const date = formatEventDate(event.starts_at);
+  const date = formatEventDate(event.starts_at, locale);
 
   return (
     <div className="eldonia-page">
@@ -45,7 +50,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-8">
         <Link href="/events" className="eldonia-link text-sm">
-          ← EVENTS に戻る
+          {pages.events.back}
         </Link>
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_22rem]">
@@ -69,16 +74,22 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
 
             <section className="eldonia-card">
               <p className="eldonia-eyebrow">{date.full}</p>
-              <h1 className="eldonia-heading eldonia-heading-sm mt-2">{event.title}</h1>
+              <ContentLine
+                text={event.title}
+                locale={locale}
+                as="h1"
+                className="eldonia-heading eldonia-heading-sm mt-2"
+                hintClassName="eldonia-localized-hint text-sm"
+              />
               <p className="mt-2 text-sm text-[var(--eldonia-text-muted)]">
-                主催: {organizerName}
+                {pages.events.organizer}: {organizerName}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {event.is_featured && (
-                  <span className="eldonia-badge-bestseller">Chronicle Highlight</span>
+                  <span className="eldonia-badge-bestseller">{pages.events.badgeFeatured}</span>
                 )}
                 {event.is_nexus_verified && (
-                  <span className="eldonia-badge-nexus-prime">Verified Host</span>
+                  <span className="eldonia-badge-nexus-prime">{pages.events.badgeVerified}</span>
                 )}
               </div>
 
@@ -87,9 +98,13 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
               </div>
 
               <h2 className="eldonia-label">About this chronicle</h2>
-              <p className="eldonia-body mt-3 whitespace-pre-wrap text-sm">
-                {event.description ?? "説明は準備中です。"}
-              </p>
+              <ContentLine
+                text={event.description ?? pages.descriptionPending}
+                locale={locale}
+                as="p"
+                className="eldonia-body mt-3 whitespace-pre-wrap text-sm"
+                hintClassName="eldonia-localized-hint text-xs"
+              />
 
               {event.tags.length > 0 && (
                 <ul className="mt-6 flex flex-wrap gap-2">
@@ -98,7 +113,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                       key={tag}
                       className="rounded-full border border-[var(--eldonia-border)] px-3 py-1 text-xs text-[var(--eldonia-text-muted)]"
                     >
-                      #{tag}
+                      #<TagWithHint text={tag} locale={locale} />
                     </li>
                   ))}
                 </ul>
@@ -106,33 +121,33 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             </section>
 
             <section className="eldonia-card">
-              <h2 className="eldonia-label">会場・参加方法</h2>
+              <h2 className="eldonia-label">{pages.events.venueSection}</h2>
               <dl className="mt-4 grid gap-3 text-sm">
                 <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                  <dt className="text-[var(--eldonia-text-dim)]">形式</dt>
-                  <dd>{formatLabel(event.format)}</dd>
+                  <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelFormat}</dt>
+                  <dd>{formatLabel(event.format, locale)}</dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                  <dt className="text-[var(--eldonia-text-dim)]">領域</dt>
-                  <dd>{realmLabel(event.category)}</dd>
+                  <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelRealm}</dt>
+                  <dd>{realmLabel(event.category, locale)}</dd>
                 </div>
                 {event.venue_name && (
                   <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                    <dt className="text-[var(--eldonia-text-dim)]">会場</dt>
+                    <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelVenue}</dt>
                     <dd className="text-right">{event.venue_name}</dd>
                   </div>
                 )}
                 {event.venue_address && (
                   <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                    <dt className="text-[var(--eldonia-text-dim)]">住所</dt>
+                    <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelAddress}</dt>
                     <dd className="text-right">{event.venue_address}</dd>
                   </div>
                 )}
                 {event.online_url && (
                   <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                    <dt className="text-[var(--eldonia-text-dim)]">オンライン</dt>
+                    <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelOnline}</dt>
                     <dd className="text-right text-[var(--eldonia-gold-muted)]">
-                      購入後に URL を表示
+                      {pages.events.urlAfterPurchase}
                     </dd>
                   </div>
                 )}

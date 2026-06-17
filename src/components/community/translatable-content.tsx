@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { LOCALE_LABELS } from "@/lib/community/constants";
+import { useContent } from "@/components/providers/locale-provider";
 import type { NexusLocale } from "@/lib/nexus-translate/translate";
 
 type TranslatableContentProps = {
@@ -17,6 +18,8 @@ export function TranslatableContent({
   defaultTarget = "en",
   className = "eldonia-body whitespace-pre-wrap text-sm",
 }: TranslatableContentProps) {
+  const { pages } = useContent();
+  const nexus = pages.community;
   const [translated, setTranslated] = useState<string | null>(null);
   const [target, setTarget] = useState<NexusLocale>(defaultTarget);
   const [loading, setLoading] = useState(false);
@@ -44,12 +47,12 @@ export function TranslatableContent({
       });
       const data = (await res.json()) as { text?: string; error?: string };
       if (!res.ok || !data.text) {
-        setError(data.error ?? "翻訳に失敗しました。");
+        setError(data.error ?? nexus.nexusErr);
         return;
       }
       setTranslated(data.text);
     } catch {
-      setError("翻訳に失敗しました。");
+      setError(nexus.nexusErr);
     } finally {
       setLoading(false);
     }
@@ -58,15 +61,17 @@ export function TranslatableContent({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <span className="eldonia-badge-nexus-prime text-[10px]">翻訳 Nexus</span>
-        <span className="text-xs text-[var(--eldonia-text-dim)]">原文: {sourceLabel}</span>
+        <span className="eldonia-badge-nexus-prime text-[10px]">{nexus.nexusBadge}</span>
+        <span className="text-xs text-[var(--eldonia-text-dim)]">
+          {nexus.nexusSource(sourceLabel)}
+        </span>
         {needsTranslation && (
           <>
             <select
               value={target}
               onChange={(e) => setTarget(e.target.value as NexusLocale)}
               className="rounded border border-[var(--eldonia-border)] bg-[var(--eldonia-surface)] px-2 py-1 text-xs"
-              aria-label="翻訳先言語"
+              aria-label={nexus.nexusTargetAria}
             >
               <option value="en">English</option>
               <option value="ja">日本語</option>
@@ -79,7 +84,7 @@ export function TranslatableContent({
               disabled={loading}
               className="eldonia-btn-ghost text-xs"
             >
-              {loading ? "翻訳中..." : "Nexus で翻訳"}
+              {loading ? nexus.nexusTranslating : nexus.nexusTranslateBtn}
             </button>
           </>
         )}
@@ -89,14 +94,16 @@ export function TranslatableContent({
 
       {translated && (
         <div className="eldonia-nexus-translation rounded border border-[var(--eldonia-border-strong)] p-4">
-          <p className="eldonia-eyebrow mb-2">Nexus Translation · {LOCALE_LABELS[target] ?? target}</p>
+          <p className="eldonia-eyebrow mb-2">
+            {nexus.nexusTranslationHeading(LOCALE_LABELS[target] ?? target)}
+          </p>
           <p className={className}>{translated}</p>
           <button
             type="button"
             onClick={() => setShowOriginal((v) => !v)}
             className="eldonia-link mt-3 text-xs"
           >
-            {showOriginal ? "原文を隠す" : "原文を表示"}
+            {showOriginal ? nexus.nexusHideOriginal : nexus.nexusShowOriginal}
           </button>
         </div>
       )}

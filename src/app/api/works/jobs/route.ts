@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server";
+import { awardUserExp } from "@/lib/exp/award-exp";
+import { apiError } from "@/lib/i18n/api-errors";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 import type { JobStatus, JobType } from "@/types/database";
 
 export async function POST(request: Request) {
+  const locale = await getUiLocale();
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "ログインが必要です。" }, { status: 401 });
+    return NextResponse.json(
+      { error: apiError("loginRequired", locale), errorKey: "loginRequired" },
+      { status: 401 },
+    );
   }
 
   const body = (await request.json()) as {
@@ -23,7 +30,10 @@ export async function POST(request: Request) {
   };
 
   if (!body.title?.trim() || !body.description?.trim()) {
-    return NextResponse.json({ error: "タイトルと詳細は必須です。" }, { status: 400 });
+    return NextResponse.json(
+      { error: apiError("titleRequired", locale), errorKey: "titleRequired" },
+      { status: 400 },
+    );
   }
 
   const { data, error } = await supabase
@@ -46,23 +56,31 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  await awardUserExp(supabase, "job.create", data.id);
   return NextResponse.json({ ok: true, id: data.id });
 }
 
 export async function PATCH(request: Request) {
+  const locale = await getUiLocale();
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "ログインが必要です。" }, { status: 401 });
+    return NextResponse.json(
+      { error: apiError("loginRequired", locale), errorKey: "loginRequired" },
+      { status: 401 },
+    );
   }
 
   const body = (await request.json()) as { jobId?: string; status?: JobStatus };
 
   if (!body.jobId || !body.status) {
-    return NextResponse.json({ error: "jobId と status が必要です。" }, { status: 400 });
+    return NextResponse.json(
+      { error: apiError("missingFields", locale), errorKey: "missingFields" },
+      { status: 400 },
+    );
   }
 
   const { error } = await supabase

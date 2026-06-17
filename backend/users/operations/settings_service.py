@@ -14,6 +14,40 @@ from .settings_constants import FEE_SETTING_SLOTS, PLAN_DETAIL_SLOTS
 FEE_SETTING_KEYS = {slot["key"] for slot in FEE_SETTING_SLOTS}
 
 
+def get_fee_setting_slots() -> list[dict]:
+    """標準手数料 + 運用画面で追加した手数料項目。"""
+    slots = [dict(slot) for slot in FEE_SETTING_SLOTS]
+    known = {slot["key"] for slot in slots}
+    for row in OpsSetting.objects.filter(category="fees").exclude(key__in=known).order_by("key"):
+        slots.append(
+            {
+                "key": row.key,
+                "rate_key": row.key,
+                "env": "",
+                "default": row.value,
+                "label": row.label or row.key,
+                "help": "追加された手数料項目です。",
+                "unit": "%",
+                "custom": True,
+            }
+        )
+    return slots
+
+
+def get_plan_detail_slots() -> list[dict]:
+    """標準プラン + 運用画面で追加したプラン。"""
+    from users.models import Plan
+
+    slots = [dict(slot) for slot in PLAN_DETAIL_SLOTS]
+    known = {slot["slug"] for slot in slots}
+    legacy = {legacy for slot in slots for legacy in slot.get("legacy_slugs", [])}
+    for plan in Plan.objects.exclude(slug__in=known | legacy).order_by(
+        "sort_order", "price", "slug"
+    ):
+        slots.append({"slug": plan.slug, "label": plan.name, "custom": True})
+    return slots
+
+
 def format_percent_value(raw: str | Decimal) -> str:
     """手数料率を 1E+1 などの指数表記なしで表示・保存する"""
     try:
@@ -46,14 +80,14 @@ def get_setting(key: str, default: str = "") -> str:
 
 def get_current_fee_values() -> dict[str, str]:
     values: dict[str, str] = {}
-    for slot in FEE_SETTING_SLOTS:
+    for slot in get_fee_setting_slots():
         values[slot["key"]] = get_setting(slot["key"], _env_default(slot))
     return values
 
 
 def get_fee_rates() -> dict[str, Decimal]:
     rates: dict[str, Decimal] = {}
-    for slot in FEE_SETTING_SLOTS:
+    for slot in get_fee_setting_slots():
         raw = get_setting(slot["key"], _env_default(slot))
         try:
             rates[slot["rate_key"]] = Decimal(raw)
@@ -68,7 +102,7 @@ def get_referral_rebate_percent() -> Decimal:
 
 def build_fee_preview(current: dict[str, str], new: dict[str, str]) -> list[dict]:
     rows = []
-    for slot in FEE_SETTING_SLOTS:
+    for slot in get_fee_setting_slots():
         key = slot["key"]
         rows.append(
             {
@@ -86,7 +120,7 @@ def build_fee_preview(current: dict[str, str], new: dict[str, str]) -> list[dict
 @transaction.atomic
 def apply_fee_values(values: dict[str, str]) -> list[str]:
     updated: list[str] = []
-    for slot in FEE_SETTING_SLOTS:
+    for slot in get_fee_setting_slots():
         key = slot["key"]
         raw = values.get(key, slot["default"]).strip()
         try:
@@ -126,7 +160,7 @@ def get_plan_details() -> dict[str, dict]:
     from users.models import Plan
 
     details: dict[str, dict] = {}
-    for slot in PLAN_DETAIL_SLOTS:
+    for slot in get_plan_detail_slots():
         plan = Plan.objects.filter(slug=slot["slug"]).first()
         if not plan:
             for legacy in slot.get("legacy_slugs", []):
@@ -144,7 +178,7 @@ def get_plan_details() -> dict[str, dict]:
 
 def build_plan_details_preview(current: dict, new: dict) -> list[dict]:
     rows = []
-    for slot in PLAN_DETAIL_SLOTS:
+    for slot in get_plan_detail_slots():
         slug = slot["slug"]
         before = current.get(slug, {})
         after = new.get(slug, {})
@@ -170,7 +204,7 @@ def apply_plan_details(values: dict[str, dict]) -> list[str]:
     from users.models import Plan
 
     updated: list[str] = []
-    for slot in PLAN_DETAIL_SLOTS:
+    for slot in get_plan_detail_slots():
         slug = slot["slug"]
         data = values.get(slug, {})
         trial_days = int(data.get("trial_days", 0))
@@ -217,6 +251,18 @@ def get_quest_actions() -> list[dict]:
             }
         )
     return rows
+
+
+def ensure_quest_actions() -> None:
+    """EXP付与項目が未作成の環境に、標準アクションを用意する。"""
+    try:
+        from gamification.models import ExpAction
+        from gamification.services import ensure_default_exp_actions
+    except ImportError:
+        return
+
+    if not ExpAction.objects.exists():
+        ensure_default_exp_actions()
 
 
 def build_quest_preview(current: list[dict], new: list[dict]) -> list[dict]:

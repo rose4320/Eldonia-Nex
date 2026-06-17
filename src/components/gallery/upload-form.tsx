@@ -2,40 +2,61 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { createClient } from "@/lib/supabase/client";
+import { awardUserExp } from "@/lib/exp/award-exp";
 import {
-  ARTWORK_CATEGORIES,
-  detectMediaType,
+  categoryLabel,
+  detectCategoryFromFile,
+  IMAGE_ARTWORK_CATEGORY_VALUES,
 } from "@/lib/gallery/constants";
+import { artworkCategoryOptions } from "@/lib/i18n/taxonomy";
 
 type UploadFormProps = {
   userId: string;
+  successRedirect?: string;
 };
 
-export function UploadForm({ userId }: UploadFormProps) {
+export function UploadForm({ userId, successRedirect }: UploadFormProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const { forms } = useContent();
+  const upload = forms.upload;
+  const imageCategories = artworkCategoryOptions(IMAGE_ARTWORK_CATEGORY_VALUES, locale);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("other");
   const [tags, setTags] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [detected, setDetected] = useState<ReturnType<typeof detectCategoryFromFile>>(null);
+  const [imageCategory, setImageCategory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  function handleFileChange(selected: File | null) {
+    setFile(selected);
+    const info = selected ? detectCategoryFromFile(selected) : null;
+    setDetected(info);
+    setImageCategory(info?.mediaType === "image" ? info.category : null);
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
     if (!file) {
-      setError("ファイルを選択してください。");
+      setError(upload.errNoFile);
       return;
     }
 
-    const mediaType = detectMediaType(file.type);
-    if (!mediaType) {
-      setError("対応していないファイル形式です。");
+    const fileInfo = detectCategoryFromFile(file);
+    if (!fileInfo) {
+      setError(upload.errFormat);
       return;
     }
+
+    const { mediaType } = fileInfo;
+    const category =
+      mediaType === "image" && imageCategory ? imageCategory : fileInfo.category;
 
     setLoading(true);
 
@@ -83,12 +104,13 @@ export function UploadForm({ userId }: UploadFormProps) {
       .single();
 
     if (insertError || !artwork) {
-      setError(insertError?.message ?? "作品の登録に失敗しました。");
+      setError(insertError?.message ?? upload.errSave);
       setLoading(false);
       return;
     }
 
-    router.push(`/gallery/${artwork.id}`);
+    await awardUserExp(supabase, "artwork.upload", artwork.id);
+    router.push(successRedirect ?? `/gallery/${artwork.id}`);
     router.refresh();
   }
 
@@ -96,24 +118,50 @@ export function UploadForm({ userId }: UploadFormProps) {
     <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4">
       <div className="flex flex-col gap-1">
         <label htmlFor="file" className="eldonia-label">
-          ファイル
+          {upload.file}
         </label>
         <input
           id="file"
           type="file"
           required
           accept="image/*,video/mp4,video/quicktime,audio/mpeg,audio/wav,audio/flac,application/pdf"
-          onChange={(event) => setFile(event.target.files?.[0] ?? null)}
+          onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)}
           className="eldonia-input"
         />
-        <p className="text-xs text-eldonia-text-muted">
-          画像・動画・音声・PDF に対応
-        </p>
+        <p className="text-xs text-eldonia-text-muted">{upload.fileHint}</p>
+        {detected && detected.mediaType !== "image" && (
+          <p className="text-xs text-eldonia-gold">
+            {upload.typeAuto(categoryLabel(detected.category, locale))}
+          </p>
+        )}
       </div>
+
+      {detected?.mediaType === "image" && (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="imageCategory" className="eldonia-label">
+            {upload.type}
+          </label>
+          <select
+            id="imageCategory"
+            value={imageCategory ?? detected.category}
+            onChange={(event) => setImageCategory(event.target.value)}
+            className="eldonia-input"
+          >
+            {imageCategories.map((item) => (
+              <option key={item.value} value={item.value}>
+                {item.label}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-eldonia-text-muted">
+            {upload.typeHint(categoryLabel(detected.category, locale))}
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-col gap-1">
         <label htmlFor="title" className="eldonia-label">
-          タイトル
+          {upload.title}
         </label>
         <input
           id="title"
@@ -128,7 +176,7 @@ export function UploadForm({ userId }: UploadFormProps) {
 
       <div className="flex flex-col gap-1">
         <label htmlFor="description" className="eldonia-label">
-          説明
+          {upload.description}
         </label>
         <textarea
           id="description"
@@ -141,26 +189,8 @@ export function UploadForm({ userId }: UploadFormProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="category" className="eldonia-label">
-          カテゴリ
-        </label>
-        <select
-          id="category"
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-          className="eldonia-input"
-        >
-          {ARTWORK_CATEGORIES.map((item) => (
-            <option key={item.value} value={item.value}>
-              {item.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="flex flex-col gap-1">
         <label htmlFor="tags" className="eldonia-label">
-          タグ
+          {upload.tags}
         </label>
         <input
           id="tags"
@@ -170,19 +200,17 @@ export function UploadForm({ userId }: UploadFormProps) {
           onChange={(event) => setTags(event.target.value)}
           className="eldonia-input"
         />
-        <p className="text-xs text-eldonia-text-muted">カンマ区切り（最大10個）</p>
+        <p className="text-xs text-eldonia-text-muted">{upload.tagsHint}</p>
       </div>
 
-      {error && (
-        <p className="eldonia-alert-error">{error}</p>
-      )}
+      {error && <p className="eldonia-alert-error">{error}</p>}
 
       <button
         type="submit"
         disabled={loading}
         className="w-fit eldonia-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "投稿中..." : "作品を投稿"}
+        {loading ? upload.submitting : upload.submit}
       </button>
     </form>
   );

@@ -1,12 +1,21 @@
 import Link from "next/link";
-import { SHOP_REALMS } from "@/lib/shop/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { shopRealmOptions } from "@/lib/i18n/taxonomy";
 
 type ShopSidebarProps = {
   activeCategory?: string;
   query?: string;
 };
 
-export function ShopSidebar({ activeCategory = "all", query }: ShopSidebarProps) {
+export async function ShopSidebar({
+  activeCategory = "all",
+  query,
+}: ShopSidebarProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
+  const realms = shopRealmOptions(locale);
+
   function hrefFor(category: string) {
     const params = new URLSearchParams();
     if (category !== "all") params.set("category", category);
@@ -18,9 +27,9 @@ export function ShopSidebar({ activeCategory = "all", query }: ShopSidebarProps)
   return (
     <aside className="eldonia-shop-sidebar">
       <h2 className="eldonia-label">Realms</h2>
-      <p className="eldonia-hint mt-1">領域で探す</p>
+      <p className="eldonia-hint mt-1">{t.shop.sidebarRealms}</p>
       <nav className="mt-4 flex flex-col gap-1">
-        {SHOP_REALMS.map((realm) => {
+        {realms.map((realm) => {
           const active = activeCategory === realm.value;
           return (
             <Link

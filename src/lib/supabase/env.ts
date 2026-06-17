@@ -32,8 +32,25 @@ export function mapAuthError(error: unknown): string {
   }
 
   if (error instanceof Error) {
-    return error.message;
+    return mapSupabaseAuthMessage(error.message);
   }
 
   return "ログインに失敗しました。";
+}
+
+export function mapSupabaseAuthMessage(message: string): string {
+  const normalized = message.toLowerCase();
+  if (normalized.includes("invalid login credentials")) {
+    return (
+      "メールアドレスまたはパスワードが正しくありません。" +
+      "フロントエンドは Supabase アカウントでログインします（Django Admin とは別です）。"
+    );
+  }
+  if (normalized.includes("email not confirmed")) {
+    return "メールアドレスの確認が完了していません。受信トレイをご確認ください。";
+  }
+  if (normalized.includes("user already registered")) {
+    return "このメールアドレスは既に登録されています。ログインするか別のメールをお使いください。";
+  }
+  return message;
 }
