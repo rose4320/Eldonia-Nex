@@ -1,8 +1,11 @@
 from decimal import Decimal
 from typing import Any
 
+# pylint: disable=no-member,unused-argument,broad-exception-caught
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 @receiver(post_save)
@@ -17,7 +20,6 @@ def give_referral_rebate(
     try:
         from .models import Order as OrderModel  # type: ignore
         from .models import Referral, ReferralTrack, Transaction
-        from users.operations.settings_service import get_referral_rebate_percent
 
         # ensure handler only acts on Order instances
         if not isinstance(instance, OrderModel):
@@ -44,10 +46,14 @@ def give_referral_rebate(
         if existing.exists():
             return
 
-        # find the referral record if any
         referral = Referral.objects.filter(
             referrer=referrer, referred_user=user
         ).first()
+        if not referral:
+            return
+
+        if referral.reward_available_at and timezone.now() < referral.reward_available_at:
+            return
 
         # create referral track marking this reward (allowing referral to be null)
         ReferralTrack.objects.create(
@@ -57,7 +63,7 @@ def give_referral_rebate(
             order_id=instance.id,
         )
 
-        rebate = instance.total_amount * get_referral_rebate_percent() / Decimal("100")
+        rebate = instance.total_amount * referral.rebate_percent / Decimal("100")
         Transaction.objects.create(
             user=referrer,
             transaction_type="referral_reward",
@@ -67,5 +73,4 @@ def give_referral_rebate(
         )
     except Exception:
         # Best-effort: do not raise from signals
-        return
         return

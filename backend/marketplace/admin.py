@@ -64,7 +64,17 @@ class TransactionAdmin(admin.ModelAdmin):  # type: ignore
 
 @admin.register(Referral)
 class ReferralAdmin(admin.ModelAdmin):  # type: ignore
-    list_display = ("referral_code", "referrer", "status")
+    list_display = (
+        "referral_code",
+        "referrer",
+        "referred_user",
+        "status",
+        "country_code",
+        "rebate_percent",
+        "reward_available_at",
+    )
+    list_filter = ("status", "country_code", "rebate_percent")
+    search_fields = ("referral_code", "referrer__username", "referred_user__username")
 
 
 @admin.register(ReferralTrack)

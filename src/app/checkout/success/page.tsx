@@ -1,35 +1,39 @@
 import Link from "next/link";
+import { ClearCartOnMount } from "@/components/commerce/clear-cart-on-mount";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { clearCart } from "@/lib/cart/cookie-cart";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type SuccessPageProps = {
   searchParams: Promise<{ session_id?: string }>;
 };
 
 export default async function CheckoutSuccessPage({ searchParams }: SuccessPageProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const { session_id } = await searchParams;
-  await clearCart();
 
   return (
     <div className="eldonia-page">
+      <ClearCartOnMount />
       <SiteHeader />
       <main className="eldonia-main flex flex-1 items-center justify-center">
         <section className="eldonia-card max-w-lg text-center">
-          <p className="eldonia-eyebrow">Checkout</p>
-          <h1 className="eldonia-heading eldonia-heading-lg mt-3">決済完了</h1>
+          <p className="eldonia-eyebrow">{t.pages.checkout.eyebrow}</p>
+          <h1 className="eldonia-heading eldonia-heading-lg mt-3">{t.pages.checkout.title}</h1>
           <p className="eldonia-body mt-4 text-sm">
-            お支払いありがとうございます。確認メールは Stripe 経由で送信されます。
+            {t.pages.checkout.body}
           </p>
           {session_id && (
             <p className="eldonia-hint mt-2 break-all">Session: {session_id}</p>
           )}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/shop" className="eldonia-btn-primary">
-              SHOP に戻る
+              {t.pages.checkout.backShop}
             </Link>
-            <Link href="/dashboard" className="eldonia-btn-secondary">
-              ダッシュボード
+            <Link href="/settings" className="eldonia-btn-secondary">
+              {t.pages.checkout.dashboard}
             </Link>
           </div>
         </section>

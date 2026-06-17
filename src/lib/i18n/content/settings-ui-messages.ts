@@ -1,0 +1,334 @@
+import type { UiLocale } from "@/lib/i18n/locale";
+
+export type SettingsUiContent = {
+  sectionRecommendations: string;
+  recommendationsHeading: string;
+  recommendationsGo: string;
+  postHubHeading: string;
+  postHubLead: string;
+  postHubGo: string;
+  postArtwork: { label: string; description: string };
+  postProduct: { label: string; description: string };
+  postEvent: { label: string; description: string };
+  basics: {
+    publicProfile: string;
+    avatar: string;
+    avatarHint: string;
+    avatarRemove: string;
+    avatarErrFormat: string;
+    avatarErrSize: string;
+    avatarUploadSkipped: string;
+    basicsExpGranted: (exp: number) => string;
+    displayName: string;
+    username: string;
+    email: string;
+    emailReadonlyHint: string;
+    bio: string;
+    creatorToggle: string;
+    identityBank: string;
+    legalName: string;
+    country: string;
+    phone: string;
+    address: string;
+    addressPlaceholder: string;
+    address2: string;
+    bankName: string;
+    bankBranch: string;
+    bankType: string;
+    bankTypeSavings: string;
+    bankTypeChecking: string;
+    bankNumber: string;
+    bankHolder: string;
+    saved: string;
+    saving: string;
+    submit: string;
+  };
+  finance: {
+    heading: string;
+    spentTotal: string;
+    paidOrders: (n: number) => string;
+    estimatedIncome: string;
+    estimatedHint: string;
+    listedProducts: string;
+    postProduct: string;
+    hostedEvents: string;
+    postEvent: string;
+    viewOrders: string;
+  };
+  portfolio: {
+    heading: string;
+    headlineUnset: string;
+    summaryEmpty: string;
+    visibility: (v: string, exp: number, level: number) => string;
+    unset: string;
+    edit: string;
+  };
+  notificationPrefs: {
+    heading: string;
+    lead: string;
+    saved: string;
+    saving: string;
+    submit: string;
+    fan: { label: string; description: string };
+    like: { label: string; description: string };
+    comment: { label: string; description: string };
+    collab: { label: string; description: string };
+    lab: { label: string; description: string };
+    order: { label: string; description: string };
+    support: { label: string; description: string };
+    announcement: { label: string; description: string };
+  };
+  expNext: string;
+  avatarSettings: (name: string) => string;
+  recommendations: {
+    basics: { title: string; description: string };
+    artwork: { title: string; description: string };
+    portfolio: { title: string; description: string };
+    product: { title: string; description: string };
+    event: { title: string; description: string };
+    unread: (n: number) => string;
+    unreadDesc: string;
+    tickets: (n: number) => string;
+    ticketsDesc: string;
+    explore: { title: string; description: string };
+  };
+};
+
+const SETTINGS_UI_JA: SettingsUiContent = {
+  sectionRecommendations: "おすすめ",
+  recommendationsHeading: "次にやること",
+  recommendationsGo: "進む →",
+  postHubHeading: "投稿",
+  postHubLead: "すべての投稿はここから行います。作品・商品・イベントを Nexus に公開できます。",
+  postHubGo: "投稿画面へ →",
+  postArtwork: { label: "作品を投稿", description: "GALLEY に画像・動画・音声・PDF を公開" },
+  postProduct: { label: "商品を投稿", description: "SHOP にデジタル・物理商品を出品" },
+  postEvent: { label: "イベントを投稿", description: "ライブ・WS・展示などのイベントを作成" },
+  basics: {
+    publicProfile: "公開プロフィール",
+    avatar: "アバター画像",
+    avatarHint: "JPG / PNG / GIF / WebP、5MB まで",
+    avatarRemove: "アバターを削除",
+    avatarErrFormat: "アバターは JPG / PNG / GIF / WebP を選択してください。",
+    avatarErrSize: "アバターは 5MB 以下の画像を選択してください。",
+    avatarUploadSkipped: "アバター画像は保存できませんでした。基本情報は保存済みです。",
+    basicsExpGranted: (exp) => `基本情報の登録ボーナスとして EXP +${exp} を付与しました。`,
+    displayName: "表示名",
+    username: "ユーザー名",
+    email: "メールアドレス",
+    emailReadonlyHint: "メールアドレスはログイン認証に使用されます。",
+    bio: "自己紹介",
+    creatorToggle: "クリエイターとして活動する（商品・イベント出品が有効）",
+    identityBank: "本人情報・振込先",
+    legalName: "氏名（本名）",
+    country: "国",
+    phone: "電話番号",
+    address: "住所",
+    addressPlaceholder: "都道府県・市区町村・番地",
+    address2: "建物名・部屋番号",
+    bankName: "振込先銀行",
+    bankBranch: "支店名",
+    bankType: "口座種別",
+    bankTypeSavings: "普通",
+    bankTypeChecking: "当座",
+    bankNumber: "口座番号",
+    bankHolder: "口座名義（カナ）",
+    saved: "基本情報を保存しました。",
+    saving: "保存中...",
+    submit: "基本情報を保存",
+  },
+  finance: {
+    heading: "収支状況",
+    spentTotal: "支出合計（購入）",
+    paidOrders: (n) => `${n} 件の決済`,
+    estimatedIncome: "収入見込み",
+    estimatedHint: "出品・開催に基づく概算",
+    listedProducts: "出品商品",
+    postProduct: "商品を投稿 →",
+    hostedEvents: "開催イベント",
+    postEvent: "イベントを投稿 →",
+    viewOrders: "注文履歴の詳細を見る →",
+  },
+  portfolio: {
+    heading: "ポートフォリオ",
+    headlineUnset: "見出し未設定",
+    summaryEmpty: "概要がまだありません。",
+    visibility: (v, exp, level) => `公開設定: ${v} · EXP ${exp} · Lv.${level}`,
+    unset: "ポートフォリオが未作成です。WORKS 応募用に設定しましょう。",
+    edit: "ポートフォリオを編集",
+  },
+  notificationPrefs: {
+    heading: "通知設定",
+    lead: "受け取りたい通知の種類を選べます。OFF にした種類は 🔔 に届きません。",
+    saved: "通知設定を保存しました。",
+    saving: "保存中...",
+    submit: "通知設定を保存",
+    fan: { label: "ファン登録", description: "誰かがあなたをファン登録したとき" },
+    like: { label: "いいね", description: "作品へのいいね" },
+    comment: { label: "コメント", description: "作品へのコメント" },
+    collab: { label: "コラボ申請", description: "コラボの申請・承認・却下" },
+    lab: { label: "Lab メモ", description: "共同作業 Lab 内の新しいメモ" },
+    order: { label: "注文・決済", description: "お支払い完了など" },
+    support: { label: "サポート返信", description: "問い合わせチケットへの返信" },
+    announcement: { label: "運営からの告知", description: "Eldonia-Nex からのお知らせ" },
+  },
+  expNext: "次のレベルまで",
+  avatarSettings: (name) => `${name} の設定画面`,
+  recommendations: {
+    basics: { title: "基本情報を登録する", description: "氏名・住所・振込先を設定すると出品・報酬受取がスムーズになります。" },
+    artwork: { title: "最初の作品を投稿する", description: "GALLEY に作品を公開してクリエイター活動を始めましょう。" },
+    portfolio: { title: "ポートフォリオを整える", description: "WORKS 応募時に自動添付されるプロフィールを設定します。" },
+    product: { title: "商品を出品する", description: "SHOP にデジタル・物理商品を登録して販売を開始できます。" },
+    event: { title: "イベントを開催する", description: "ライブ・ワークショップ・展示などのイベントを作成します。" },
+    unread: (n) => `未読の通知が ${n} 件`,
+    unreadDesc: "運営からの告知やアクティビティ通知を確認してください。",
+    tickets: (n) => `対応中のサポートチケットが ${n} 件`,
+    ticketsDesc: "ヘルプデスクからの返信を確認しましょう。",
+    explore: { title: "コミュニティを探索する", description: "すべての設定が完了しています。掲示板やイベントをチェックしましょう。" },
+  },
+};
+
+const SETTINGS_UI_EN: SettingsUiContent = {
+  sectionRecommendations: "Recommended",
+  recommendationsHeading: "Next steps",
+  recommendationsGo: "Go →",
+  postHubHeading: "Posts",
+  postHubLead: "Publish artwork, products, and events to the Nexus from here.",
+  postHubGo: "Open post page →",
+  postArtwork: { label: "Post artwork", description: "Publish image, video, audio, or PDF to GALLEY" },
+  postProduct: { label: "List product", description: "Sell digital or physical items on SHOP" },
+  postEvent: { label: "Create event", description: "Live shows, workshops, exhibitions, and more" },
+  basics: {
+    publicProfile: "Public profile",
+    avatar: "Avatar image",
+    avatarHint: "JPG / PNG / GIF / WebP, up to 5MB",
+    avatarRemove: "Remove avatar",
+    avatarErrFormat: "Choose a JPG, PNG, GIF, or WebP avatar.",
+    avatarErrSize: "Choose an avatar image up to 5MB.",
+    avatarUploadSkipped: "Avatar image could not be saved. Profile details were saved.",
+    basicsExpGranted: (exp) => `Granted EXP +${exp} for completing your profile.`,
+    displayName: "Display name",
+    username: "Username",
+    email: "Email",
+    emailReadonlyHint: "This email is used for account authentication.",
+    bio: "Bio",
+    creatorToggle: "Act as a creator (enables product & event listings)",
+    identityBank: "Identity & payout",
+    legalName: "Legal name",
+    country: "Country",
+    phone: "Phone",
+    address: "Address",
+    addressPlaceholder: "City, street, number",
+    address2: "Building / unit",
+    bankName: "Bank name",
+    bankBranch: "Branch",
+    bankType: "Account type",
+    bankTypeSavings: "Savings",
+    bankTypeChecking: "Checking",
+    bankNumber: "Account number",
+    bankHolder: "Account holder (kana)",
+    saved: "Profile saved.",
+    saving: "Saving…",
+    submit: "Save profile",
+  },
+  finance: {
+    heading: "Finance",
+    spentTotal: "Total spent (purchases)",
+    paidOrders: (n) => `${n} paid order${n === 1 ? "" : "s"}`,
+    estimatedIncome: "Estimated earnings",
+    estimatedHint: "Rough estimate from listings & events",
+    listedProducts: "Listed products",
+    postProduct: "List product →",
+    hostedEvents: "Hosted events",
+    postEvent: "Create event →",
+    viewOrders: "View order history →",
+  },
+  portfolio: {
+    heading: "Portfolio",
+    headlineUnset: "No headline yet",
+    summaryEmpty: "No summary yet.",
+    visibility: (v, exp, level) => `Visibility: ${v} · EXP ${exp} · Lv.${level}`,
+    unset: "No portfolio yet. Set one up for WORKS applications.",
+    edit: "Edit portfolio",
+  },
+  notificationPrefs: {
+    heading: "Notification preferences",
+    lead: "Choose which notifications you receive. Disabled types won't appear in 🔔.",
+    saved: "Notification preferences saved.",
+    saving: "Saving…",
+    submit: "Save preferences",
+    fan: { label: "Fan signup", description: "When someone follows you as a fan" },
+    like: { label: "Likes", description: "Likes on your artwork" },
+    comment: { label: "Comments", description: "Comments on your artwork" },
+    collab: { label: "Collab requests", description: "Collab requests, acceptances, declines" },
+    lab: { label: "Lab notes", description: "New notes in Collab Lab" },
+    order: { label: "Orders & payments", description: "Payment confirmations, etc." },
+    support: { label: "Support replies", description: "Replies to support tickets" },
+    announcement: { label: "Announcements", description: "News from Eldonia-Nex" },
+  },
+  expNext: "to next level",
+  avatarSettings: (name) => `${name} — settings`,
+  recommendations: {
+    basics: { title: "Complete your profile", description: "Add legal name, address, and payout info for smoother selling." },
+    artwork: { title: "Post your first artwork", description: "Publish to GALLEY and start creating." },
+    portfolio: { title: "Set up portfolio", description: "Auto-attached when you apply on WORKS." },
+    product: { title: "List a product", description: "Register digital or physical items on SHOP." },
+    event: { title: "Host an event", description: "Create live shows, workshops, or exhibitions." },
+    unread: (n) => `${n} unread notification${n === 1 ? "" : "s"}`,
+    unreadDesc: "Check announcements and activity updates.",
+    tickets: (n) => `${n} open support ticket${n === 1 ? "" : "s"}`,
+    ticketsDesc: "Review replies from the help desk.",
+    explore: { title: "Explore the community", description: "You're all set. Browse boards and events." },
+  },
+};
+
+export const SETTINGS_UI_CONTENT: Record<UiLocale, SettingsUiContent> = {
+  ja: SETTINGS_UI_JA,
+  en: SETTINGS_UI_EN,
+  ko: {
+    ...SETTINGS_UI_EN,
+    sectionRecommendations: "추천",
+    recommendationsHeading: "다음 단계",
+    postHubHeading: "게시",
+    basics: {
+      ...SETTINGS_UI_EN.basics,
+      avatar: "아바타 이미지",
+      avatarHint: "JPG / PNG / GIF / WebP, 최대 5MB",
+      avatarRemove: "아바타 삭제",
+      avatarErrFormat: "JPG / PNG / GIF / WebP 아바타를 선택하세요.",
+      avatarErrSize: "5MB 이하의 아바타 이미지를 선택하세요.",
+      avatarUploadSkipped: "아바타 이미지는 저장하지 못했습니다. 기본 정보는 저장되었습니다.",
+      basicsExpGranted: (exp) => `기본 정보 등록 보너스로 EXP +${exp} 지급.`,
+      submit: "기본 정보 저장",
+      saved: "저장되었습니다.",
+      saving: "저장 중…",
+    },
+    finance: { ...SETTINGS_UI_EN.finance, heading: "수입·지출", viewOrders: "주문 내역 →" },
+    portfolio: { ...SETTINGS_UI_EN.portfolio, edit: "포트폴리오 편집" },
+    notificationPrefs: { ...SETTINGS_UI_EN.notificationPrefs, heading: "알림 설정", submit: "알림 설정 저장" },
+    expNext: "다음 레벨까지",
+  },
+  "zh-CN": {
+    ...SETTINGS_UI_EN,
+    sectionRecommendations: "推荐",
+    recommendationsHeading: "下一步",
+    postHubHeading: "发布",
+    basics: {
+      ...SETTINGS_UI_EN.basics,
+      avatar: "头像图片",
+      avatarHint: "JPG / PNG / GIF / WebP，最大 5MB",
+      avatarRemove: "删除头像",
+      avatarErrFormat: "请选择 JPG / PNG / GIF / WebP 头像。",
+      avatarErrSize: "请选择 5MB 以下的头像图片。",
+      avatarUploadSkipped: "头像图片未能保存。基本信息已保存。",
+      basicsExpGranted: (exp) => `完成基本信息奖励 EXP +${exp}。`,
+      submit: "保存基本信息",
+      saved: "已保存。",
+      saving: "保存中…",
+    },
+    finance: { ...SETTINGS_UI_EN.finance, heading: "收支", viewOrders: "查看订单 →" },
+    portfolio: { ...SETTINGS_UI_EN.portfolio, edit: "编辑作品集" },
+    notificationPrefs: { ...SETTINGS_UI_EN.notificationPrefs, heading: "通知设置", submit: "保存通知设置" },
+    expNext: "距下一级",
+  },
+};

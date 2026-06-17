@@ -8,10 +8,19 @@ from django.views.decorators.http import require_http_methods
 from .dashboard import get_dashboard_metrics
 from .forms import (
     AdminPasswordConfirmForm,
+    AnnouncementBroadcastForm,
+    ExpActionAddForm,
+    FeeSettingAddForm,
     FeeSettingsForm,
+    SubscriptionPlanAddForm,
     PlanDetailsForm,
     QuestSettingsForm,
     SubscriptionPlanPricesForm,
+)
+from .announcement_service import (
+    SupabaseAnnouncementError,
+    preview_announcement,
+    send_announcement,
 )
 from .services import (
     SESSION_KEY,
@@ -21,6 +30,7 @@ from .services import (
 )
 from .settings_constants import (
     FEE_SETTING_SLOTS,
+    SESSION_KEY_ANNOUNCEMENT,
     SESSION_KEY_FEES,
     SESSION_KEY_PLAN_DETAILS,
     SESSION_KEY_QUEST,
@@ -32,10 +42,12 @@ from .settings_service import (
     build_fee_preview,
     build_plan_details_preview,
     build_quest_preview,
+    ensure_quest_actions,
     get_current_fee_values,
     get_plan_details,
     get_quest_actions,
 )
+from users.models import OpsSetting, Plan
 
 
 def _serialize_dashboard(metrics: dict) -> dict:
@@ -143,6 +155,7 @@ def subscription_plans_view(request: HttpRequest) -> HttpResponse:
         "admin/operations/subscription_plans.html",
         {
             "form": form,
+            "add_form": SubscriptionPlanAddForm(),
             "current": current,
             "title": "サブスク料金の設定",
             "step": 1,
@@ -175,6 +188,28 @@ def subscription_plans_confirm_view(request: HttpRequest) -> HttpResponse:
 
 
 @staff_member_required
+@require_http_methods(["POST"])
+def subscription_plan_add_view(request: HttpRequest) -> HttpResponse:
+    form = SubscriptionPlanAddForm(request.POST)
+    if form.is_valid():
+        Plan.objects.create(
+            name=form.cleaned_data["name"].strip(),
+            slug=form.cleaned_data["slug"],
+            price=form.cleaned_data["price"],
+            currency="JPY",
+            billing_cycle="monthly",
+            trial_days=form.cleaned_data["trial_days"],
+            is_active=form.cleaned_data.get("is_active", False),
+            sort_order=(Plan.objects.count() + 1) * 10,
+        )
+        messages.success(request, f"プラン「{form.cleaned_data['name']}」を追加しました。")
+    else:
+        messages.error(request, "プランを追加できませんでした。入力内容を確認してください。")
+        request.session["ops_plan_add_errors"] = form.errors
+    return redirect("admin:ops_subscription_plans")
+
+
+@staff_member_required
 @require_http_methods(["GET", "POST"])
 def fee_settings_view(request: HttpRequest) -> HttpResponse:
     current = get_current_fee_values()
@@ -196,6 +231,7 @@ def fee_settings_view(request: HttpRequest) -> HttpResponse:
         "admin/operations/fee_settings.html",
         {
             "form": form,
+            "add_form": FeeSettingAddForm(),
             "title": "手数料・還元率の設定",
             "step": 1,
             "active_tab": "fees",
@@ -228,6 +264,24 @@ def fee_settings_confirm_view(request: HttpRequest) -> HttpResponse:
 
 
 @staff_member_required
+@require_http_methods(["POST"])
+def fee_setting_add_view(request: HttpRequest) -> HttpResponse:
+    form = FeeSettingAddForm(request.POST)
+    if form.is_valid():
+        OpsSetting.objects.create(
+            key=form.cleaned_data["key"],
+            label=form.cleaned_data["label"].strip(),
+            value=form.cleaned_data["value"].strip(),
+            category="fees",
+        )
+        messages.success(request, f"手数料項目「{form.cleaned_data['label']}」を追加しました。")
+    else:
+        messages.error(request, "手数料項目を追加できませんでした。入力内容を確認してください。")
+        request.session["ops_fee_add_errors"] = form.errors
+    return redirect("admin:ops_fee_settings")
+
+
+@staff_member_required
 @require_http_methods(["GET", "POST"])
 def plan_details_view(request: HttpRequest) -> HttpResponse:
     current = get_plan_details()
@@ -254,6 +308,7 @@ def plan_details_view(request: HttpRequest) -> HttpResponse:
         "admin/operations/plan_details.html",
         {
             "form": form,
+            "add_form": SubscriptionPlanAddForm(),
             "plan_details": current,
             "title": "プラン詳細の設定",
             "step": 1,
@@ -286,8 +341,37 @@ def plan_details_confirm_view(request: HttpRequest) -> HttpResponse:
 
 
 @staff_member_required
+@require_http_methods(["POST"])
+def exp_action_add_view(request: HttpRequest) -> HttpResponse:
+    form = ExpActionAddForm(request.POST)
+    if form.is_valid():
+        try:
+            from gamification.models import ExpAction
+        except ImportError:
+            messages.error(request, "Gamification アプリが利用できません。")
+            return redirect("admin:ops_exp_settings")
+
+        ExpAction.objects.create(
+            action_type=form.cleaned_data["action_type"],
+            description=form.cleaned_data["description"].strip(),
+            base_exp=form.cleaned_data["base_exp"],
+            max_daily_count=form.cleaned_data["max_daily_count"],
+            is_active=form.cleaned_data.get("is_active", False),
+        )
+        messages.success(
+            request,
+            f"EXP付与アクション「{form.cleaned_data['description']}」を追加しました。",
+        )
+    else:
+        messages.error(request, "EXP付与アクションを追加できませんでした。入力内容を確認してください。")
+        request.session["ops_exp_add_errors"] = form.errors
+    return redirect("admin:ops_exp_settings")
+
+
+@staff_member_required
 @require_http_methods(["GET", "POST"])
 def quest_settings_view(request: HttpRequest) -> HttpResponse:
+    ensure_quest_actions()
     current = get_quest_actions()
     if not current:
         return render(
@@ -295,8 +379,9 @@ def quest_settings_view(request: HttpRequest) -> HttpResponse:
             "admin/operations/quest_settings.html",
             {
                 "form": None,
+                "add_form": ExpActionAddForm(),
                 "quest_actions": [],
-                "title": "Quest 設定",
+                "title": "EXP付与設定",
                 "step": 1,
                 "active_tab": "quest",
                 "empty": True,
@@ -309,9 +394,9 @@ def quest_settings_view(request: HttpRequest) -> HttpResponse:
             new_rows = form.cleaned_rows()
             if new_rows == current:
                 messages.info(request, "変更はありません。")
-                return redirect("admin:ops_quest_settings")
+                return redirect("admin:ops_exp_settings")
             request.session[SESSION_KEY_QUEST] = new_rows
-            return redirect("admin:ops_quest_settings_confirm")
+            return redirect("admin:ops_exp_settings_confirm")
     else:
         form = QuestSettingsForm()
 
@@ -320,8 +405,9 @@ def quest_settings_view(request: HttpRequest) -> HttpResponse:
         "admin/operations/quest_settings.html",
         {
             "form": form,
+            "add_form": ExpActionAddForm(),
             "quest_actions": current,
-            "title": "Quest 設定",
+            "title": "EXP付与設定",
             "step": 1,
             "active_tab": "quest",
             "empty": False,
@@ -335,18 +421,105 @@ def quest_settings_confirm_view(request: HttpRequest) -> HttpResponse:
     pending = request.session.get(SESSION_KEY_QUEST)
     if not pending:
         messages.warning(request, "確認する変更がありません。最初から入力してください。")
-        return redirect("admin:ops_quest_settings")
+        return redirect("admin:ops_exp_settings")
 
     current = get_quest_actions()
     return _render_confirm(
         request,
         template="admin/operations/quest_settings_confirm.html",
         session_key=SESSION_KEY_QUEST,
-        back_url=reverse("admin:ops_quest_settings"),
-        title="Quest 設定 — 最終確認",
+        back_url=reverse("admin:ops_exp_settings"),
+        title="EXP付与設定 — 最終確認",
         active_tab="quest",
         preview=build_quest_preview(current, pending),
         on_apply=apply_quest_actions,
-        success_message="Quest 設定を更新しました",
-        success_redirect=reverse("admin:ops_quest_settings"),
+        success_message="EXP付与設定を更新しました",
+        success_redirect=reverse("admin:ops_exp_settings"),
+    )
+
+
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def announcement_broadcast_view(request: HttpRequest) -> HttpResponse:
+    if request.method == "POST":
+        form = AnnouncementBroadcastForm(request.POST)
+        if form.is_valid():
+            payload = {
+                "target": form.cleaned_data["target"],
+                "target_email": form.cleaned_data.get("target_email") or "",
+                "title": form.cleaned_data["title"],
+                "body": form.cleaned_data.get("body") or "",
+                "href": form.cleaned_data.get("href") or "",
+            }
+            request.session[SESSION_KEY_ANNOUNCEMENT] = payload
+            return redirect("admin:ops_announcement_confirm")
+    else:
+        form = AnnouncementBroadcastForm()
+
+    return render(
+        request,
+        "admin/operations/announcement_broadcast.html",
+        {
+            "form": form,
+            "title": "ユーザーへの告知送信",
+            "step": 1,
+            "active_tab": "announcement",
+        },
+    )
+
+
+@staff_member_required
+@require_http_methods(["GET", "POST"])
+def announcement_broadcast_confirm_view(request: HttpRequest) -> HttpResponse:
+    pending = request.session.get(SESSION_KEY_ANNOUNCEMENT)
+    if not pending:
+        messages.warning(request, "確認する告知がありません。最初から入力してください。")
+        return redirect("admin:ops_announcement_broadcast")
+
+    try:
+        preview = preview_announcement(
+            title=pending["title"],
+            body=pending["body"],
+            href=pending["href"] or None,
+            target=pending["target"],
+            email=pending["target_email"] or None,
+        )
+    except SupabaseAnnouncementError as exc:
+        messages.error(request, str(exc))
+        return redirect("admin:ops_announcement_broadcast")
+
+    if request.method == "POST":
+        form = AdminPasswordConfirmForm(request.POST)
+        if form.is_valid():
+            if not request.user.check_password(form.cleaned_data["admin_password"]):
+                form.add_error("admin_password", "パスワードが正しくありません。")
+            else:
+                try:
+                    count = send_announcement(
+                        title=pending["title"],
+                        body=pending["body"],
+                        href=pending["href"] or None,
+                        target=pending["target"],
+                        email=pending["target_email"] or None,
+                    )
+                except SupabaseAnnouncementError as exc:
+                    messages.error(request, str(exc))
+                    return redirect("admin:ops_announcement_broadcast")
+                del request.session[SESSION_KEY_ANNOUNCEMENT]
+                messages.success(request, f"告知を {count} 件のユーザーに送信しました。")
+                return redirect("admin:ops_announcement_broadcast")
+    else:
+        form = AdminPasswordConfirmForm()
+
+    return render(
+        request,
+        "admin/operations/announcement_broadcast_confirm.html",
+        {
+            "form": form,
+            "preview": preview,
+            "title": "告知送信 — 最終確認",
+            "step": 2,
+            "active_tab": "announcement",
+            "back_url": reverse("admin:ops_announcement_broadcast"),
+        },
     )

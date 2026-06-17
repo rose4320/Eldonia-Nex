@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContent } from "@/components/providers/locale-provider";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 
@@ -11,6 +12,8 @@ type ProfileFormProps = {
 
 export function ProfileForm({ profile }: ProfileFormProps) {
   const router = useRouter();
+  const { forms } = useContent();
+  const copy = forms.profile;
   const [displayName, setDisplayName] = useState(profile.display_name ?? "");
   const [username, setUsername] = useState(profile.username ?? "");
   const [bio, setBio] = useState(profile.bio ?? "");
@@ -42,7 +45,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       return;
     }
 
-    setMessage("プロフィールを保存しました。");
+    setMessage(copy.saved);
     setLoading(false);
     router.refresh();
   }
@@ -50,7 +53,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   return (
     <form onSubmit={handleSubmit} className="flex max-w-lg flex-col gap-4">
       <div className="flex flex-col gap-1">
-        <label htmlFor="display_name" className="eldonia-label">表示名</label>
+        <label htmlFor="display_name" className="eldonia-label">
+          {copy.displayName}
+        </label>
         <input
           id="display_name"
           type="text"
@@ -61,21 +66,25 @@ export function ProfileForm({ profile }: ProfileFormProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="username" className="eldonia-label">ユーザー名</label>
+        <label htmlFor="username" className="eldonia-label">
+          {copy.username}
+        </label>
         <input
           id="username"
           type="text"
           pattern="[a-z0-9_]{3,30}"
-          title="3〜30文字の半角英小文字・数字・アンダースコア"
+          title={copy.usernameTitle}
           value={username}
           onChange={(event) => setUsername(event.target.value.toLowerCase())}
           className="eldonia-input"
         />
-        <p className="eldonia-hint">3〜30文字（a-z, 0-9, _）</p>
+        <p className="eldonia-hint">{copy.usernameHint}</p>
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="bio" className="eldonia-label">自己紹介</label>
+        <label htmlFor="bio" className="eldonia-label">
+          {copy.bio}
+        </label>
         <textarea
           id="bio"
           rows={4}
@@ -93,14 +102,14 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           onChange={(event) => setIsCreator(event.target.checked)}
           className="rounded border-eldonia-gold/40 bg-eldonia-surface accent-eldonia-gold"
         />
-        クリエイターとして活動する
+        {copy.creatorToggle}
       </label>
 
       {error && <p className="eldonia-alert-error">{error}</p>}
       {message && <p className="eldonia-alert-success">{message}</p>}
 
       <button type="submit" disabled={loading} className="eldonia-btn-primary w-fit">
-        {loading ? "保存中..." : "保存する"}
+        {loading ? copy.saving : copy.submit}
       </button>
     </form>
   );

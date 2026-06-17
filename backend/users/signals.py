@@ -1,9 +1,9 @@
 from typing import Any, Dict
 
+# pylint: disable=no-member,unused-argument,broad-exception-caught
+
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
-from marketplace.models import Referral
 
 from .models import User
 
@@ -21,16 +21,9 @@ def attach_referral_on_signup(
         return
     if getattr(instance, "referral_code_used", None):
         try:
-            ref = Referral.objects.filter(
-                referral_code=instance.referral_code_used
-            ).first()
-            if ref:
-                # assign referred_user and user's referred_by_user
-                instance.referred_by_user = ref.referrer
-                instance.save(update_fields=["referred_by_user"])
-                if not ref.referred_user:
-                    ref.referred_user = instance
-                    ref.save(update_fields=["referred_user"])
+            from marketplace.referral_service import attach_referral_code
+
+            attach_referral_code(instance, instance.referral_code_used)
         except Exception:
             return
 
@@ -61,4 +54,17 @@ def sync_artwork_denorm_on_user_update(
         Artwork.objects.filter(creator_id=instance.pk).update(**update_vals)
     except Exception:
         # Best-effort: do not raise from signal
+        return
+
+
+@receiver(post_save, sender=User)
+def ensure_paid_member_referral_code(
+    sender: Any, instance: User, created: bool, **kwargs: Any
+) -> None:
+    """有料会員に紹介コードを付与する。"""
+    try:
+        from marketplace.referral_service import ensure_referral_code
+
+        ensure_referral_code(instance)
+    except Exception:
         return

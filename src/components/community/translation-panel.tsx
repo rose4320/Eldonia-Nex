@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useContent } from "@/components/providers/locale-provider";
 import { NEXUS_LOCALES, type NexusLocale } from "@/lib/nexus-translate/translate";
 
 type TranslationPanelProps = {
@@ -16,6 +17,8 @@ export function TranslationPanel({
   defaultTarget = "en",
   compact = false,
 }: TranslationPanelProps) {
+  const { pages } = useContent();
+  const nexus = pages.community;
   const [target, setTarget] = useState<NexusLocale>(defaultTarget);
   const [translated, setTranslated] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
@@ -36,14 +39,14 @@ export function TranslationPanel({
         error?: string;
       };
       if (!res.ok || !data.translated) {
-        alert(data.error ?? "翻訳に失敗しました。");
+        alert(data.error ?? nexus.nexusErr);
         return;
       }
       setTranslated(data.translated);
       setMode(data.mode ?? null);
       setShowTranslation(true);
     } catch {
-      alert("翻訳に失敗しました。");
+      alert(nexus.nexusErr);
     } finally {
       setLoading(false);
     }
@@ -56,7 +59,7 @@ export function TranslationPanel({
   return (
     <div className={compact ? "mt-2" : "mt-4 rounded border border-[var(--eldonia-border)] p-3"}>
       <div className="flex flex-wrap items-center gap-2">
-        <span className="eldonia-badge-nexus-prime text-[10px]">翻訳 Nexus</span>
+        <span className="eldonia-badge-nexus-prime text-[10px]">{nexus.nexusBadge}</span>
         <select
           value={target}
           onChange={(e) => {
@@ -65,7 +68,7 @@ export function TranslationPanel({
             setTranslated(null);
           }}
           className="rounded border border-[var(--eldonia-border)] bg-[var(--eldonia-surface)] px-2 py-1 text-xs"
-          aria-label="翻訳先言語"
+          aria-label={nexus.nexusTargetAria}
         >
           {NEXUS_LOCALES.filter((l) => l.value !== sourceLocale).map((locale) => (
             <option key={locale.value} value={locale.value}>
@@ -79,7 +82,7 @@ export function TranslationPanel({
           disabled={loading}
           className="eldonia-btn-ghost text-xs"
         >
-          {loading ? "翻訳中..." : showTranslation ? "再翻訳" : "翻訳を表示"}
+          {loading ? nexus.nexusTranslating : showTranslation ? nexus.nexusRetranslate : nexus.nexusShow}
         </button>
         {showTranslation && (
           <button
@@ -87,7 +90,7 @@ export function TranslationPanel({
             onClick={() => setShowTranslation(false)}
             className="eldonia-link text-xs"
           >
-            原文のみ
+            {nexus.nexusOriginalOnly}
           </button>
         )}
       </div>
@@ -95,7 +98,7 @@ export function TranslationPanel({
         <p className="eldonia-body mt-3 whitespace-pre-wrap text-sm text-[var(--eldonia-gold-muted)]">
           {translated}
           {mode === "demo" && (
-            <span className="eldonia-hint ml-2 text-[10px]">（デモ辞書翻訳）</span>
+            <span className="eldonia-hint ml-2 text-[10px]">{nexus.nexusDemoHint}</span>
           )}
         </p>
       )}

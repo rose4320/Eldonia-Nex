@@ -1,10 +1,13 @@
 import Link from "next/link";
+import { ContentLine } from "@/components/i18n/content-line";
 import {
   CATEGORY_ICONS,
   discountPercent,
   formatPrice,
   realmLabel,
 } from "@/lib/shop/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import type { ShopProductWithSeller } from "@/types/database";
 import { StarRating } from "./star-rating";
 
@@ -12,7 +15,9 @@ type ProductCardProps = {
   product: ShopProductWithSeller;
 };
 
-export function ProductCard({ product }: ProductCardProps) {
+export async function ProductCard({ product }: ProductCardProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const discount = discountPercent(product.price, product.compare_at_price);
   const icon = CATEGORY_ICONS[product.category] ?? "◆";
 
@@ -41,19 +46,28 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        <h2 className="line-clamp-2 text-sm leading-snug text-[var(--eldonia-text)] group-hover:text-[var(--eldonia-gold-light)]">
-          {product.title}
-        </h2>
+        <ContentLine
+          text={product.title}
+          locale={locale}
+          as="h2"
+          className="line-clamp-2 text-sm leading-snug text-[var(--eldonia-text)] group-hover:text-[var(--eldonia-gold-light)]"
+          hintClassName="eldonia-localized-hint text-[11px] line-clamp-2"
+        />
 
-        <StarRating rating={product.rating} reviewCount={product.review_count} />
+        <StarRating
+          rating={product.rating}
+          reviewCount={product.review_count}
+          locale={locale}
+          ratingAria={t.shop.ratingAria}
+        />
 
         <div className="mt-auto flex flex-wrap items-baseline gap-2">
           <span className="font-display text-lg text-[var(--eldonia-gold-light)]">
-            {formatPrice(product.price)}
+            {formatPrice(product.price, locale)}
           </span>
           {product.compare_at_price && (
             <span className="text-xs text-[var(--eldonia-text-dim)] line-through">
-              {formatPrice(product.compare_at_price)}
+              {formatPrice(product.compare_at_price, locale)}
             </span>
           )}
           {discount && (
@@ -63,13 +77,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {product.is_nexus_prime && (
           <p className="eldonia-badge-nexus-prime w-fit">
-            <span aria-hidden>⚜</span> Nexus Prime 対象
+            <span aria-hidden>⚜</span> {t.shop.nexusPrimeBadge}
           </p>
         )}
 
         <p className="text-[10px] uppercase tracking-wider text-[var(--eldonia-text-dim)]">
-          {realmLabel(product.category)}
-          {product.product_type === "digital" ? " · 即時DL" : ""}
+          {realmLabel(product.category, locale)}
+          {product.product_type === "digital" ? t.shop.instantDownload : ""}
         </p>
       </div>
     </Link>

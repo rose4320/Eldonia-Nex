@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
+import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
 
 type ThreadCreateFormProps = {
@@ -12,6 +14,9 @@ type ThreadCreateFormProps = {
 
 export function ThreadCreateForm({ boardId, boardSlug, userId }: ThreadCreateFormProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const { pages } = useContent();
+  const community = pages.community;
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +35,7 @@ export function ThreadCreateForm({ boardId, boardSlug, userId }: ThreadCreateFor
         author_id: userId,
         title: title.trim(),
         body: body.trim(),
-        locale: "ja",
+        locale,
       })
       .select("id")
       .single();
@@ -41,16 +46,17 @@ export function ThreadCreateForm({ boardId, boardSlug, userId }: ThreadCreateFor
       return;
     }
 
+    await awardUserExp(supabase, "community.thread", data.id);
     router.push(`/community/t/${data.id}`);
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="eldonia-card space-y-4">
-      <p className="eldonia-eyebrow">新規スレッド · {boardSlug}</p>
+      <p className="eldonia-eyebrow">{community.threadCreateEyebrow(boardSlug)}</p>
       <div className="flex flex-col gap-1">
         <label htmlFor="thread-title" className="eldonia-label">
-          タイトル
+          {community.threadTitle}
         </label>
         <input
           id="thread-title"
@@ -64,7 +70,7 @@ export function ThreadCreateForm({ boardId, boardSlug, userId }: ThreadCreateFor
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="thread-body" className="eldonia-label">
-          本文
+          {community.threadBody}
         </label>
         <textarea
           id="thread-body"
@@ -83,14 +89,10 @@ export function ThreadCreateForm({ boardId, boardSlug, userId }: ThreadCreateFor
           disabled={loading}
           className="eldonia-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {loading ? "投稿中..." : "スレッドを作成"}
+          {loading ? community.threadSubmitting : community.threadSubmit}
         </button>
-        <button
-          type="button"
-          className="eldonia-btn-ghost"
-          onClick={() => router.back()}
-        >
-          キャンセル
+        <button type="button" className="eldonia-btn-ghost" onClick={() => router.back()}>
+          {community.cancel}
         </button>
       </div>
     </form>

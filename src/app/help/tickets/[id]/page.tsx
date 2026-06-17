@@ -5,6 +5,9 @@ import { TicketReplyForm } from "@/components/support/ticket-reply-form";
 import { TicketStatusBadge } from "@/components/support/ticket-status-badge";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { supportTicketStatusLabel } from "@/lib/i18n/taxonomy";
 import {
   categoryLabel,
   formatDateTime,
@@ -23,6 +26,9 @@ export default async function TicketDetailPage({
 }: TicketDetailPageProps) {
   const { id } = await params;
   const query = await searchParams;
+  const locale = await getUiLocale();
+  const { pages, forms } = getContent(locale);
+  const help = pages.help;
   const supabase = await createClient();
   const {
     data: { user },
@@ -50,7 +56,7 @@ export default async function TicketDetailPage({
     .single();
 
   const authorName =
-    profile?.display_name ?? profile?.username ?? user.email ?? "ユーザー";
+    profile?.display_name ?? profile?.username ?? user.email ?? pages.userFallback;
 
   const { data: messages } = await supabase
     .from("support_ticket_messages")
@@ -59,6 +65,10 @@ export default async function TicketDetailPage({
     .order("created_at", { ascending: true });
 
   const canReply = !["resolved", "closed"].includes(ticket.status);
+  const closedStatusLabel =
+    ticket.status === "resolved"
+      ? supportTicketStatusLabel("resolved", locale)
+      : supportTicketStatusLabel("closed", locale);
 
   return (
     <div className="eldonia-page">
@@ -66,28 +76,26 @@ export default async function TicketDetailPage({
 
       <main className="eldonia-main eldonia-main-narrow">
         <div>
-          <Link
-            href="/help/tickets"
-            className="eldonia-link text-sm"
-          >
-            ← マイチケット一覧
+          <Link href="/help/tickets" className="eldonia-link text-sm">
+            {forms.ticketListBack}
           </Link>
           <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="font-mono text-sm text-eldonia-text-muted">{ticket.ticket_number}</p>
               <h1 className="mt-1 eldonia-heading eldonia-heading-sm">{ticket.subject}</h1>
               <p className="mt-2 text-sm text-eldonia-text-muted">
-                {categoryLabel(ticket.category)} · 作成 {formatDateTime(ticket.created_at)}
+                {categoryLabel(ticket.category, locale)} · {help.ticketDetailCreated}{" "}
+                {formatDateTime(ticket.created_at, locale)}
               </p>
             </div>
-            <TicketStatusBadge status={ticket.status as SupportTicketStatus} />
+            <TicketStatusBadge status={ticket.status as SupportTicketStatus} locale={locale} />
           </div>
           <HelpNav current="/help/tickets" />
         </div>
 
         {query.created === "1" && (
           <p className="rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-            お問い合わせを受け付けました。サポートチームからの返信をお待ちください。
+            {forms.ticketCreatedBanner}
           </p>
         )}
 
@@ -106,17 +114,15 @@ export default async function TicketDetailPage({
                   {message.author_name}
                   {message.is_staff && (
                     <span className="ml-2 text-xs font-semibold text-eldonia-gold">
-                      サポート
+                      {help.ticketDetailSupport}
                     </span>
                   )}
                 </p>
                 <time className="text-xs text-eldonia-text-muted">
-                  {formatDateTime(message.created_at)}
+                  {formatDateTime(message.created_at, locale)}
                 </time>
               </div>
-              <p className="mt-3 whitespace-pre-wrap eldonia-body text-sm">
-                {message.body}
-              </p>
+              <p className="mt-3 whitespace-pre-wrap eldonia-body text-sm">{message.body}</p>
             </article>
           ))}
         </section>
@@ -131,8 +137,7 @@ export default async function TicketDetailPage({
           </section>
         ) : (
           <p className="rounded-lg bg-eldonia-surface px-4 py-3 eldonia-body text-sm">
-            このチケットは {ticket.status === "resolved" ? "解決済み" : "クローズ"}
-            です。追加のご質問は新規お問い合わせをご利用ください。
+            {forms.ticketClosed(closedStatusLabel)}
           </p>
         )}
       </main>

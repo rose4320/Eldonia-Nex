@@ -7,8 +7,76 @@
   <p class="ops-lead">各項目の <strong>（　）</strong> 内の数字（%）だけを編集してください。</p>
 </header>
 
-<form method="post" class="ops-card">
+<section class="ops-command-panel" aria-label="手数料設定の操作サマリー">
+  <div class="ops-command-main">
+    <span class="ops-command-kicker">Fees & Rebates</span>
+    <h2>売上・還元に関わる率をまとめて調整</h2>
+    <p>マーケットプレイス手数料、紹介還元、決済参考手数料などを変更します。率の変更は収益計算や還元額に直接影響します。</p>
+  </div>
+  <div class="ops-command-actions">
+    <a class="ops-action-chip" href="{% url 'admin:ops_settings_hub' %}">設定一覧へ</a>
+    <a class="ops-action-chip" href="{% url 'admin:marketplace_transaction_changelist' %}">取引履歴</a>
+  </div>
+</section>
+
+<section class="ops-insight-grid" aria-label="設定のポイント">
+  <div class="ops-insight-card">
+    <span>入力形式</span>
+    <strong>0〜100%</strong>
+    <small>小数も入力できます（例: 3.6）</small>
+  </div>
+  <div class="ops-insight-card">
+    <span>影響範囲</span>
+    <strong>手数料・紹介還元</strong>
+    <small>収益見込みと還元計算に反映</small>
+  </div>
+  <div class="ops-insight-card ops-insight-warn">
+    <span>承認</span>
+    <strong>パスワード必須</strong>
+    <small>確認画面で管理人確認があります</small>
+  </div>
+</section>
+
+<details class="ops-add-panel">
+  <summary>＋ 新しい手数料項目を追加</summary>
+  <form method="post" action="{% url 'admin:ops_fee_setting_add' %}" class="ops-add-form">
+    {% csrf_token %}
+    <div class="ops-add-grid">
+      <label>{{ add_form.label.label }} {{ add_form.label }}</label>
+      <label>{{ add_form.key.label }} {{ add_form.key }}</label>
+      <label>{{ add_form.value.label }} {{ add_form.value }}</label>
+      <label class="ops-add-wide">{{ add_form.help_text.label }} {{ add_form.help_text }}</label>
+    </div>
+    <p class="ops-muted-inline">追加した項目はこの画面の編集一覧に表示されます。計算ロジックへの反映は別途実装が必要です。</p>
+    <button type="submit" class="ops-btn ops-btn-primary">手数料項目を追加</button>
+  </form>
+</details>
+
+<form method="post" class="ops-card" id="ops-fee-form">
   {% csrf_token %}
+  <section class="ops-toolbelt" aria-label="手数料のクイック操作">
+    <div class="ops-toolbelt-main">
+      <span class="ops-toolbelt-kicker">Quick Actions</span>
+      <h2>率プリセット</h2>
+      <p>標準・低手数料・キャンペーン向けの率をまとめて反映できます。反映後に各項目を個別調整してください。</p>
+    </div>
+    <div class="ops-tool-grid">
+      <button type="button" class="ops-tool-button" data-ops-fill='{"marketplace_fee_percent":"10","referral_rebate_percent":"10","stripe_fee_percent":"3.6","stream_donation_fee_percent":"5","event_ticket_fee_percent":"8"}'>
+        標準設定
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"marketplace_fee_percent":"7","referral_rebate_percent":"8","stripe_fee_percent":"3.6","stream_donation_fee_percent":"4","event_ticket_fee_percent":"5"}'>
+        低手数料
+      </button>
+      <button type="button" class="ops-tool-button" data-ops-fill='{"marketplace_fee_percent":"5","referral_rebate_percent":"15","stripe_fee_percent":"3.6","stream_donation_fee_percent":"3","event_ticket_fee_percent":"4"}'>
+        集客キャンペーン
+      </button>
+      <button type="button" class="ops-tool-button ops-tool-danger" data-ops-fill='{"marketplace_fee_percent":"0","referral_rebate_percent":"0","stripe_fee_percent":"0","stream_donation_fee_percent":"0","event_ticket_fee_percent":"0"}'>
+        全て 0%
+      </button>
+      <button type="reset" class="ops-tool-button ops-tool-muted">入力前に戻す</button>
+    </div>
+  </section>
+
   <ul class="ops-plan-list">
     {% for group in form.field_groups %}
       <li class="ops-setting-row">

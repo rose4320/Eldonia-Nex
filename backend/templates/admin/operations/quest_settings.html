@@ -4,28 +4,91 @@
 <header class="ops-header">
   {% if step %}<p class="ops-step">ステップ {{ step }} / 2</p>{% endif %}
   <h1>{{ title }}</h1>
-  <p class="ops-lead">Quest の EXP と 1日上限は <strong>（　）</strong> の数字だけ編集できます。</p>
+  <p class="ops-lead">ユーザー操作ごとに付与する EXP と 1日上限を編集できます。変更後は確認画面で管理人パスワードを入力してください。</p>
 </header>
+
+<section class="ops-command-panel" aria-label="EXP付与設定の操作サマリー">
+  <div class="ops-command-main">
+    <span class="ops-command-kicker">Experience Economy</span>
+    <h2>ユーザー行動ごとのEXP経済を調整</h2>
+    <p>作品投稿・応募・コメントなどの行動に付与するEXPと1日上限を編集します。上げすぎるとレベル上昇が速くなるため慎重に調整してください。</p>
+  </div>
+  <div class="ops-command-actions">
+    <a class="ops-action-chip" href="{% url 'admin:ops_settings_hub' %}">設定一覧へ</a>
+    <a class="ops-action-chip" href="{% url 'admin:gamification_expaction_changelist' %}">上級一覧</a>
+  </div>
+</section>
+
+<section class="ops-insight-grid" aria-label="設定のポイント">
+  <div class="ops-insight-card">
+    <span>EXP</span>
+    <strong>行動1回あたり</strong>
+    <small>0にすると実質付与なし</small>
+  </div>
+  <div class="ops-insight-card">
+    <span>1日上限</span>
+    <strong>乱獲防止</strong>
+    <small>0は上限なしとして扱います</small>
+  </div>
+  <div class="ops-insight-card ops-insight-warn">
+    <span>影響</span>
+    <strong>Lv / 称号</strong>
+    <small>フロントのEXP表示にも関係します</small>
+  </div>
+</section>
+
+<details class="ops-add-panel">
+  <summary>＋ 新しいEXP付与アクションを追加</summary>
+  <form method="post" action="{% url 'admin:ops_exp_action_add' %}" class="ops-add-form">
+    {% csrf_token %}
+    <div class="ops-add-grid">
+      <label>{{ add_form.action_type.label }} {{ add_form.action_type }}</label>
+      <label>{{ add_form.description.label }} {{ add_form.description }}</label>
+      <label>{{ add_form.base_exp.label }} {{ add_form.base_exp }}</label>
+      <label>{{ add_form.max_daily_count.label }} {{ add_form.max_daily_count }}</label>
+      <label class="ops-checkbox">{{ add_form.is_active }} {{ add_form.is_active.label }}</label>
+    </div>
+    <p class="ops-muted-inline">アクションキー例: ai.generate / lab.review / event.checkin。フロント側から同じキーで付与処理を呼びます。</p>
+    <button type="submit" class="ops-btn ops-btn-primary">EXPアクションを追加</button>
+  </form>
+</details>
 
 {% if empty %}
   <section class="ops-card ops-empty">
-    <p>Quest（ExpAction）がまだ登録されていません。</p>
-    <a class="ops-btn ops-btn-primary" href="{% url 'admin:gamification_expaction_changelist' %}">上級メニューで Quest を追加 →</a>
+    <p>EXP付与アクション（ExpAction）がまだ登録されていません。</p>
+    <a class="ops-btn ops-btn-primary" href="{% url 'admin:gamification_expaction_changelist' %}">上級メニューでEXP付与項目を追加 →</a>
   </section>
 {% else %}
-  <form method="post" class="ops-card">
+  <form method="post" class="ops-card" id="ops-exp-form">
     {% csrf_token %}
+    <section class="ops-toolbelt" aria-label="EXP付与のクイック操作">
+      <div class="ops-toolbelt-main">
+        <span class="ops-toolbelt-kicker">Quick Actions</span>
+        <h2>EXP倍率・有効状態の一括操作</h2>
+        <p>全アクションのEXPを倍率調整したり、有効/停止をまとめて切り替えられます。バランス調整時に便利です。</p>
+      </div>
+      <div class="ops-tool-grid">
+        <button type="button" class="ops-tool-button" data-ops-exp-multiplier="0.5">EXPを半分</button>
+        <button type="button" class="ops-tool-button" data-ops-exp-multiplier="1.2">EXPを1.2倍</button>
+        <button type="button" class="ops-tool-button" data-ops-exp-multiplier="1.5">EXPを1.5倍</button>
+        <button type="button" class="ops-tool-button" data-ops-active-state="true">全て有効</button>
+        <button type="button" class="ops-tool-button ops-tool-danger" data-ops-active-state="false">全て停止</button>
+        <button type="reset" class="ops-tool-button ops-tool-muted">入力前に戻す</button>
+      </div>
+    </section>
+
     <ul class="ops-plan-list">
       {% for group in form.field_groups %}
         <li class="ops-setting-row ops-setting-row-wide">
           <div class="ops-setting-main">
             <strong>{{ group.description }}</strong>
             <code class="ops-code">{{ group.action_type }}</code>
+            <small class="ops-muted-inline">この操作が発生したとき、下記EXPを付与します。</small>
           </div>
           <div class="ops-setting-fields">
-            <span class="ops-inline-field">EXP（ {{ group.exp }} ）</span>
+            <span class="ops-inline-field ops-exp-field">EXP（ {{ group.exp }} ）</span>
             <span class="ops-inline-field">1日（ {{ group.daily }} ）回</span>
-            <label class="ops-toggle">{{ group.active }} 有効</label>
+            <label class="ops-toggle ops-active-field">{{ group.active }} 有効</label>
           </div>
         </li>
       {% endfor %}

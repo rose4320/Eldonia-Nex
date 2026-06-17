@@ -1,0 +1,394 @@
+import type { UiLocale } from "@/lib/i18n/locale";
+
+export type SignupPlanId = "free" | "standard" | "pro";
+
+export type SignupPlan = {
+  id: SignupPlanId;
+  name: string;
+  price: string;
+  lead: string;
+  features: string[];
+};
+
+export type SignupConsent = {
+  type: string;
+  title: string;
+  version: string;
+  lead: string;
+  body: string[];
+  requiredLabel: string;
+};
+
+export type SignupContent = {
+  steps: { basic: string; plan: string; payment: string; consent: string };
+  basic: {
+    displayName: string;
+    username: string;
+    legalName: string;
+    country: string;
+    phone: string;
+    creatorToggle: string;
+    submit: string;
+  };
+  plan: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    back: string;
+    toPayment: string;
+  };
+  payment: {
+    eyebrow: string;
+    titleConfirm: (planName: string) => string;
+    leadSelected: (price: string) => string;
+    backToPlan: string;
+    preparing: string;
+    toConsentFree: string;
+    toStripe: string;
+    sessionMissing: string;
+  };
+  consent: {
+    progress: (current: number, total: number) => string;
+    back: string;
+    saving: string;
+    finish: string;
+    next: string;
+  };
+  complete: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    start: string;
+    settings: string;
+  };
+  messages: {
+    basicSaved: string;
+    confirmEmailContinue: string;
+    paymentComplete: string;
+    freePlanSelected: string;
+    checkoutFailed: string;
+    consentRequired: string;
+    consentSaveFailed: string;
+    flowComplete: string;
+  };
+  plans: SignupPlan[];
+  consents: SignupConsent[];
+};
+
+const CONSENT_VERSION = "2026-06-16";
+
+const SIGNUP_JA: SignupContent = {
+  steps: {
+    basic: "1 基本情報",
+    plan: "2 プラン",
+    payment: "3 決済",
+    consent: "4 規約",
+  },
+  basic: {
+    displayName: "表示名",
+    username: "ユーザー名",
+    legalName: "氏名・法人名（任意）",
+    country: "国",
+    phone: "電話番号（任意）",
+    creatorToggle: "クリエイターとして作品投稿・販売・イベント参加を始める",
+    submit: "基本情報を保存して次へ",
+  },
+  plan: {
+    eyebrow: "Plan Selection",
+    title: "利用プランを選択",
+    lead: "いつでも変更できます。Free は決済なしで規約確認へ進みます。",
+    back: "戻る",
+    toPayment: "決済ステップへ",
+  },
+  payment: {
+    eyebrow: "Payment",
+    titleConfirm: (name) => `${name} プランの確認`,
+    leadSelected: (price) =>
+      `選択中: ${price}。有料プランは Stripe の安全な決済画面へ移動します。`,
+    backToPlan: "プラン選択へ戻る",
+    preparing: "決済準備中...",
+    toConsentFree: "決済なしで規約へ",
+    toStripe: "Stripe 決済へ進む",
+    sessionMissing: "ログインセッションが確認できません。基本情報入力からやり直してください。",
+  },
+  consent: {
+    progress: (c, t) => `Consent ${c} / ${t}`,
+    back: "戻る",
+    saving: "保存中...",
+    finish: "承認して登録完了",
+    next: "次の規約へ",
+  },
+  complete: {
+    eyebrow: "Welcome",
+    title: "登録が完了しました",
+    lead: "基本情報、プラン選択、決済確認、規約承認を保存しました。",
+    start: "はじめる",
+    settings: "設定を開く",
+  },
+  messages: {
+    basicSaved: "基本情報を保存しました。次にプランを選択してください。",
+    confirmEmailContinue: "メール認証後にログインし、登録フローを続けてください。",
+    paymentComplete: "決済が完了しました。最後に規約を項目ごとに確認してください。",
+    freePlanSelected: "Free プランを選択しました。規約を項目ごとに確認してください。",
+    checkoutFailed: "決済セッションの作成に失敗しました。",
+    consentRequired: "この項目を理解したチェックを入れてから次へ進んでください。",
+    consentSaveFailed: "規約承認の保存に失敗しました。",
+    flowComplete: "登録フローが完了しました。Eldonia-Nex へようこそ。",
+  },
+  plans: [
+    {
+      id: "free",
+      name: "Free",
+      price: "¥0 / 月",
+      lead: "閲覧と基本投稿を試せる入門プラン",
+      features: ["作品投稿 3件/月", "基本プロフィール", "コミュニティ参加"],
+    },
+    {
+      id: "standard",
+      name: "Standard",
+      price: "¥800 / 月",
+      lead: "継続投稿と創作活動を始める標準プラン",
+      features: ["作品投稿 20件/月", "50MB までのファイル", "Live 配信の基本機能"],
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: "¥1,500 / 月",
+      lead: "収益化と分析を重視するクリエイター向け",
+      features: ["作品投稿 無制限", "500MB までのファイル", "優先サポート"],
+    },
+  ],
+  consents: [
+    {
+      type: "terms_of_service",
+      title: "利用規約",
+      version: CONSENT_VERSION,
+      lead: "Eldonia-Nex を利用するための基本ルールです。",
+      body: [
+        "アカウントは本人が管理し、第三者への譲渡や不正利用を行わないでください。",
+        "サービス上での投稿・販売・交流は、法令とプラットフォームルールに従う必要があります。",
+        "違反が確認された場合、投稿の制限、アカウント停止、取引の保留を行うことがあります。",
+      ],
+      requiredLabel: "利用規約を読み、アカウント利用条件を理解しました",
+    },
+    {
+      type: "privacy_policy",
+      title: "プライバシーポリシー",
+      version: CONSENT_VERSION,
+      lead: "登録情報・決済情報・利用履歴の取り扱いについてです。",
+      body: [
+        "登録情報は認証、本人確認、サポート、通知、サービス改善のために利用します。",
+        "決済に必要な情報は Stripe 等の決済事業者と連携して処理します。",
+        "法令に基づく場合を除き、必要な範囲を超えて個人情報を第三者へ提供しません。",
+      ],
+      requiredLabel: "個人情報の利用目的と管理方針を理解しました",
+    },
+    {
+      type: "subscription_terms",
+      title: "サブスクリプション・決済条件",
+      version: CONSENT_VERSION,
+      lead: "有料プランの課金、自動更新、解約に関する確認です。",
+      body: [
+        "有料プランは選択した周期で自動更新され、解約するまで請求が継続します。",
+        "プラン変更や解約の反映タイミングは、決済事業者とサービス設定に従います。",
+        "無料プランを選んだ場合、この項目は将来の有料化時の確認事項として扱います。",
+      ],
+      requiredLabel: "課金・自動更新・解約条件を理解しました",
+    },
+    {
+      type: "creator_guidelines",
+      title: "投稿・コンテンツガイドライン",
+      version: CONSENT_VERSION,
+      lead: "作品投稿、販売、コミュニティ活動で守る内容です。",
+      body: [
+        "権利を保有していない作品、盗用、無断転載、権利侵害コンテンツは投稿できません。",
+        "年齢制限が必要な表現、暴力的・差別的な表現は適切な分類と制限が必要です。",
+        "購入者や参加者に誤解を与える説明、価格表示、納品条件の記載を避けてください。",
+      ],
+      requiredLabel: "投稿ルールと禁止事項を理解しました",
+    },
+    {
+      type: "commerce_terms",
+      title: "取引・返金・収益化条件",
+      version: CONSENT_VERSION,
+      lead: "販売、イベント、仕事依頼など金銭を伴う活動の確認です。",
+      body: [
+        "販売・受注・イベント開催では、提供内容、価格、納期、キャンセル条件を明確にしてください。",
+        "返金や紛争対応は、各取引の状態、決済状況、運営判断に基づいて処理されます。",
+        "収益の支払いには本人情報、振込先、税務上必要な情報の確認が必要になる場合があります。",
+      ],
+      requiredLabel: "取引・返金・収益化条件を理解しました",
+    },
+  ],
+};
+
+const SIGNUP_EN: SignupContent = {
+  steps: {
+    basic: "1 Basics",
+    plan: "2 Plan",
+    payment: "3 Payment",
+    consent: "4 Terms",
+  },
+  basic: {
+    displayName: "Display name",
+    username: "Username",
+    legalName: "Legal name (optional)",
+    country: "Country",
+    phone: "Phone (optional)",
+    creatorToggle: "Act as a creator — post artwork, sell, and host events",
+    submit: "Save & continue",
+  },
+  plan: {
+    eyebrow: "Plan Selection",
+    title: "Choose a plan",
+    lead: "Change anytime. Free skips payment and goes to terms.",
+    back: "Back",
+    toPayment: "Continue to payment",
+  },
+  payment: {
+    eyebrow: "Payment",
+    titleConfirm: (name) => `Confirm ${name} plan`,
+    leadSelected: (price) =>
+      `Selected: ${price}. Paid plans redirect to Stripe secure checkout.`,
+    backToPlan: "Back to plans",
+    preparing: "Preparing checkout…",
+    toConsentFree: "Continue without payment",
+    toStripe: "Pay with Stripe",
+    sessionMissing: "Session not found. Please restart from basics.",
+  },
+  consent: {
+    progress: (c, t) => `Consent ${c} / ${t}`,
+    back: "Back",
+    saving: "Saving…",
+    finish: "Accept & finish signup",
+    next: "Next agreement",
+  },
+  complete: {
+    eyebrow: "Welcome",
+    title: "Signup complete",
+    lead: "Basics, plan, payment, and agreements are saved.",
+    start: "Get started",
+    settings: "Open settings",
+  },
+  messages: {
+    basicSaved: "Profile saved. Choose a plan next.",
+    confirmEmailContinue: "After confirming email, log in to continue signup.",
+    paymentComplete: "Payment complete. Review each agreement to finish.",
+    freePlanSelected: "Free plan selected. Review each agreement to finish.",
+    checkoutFailed: "Could not start checkout.",
+    consentRequired: "Check that you understand this item before continuing.",
+    consentSaveFailed: "Could not save agreement.",
+    flowComplete: "Welcome to Eldonia-Nex!",
+  },
+  plans: [
+    {
+      id: "free",
+      name: "Free",
+      price: "¥0 / mo",
+      lead: "Try browsing and basic posting",
+      features: ["3 artworks / month", "Basic profile", "Community access"],
+    },
+    {
+      id: "standard",
+      name: "Standard",
+      price: "¥800 / mo",
+      lead: "Standard plan for regular creators",
+      features: ["20 artworks / month", "Files up to 50MB", "Basic live streaming"],
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: "¥1,500 / mo",
+      lead: "For creators focused on monetization & analytics",
+      features: ["Unlimited artworks", "Files up to 500MB", "Priority support"],
+    },
+  ],
+  consents: SIGNUP_JA.consents.map((c) => ({
+    ...c,
+    title: c.type === "terms_of_service" ? "Terms of Service" : c.title,
+  })).map((item) => {
+    const enMap: Record<string, Omit<SignupConsent, "type" | "version">> = {
+      terms_of_service: {
+        title: "Terms of Service",
+        lead: "Basic rules for using Eldonia-Nex.",
+        body: [
+          "You are responsible for your account; do not transfer or misuse it.",
+          "Posts, sales, and community activity must follow laws and platform rules.",
+          "Violations may lead to restrictions, suspension, or held transactions.",
+        ],
+        requiredLabel: "I have read and accept the Terms of Service",
+      },
+      privacy_policy: {
+        title: "Privacy Policy",
+        lead: "How we handle registration, payment, and usage data.",
+        body: [
+          "We use registration data for auth, verification, support, notifications, and improvements.",
+          "Payment data is processed via Stripe and other payment providers.",
+          "We do not share personal data beyond what is legally required.",
+        ],
+        requiredLabel: "I understand how personal data is used and managed",
+      },
+      subscription_terms: {
+        title: "Subscription & billing",
+        lead: "Billing, auto-renewal, and cancellation for paid plans.",
+        body: [
+          "Paid plans auto-renew until you cancel.",
+          "Plan changes and cancellation timing follow the payment provider and settings.",
+          "For Free, this applies when you upgrade later.",
+        ],
+        requiredLabel: "I understand billing, auto-renewal, and cancellation",
+      },
+      creator_guidelines: {
+        title: "Content guidelines",
+        lead: "Rules for posting, selling, and community activity.",
+        body: [
+          "Do not post content you do not own or that infringes rights.",
+          "Age-restricted or harmful content must be classified and limited appropriately.",
+          "Avoid misleading descriptions, pricing, or delivery terms.",
+        ],
+        requiredLabel: "I understand posting rules and prohibited content",
+      },
+      commerce_terms: {
+        title: "Commerce & payouts",
+        lead: "Sales, events, jobs, and other paid activity.",
+        body: [
+          "Clearly state what you offer, price, timeline, and cancellation terms.",
+          "Refunds and disputes are handled per transaction state and platform policy.",
+          "Payouts may require identity and tax information.",
+        ],
+        requiredLabel: "I understand commerce, refunds, and payout terms",
+      },
+    };
+    const en = enMap[item.type];
+    return en ? { type: item.type, version: item.version, ...en } : item;
+  }),
+};
+
+export const SIGNUP_CONTENT: Record<UiLocale, SignupContent> = {
+  ja: SIGNUP_JA,
+  en: SIGNUP_EN,
+  ko: {
+    ...SIGNUP_EN,
+    steps: { basic: "1 기본 정보", plan: "2 플랜", payment: "3 결제", consent: "4 약관" },
+    basic: { ...SIGNUP_EN.basic, submit: "저장 후 계속" },
+    plan: { ...SIGNUP_EN.plan, title: "플랜 선택", toPayment: "결제 단계로" },
+    complete: { ...SIGNUP_EN.complete, title: "가입 완료", start: "시작하기" },
+    messages: {
+      ...SIGNUP_EN.messages,
+      basicSaved: "저장되었습니다. 플랜을 선택하세요.",
+      flowComplete: "Eldonia-Nex에 오신 것을 환영합니다!",
+    },
+  },
+  "zh-CN": {
+    ...SIGNUP_EN,
+    steps: { basic: "1 基本信息", plan: "2 方案", payment: "3 支付", consent: "4 条款" },
+    basic: { ...SIGNUP_EN.basic, submit: "保存并继续" },
+    plan: { ...SIGNUP_EN.plan, title: "选择方案", toPayment: "前往支付" },
+    complete: { ...SIGNUP_EN.complete, title: "注册完成", start: "开始使用" },
+    messages: {
+      ...SIGNUP_EN.messages,
+      basicSaved: "已保存。请选择方案。",
+      flowComplete: "欢迎来到 Eldonia-Nex！",
+    },
+  },
+};

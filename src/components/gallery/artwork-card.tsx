@@ -1,6 +1,9 @@
 import Link from "next/link";
 import type { ArtworkWithCreator } from "@/types/database";
+import { ContentLine } from "@/components/i18n/content-line";
 import { categoryLabel, formatDate } from "@/lib/gallery/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type ArtworkCardProps = {
   artwork: ArtworkWithCreator;
@@ -12,12 +15,14 @@ function previewUrl(artwork: ArtworkWithCreator): string | null {
   return null;
 }
 
-export function ArtworkCard({ artwork }: ArtworkCardProps) {
+export async function ArtworkCard({ artwork }: ArtworkCardProps) {
+  const locale = await getUiLocale();
+  const pages = getContent(locale).pages;
   const imageUrl = previewUrl(artwork);
   const creatorName =
     artwork.profiles?.display_name ??
     artwork.profiles?.username ??
-    "クリエイター";
+    pages.creatorFallback;
 
   return (
     <Link
@@ -40,11 +45,19 @@ export function ArtworkCard({ artwork }: ArtworkCardProps) {
       </div>
       <div className="space-y-1 p-4">
         <p className="eldonia-eyebrow text-[0.65rem]">
-          {categoryLabel(artwork.category)}
+          {categoryLabel(artwork.category, locale)}
         </p>
-        <h2 className="line-clamp-1 font-display font-semibold text-eldonia-gold-light">{artwork.title}</h2>
+        <ContentLine
+          text={artwork.title}
+          locale={locale}
+          as="h2"
+          className="line-clamp-1 font-display font-semibold text-eldonia-gold-light"
+          hintClassName="eldonia-localized-hint text-xs"
+        />
         <p className="text-sm text-eldonia-text-muted">{creatorName}</p>
-        <p className="text-xs text-eldonia-text-dim">{formatDate(artwork.created_at)}</p>
+        <p className="text-xs text-eldonia-text-dim">
+          {formatDate(artwork.created_at, locale)}
+        </p>
       </div>
     </Link>
   );

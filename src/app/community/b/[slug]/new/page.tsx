@@ -4,6 +4,8 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { CommunityToolbar } from "@/components/community/community-toolbar";
 import { ThreadCreateForm } from "@/components/community/thread-create-form";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { getCommunityBoards } from "@/lib/community/get-community";
 import { createClient } from "@/lib/supabase/server";
 
@@ -11,6 +13,8 @@ type NewThreadPageProps = { params: Promise<{ slug: string }> };
 
 export default async function NewThreadPage({ params }: NewThreadPageProps) {
   const { slug } = await params;
+  const locale = await getUiLocale();
+  const pages = getContent(locale).pages;
   const supabase = await createClient();
   const {
     data: { user },
@@ -34,7 +38,7 @@ export default async function NewThreadPage({ params }: NewThreadPageProps) {
         <Link href={`/community/b/${slug}`} className="eldonia-link text-sm">
           ← {board.name}
         </Link>
-        <h1 className="eldonia-heading eldonia-heading-lg mt-4">新規スレッド</h1>
+        <h1 className="eldonia-heading eldonia-heading-lg mt-4">{pages.community.newThread}</h1>
         <div className="mt-6">
           <ThreadCreateForm boardId={board.id} boardSlug={slug} userId={user.id} />
         </div>

@@ -6,6 +6,11 @@
   <link rel="stylesheet" href="{% static 'admin/css/eldonia-ops.css' %}">
 {% endblock %}
 
+{% block extrahead %}
+  {{ block.super }}
+  <script src="{% static 'admin/js/eldonia-ops-settings.js' %}" defer></script>
+{% endblock %}
+
 {% block content %}
 <div class="ops-settings-page">
   <nav class="ops-tabs" aria-label="設定メニュー">
@@ -13,7 +18,8 @@
     <a class="ops-tab{% if active_tab == 'plans' %} is-active{% endif %}" href="{% url 'admin:ops_subscription_plans' %}">💴 サブスク料金</a>
     <a class="ops-tab{% if active_tab == 'fees' %} is-active{% endif %}" href="{% url 'admin:ops_fee_settings' %}">💰 手数料</a>
     <a class="ops-tab{% if active_tab == 'plan_details' %} is-active{% endif %}" href="{% url 'admin:ops_plan_details' %}">📋 プラン詳細</a>
-    <a class="ops-tab{% if active_tab == 'quest' %} is-active{% endif %}" href="{% url 'admin:ops_quest_settings' %}">⚔️ Quest</a>
+    <a class="ops-tab{% if active_tab == 'quest' %} is-active{% endif %}" href="{% url 'admin:ops_exp_settings' %}">⚔️ EXP付与</a>
+    <a class="ops-tab{% if active_tab == 'announcement' %} is-active{% endif %}" href="{% url 'admin:ops_announcement_broadcast' %}">📢 告知</a>
     <a class="ops-tab" href="{% url 'admin:index' %}">🏠 ダッシュボード</a>
   </nav>
 

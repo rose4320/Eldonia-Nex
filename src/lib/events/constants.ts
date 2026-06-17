@@ -1,11 +1,61 @@
-export const EVENT_REALMS = [
-  { value: "all", label: "すべての領域" },
-  { value: "concert", label: "ライブ・演奏" },
-  { value: "workshop", label: "ワークショップ" },
-  { value: "meetup", label: "交流会・サミット" },
-  { value: "exhibition", label: "展示・展覧会" },
-  { value: "streaming", label: "配信・オンライン" },
-  { value: "competition", label: "コンテスト" },
+import type { UiLocale } from "@/lib/i18n/locale";
+import {
+  eventFormatLabel,
+  eventRealmLabel,
+  formatFreePrice,
+  formatYenPrice,
+  intlDateTag,
+  ticketsRemainingLabel,
+} from "@/lib/i18n/taxonomy";
+
+export function formatEventDate(
+  iso: string,
+  locale: UiLocale = "ja",
+): { day: string; month: string; time: string; full: string } {
+  const d = new Date(iso);
+  const tag = intlDateTag(locale);
+  return {
+    day: d.getDate().toString(),
+    month: d.toLocaleDateString(tag, { month: "short" }),
+    time: d.toLocaleTimeString(tag, { hour: "2-digit", minute: "2-digit" }),
+    full: d.toLocaleDateString(tag, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+  };
+}
+
+export function formatPrice(yen: number, locale: UiLocale = "ja"): string {
+  return yen === 0 ? formatFreePrice(locale) : formatYenPrice(yen, locale);
+}
+
+export function formatLabel(format: string, locale: UiLocale = "ja"): string {
+  return eventFormatLabel(format, locale);
+}
+
+export function realmLabel(category: string, locale: UiLocale = "ja"): string {
+  return eventRealmLabel(category, locale);
+}
+
+export function ticketsRemainingText(
+  remaining: number,
+  locale: UiLocale = "ja",
+): string {
+  return ticketsRemainingLabel(remaining, locale);
+}
+
+export const EVENT_REALM_VALUES = [
+  "all",
+  "concert",
+  "workshop",
+  "meetup",
+  "exhibition",
+  "streaming",
+  "competition",
 ] as const;
 
 export const CATEGORY_ICONS: Record<string, string> = {
@@ -16,41 +66,6 @@ export const CATEGORY_ICONS: Record<string, string> = {
   streaming: "📡",
   competition: "🏆",
 };
-
-const REALM_LABELS = Object.fromEntries(
-  EVENT_REALMS.filter((r) => r.value !== "all").map((r) => [r.value, r.label]),
-) as Record<string, string>;
-
-export function realmLabel(category: string): string {
-  return REALM_LABELS[category] ?? category;
-}
-
-export function formatLabel(format: string): string {
-  if (format === "online") return "オンライン";
-  if (format === "hybrid") return "ハイブリッド";
-  return "会場";
-}
-
-export function formatPrice(yen: number): string {
-  return yen === 0 ? "無料" : `¥${yen.toLocaleString("ja-JP")}`;
-}
-
-export function formatEventDate(iso: string): { day: string; month: string; time: string; full: string } {
-  const d = new Date(iso);
-  return {
-    day: d.getDate().toString(),
-    month: d.toLocaleDateString("ja-JP", { month: "short" }),
-    time: d.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" }),
-    full: d.toLocaleDateString("ja-JP", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      weekday: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-  };
-}
 
 export function ticketsRemaining(capacity: number | null, sold: number): number | null {
   if (capacity === null) return null;

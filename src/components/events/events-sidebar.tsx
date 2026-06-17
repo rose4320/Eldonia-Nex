@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { EVENT_REALMS } from "@/lib/events/constants";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { eventRealmOptions } from "@/lib/i18n/taxonomy";
 
 type EventsSidebarProps = {
   activeCategory?: string;
@@ -7,11 +9,15 @@ type EventsSidebarProps = {
   query?: string;
 };
 
-export function EventsSidebar({
+export async function EventsSidebar({
   activeCategory = "all",
   activeWhen = "upcoming",
   query,
 }: EventsSidebarProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
+  const realms = eventRealmOptions(locale);
+
   function hrefFor(category: string, when: string) {
     const params = new URLSearchParams();
     if (category !== "all") params.set("category", category);
@@ -21,13 +27,19 @@ export function EventsSidebar({
     return qs ? `/events?${qs}` : "/events";
   }
 
+  const whenOptions = [
+    { value: "upcoming", label: t.events.whenUpcoming },
+    { value: "past", label: t.events.whenPast },
+    { value: "all", label: t.events.whenAll },
+  ];
+
   return (
     <aside className="eldonia-events-sidebar space-y-6">
       <div>
         <h2 className="eldonia-label">Realms</h2>
-        <p className="eldonia-hint mt-1">領域で探す</p>
+        <p className="eldonia-hint mt-1">{t.events.sidebarRealms}</p>
         <nav className="mt-4 flex flex-col gap-1">
-          {EVENT_REALMS.map((realm) => {
+          {realms.map((realm) => {
             const active = activeCategory === realm.value;
             return (
               <Link
@@ -47,13 +59,9 @@ export function EventsSidebar({
       </div>
 
       <div>
-        <h2 className="eldonia-label">時期</h2>
+        <h2 className="eldonia-label">{t.events.sidebarWhen}</h2>
         <nav className="mt-3 flex flex-col gap-1">
-          {[
-            { value: "upcoming", label: "開催予定" },
-            { value: "past", label: "終了済み" },
-            { value: "all", label: "すべて" },
-          ].map((item) => {
+          {whenOptions.map((item) => {
             const active = activeWhen === item.value;
             return (
               <Link

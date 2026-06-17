@@ -1,80 +1,106 @@
 import Link from "next/link";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import type { UiLocale } from "@/lib/i18n/locale";
+import { uiMessage } from "@/lib/i18n/ui-messages";
+import { MODULE_NAV_LINKS } from "@/lib/layout/nav-links";
 
-const supportLinks = [
-  { href: "/help", label: "ヘルプセンター" },
-  { href: "/help/faq", label: "よくある質問" },
-  { href: "/help/guides", label: "利用ガイド" },
-  { href: "/help/contact", label: "お問い合わせ" },
-  { href: "/help/tickets", label: "マイチケット" },
+const TECH_STACK = [
+  "Next.js 16",
+  "Supabase",
+  "PostgreSQL",
+  "Stripe",
+  "Django Admin",
 ];
 
-const moduleLinks = [
-  { href: "/gallery", label: "GALLEY" },
-  { href: "/shop", label: "SHOP" },
-  { href: "/events", label: "EVENTS" },
-  { href: "/community", label: "COMMUNITY" },
-  { href: "/works", label: "WORKS" },
+const HELP_LINKS = [
+  { href: "/help", label: { ja: "ヘルプセンター", en: "Help Center", ko: "도움말", "zh-CN": "帮助中心" } },
+  { href: "/help/faq", label: { ja: "よくある質問", en: "FAQ", ko: "FAQ", "zh-CN": "常见问题" } },
+  { href: "/help/guides", label: { ja: "利用ガイド", en: "Guides", ko: "가이드", "zh-CN": "使用指南" } },
+  { href: "/help/contact", label: { ja: "お問い合わせ", en: "Contact", ko: "문의", "zh-CN": "联系我们" } },
+  { href: "/help/tickets", label: { ja: "マイチケット", en: "My Tickets", ko: "내 티켓", "zh-CN": "我的工单" } },
 ];
 
-export function SiteFooter() {
+const PARTNERS = [
+  { name: "Nexus Cloud", role: { ja: "インフラ協力", en: "Infrastructure", ko: "인프라", "zh-CN": "基础设施" } },
+  { name: "Creator Guild", role: { ja: "コミュニティ協力", en: "Community Partner", ko: "커뮤니티", "zh-CN": "社区合作" } },
+  { name: "Gold Sponsor Slot", role: { ja: "スポンサー枠", en: "Sponsor Slot", ko: "스폰서", "zh-CN": "赞助位" } },
+];
+
+function localizedLabel(
+  record: { ja: string; en: string; ko: string; "zh-CN": string },
+  locale: UiLocale,
+): string {
+  return record[locale] ?? record.ja;
+}
+
+export async function SiteFooter() {
+  const locale = await getUiLocale();
+
   return (
     <footer className="eldonia-footer">
-      <div className="mx-auto max-w-6xl px-6 pt-10">
+      <div className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
         <EldoniaDivider />
+
+        <div className="eldonia-footer-brand mt-10">
+          <BrandLogo size="md" showSubtitle />
+        </div>
+
+        <div className="eldonia-footer-grid mt-10">
+          <div>
+            <h2 className="eldonia-eyebrow">{uiMessage(locale, "footerTech")}</h2>
+            <ul className="mt-4 space-y-2">
+              {TECH_STACK.map((item) => (
+                <li key={item} className="eldonia-body text-sm text-eldonia-text-muted">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="eldonia-eyebrow">{uiMessage(locale, "footerHelp")}</h2>
+            <ul className="mt-4 space-y-2">
+              {HELP_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="eldonia-link text-sm">
+                    {localizedLabel(link.label, locale)}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="eldonia-eyebrow mt-6">{uiMessage(locale, "footerSitemap")}</p>
+            <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-2">
+              {MODULE_NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="eldonia-link text-xs tracking-wider">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="eldonia-eyebrow">{uiMessage(locale, "footerPartners")}</h2>
+            <ul className="mt-4 space-y-3">
+              {PARTNERS.map((partner) => (
+                <li key={partner.name} className="text-sm">
+                  <p className="font-display text-eldonia-gold-light">{partner.name}</p>
+                  <p className="eldonia-body text-xs text-eldonia-text-muted">
+                    {localizedLabel(partner.role, locale)}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
-      <div className="mx-auto grid max-w-6xl gap-8 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="space-y-3 sm:col-span-2 lg:col-span-1">
-          <BrandLogo size="sm" showSubtitle />
-          <p className="eldonia-body text-sm">
-            クリエイターがファンを集め、作品を共有し、収益化できるファンタジー・ネクサス。
-          </p>
-        </div>
 
-        <div>
-          <h2 className="eldonia-eyebrow">サポート</h2>
-          <ul className="mt-4 space-y-2">
-            {supportLinks.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="eldonia-link text-sm">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h2 className="eldonia-eyebrow">モジュール</h2>
-          <ul className="mt-4 space-y-2">
-            {moduleLinks.map((link) => (
-              <li key={link.href}>
-                <Link href={link.href} className="eldonia-link text-sm">
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div>
-          <h2 className="eldonia-eyebrow">お問い合わせ</h2>
-          <ul className="mt-4 space-y-2 text-sm text-eldonia-text-muted">
-            <li>
-              <a href="mailto:support@eldonia-nex.com" className="eldonia-link">
-                support@eldonia-nex.com
-              </a>
-            </li>
-            <li>平日 10:00〜18:00（JST）</li>
-            <li>初回返信目安: 1〜2 営業日</li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="border-t border-eldonia-gold/10 px-6 py-4 text-center">
+      <div className="eldonia-footer-copy mt-10 border-t border-eldonia-gold/10 px-4 py-5 sm:px-6">
         <p className="font-display text-[0.65rem] tracking-[0.2em] text-eldonia-text-dim uppercase">
-          © {new Date().getFullYear()} Eldonia-Nex. All rights reserved.
+          © {new Date().getFullYear()} Eldonia-Nex. {uiMessage(locale, "footerCopyright")}
         </p>
       </div>
     </footer>

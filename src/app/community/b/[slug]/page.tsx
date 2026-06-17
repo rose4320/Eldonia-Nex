@@ -5,6 +5,8 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { CommunityToolbar } from "@/components/community/community-toolbar";
 import { ThreadCard } from "@/components/community/thread-card";
 import { ThreadPagination } from "@/components/community/thread-pagination";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { getCommunityBoards, getCommunityThreadsPaginated } from "@/lib/community/get-community";
 import { createClient } from "@/lib/supabase/server";
 
@@ -17,6 +19,8 @@ export default async function CommunityBoardPage({ params, searchParams }: Board
   const { slug } = await params;
   const { q, page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
+  const locale = await getUiLocale();
+  const pages = getContent(locale).pages;
   const supabase = await createClient();
   const {
     data: { user },
@@ -48,22 +52,22 @@ export default async function CommunityBoardPage({ params, searchParams }: Board
             href={`/community/b/${slug}/new`}
             className="eldonia-btn-primary mt-4 inline-block text-sm"
           >
-            新規スレッド
+            {pages.community.newThread}
           </Link>
         ) : (
           <Link
             href={`/auth/login?redirect_to=/community/b/${slug}/new`}
             className="eldonia-btn-secondary mt-4 inline-block text-sm"
           >
-            ログインして投稿
+            {pages.community.loginToPost}
           </Link>
         )}
 
-        <p className="eldonia-hint mt-6">{total} 件のスレッド</p>
+        <p className="eldonia-hint mt-6">{pages.community.threadCount(total)}</p>
 
         <div className="mt-4 flex flex-col gap-3">
           {threads.length === 0 ? (
-            <p className="eldonia-body text-center py-12">スレッドがありません。</p>
+            <p className="eldonia-body text-center py-12">{pages.community.threadsEmpty}</p>
           ) : (
             threads.map((thread) => <ThreadCard key={thread.id} thread={thread} />)
           )}

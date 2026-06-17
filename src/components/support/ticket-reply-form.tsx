@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useContent } from "@/components/providers/locale-provider";
 import { createClient } from "@/lib/supabase/client";
 
 type TicketReplyFormProps = {
@@ -16,6 +17,7 @@ export function TicketReplyForm({
   authorName,
 }: TicketReplyFormProps) {
   const router = useRouter();
+  const { forms } = useContent();
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ export function TicketReplyForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <label htmlFor="reply" className="eldonia-label">
-        追加メッセージ
+        {forms.ticketReplyTitle}
       </label>
       <textarea
         id="reply"
@@ -60,15 +62,13 @@ export function TicketReplyForm({
         onChange={(event) => setBody(event.target.value)}
         className="eldonia-input"
       />
-      {error && (
-        <p className="eldonia-alert-error">{error}</p>
-      )}
+      {error && <p className="eldonia-alert-error">{error}</p>}
       <button
         type="submit"
         disabled={loading}
         className="w-fit eldonia-btn-primary disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? "送信中..." : "返信を送信"}
+        {loading ? forms.ticketReplySubmitting : forms.ticketReplySubmit}
       </button>
     </form>
   );

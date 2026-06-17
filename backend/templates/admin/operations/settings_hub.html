@@ -37,19 +37,24 @@
     <span class="ops-menu-cta">編集する →</span>
   </a>
 
-  <a class="ops-settings-card" href="{% url 'admin:ops_quest_settings' %}">
-    <h2>⚔️ Quest 設定</h2>
+  <a class="ops-settings-card" href="{% url 'admin:ops_exp_settings' %}">
+    <h2>⚔️ EXP付与設定</h2>
     {% if quest_actions %}
       <ul class="ops-current-list">
         {% for row in quest_actions|slice:":3" %}
-          <li>{{ row.description }} = EXP（{{ row.base_exp }}）</li>
+          <li>{{ row.description }} = EXP（{{ row.base_exp }}）· 1日（{{ row.max_daily_count }}）回</li>
         {% endfor %}
         {% if quest_actions|length > 3 %}<li>…他 {{ quest_actions|length|add:"-3" }} 件</li>{% endif %}
       </ul>
     {% else %}
-      <p class="ops-muted-inline">Quest が未登録です（上級メニューから追加）</p>
+      <p class="ops-muted-inline">EXP付与アクションが未登録です（初回表示時に標準項目を作成します）</p>
     {% endif %}
     <span class="ops-menu-cta">編集する →</span>
+  </a>
+  <a class="ops-settings-card" href="{% url 'admin:ops_announcement_broadcast' %}">
+    <h2>📢 ユーザー告知</h2>
+    <p class="ops-muted-inline">全ユーザー・クリエイター・個別メールへ告知を配信。フロントの 🔔 に表示されます。</p>
+    <span class="ops-menu-cta">告知を送る →</span>
   </a>
 </div>
 {% endblock %}

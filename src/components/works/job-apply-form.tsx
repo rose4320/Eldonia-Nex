@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
+import { apiError, type ApiErrorKey } from "@/lib/i18n/api-errors";
 import type { JobListingWithPoster, Portfolio } from "@/types/database";
 
 type JobApplyFormProps = {
@@ -10,11 +12,15 @@ type JobApplyFormProps = {
 };
 
 export function JobApplyForm({ job, portfolio, isLoggedIn }: JobApplyFormProps) {
+  const locale = useLocale();
+  const { forms } = useContent();
+  const apply = forms.apply;
   const [message, setMessage] = useState("");
   const [attachPortfolio, setAttachPortfolio] = useState(
     portfolio?.attach_on_apply ?? true,
   );
-  const [status, setStatus] = useState<string | null>(null);
+  const [status, setStatus] = useState<"success" | "error" | null>(null);
+  const [statusText, setStatusText] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   if (!isLoggedIn) {
@@ -23,7 +29,7 @@ export function JobApplyForm({ job, portfolio, isLoggedIn }: JobApplyFormProps) 
         href={`/auth/login?redirect_to=/works/${job.id}`}
         className="eldonia-btn-primary inline-block text-center"
       >
-        ログインして応募
+        {apply.loginToApply}
       </a>
     );
   }
@@ -32,6 +38,7 @@ export function JobApplyForm({ job, portfolio, isLoggedIn }: JobApplyFormProps) 
     e.preventDefault();
     setLoading(true);
     setStatus(null);
+    setStatusText(null);
     try {
       const res = await fetch("/api/works/apply", {
         method: "POST",
@@ -42,14 +49,25 @@ export function JobApplyForm({ job, portfolio, isLoggedIn }: JobApplyFormProps) 
           attachPortfolio,
         }),
       });
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      const data = (await res.json()) as {
+        ok?: boolean;
+        error?: string;
+        errorKey?: ApiErrorKey;
+      };
       if (!res.ok) {
-        setStatus(data.error ?? "応募に失敗しました。");
+        setStatus("error");
+        setStatusText(
+          data.errorKey
+            ? apiError(data.errorKey, locale)
+            : (data.error ?? apply.errSave),
+        );
         return;
       }
-      setStatus("応募を送信しました。求人主からの連絡をお待ちください。");
+      setStatus("success");
+      setStatusText(apply.success);
     } catch {
-      setStatus("応募に失敗しました。");
+      setStatus("error");
+      setStatusText(apply.errSave);
     } finally {
       setLoading(false);
     }
@@ -57,10 +75,10 @@ export function JobApplyForm({ job, portfolio, isLoggedIn }: JobApplyFormProps) 
 
   return (
     <form onSubmit={handleSubmit} className="eldonia-buy-box space-y-4">
-      <h2 className="eldonia-label">応募</h2>
+      <h2 className="eldonia-label">{apply.heading}</h2>
       {portfolio && attachPortfolio && (
         <div className="rounded border border-[var(--eldonia-border)] p-3 text-sm">
-          <p className="eldonia-badge-nexus-prime w-fit">Portfolio 添付</p>
+          <p className="eldonia-badge-nexus-prime w-fit">{apply.portfolioAttach}</p>
           <p className="mt-2 text-[var(--eldonia-gold-light)]">{portfolio.headline}</p>
           <p className="text-xs text-[var(--eldonia-text-dim)]">
             Lv.{portfolio.level} · {portfolio.title_badge} · EXP {portfolio.exp_points}
@@ -74,22 +92,22 @@ export function JobApplyForm({ job, portfolio, isLoggedIn }: JobApplyFormProps) 
           onChange={(e) => setAttachPortfolio(e.target.checked)}
           disabled={!portfolio}
         />
-        ポートフォリオを添付（ダッシュボード設定に従う）
+        {apply.attachLabel}
       </label>
       <textarea
         rows={4}
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder="志望動機・実績..."
+        placeholder={apply.messagePlaceholder}
         className="eldonia-textarea"
         required
       />
       <button type="submit" className="eldonia-btn-primary w-full" disabled={loading}>
-        {loading ? "送信中..." : "応募する"}
+        {loading ? apply.submitting : apply.submit}
       </button>
-      {status && (
-        <p className={status.includes("失敗") ? "eldonia-alert-error" : "eldonia-alert-success"}>
-          {status}
+      {status && statusText && (
+        <p className={status === "error" ? "eldonia-alert-error" : "eldonia-alert-success"}>
+          {statusText}
         </p>
       )}
     </form>

@@ -4,12 +4,12 @@
 <header class="ops-header">
   <p class="ops-step">ステップ {{ step }} / 2</p>
   <h1>{{ title }}</h1>
-  <p class="ops-lead ops-lead-warn">⚠️ Quest 設定の変更はユーザーの EXP 獲得に影響します。</p>
+  <p class="ops-lead ops-lead-warn">⚠️ EXP付与設定の変更は、ユーザーのレベル上昇・報酬獲得ペースに影響します。</p>
 </header>
 
 <section class="ops-card">
   <table class="ops-table">
-    <thead><tr><th>Quest</th><th>EXP</th><th>1日上限</th><th>有効</th></tr></thead>
+    <thead><tr><th>付与アクション</th><th>EXP</th><th>1日上限</th><th>有効</th></tr></thead>
     <tbody>
       {% for row in preview %}
         <tr class="{% if row.changed %}ops-row-changed{% endif %}">

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { getCart } from "@/lib/cart/cookie-cart";
 
 type ShopToolbarProps = {
@@ -6,8 +8,11 @@ type ShopToolbarProps = {
 };
 
 export async function ShopToolbar({ query }: ShopToolbarProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const cart = await getCart();
   const count = cart.reduce((sum, line) => sum + line.quantity, 0);
+
   return (
     <div className="eldonia-shop-toolbar">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-3">
@@ -20,17 +25,17 @@ export async function ShopToolbar({ query }: ShopToolbarProps) {
             type="search"
             name="q"
             defaultValue={query ?? ""}
-            placeholder="Nexus 内を検索..."
+            placeholder={t.shop.searchPlaceholder}
             className="eldonia-shop-search-input"
-            aria-label="商品検索"
+            aria-label={t.shop.searchAria}
           />
           <button type="submit" className="eldonia-shop-search-btn">
-            検索
+            {t.shop.searchSubmit}
           </button>
         </form>
 
         <Link href="/shop/cart" className="eldonia-btn-ghost shrink-0 text-xs">
-          カート · {count}
+          {t.shop.cart(count)}
         </Link>
       </div>
     </div>

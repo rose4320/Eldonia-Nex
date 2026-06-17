@@ -12,6 +12,109 @@ export type Profile = {
   updated_at: string;
 };
 
+export type UserSettings = {
+  user_id: string;
+  legal_name: string | null;
+  country: string;
+  address_line1: string | null;
+  address_line2: string | null;
+  phone: string | null;
+  bank_name: string | null;
+  bank_branch: string | null;
+  bank_account_type: string | null;
+  bank_account_number: string | null;
+  bank_account_holder: string | null;
+  notify_fan: boolean;
+  notify_like: boolean;
+  notify_comment: boolean;
+  notify_collab: boolean;
+  notify_lab: boolean;
+  notify_order: boolean;
+  notify_support: boolean;
+  notify_announcement: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type UserNotification = {
+  id: string;
+  user_id: string;
+  kind:
+    | "notification"
+    | "announcement"
+    | "collab_request"
+    | "collab_accepted"
+    | "collab_declined"
+    | "fan_registered"
+    | "artwork_liked"
+    | "artwork_commented"
+    | "lab_post"
+    | "order_paid"
+    | "support_reply";
+  title: string;
+  body: string | null;
+  href: string | null;
+  collab_request_id: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export type UserOnboarding = {
+  user_id: string;
+  selected_plan: "free" | "standard" | "pro";
+  payment_status: "not_required" | "pending" | "completed" | "failed";
+  stripe_session_id: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type UserConsent = {
+  id: string;
+  user_id: string;
+  consent_type: string;
+  document_title: string;
+  document_version: string;
+  agreed_at: string;
+  created_at: string;
+};
+
+export type UserReferralCode = {
+  user_id: string;
+  referral_code: string;
+  referral_url: string;
+  status: "active" | "disabled";
+  created_at: string;
+  updated_at: string;
+};
+
+export type CollabLab = {
+  id: string;
+  artwork_id: string;
+  collab_request_id: string;
+  title: string;
+  created_at: string;
+};
+
+export type CollabLabMember = {
+  lab_id: string;
+  user_id: string;
+  role: "owner" | "collaborator";
+  joined_at: string;
+};
+
+export type CollabLabPost = {
+  id: string;
+  lab_id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+};
+
+export type CollabLabPostWithAuthor = CollabLabPost & {
+  profiles: Pick<Profile, "display_name" | "username" | "avatar_url"> | null;
+};
+
 export type Artwork = {
   id: string;
   creator_id: string;
@@ -30,6 +133,52 @@ export type Artwork = {
 
 export type ArtworkWithCreator = Artwork & {
   profiles: Pick<Profile, "display_name" | "username" | "avatar_url"> | null;
+};
+
+export type ArtworkComment = {
+  id: string;
+  artwork_id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ArtworkCommentWithAuthor = ArtworkComment & {
+  profiles: Pick<Profile, "display_name" | "username" | "avatar_url"> | null;
+};
+
+export type CreatorFan = {
+  fan_id: string;
+  creator_id: string;
+  created_at: string;
+};
+
+export type CollabRequestStatus = "pending" | "accepted" | "declined" | "cancelled";
+
+export type CollabRequest = {
+  id: string;
+  artwork_id: string;
+  requester_id: string;
+  creator_id: string;
+  message: string | null;
+  status: CollabRequestStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ArtworkEngagementState = {
+  fanCount: number;
+  isFan: boolean;
+  collabRequest: Pick<CollabRequest, "id" | "status" | "message"> | null;
+  likeCount: number;
+  isLiked: boolean;
+};
+
+export type ArtworkLike = {
+  artwork_id: string;
+  user_id: string;
+  created_at: string;
 };
 
 export type ShopProductType = "physical" | "digital";
@@ -308,6 +457,61 @@ export type Database = {
           view_count?: number;
           updated_at?: string;
         };
+        Relationships: [];
+      };
+      artwork_comments: {
+        Row: ArtworkComment;
+        Insert: {
+          id?: string;
+          artwork_id: string;
+          author_id: string;
+          body: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          body?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      creator_fans: {
+        Row: CreatorFan;
+        Insert: {
+          fan_id: string;
+          creator_id: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      collab_requests: {
+        Row: CollabRequest;
+        Insert: {
+          id?: string;
+          artwork_id: string;
+          requester_id: string;
+          creator_id: string;
+          message?: string | null;
+          status?: CollabRequestStatus;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          message?: string | null;
+          status?: CollabRequestStatus;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      artwork_likes: {
+        Row: ArtworkLike;
+        Insert: {
+          artwork_id: string;
+          user_id: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
         Relationships: [];
       };
       shop_products: {
@@ -629,11 +833,207 @@ export type Database = {
         };
         Relationships: [];
       };
+      user_settings: {
+        Row: UserSettings;
+        Insert: {
+          user_id: string;
+          legal_name?: string | null;
+          country?: string;
+          address_line1?: string | null;
+          address_line2?: string | null;
+          phone?: string | null;
+          bank_name?: string | null;
+          bank_branch?: string | null;
+          bank_account_type?: string | null;
+          bank_account_number?: string | null;
+          bank_account_holder?: string | null;
+          notify_fan?: boolean;
+          notify_like?: boolean;
+          notify_comment?: boolean;
+          notify_collab?: boolean;
+          notify_lab?: boolean;
+          notify_order?: boolean;
+          notify_support?: boolean;
+          notify_announcement?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          legal_name?: string | null;
+          country?: string;
+          address_line1?: string | null;
+          address_line2?: string | null;
+          phone?: string | null;
+          bank_name?: string | null;
+          bank_branch?: string | null;
+          bank_account_type?: string | null;
+          bank_account_number?: string | null;
+          bank_account_holder?: string | null;
+          notify_fan?: boolean;
+          notify_like?: boolean;
+          notify_comment?: boolean;
+          notify_collab?: boolean;
+          notify_lab?: boolean;
+          notify_order?: boolean;
+          notify_support?: boolean;
+          notify_announcement?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_onboarding: {
+        Row: UserOnboarding;
+        Insert: {
+          user_id: string;
+          selected_plan?: "free" | "standard" | "pro";
+          payment_status?: "not_required" | "pending" | "completed" | "failed";
+          stripe_session_id?: string | null;
+          completed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          selected_plan?: "free" | "standard" | "pro";
+          payment_status?: "not_required" | "pending" | "completed" | "failed";
+          stripe_session_id?: string | null;
+          completed_at?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_consents: {
+        Row: UserConsent;
+        Insert: {
+          id?: string;
+          user_id: string;
+          consent_type: string;
+          document_title: string;
+          document_version: string;
+          agreed_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          document_title?: string;
+          document_version?: string;
+          agreed_at?: string;
+        };
+        Relationships: [];
+      };
+      user_referral_codes: {
+        Row: UserReferralCode;
+        Insert: {
+          user_id: string;
+          referral_code: string;
+          referral_url: string;
+          status?: "active" | "disabled";
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          referral_code?: string;
+          referral_url?: string;
+          status?: "active" | "disabled";
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_notifications: {
+        Row: UserNotification;
+        Insert: {
+          id?: string;
+          user_id: string;
+          kind?:
+            | "notification"
+            | "announcement"
+            | "collab_request"
+            | "collab_accepted"
+            | "collab_declined"
+            | "fan_registered"
+            | "artwork_liked"
+            | "artwork_commented"
+            | "lab_post"
+            | "order_paid"
+            | "support_reply";
+          title: string;
+          body?: string | null;
+          href?: string | null;
+          collab_request_id?: string | null;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          kind?:
+            | "notification"
+            | "announcement"
+            | "collab_request"
+            | "collab_accepted"
+            | "collab_declined"
+            | "fan_registered"
+            | "artwork_liked"
+            | "artwork_commented"
+            | "lab_post"
+            | "order_paid"
+            | "support_reply";
+          title?: string;
+          body?: string | null;
+          href?: string | null;
+          collab_request_id?: string | null;
+          is_read?: boolean;
+        };
+        Relationships: [];
+      };
+      collab_labs: {
+        Row: CollabLab;
+        Insert: {
+          id?: string;
+          artwork_id: string;
+          collab_request_id: string;
+          title: string;
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+        };
+        Relationships: [];
+      };
+      collab_lab_members: {
+        Row: CollabLabMember;
+        Insert: {
+          lab_id: string;
+          user_id: string;
+          role?: "owner" | "collaborator";
+          joined_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
+      collab_lab_posts: {
+        Row: CollabLabPost;
+        Insert: {
+          id?: string;
+          lab_id: string;
+          author_id: string;
+          body: string;
+          created_at?: string;
+        };
+        Update: Record<string, never>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
-    Functions: Record<string, never>;
+    Functions: {
+      award_user_exp: {
+        Args: { p_action_type: string; p_reference_key?: string };
+        Returns: number;
+      };
+      respond_to_collab_request: {
+        Args: { p_request_id: string; p_action: string };
+        Returns: string;
+      };
+    };
     Enums: {
       artwork_media_type: ArtworkMediaType;
+      collab_request_status: CollabRequestStatus;
       shop_product_type: ShopProductType;
       event_format: EventFormat;
       event_status: EventStatus;

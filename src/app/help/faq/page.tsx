@@ -3,6 +3,8 @@ import { FaqAccordion } from "@/components/support/faq-accordion";
 import { HelpNav } from "@/components/support/help-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 
 type FaqPageProps = {
@@ -10,6 +12,8 @@ type FaqPageProps = {
 };
 
 export default async function FaqPage({ searchParams }: FaqPageProps) {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const params = await searchParams;
   const supabase = await createClient();
 
@@ -25,13 +29,12 @@ export default async function FaqPage({ searchParams }: FaqPageProps) {
 
       <main className="eldonia-main">
         <section className="space-y-4">
-          <h1 className="eldonia-heading eldonia-heading-lg">よくある質問</h1>
+          <h1 className="eldonia-heading eldonia-heading-lg">{t.pages.help.faqTitle}</h1>
           <p className="eldonia-body text-sm">
-            解決しない場合は{" "}
+            {t.pages.help.faqLead}{" "}
             <Link href="/help/contact" className="eldonia-link font-medium">
-              お問い合わせフォーム
+              {t.pages.help.faqContactLink}
             </Link>
-            からご連絡ください。
           </p>
           <HelpNav current="/help/faq" />
         </section>

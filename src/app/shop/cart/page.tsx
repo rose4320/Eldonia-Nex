@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContentLine } from "@/components/i18n/content-line";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
@@ -6,6 +7,8 @@ import { CheckoutButton } from "@/components/cart/checkout-button";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { removeFromCart } from "@/lib/cart/cookie-cart";
 import { formatCartPrice, resolveCart } from "@/lib/cart/resolve-cart";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
 
 async function removeItem(formData: FormData) {
@@ -18,6 +21,8 @@ async function removeItem(formData: FormData) {
 }
 
 export default async function CartPage() {
+  const locale = await getUiLocale();
+  const t = getContent(locale);
   const supabase = await createClient();
   const {
     data: { user },
@@ -32,22 +37,31 @@ export default async function CartPage() {
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-8">
         <p className="eldonia-eyebrow">CART</p>
-        <h1 className="eldonia-heading eldonia-heading-lg mt-2">Nexus Cart</h1>
+        <h1 className="eldonia-heading eldonia-heading-lg mt-2">{t.shop.cartHeading}</h1>
 
         {items.length === 0 ? (
           <div className="eldonia-card-dashed mt-8 px-8 py-16 text-center">
-            <p className="eldonia-body">カートは空です。</p>
+            <p className="eldonia-body">{t.shop.cartEmpty}</p>
             <Link href="/shop" className="eldonia-link mt-4 inline-block text-sm">
-              SHOP を見る →
+              {t.shop.cartBrowseShop}
             </Link>
           </div>
         ) : (
           <div className="mt-8 space-y-4">
             {items.map((item) => (
-              <div key={`${item.line.kind}-${item.line.id}`} className="eldonia-card flex flex-wrap items-center justify-between gap-4">
-                <div>
+              <div
+                key={`${item.line.kind}-${item.line.id}`}
+                className="eldonia-card flex flex-wrap items-center justify-between gap-4"
+              >
+                <div className="min-w-0 flex-1">
                   <p className="text-xs text-[var(--eldonia-gold-muted)]">{item.subtitle}</p>
-                  <h2 className="font-display text-[var(--eldonia-gold-light)]">{item.title}</h2>
+                  <ContentLine
+                    text={item.title}
+                    locale={locale}
+                    as="h2"
+                    className="font-display text-[var(--eldonia-gold-light)]"
+                    hintClassName="eldonia-localized-hint text-xs"
+                  />
                   <p className="text-sm text-[var(--eldonia-text-dim)]">
                     {formatCartPrice(item.unitPrice)} × {item.line.quantity}
                   </p>
@@ -58,7 +72,7 @@ export default async function CartPage() {
                     <input type="hidden" name="kind" value={item.line.kind} />
                     <input type="hidden" name="id" value={item.line.id} />
                     <button type="submit" className="eldonia-btn-ghost text-xs">
-                      削除
+                      {t.shop.cartRemove}
                     </button>
                   </form>
                 </div>
@@ -68,7 +82,7 @@ export default async function CartPage() {
             <div className="eldonia-buy-box">
               <EldoniaDivider />
               <p className="mt-4 flex justify-between font-display text-xl">
-                <span>合計</span>
+                <span>{t.shop.cartTotal}</span>
                 <span className="text-[var(--eldonia-gold-light)]">{formatCartPrice(total)}</span>
               </p>
               {user ? (
@@ -80,7 +94,7 @@ export default async function CartPage() {
                   href="/auth/login?redirect_to=/shop/cart"
                   className="eldonia-btn-primary mt-4 block text-center"
                 >
-                  ログインして決済
+                  {t.shop.cartLoginCheckout}
                 </Link>
               )}
             </div>
