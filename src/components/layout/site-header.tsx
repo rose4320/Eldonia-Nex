@@ -16,14 +16,41 @@ import {
 } from "@/lib/notifications/get-notifications";
 import { getPortfolioForUser } from "@/lib/works/get-works";
 import { createClient } from "@/lib/supabase/server";
+import type { User } from "@supabase/supabase-js";
+
+const HEADER_AUTH_TIMEOUT_MS = 250;
+const HEADER_DATA_TIMEOUT_MS = 350;
+
+type HeaderProfile = {
+  display_name: string | null;
+  username: string | null;
+  avatar_url: string | null;
+};
+
+async function withTimeout<T>(
+  promise: PromiseLike<T>,
+  fallback: T,
+  timeoutMs: number,
+): Promise<T> {
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((resolve) => setTimeout(() => resolve(fallback), timeoutMs)),
+    ]);
+  } catch {
+    return fallback;
+  }
+}
 
 export async function SiteHeader() {
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await withTimeout<User | null>(
+    supabase.auth.getUser().then((result) => result.data.user),
+    null,
+    HEADER_AUTH_TIMEOUT_MS,
+  );
 
   let displayName = user?.email ?? null;
   let avatarUrl: string | null = null;
@@ -34,22 +61,31 @@ export async function SiteHeader() {
 
   if (user) {
     const [profileRes, notificationList, count, portfolio] = await Promise.all([
-      supabase
-        .from("profiles")
-        .select("display_name, username, avatar_url")
-        .eq("id", user.id)
-        .single(),
-      getHeaderNotifications(user.id),
-      getUnreadNotificationCount(user.id),
-      getPortfolioForUser(user.id, { useSampleFallback: false }),
+      withTimeout(
+        supabase
+          .from("profiles")
+          .select("display_name, username, avatar_url")
+          .eq("id", user.id)
+          .single()
+          .then((result) => result.data as HeaderProfile | null),
+        null,
+        HEADER_DATA_TIMEOUT_MS,
+      ),
+      withTimeout(getHeaderNotifications(user.id), [], HEADER_DATA_TIMEOUT_MS),
+      withTimeout(getUnreadNotificationCount(user.id), 0, HEADER_DATA_TIMEOUT_MS),
+      withTimeout(
+        getPortfolioForUser(user.id, { useSampleFallback: false }),
+        null,
+        HEADER_DATA_TIMEOUT_MS,
+      ),
     ]);
 
     displayName =
-      profileRes.data?.display_name ??
-      profileRes.data?.username ??
+      profileRes?.display_name ??
+      profileRes?.username ??
       user.email ??
       pages.userFallback;
-    avatarUrl = profileRes.data?.avatar_url ?? null;
+    avatarUrl = profileRes?.avatar_url ?? null;
     notifications = notificationList;
     unreadCount = count;
     expPoints = portfolio?.exp_points ?? 0;
@@ -62,7 +98,7 @@ export async function SiteHeader() {
         <div className="eldonia-header-grid">
           {/* 左: ロゴ + タイトル + サブタイトル */}
           <div className="eldonia-header-col eldonia-header-col-left">
-            <BrandLogo size="sm" showSubtitle />
+            <BrandLogo size="xl" showSubtitle />
           </div>
 
           {/* 中: モジュールナビ + 検索 */}
