@@ -66,16 +66,18 @@ export type SignupContent = {
     confirmEmailContinue: string;
     paymentComplete: string;
     freePlanSelected: string;
+    paymentSkipped: string;
     checkoutFailed: string;
     consentRequired: string;
     consentSaveFailed: string;
     flowComplete: string;
+    usernameTaken: string;
   };
   plans: SignupPlan[];
   consents: SignupConsent[];
 };
 
-const CONSENT_VERSION = "2026-06-16";
+const CONSENT_VERSION = "2026-06-19";
 
 const SIGNUP_JA: SignupContent = {
   steps: {
@@ -130,10 +132,12 @@ const SIGNUP_JA: SignupContent = {
     confirmEmailContinue: "メール認証後にログインし、登録フローを続けてください。",
     paymentComplete: "決済が完了しました。最後に規約を項目ごとに確認してください。",
     freePlanSelected: "Free プランを選択しました。規約を項目ごとに確認してください。",
+    paymentSkipped: "登録フロー確認のため、決済をスキップして規約確認へ進みます。",
     checkoutFailed: "決済セッションの作成に失敗しました。",
     consentRequired: "この項目を理解したチェックを入れてから次へ進んでください。",
     consentSaveFailed: "規約承認の保存に失敗しました。",
     flowComplete: "登録フローが完了しました。Eldonia-Nex へようこそ。",
+    usernameTaken: "このユーザー名は既に使われています。別のユーザー名を入力してください。",
   },
   plans: [
     {
@@ -167,9 +171,12 @@ const SIGNUP_JA: SignupContent = {
       body: [
         "アカウントは本人が管理し、第三者への譲渡や不正利用を行わないでください。",
         "サービス上での投稿・販売・交流は、法令とプラットフォームルールに従う必要があります。",
-        "違反が確認された場合、投稿の制限、アカウント停止、取引の保留を行うことがあります。",
+        "【重要】誹謗中傷、名誉毀損、嫌がらせ、脅迫、差別的発言、その他他者の権利・尊厳を侵害する言動は固く禁止されています。",
+        "【重要】詐欺、なりすまし、虚偽情報の流布、不正な勧誘、第三者のなりすましアカウント作成などの行為は、アカウント永久停止および関係機関への通報の対象となります。",
+        "違反が確認された場合、投稿の制限、アカウント停止、取引の保留、損害賠償請求の検討を行うことがあります。",
       ],
-      requiredLabel: "利用規約を読み、アカウント利用条件を理解しました",
+      requiredLabel:
+        "利用規約を読み、誹謗中傷・詐欺行為を含む禁止事項を理解し、遵守することに同意しました",
     },
     {
       type: "privacy_policy",
@@ -202,10 +209,12 @@ const SIGNUP_JA: SignupContent = {
       lead: "作品投稿、販売、コミュニティ活動で守る内容です。",
       body: [
         "権利を保有していない作品、盗用、無断転載、権利侵害コンテンツは投稿できません。",
+        "【重要】特定個人・団体への誹謗中傷、根拠のない批判、晒し行為、執拗な嫌がらせは投稿・コメント・メッセージ等すべての場面で禁止です。",
         "年齢制限が必要な表現、暴力的・差別的な表現は適切な分類と制限が必要です。",
         "購入者や参加者に誤解を与える説明、価格表示、納品条件の記載を避けてください。",
       ],
-      requiredLabel: "投稿ルールと禁止事項を理解しました",
+      requiredLabel:
+        "誹謗中傷を含む投稿ルールと禁止事項を理解し、他者への侵害行為を行わないことに同意しました",
     },
     {
       type: "commerce_terms",
@@ -214,10 +223,13 @@ const SIGNUP_JA: SignupContent = {
       lead: "販売、イベント、仕事依頼など金銭を伴う活動の確認です。",
       body: [
         "販売・受注・イベント開催では、提供内容、価格、納期、キャンセル条件を明確にしてください。",
+        "【重要】虚偽の商品説明、存在しないサービスの販売、前払い詐欺、なりすまし販売、不正な紹介報酬の勧誘などの詐欺行為は厳禁です。",
+        "【重要】詐欺・不正取引が確認された場合、取引の即時停止、アカウント永久停止、関係機関への通報、損害賠償請求を行うことがあります。",
         "返金や紛争対応は、各取引の状態、決済状況、運営判断に基づいて処理されます。",
         "収益の支払いには本人情報、振込先、税務上必要な情報の確認が必要になる場合があります。",
       ],
-      requiredLabel: "取引・返金・収益化条件を理解しました",
+      requiredLabel:
+        "詐欺行為を含む取引禁止事項を理解し、誠実な取引のみ行うことに同意しました",
     },
   ],
 };
@@ -275,10 +287,12 @@ const SIGNUP_EN: SignupContent = {
     confirmEmailContinue: "After confirming email, log in to continue signup.",
     paymentComplete: "Payment complete. Review each agreement to finish.",
     freePlanSelected: "Free plan selected. Review each agreement to finish.",
+    paymentSkipped: "Payment is skipped for signup flow testing. Review agreements to finish.",
     checkoutFailed: "Could not start checkout.",
     consentRequired: "Check that you understand this item before continuing.",
     consentSaveFailed: "Could not save agreement.",
     flowComplete: "Welcome to Eldonia-Nex!",
+    usernameTaken: "This username is already taken. Please choose another username.",
   },
   plans: [
     {
@@ -314,9 +328,12 @@ const SIGNUP_EN: SignupContent = {
         body: [
           "You are responsible for your account; do not transfer or misuse it.",
           "Posts, sales, and community activity must follow laws and platform rules.",
-          "Violations may lead to restrictions, suspension, or held transactions.",
+          "[Important] Defamation, harassment, threats, discrimination, and any conduct that infringes others' rights or dignity are strictly prohibited.",
+          "[Important] Fraud, impersonation, spreading false information, deceptive solicitation, and creating fake accounts may result in permanent suspension and reporting to authorities.",
+          "Violations may lead to restrictions, suspension, held transactions, or pursuit of damages.",
         ],
-        requiredLabel: "I have read and accept the Terms of Service",
+        requiredLabel:
+          "I have read the Terms of Service and agree to comply, including prohibitions on defamation and fraud",
       },
       privacy_policy: {
         title: "Privacy Policy",
@@ -343,20 +360,25 @@ const SIGNUP_EN: SignupContent = {
         lead: "Rules for posting, selling, and community activity.",
         body: [
           "Do not post content you do not own or that infringes rights.",
+          "[Important] Defamation, baseless attacks, doxxing, and persistent harassment are prohibited in posts, comments, and messages.",
           "Age-restricted or harmful content must be classified and limited appropriately.",
           "Avoid misleading descriptions, pricing, or delivery terms.",
         ],
-        requiredLabel: "I understand posting rules and prohibited content",
+        requiredLabel:
+          "I understand posting rules including defamation bans and will not harm others",
       },
       commerce_terms: {
         title: "Commerce & payouts",
         lead: "Sales, events, jobs, and other paid activity.",
         body: [
           "Clearly state what you offer, price, timeline, and cancellation terms.",
+          "[Important] Fraudulent listings, selling non-existent services, advance-payment scams, impersonation sales, and deceptive referral schemes are strictly forbidden.",
+          "[Important] Confirmed fraud may result in immediate transaction holds, permanent suspension, reporting to authorities, and pursuit of damages.",
           "Refunds and disputes are handled per transaction state and platform policy.",
           "Payouts may require identity and tax information.",
         ],
-        requiredLabel: "I understand commerce, refunds, and payout terms",
+        requiredLabel:
+          "I understand commerce rules including fraud prohibitions and will trade honestly",
       },
     };
     const en = enMap[item.type];

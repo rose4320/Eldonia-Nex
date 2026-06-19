@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
-import { sanitizeRedirectTo } from "@/lib/auth/redirect";
+import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
 import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
   mapAuthError,
@@ -33,6 +33,7 @@ type SignupDraft = {
 };
 
 const STORAGE_KEY = "eldonia_signup_onboarding";
+const SKIP_ONBOARDING_PAYMENTS = true;
 
 const initialDraft: SignupDraft = {
   email: "",
@@ -43,6 +44,8 @@ const initialDraft: SignupDraft = {
   phone: "",
   isCreator: true,
 };
+
+type SupabaseBrowserClient = ReturnType<typeof createClient>;
 
 function readStoredSignup(): { draft: SignupDraft; selectedPlan: SignupPlanId } {
   if (typeof window === "undefined") {
@@ -136,6 +139,74 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     setMessage(null);
   }
 
+  function continueToConsentWithoutPayment() {
+    setPaymentCompleted(false);
+    setStep("consent");
+    setMessage(
+      selectedPlan === "free"
+        ? signup.messages.freePlanSelected
+        : signup.messages.paymentSkipped,
+    );
+  }
+
+  function handlePlanContinue() {
+    resetFeedback();
+    if (selectedPlan === "free" || SKIP_ONBOARDING_PAYMENTS) {
+      continueToConsentWithoutPayment();
+      return;
+    }
+    setStep("payment");
+  }
+
+  async function isUsernameAvailable(supabase: SupabaseBrowserClient, username: string) {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("username", username)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    return !data;
+  }
+
+  async function saveBasicInfo(
+    supabase: SupabaseBrowserClient,
+    currentUserId: string,
+    email: string,
+  ) {
+    const username = draft.username.trim().toLowerCase() || null;
+    const { error: profileError } = await supabase.from("profiles").upsert(
+      {
+        id: currentUserId,
+        username,
+        display_name: draft.displayName.trim() || email.split("@")[0],
+        is_creator: draft.isCreator,
+      },
+      { onConflict: "id" },
+    );
+
+    if (profileError) {
+      return profileError.message.includes("profiles_username")
+        ? signup.messages.usernameTaken
+        : profileError.message;
+    }
+
+    const { error: settingsError } = await supabase.from("user_settings").upsert(
+      {
+        user_id: currentUserId,
+        legal_name: draft.legalName.trim() || null,
+        country: draft.country.trim() || "JP",
+        phone: draft.phone.trim() || null,
+      },
+      { onConflict: "user_id" },
+    );
+
+    return settingsError?.message ?? null;
+  }
+
   async function handleBasicSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     resetFeedback();
@@ -149,13 +220,22 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
 
     try {
       const supabase = createClient();
+      const email = draft.email.trim().toLowerCase();
+      const username = draft.username.trim().toLowerCase();
+
+      if (username && !(await isUsernameAvailable(supabase, username))) {
+        setError(signup.messages.usernameTaken);
+        setLoading(false);
+        return;
+      }
+
       const { data, error: signUpError } = await supabase.auth.signUp({
-        email: draft.email,
+        email,
         password,
         options: {
           data: {
-            display_name: draft.displayName,
-            username: draft.username.trim().toLowerCase() || null,
+            display_name: draft.displayName.trim(),
+            username: username || null,
             referral_code: referralCode,
           },
           emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=${encodeURIComponent(redirectTo)}`,
@@ -172,32 +252,10 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
         const currentUserId = data.user?.id;
         if (currentUserId) {
           setUserId(currentUserId);
-          const username = draft.username.trim().toLowerCase() || null;
-          const { error: profileError } = await supabase.from("profiles").upsert({
-            id: currentUserId,
-            username,
-            display_name: draft.displayName.trim() || draft.email.split("@")[0],
-            is_creator: draft.isCreator,
-          });
+          const basicInfoError = await saveBasicInfo(supabase, currentUserId, email);
 
-          if (profileError) {
-            setError(profileError.message);
-            setLoading(false);
-            return;
-          }
-
-          const { error: settingsError } = await supabase.from("user_settings").upsert(
-            {
-              user_id: currentUserId,
-              legal_name: draft.legalName.trim() || null,
-              country: draft.country.trim() || "JP",
-              phone: draft.phone.trim() || null,
-            },
-            { onConflict: "user_id" },
-          );
-
-          if (settingsError) {
-            setError(settingsError.message);
+          if (basicInfoError) {
+            setError(basicInfoError);
             setLoading(false);
             return;
           }
@@ -223,10 +281,8 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
   async function handleCheckout() {
     resetFeedback();
 
-    if (selectedPlan === "free") {
-      setPaymentCompleted(true);
-      setStep("consent");
-      setMessage(signup.messages.freePlanSelected);
+    if (selectedPlan === "free" || SKIP_ONBOARDING_PAYMENTS) {
+      continueToConsentWithoutPayment();
       return;
     }
 
@@ -289,10 +345,8 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
       }
 
       window.localStorage.removeItem(STORAGE_KEY);
-      setStep("complete");
-      setMessage(signup.messages.flowComplete);
-      setLoading(false);
-      router.refresh();
+      window.location.assign(resolvePostLoginPath(redirectTo));
+      return;
     } catch (caught) {
       setError(mapAuthError(caught));
       setLoading(false);
@@ -493,8 +547,10 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
             <button type="button" onClick={() => setStep("basic")} className="eldonia-btn-secondary">
               {signup.plan.back}
             </button>
-            <button type="button" onClick={() => setStep("payment")} className="eldonia-btn-primary">
-              {signup.plan.toPayment}
+            <button type="button" onClick={handlePlanContinue} className="eldonia-btn-primary">
+              {selectedPlan === "free" || SKIP_ONBOARDING_PAYMENTS
+                ? signup.payment.toConsentFree
+                : signup.plan.toPayment}
             </button>
           </div>
         </section>
@@ -507,7 +563,9 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
             {signup.payment.titleConfirm(selectedPlanInfo.name)}
           </h2>
           <p className="eldonia-body mt-3 text-sm">
-            {signup.payment.leadSelected(selectedPlanInfo.price)}
+            {SKIP_ONBOARDING_PAYMENTS && selectedPlan !== "free"
+              ? `選択中: ${selectedPlanInfo.price}。テスト運営中のため、Stripe決済は行わず規約確認へ進みます。`
+              : signup.payment.leadSelected(selectedPlanInfo.price)}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <button type="button" onClick={() => setStep("plan")} className="eldonia-btn-secondary">
@@ -521,7 +579,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
             >
               {loading
                 ? signup.payment.preparing
-                : selectedPlan === "free"
+                : selectedPlan === "free" || SKIP_ONBOARDING_PAYMENTS
                   ? signup.payment.toConsentFree
                   : signup.payment.toStripe}
             </button>
@@ -566,7 +624,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
                 type="button"
                 onClick={() =>
                   activeConsentIndex === 0
-                    ? setStep("payment")
+                    ? setStep(selectedPlan === "free" || SKIP_ONBOARDING_PAYMENTS ? "plan" : "payment")
                     : setActiveConsentIndex((current) => current - 1)
                 }
                 className="eldonia-btn-secondary"

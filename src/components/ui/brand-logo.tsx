@@ -3,13 +3,14 @@ import Link from "next/link";
 
 type BrandLogoProps = {
   showSubtitle?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 };
 
 const sizes = {
   sm: { image: 32, title: "text-sm", subtitle: "text-[0.55rem]" },
   md: { image: 40, title: "text-base", subtitle: "text-[0.6rem]" },
   lg: { image: 56, title: "text-xl", subtitle: "text-[0.65rem]" },
+  xl: { image: 66, title: "text-2xl", subtitle: "text-[0.72rem]" },
 };
 
 export function BrandLogo({ showSubtitle = false, size = "md" }: BrandLogoProps) {

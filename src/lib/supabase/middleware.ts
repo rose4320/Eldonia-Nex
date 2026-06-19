@@ -12,6 +12,8 @@ const PROTECTED_PREFIXES = [
   "/works/portfolio",
 ];
 
+const AUTH_LOOKUP_TIMEOUT_MS = 2500;
+
 function isProtectedPath(pathname: string): boolean {
   if (
     PROTECTED_PREFIXES.some(
@@ -24,7 +26,31 @@ function isProtectedPath(pathname: string): boolean {
   return /^\/community\/b\/[^/]+\/new$/.test(pathname);
 }
 
+async function getUserWithTimeout(
+  supabase: ReturnType<typeof createServerClient<Database>>,
+) {
+  try {
+    const result = await Promise.race([
+      supabase.auth.getUser(),
+      new Promise<null>((resolve) =>
+        setTimeout(() => resolve(null), AUTH_LOOKUP_TIMEOUT_MS),
+      ),
+    ]);
+
+    return result?.data.user ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function updateSession(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const needsAuthLookup = isProtectedPath(pathname) || pathname === "/auth/login";
+
+  if (!needsAuthLookup) {
+    return NextResponse.next({ request });
+  }
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient<Database>(
@@ -48,11 +74,7 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { pathname } = request.nextUrl;
+  const user = await getUserWithTimeout(supabase);
 
   if (user && pathname === "/auth/login") {
     const redirectTo = resolvePostLoginPath(

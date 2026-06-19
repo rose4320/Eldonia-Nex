@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArtworkCommentForm } from "@/components/gallery/artwork-comment-form";
 import { ArtworkCommentsPanel } from "@/components/gallery/artwork-comments-panel";
 import { ArtworkEngagementActions } from "@/components/gallery/artwork-engagement-actions";
 import { ArtworkLikeButtons } from "@/components/gallery/artwork-like-buttons";
@@ -22,14 +21,26 @@ type ArtworkDetailPageProps = {
   params: Promise<{ id: string }>;
 };
 
+const GALLERY_DETAIL_TIMEOUT_MS = 1200;
+
+async function withTimeout<T>(promise: PromiseLike<T>, fallback: T): Promise<T> {
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<T>((resolve) =>
+        setTimeout(() => resolve(fallback), GALLERY_DETAIL_TIMEOUT_MS),
+      ),
+    ]);
+  } catch {
+    return fallback;
+  }
+}
+
 export default async function ArtworkDetailPage({ params }: ArtworkDetailPageProps) {
   const { id } = await params;
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   const { data: artwork } = await supabase
     .from("artworks")
@@ -53,11 +64,18 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
   const item = artwork as ArtworkWithCreator;
   const creatorName =
     item.profiles?.display_name ?? item.profiles?.username ?? pages.creatorFallback;
-  const isOwner = user?.id === item.creator_id;
+  const userId = null;
+  const isOwner = false;
 
   const [comments, engagement] = await Promise.all([
-    getArtworkComments(id),
-    getArtworkEngagement(id, item.creator_id, user?.id ?? null),
+    withTimeout(getArtworkComments(id), []),
+    withTimeout(getArtworkEngagement(id, item.creator_id, userId), {
+      fanCount: 0,
+      isFan: false,
+      collabRequest: null,
+      likeCount: 0,
+      isLiked: false,
+    }),
   ]);
 
   const loginRedirect = `/gallery/${id}`;
@@ -153,7 +171,7 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                 <div className="space-y-3 border-t border-eldonia-border pt-4">
                   <ArtworkLikeButtons
                     artworkId={id}
-                    userId={user?.id ?? null}
+                userId={userId}
                     isOwner={isOwner}
                     engagement={engagement}
                     loginRedirect={loginRedirect}
@@ -162,7 +180,7 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                     artworkId={id}
                     creatorId={item.creator_id}
                     creatorName={creatorName}
-                    userId={user?.id ?? null}
+                    userId={userId}
                     isOwner={isOwner}
                     engagement={engagement}
                     loginRedirect={loginRedirect}
@@ -175,7 +193,7 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
               <ArtworkCommentsPanel
                 comments={comments}
                 artworkId={id}
-                userId={user?.id ?? null}
+                userId={userId}
                 loginRedirect={loginRedirect}
                 showForm={false}
                 className="max-h-80"
@@ -186,28 +204,22 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
           <ArtworkCommentsPanel
             comments={comments}
             artworkId={id}
-            userId={user?.id ?? null}
+            userId={userId}
             loginRedirect={loginRedirect}
             className="hidden lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-6rem)]"
           />
         </div>
 
-        {user ? (
-          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-eldonia-border bg-eldonia-surface-elevated p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden">
-            <ArtworkCommentForm artworkId={id} userId={user.id} variant="fixed" />
-          </div>
-        ) : (
-          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-eldonia-border bg-eldonia-surface-elevated p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden">
-            <p className="eldonia-body text-center text-sm">
-              <Link
-                href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
-                className="eldonia-link"
-              >
-                {pages.gallery.loginToCommentFull}
-              </Link>
-            </p>
-          </div>
-        )}
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-eldonia-border bg-eldonia-surface-elevated p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden">
+          <p className="eldonia-body text-center text-sm">
+            <Link
+              href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
+              className="eldonia-link"
+            >
+              {pages.gallery.loginToCommentFull}
+            </Link>
+          </p>
+        </div>
       </main>
 
       <SiteFooter />

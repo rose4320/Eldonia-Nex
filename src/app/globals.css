@@ -193,6 +193,396 @@ body {
   background: transparent;
 }
 
+/* ── Home showcase ── */
+.eldonia-home-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
+  gap: 2rem;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--eldonia-border);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 72% 38%, rgba(201, 168, 76, 0.18), transparent 19rem),
+    linear-gradient(135deg, rgba(12, 12, 12, 0.98), rgba(0, 0, 0, 0.94));
+  padding: clamp(1.5rem, 4vw, 3rem);
+  box-shadow:
+    0 0 80px rgba(201, 168, 76, 0.08),
+    inset 0 0 80px rgba(201, 168, 76, 0.03);
+}
+
+.eldonia-home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(201, 168, 76, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201, 168, 76, 0.06) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(circle at 70% 35%, black, transparent 68%);
+}
+
+.eldonia-home-hero-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.eldonia-nexus-orb {
+  position: relative;
+  z-index: 1;
+  aspect-ratio: 1;
+  min-height: 22rem;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(232, 213, 163, 0.14) 0 9%, transparent 10%),
+    repeating-radial-gradient(
+      circle,
+      transparent 0 4.4rem,
+      rgba(201, 168, 76, 0.28) 4.45rem 4.5rem
+    );
+  filter: drop-shadow(0 0 42px rgba(201, 168, 76, 0.16));
+}
+
+.eldonia-nexus-orb::before,
+.eldonia-nexus-orb::after {
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border: 1px solid rgba(232, 213, 163, 0.18);
+  border-radius: 999px;
+  transform: rotateX(68deg) rotateZ(-18deg);
+}
+
+.eldonia-nexus-orb::after {
+  inset: 24%;
+  transform: rotateX(64deg) rotateZ(34deg);
+}
+
+.eldonia-nexus-orb-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: 9rem;
+  height: 9rem;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--eldonia-border-strong);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 20%, rgba(232, 213, 163, 0.34), transparent 28%),
+    linear-gradient(145deg, #151008, #050505 68%);
+  box-shadow:
+    0 0 36px rgba(201, 168, 76, 0.28),
+    inset 0 0 28px rgba(201, 168, 76, 0.14);
+  text-align: center;
+}
+
+.eldonia-nexus-orb-core span {
+  font-family: var(--font-cinzel), serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-nexus-orb-core strong {
+  margin-top: -1.5rem;
+  max-width: 5rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eldonia-text-muted);
+}
+
+.eldonia-orbit-label {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 5.5rem;
+  border: 1px solid rgba(201, 168, 76, 0.42);
+  border-radius: 999px;
+  background: rgba(5, 5, 5, 0.88);
+  padding: 0.45rem 0.75rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold-light);
+  box-shadow: 0 0 22px rgba(201, 168, 76, 0.12);
+}
+
+.eldonia-orbit-1 {
+  top: 7%;
+  left: 45%;
+}
+
+.eldonia-orbit-2 {
+  top: 31%;
+  right: 0;
+}
+
+.eldonia-orbit-3 {
+  right: 12%;
+  bottom: 14%;
+}
+
+.eldonia-orbit-4 {
+  bottom: 16%;
+  left: 5%;
+}
+
+.eldonia-orbit-5 {
+  top: 28%;
+  left: 0;
+}
+
+.eldonia-signal-card {
+  border: 1px solid var(--eldonia-border);
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgba(201, 168, 76, 0.08), transparent),
+    rgba(12, 12, 12, 0.88);
+  padding: 1.25rem;
+}
+
+.eldonia-signal-card strong {
+  display: block;
+  font-family: var(--font-cinzel), serif;
+  font-size: 2rem;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-signal-card span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--eldonia-text-muted);
+}
+
+.eldonia-quest-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(201, 168, 76, 0.16);
+  border-radius: 0.9rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 1rem;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+}
+
+.eldonia-quest-row:hover {
+  transform: translateY(-2px);
+  border-color: var(--eldonia-border-strong);
+  background: rgba(201, 168, 76, 0.07);
+}
+
+.eldonia-quest-row strong {
+  display: block;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-quest-row small {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--eldonia-text-muted);
+}
+
+.eldonia-quest-glyph {
+  width: 0.8rem;
+  height: 0.8rem;
+  rotate: 45deg;
+  border: 1px solid var(--eldonia-gold);
+  background: rgba(201, 168, 76, 0.22);
+  box-shadow: 0 0 18px rgba(201, 168, 76, 0.24);
+}
+
+.eldonia-top-work {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  border: 1px solid rgba(201, 168, 76, 0.16);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.8rem;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    transform 0.2s;
+}
+
+.eldonia-top-work:hover {
+  transform: translateY(-2px);
+  border-color: var(--eldonia-border-strong);
+  background: rgba(201, 168, 76, 0.06);
+}
+
+.eldonia-top-work-rank {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(201, 168, 76, 0.12);
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-investor-panel {
+  overflow: hidden;
+  border: 1px solid var(--eldonia-border);
+  border-radius: 1.5rem;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(201, 168, 76, 0.14), transparent 18rem),
+    radial-gradient(circle at 95% 80%, rgba(232, 213, 163, 0.08), transparent 20rem),
+    linear-gradient(145deg, rgba(12, 12, 12, 0.98), rgba(0, 0, 0, 0.94));
+  padding: clamp(1.4rem, 4vw, 2.5rem);
+}
+
+.eldonia-investor-card {
+  min-height: 15rem;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(201, 168, 76, 0.1), transparent),
+    rgba(255, 255, 255, 0.025);
+  padding: 1.25rem;
+}
+
+.eldonia-investor-card span {
+  display: inline-flex;
+  border: 1px solid var(--eldonia-border);
+  border-radius: 999px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--eldonia-gold);
+}
+
+.eldonia-investor-card h3 {
+  margin-top: 1.5rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-investor-card p {
+  margin-top: 0.8rem;
+  color: var(--eldonia-text-muted);
+  line-height: 1.7;
+}
+
+.eldonia-manifesto-line {
+  border-left: 2px solid var(--eldonia-gold-dark);
+  padding-left: 1rem;
+  color: var(--eldonia-gold-light);
+  line-height: 1.8;
+}
+
+.eldonia-revenue-loop {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.eldonia-revenue-step,
+.eldonia-referral-card {
+  border: 1px solid var(--eldonia-border);
+  border-radius: 1.1rem;
+  background: linear-gradient(160deg, rgba(12, 12, 12, 0.96), rgba(0, 0, 0, 0.92));
+  padding: 1.25rem;
+}
+
+.eldonia-revenue-step span {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.75rem;
+  color: var(--eldonia-gold);
+}
+
+.eldonia-revenue-step h3,
+.eldonia-referral-card h3 {
+  margin-top: 0.9rem;
+  font-family: var(--font-cinzel), serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-revenue-step p,
+.eldonia-referral-card p {
+  margin-top: 0.8rem;
+  color: var(--eldonia-text-muted);
+  line-height: 1.7;
+}
+
+.eldonia-referral-card {
+  grid-column: 1 / -1;
+  background:
+    radial-gradient(circle at 92% 20%, rgba(201, 168, 76, 0.22), transparent 12rem),
+    linear-gradient(145deg, rgba(18, 13, 4, 0.96), rgba(0, 0, 0, 0.94));
+}
+
+@media (max-width: 1024px) {
+  .eldonia-home-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .eldonia-nexus-orb {
+    max-width: 30rem;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .eldonia-nexus-orb {
+    min-height: 18rem;
+  }
+
+  .eldonia-nexus-orb-core {
+    width: 7rem;
+    height: 7rem;
+  }
+
+  .eldonia-orbit-label {
+    min-width: auto;
+    padding: 0.35rem 0.55rem;
+    font-size: 0.58rem;
+  }
+
+  .eldonia-revenue-loop {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .eldonia-home-hero {
+    border-radius: 1rem;
+  }
+
+  .eldonia-top-work {
+    align-items: flex-start;
+  }
+
+  .eldonia-top-work-rank {
+    display: none;
+  }
+}
+
 /* ── Buttons ── */
 .eldonia-btn-primary {
   display: inline-flex;
@@ -335,11 +725,13 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
   gap: 1.25rem 1.5rem;
-  align-items: start;
+  align-items: center;
 }
 
 .eldonia-header-col-left {
   min-width: 0;
+  display: flex;
+  align-items: center;
 }
 
 .eldonia-header-col-center {
