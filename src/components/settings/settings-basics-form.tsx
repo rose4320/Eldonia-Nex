@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
-import { awardUserExp } from "@/lib/exp/award-exp";
+import { isBasicsComplete } from "@/lib/settings/basics-completion";
+import type { UserPlanId } from "@/lib/plans/types";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile, UserSettings } from "@/types/database";
 
@@ -12,27 +14,13 @@ const AVATAR_FALLBACK_BUCKET = "artworks";
 const AVATAR_MAX_BYTES = 5 * 1024 * 1024;
 const AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
-function isBasicsComplete(values: {
-  displayName: string | null;
-  legalName: string | null;
-  phone: string | null;
-  address1: string | null;
-  bankHolder: string | null;
-}): boolean {
-  return Boolean(
-    values.displayName?.trim() &&
-      values.legalName?.trim() &&
-      values.phone?.trim() &&
-      values.address1?.trim() &&
-      values.bankHolder?.trim(),
-  );
-}
-
 type SettingsBasicsFormProps = {
   userId: string;
   email: string | null;
   profile: Profile;
   settings: UserSettings;
+  currentPlan: UserPlanId;
+  basicsExpAwarded: boolean;
 };
 
 export function SettingsBasicsForm({
@@ -40,10 +28,17 @@ export function SettingsBasicsForm({
   email,
   profile,
   settings,
+  currentPlan,
+  basicsExpAwarded: initialBasicsExpAwarded,
 }: SettingsBasicsFormProps) {
   const router = useRouter();
-  const { settingsUi } = useContent();
+  const { signup, settingsUi } = useContent();
   const copy = settingsUi.basics;
+  const planCopy = settingsUi.plan;
+  const currentPlanInfo = useMemo(
+    () => signup.plans.find((plan) => plan.id === currentPlan) ?? signup.plans[0],
+    [signup.plans, currentPlan],
+  );
   const [displayName, setDisplayName] = useState(profile.display_name ?? "");
   const [username, setUsername] = useState(profile.username ?? "");
   const [bio, setBio] = useState(profile.bio ?? "");
@@ -65,7 +60,7 @@ export function SettingsBasicsForm({
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [basicsExpAwarded, setBasicsExpAwarded] = useState(false);
+  const [basicsExpAwarded, setBasicsExpAwarded] = useState(initialBasicsExpAwarded);
 
   useEffect(() => {
     return () => {
@@ -136,21 +131,33 @@ export function SettingsBasicsForm({
     return { publicUrl: null, skipped: true };
   }
 
-  async function awardBasicsExpIfNeeded(supabase: ReturnType<typeof createClient>) {
-    const nextBasicsComplete = isBasicsComplete({
-      displayName,
-      legalName,
-      phone,
-      address1,
-      bankHolder,
+  async function requestBasicsExpAward() {
+    if (basicsExpAwarded) return { gained: 0, reason: "already_awarded" as const };
+
+    const expResponse = await fetch("/api/settings/basics-exp", {
+      method: "POST",
+      credentials: "same-origin",
     });
+    const payload = (await expResponse.json()) as {
+      gained?: number;
+      reason?: "incomplete" | "already_awarded";
+      error?: string;
+    };
 
-    if (!nextBasicsComplete || basicsExpAwarded) return false;
+    if (!expResponse.ok) {
+      return { gained: 0, reason: null, error: payload.error ?? copy.basicsExpFailed };
+    }
 
-    const gained = await awardUserExp(supabase, "profile.basics", "profile.basics");
-    if (gained <= 0) return false;
-    setBasicsExpAwarded(true);
-    return gained;
+    if (payload.gained && payload.gained > 0) {
+      setBasicsExpAwarded(true);
+      return { gained: payload.gained, reason: null };
+    }
+
+    if (payload.reason === "already_awarded") {
+      setBasicsExpAwarded(true);
+    }
+
+    return { gained: 0, reason: payload.reason ?? null };
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -216,9 +223,15 @@ export function SettingsBasicsForm({
     setAvatarUrl(nextAvatarUrl);
     setAvatarFile(null);
     setRemoveAvatar(false);
-    const expGranted = await awardBasicsExpIfNeeded(supabase);
+    const expResult = await requestBasicsExpAward();
     const messages = [copy.saved];
-    if (expGranted) messages.push(copy.basicsExpGranted(expGranted));
+    if (expResult.gained > 0) {
+      messages.push(copy.basicsExpGranted(expResult.gained));
+    } else if (expResult.reason === "incomplete") {
+      messages.push(copy.basicsExpIncomplete);
+    } else if (expResult.error) {
+      messages.push(expResult.error);
+    }
     if (avatarSkipped) messages.push(copy.avatarUploadSkipped);
     setMessage(messages.join(" "));
     setLoading(false);
@@ -227,6 +240,15 @@ export function SettingsBasicsForm({
 
   const visibleAvatar = removeAvatar ? null : (avatarPreview ?? avatarUrl);
   const avatarInitial = (displayName || username || "A").slice(0, 1).toUpperCase();
+  const basicsComplete = isBasicsComplete(
+    {
+      legal_name: legalName,
+      phone,
+      address_line1: address1,
+      bank_account_holder: bankHolder,
+    },
+    { display_name: displayName },
+  );
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-2">
@@ -351,8 +373,23 @@ export function SettingsBasicsForm({
         </div>
       </fieldset>
 
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded border border-eldonia-gold/15 bg-eldonia-surface/30 px-4 py-3 lg:col-span-2">
+        <div>
+          <p className="eldonia-label">{copy.currentPlanLabel}</p>
+          <p className="text-sm text-eldonia-gold-light">
+            {currentPlanInfo.name} ({currentPlanInfo.price})
+          </p>
+        </div>
+        <Link href="/settings/plan" className="eldonia-link text-sm font-medium">
+          {planCopy.changeLink}
+        </Link>
+      </div>
+
       {error && <p className="eldonia-alert-error lg:col-span-2">{error}</p>}
       {message && <p className="eldonia-alert-success lg:col-span-2">{message}</p>}
+      {!basicsExpAwarded && !basicsComplete && (
+        <p className="eldonia-hint lg:col-span-2">{copy.basicsExpHint}</p>
+      )}
 
       <button type="submit" disabled={loading} className="eldonia-btn-primary w-fit lg:col-span-2">
         {loading ? copy.saving : copy.submit}

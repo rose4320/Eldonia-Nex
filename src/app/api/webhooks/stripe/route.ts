@@ -52,6 +52,38 @@ export async function POST(request: Request) {
           })
           .eq("user_id", session.metadata.user_id);
       }
+
+      if (session.metadata?.kind === "subscription_settings") {
+        const userId = session.metadata.user_id;
+        const planId = session.metadata.plan_id;
+        const fromPlan = session.metadata.from_plan;
+
+        if (
+          userId &&
+          (planId === "standard" || planId === "pro") &&
+          (fromPlan === "free" || fromPlan === "standard" || fromPlan === "pro")
+        ) {
+          await admin.from("user_onboarding").upsert(
+            {
+              user_id: userId,
+              selected_plan: planId,
+              payment_status: "completed",
+              stripe_session_id: session.id,
+              completed_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" },
+          );
+
+          await admin.from("user_plan_changes").insert({
+            user_id: userId,
+            from_plan: fromPlan,
+            to_plan: planId,
+            payment_status: "completed",
+            stripe_session_id: session.id,
+            changed_via: "stripe_webhook",
+          });
+        }
+      }
     }
   }
 

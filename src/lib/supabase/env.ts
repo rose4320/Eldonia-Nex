@@ -27,6 +27,13 @@ export function getSupabaseSecretKey(): string {
   );
 }
 
+/** サーバー専用: Secret を優先（Vercel に残った旧 anon key より安全） */
+export function getSupabaseServerKey(): string {
+  const secret = getSupabaseSecretKey();
+  if (secret) return secret;
+  return getSupabasePublishableKey();
+}
+
 export function getSupabaseEnv() {
   return {
     url: getSupabaseUrl(),
@@ -36,11 +43,17 @@ export function getSupabaseEnv() {
 
 export function isSupabaseConfigured(): boolean {
   const url = getSupabaseUrl();
-  const publishableKey = getSupabasePublishableKey();
-  if (!url || !publishableKey) return false;
+  const serverKey = getSupabaseServerKey();
+  if (!url || !serverKey) return false;
   if (url === PLACEHOLDER_URL || url.includes("your-project")) return false;
-  if (PLACEHOLDER_KEYS.has(publishableKey)) return false;
+  if (PLACEHOLDER_KEYS.has(serverKey)) return false;
   return true;
+}
+
+export function isSupabaseBrowserConfigured(): boolean {
+  const publishableKey = getSupabasePublishableKey();
+  if (!publishableKey || PLACEHOLDER_KEYS.has(publishableKey)) return false;
+  return isSupabaseConfigured();
 }
 
 export function supabaseSetupMessage(): string {

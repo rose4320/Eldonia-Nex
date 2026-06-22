@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { CollabRespondButtons } from "@/components/gallery/collab-respond-buttons";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { notificationKindLabel } from "@/lib/notifications/notification-labels";
 import type { CollabNotification } from "@/lib/notifications/get-notifications";
 import type { UserNotification } from "@/types/database";
@@ -30,6 +30,8 @@ export function NotificationBell({
   const [unreadCount, setUnreadCount] = useState(initialCount);
 
   useEffect(() => {
+    if (!hasBrowserSupabaseConfig()) return;
+
     const supabase = createClient();
 
     const channel = supabase
@@ -86,6 +88,8 @@ export function NotificationBell({
   }
 
   async function markRead(id: string) {
+    if (!hasBrowserSupabaseConfig()) return;
+
     const supabase = createClient();
     await supabase.from("user_notifications").update({ is_read: true }).eq("id", id);
     setNotifications((items) => items.filter((item) => item.id !== id));

@@ -3,8 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
-import { createClient } from "@/lib/supabase/client";
-import { awardUserExp } from "@/lib/exp/award-exp";
 import {
   categoryLabel,
   detectCategoryFromFile,
@@ -13,11 +11,10 @@ import {
 import { artworkCategoryOptions } from "@/lib/i18n/taxonomy";
 
 type UploadFormProps = {
-  userId: string;
   successRedirect?: string;
 };
 
-export function UploadForm({ userId, successRedirect }: UploadFormProps) {
+export function UploadForm({ successRedirect }: UploadFormProps) {
   const router = useRouter();
   const locale = useLocale();
   const { forms } = useContent();
@@ -60,58 +57,33 @@ export function UploadForm({ userId, successRedirect }: UploadFormProps) {
 
     setLoading(true);
 
-    const supabase = createClient();
-    const extension = file.name.split(".").pop() ?? "bin";
-    const objectPath = `${userId}/${crypto.randomUUID()}.${extension}`;
+    const body = new FormData();
+    body.append("file", file);
+    body.append("title", title.trim());
+    body.append("description", description.trim());
+    body.append("category", category);
+    body.append("tags", tags);
 
-    const { error: uploadError } = await supabase.storage
-      .from("artworks")
-      .upload(objectPath, file, {
-        cacheControl: "3600",
-        upsert: false,
+    try {
+      const response = await fetch("/api/gallery/artworks", {
+        method: "POST",
+        credentials: "same-origin",
+        body,
       });
+      const payload = (await response.json()) as { id?: string; error?: string };
 
-    if (uploadError) {
-      setError(uploadError.message);
+      if (!response.ok || !payload.id) {
+        setError(payload.error ?? upload.errSave);
+        setLoading(false);
+        return;
+      }
+
+      router.push(successRedirect ?? `/gallery/${payload.id}`);
+      router.refresh();
+    } catch {
+      setError(upload.errSave);
       setLoading(false);
-      return;
     }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("artworks").getPublicUrl(objectPath);
-
-    const tagList = tags
-      .split(",")
-      .map((tag) => tag.trim())
-      .filter(Boolean)
-      .slice(0, 10);
-
-    const { data: artwork, error: insertError } = await supabase
-      .from("artworks")
-      .insert({
-        creator_id: userId,
-        title: title.trim(),
-        description: description.trim() || null,
-        media_type: mediaType,
-        media_url: publicUrl,
-        thumbnail_url: mediaType === "image" ? publicUrl : null,
-        category,
-        tags: tagList,
-        is_public: true,
-      })
-      .select("id")
-      .single();
-
-    if (insertError || !artwork) {
-      setError(insertError?.message ?? upload.errSave);
-      setLoading(false);
-      return;
-    }
-
-    await awardUserExp(supabase, "artwork.upload", artwork.id);
-    router.push(successRedirect ?? `/gallery/${artwork.id}`);
-    router.refresh();
   }
 
   return (

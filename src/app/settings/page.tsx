@@ -81,6 +81,8 @@ export default async function SettingsPage() {
                   email={user.email ?? null}
                   profile={data.profile}
                   settings={settings}
+                  currentPlan={data.plan.plan}
+                  basicsExpAwarded={data.basicsExpAwarded}
                 />
               </div>
             </section>

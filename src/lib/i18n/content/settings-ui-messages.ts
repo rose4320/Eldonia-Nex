@@ -19,6 +19,9 @@ export type SettingsUiContent = {
     avatarErrSize: string;
     avatarUploadSkipped: string;
     basicsExpGranted: (exp: number) => string;
+    basicsExpHint: string;
+    basicsExpIncomplete: string;
+    basicsExpFailed: string;
     displayName: string;
     username: string;
     email: string;
@@ -42,6 +45,26 @@ export type SettingsUiContent = {
     saved: string;
     saving: string;
     submit: string;
+    currentPlanLabel: string;
+    changePlanLink: string;
+  };
+  plan: {
+    eyebrow: string;
+    title: string;
+    lead: string;
+    testPhaseLead: string;
+    currentLabel: string;
+    pendingPayment: string;
+    apply: string;
+    changing: string;
+    changed: string;
+    unchanged: string;
+    changeFailed: string;
+    redirectingHome: string;
+    changeLink: string;
+    backToBasics: string;
+    checkoutSuccess: string;
+    checkoutCancelled: string;
   };
   finance: {
     heading: string;
@@ -113,6 +136,11 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     avatarErrSize: "アバターは 5MB 以下の画像を選択してください。",
     avatarUploadSkipped: "アバター画像は保存できませんでした。基本情報は保存済みです。",
     basicsExpGranted: (exp) => `基本情報の登録ボーナスとして EXP +${exp} を付与しました。`,
+    basicsExpHint:
+      "EXP +100 ボーナス: 表示名・氏名・電話番号・住所・口座名義（カナ）をすべて入力して保存すると付与されます。",
+    basicsExpIncomplete:
+      "保存しました。EXP ボーナスは表示名・氏名・電話番号・住所・口座名義（カナ）がすべて入力されたときに付与されます。",
+    basicsExpFailed: "EXP の付与に失敗しました。時間をおいて再度保存してください。",
     displayName: "表示名",
     username: "ユーザー名",
     email: "メールアドレス",
@@ -136,6 +164,27 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     saved: "基本情報を保存しました。",
     saving: "保存中...",
     submit: "基本情報を保存",
+    currentPlanLabel: "現在のプラン",
+    changePlanLink: "プラン変更へ →",
+  },
+  plan: {
+    eyebrow: "Plan",
+    title: "利用プラン",
+    lead: "プランはいつでも変更できます。Free は即時反映、有料プランは Stripe 決済後に反映されます。",
+    testPhaseLead:
+      "テスト運用中のため、決済なしですべてのプランが即時反映されます。変更後はホーム画面へ移動します。",
+    currentLabel: "現在のプラン",
+    pendingPayment: "決済確認待ち",
+    apply: "プランを変更してホームへ",
+    changing: "変更中...",
+    changed: "プランを更新しました。",
+    unchanged: "選択中のプランは現在と同じです。",
+    changeFailed: "プラン変更に失敗しました。",
+    redirectingHome: "反映中...",
+    changeLink: "プラン変更へ →",
+    backToBasics: "← 基本情報に戻る",
+    checkoutSuccess: "決済が完了しました。プランが更新されました。",
+    checkoutCancelled: "決済がキャンセルされました。",
   },
   finance: {
     heading: "収支状況",
@@ -207,6 +256,11 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     avatarErrSize: "Choose an avatar image up to 5MB.",
     avatarUploadSkipped: "Avatar image could not be saved. Profile details were saved.",
     basicsExpGranted: (exp) => `Granted EXP +${exp} for completing your profile.`,
+    basicsExpHint:
+      "EXP +100 bonus: fill display name, legal name, phone, address, and account holder (kana), then save.",
+    basicsExpIncomplete:
+      "Saved. The EXP bonus is granted when display name, legal name, phone, address, and account holder are all filled in.",
+    basicsExpFailed: "Could not grant EXP. Please save again in a moment.",
     displayName: "Display name",
     username: "Username",
     email: "Email",
@@ -230,6 +284,27 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     saved: "Profile saved.",
     saving: "Saving…",
     submit: "Save profile",
+    currentPlanLabel: "Current plan",
+    changePlanLink: "Change plan →",
+  },
+  plan: {
+    eyebrow: "Plan",
+    title: "Subscription plan",
+    lead: "Change anytime. Free applies immediately; paid plans apply after Stripe checkout.",
+    testPhaseLead:
+      "Test mode: all plans apply immediately without payment. You will return to the home page after changing.",
+    currentLabel: "Current plan",
+    pendingPayment: "Payment pending",
+    apply: "Change plan and go home",
+    changing: "Updating…",
+    changed: "Plan updated.",
+    unchanged: "This is already your current plan.",
+    changeFailed: "Could not change plan.",
+    redirectingHome: "Applying…",
+    changeLink: "Change plan →",
+    backToBasics: "← Back to basics",
+    checkoutSuccess: "Payment complete. Your plan has been updated.",
+    checkoutCancelled: "Checkout was cancelled.",
   },
   finance: {
     heading: "Finance",

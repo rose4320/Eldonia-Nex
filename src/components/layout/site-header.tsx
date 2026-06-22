@@ -18,8 +18,8 @@ import { getPortfolioForUser } from "@/lib/works/get-works";
 import { createClient } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
 
-const HEADER_AUTH_TIMEOUT_MS = 250;
-const HEADER_DATA_TIMEOUT_MS = 350;
+const HEADER_AUTH_FALLBACK_TIMEOUT_MS = 2500;
+const HEADER_DATA_TIMEOUT_MS = 1000;
 
 type HeaderProfile = {
   display_name: string | null;
@@ -46,11 +46,18 @@ export async function SiteHeader() {
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const supabase = await createClient();
-  const user = await withTimeout<User | null>(
-    supabase.auth.getUser().then((result) => result.data.user),
-    null,
-    HEADER_AUTH_TIMEOUT_MS,
-  );
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  let user: User | null = session?.user ?? null;
+
+  if (!user) {
+    user = await withTimeout<User | null>(
+      supabase.auth.getUser().then((result) => result.data.user),
+      null,
+      HEADER_AUTH_FALLBACK_TIMEOUT_MS,
+    );
+  }
 
   let displayName = user?.email ?? null;
   let avatarUrl: string | null = null;

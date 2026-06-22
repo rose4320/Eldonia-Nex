@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
 import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
@@ -108,11 +108,13 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     setStep("consent");
     setMessage(signup.messages.paymentComplete);
     /* eslint-enable react-hooks/set-state-in-effect */
-    void createClient()
-      .auth.getUser()
-      .then(({ data }) => {
-        if (data.user) setUserId(data.user.id);
-      });
+    void (hasBrowserSupabaseConfig()
+      ? createClient()
+          .auth.getUser()
+          .then(({ data }) => {
+            if (data.user) setUserId(data.user.id);
+          })
+      : Promise.resolve());
   }, [checkoutSuccess, searchParams, signup.messages.paymentComplete]);
 
   function updateDraft<K extends keyof SignupDraft>(key: K, value: SignupDraft[K]) {
@@ -212,7 +214,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     resetFeedback();
     setLoading(true);
 
-    if (!supabaseConfigured) {
+    if (!supabaseConfigured || !hasBrowserSupabaseConfig()) {
       setError(supabaseSetupMessage());
       setLoading(false);
       return;
