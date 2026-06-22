@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolvePostLoginPath } from "@/lib/auth/redirect";
-import { getSupabasePublishableKey, getSupabaseUrl } from "@/lib/supabase/env";
+import { getSupabaseServerKey, getSupabaseUrl } from "@/lib/supabase/env";
 import type { Database } from "@/types/database";
 
 const PROTECTED_PREFIXES = [
@@ -56,7 +56,7 @@ export async function updateSession(request: NextRequest) {
 
   const supabase = createServerClient<Database>(
     getSupabaseUrl(),
-    getSupabasePublishableKey(),
+    getSupabaseServerKey(),
     {
       cookies: {
         getAll() {

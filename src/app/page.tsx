@@ -6,6 +6,7 @@ import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { MODULE_NAV_LINKS } from "@/lib/layout/nav-links";
 import { categoryLabel } from "@/lib/gallery/constants";
+import { getTopPublicArtworks } from "@/lib/gallery/get-public-artworks";
 import { formatBudget, jobTypeLabel } from "@/lib/works/constants";
 import type { UiLocale } from "@/lib/i18n/locale";
 import type { ArtworkWithCreator, JobListingWithPoster } from "@/types/database";
@@ -341,8 +342,7 @@ export default async function HomePage() {
   const locale = await getUiLocale();
   const t = getContent(locale);
   const copy = HOME_COPY[locale];
-  // Keep the public landing page fast: dynamic works/quest feeds can load later.
-  const topArtworks: HomeArtwork[] = [];
+  const topArtworks: HomeArtwork[] = await getTopPublicArtworks(6);
   const quests: JobListingWithPoster[] = [];
 
   return (

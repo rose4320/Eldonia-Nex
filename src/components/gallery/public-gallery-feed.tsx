@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ContentLine } from "@/components/i18n/content-line";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { categoryLabel, formatDate } from "@/lib/gallery/constants";
-import { createClient } from "@/lib/supabase/client";
 import type { ArtworkWithCreator } from "@/types/database";
 
 type PublicGalleryFeedProps = {
+  items: ArtworkWithCreator[];
   query?: string;
 };
 
@@ -18,69 +17,9 @@ function previewUrl(artwork: ArtworkWithCreator): string | null {
   return null;
 }
 
-export function PublicGalleryFeed({ query }: PublicGalleryFeedProps) {
+export function PublicGalleryFeed({ items, query }: PublicGalleryFeedProps) {
   const locale = useLocale();
   const t = useContent();
-  const [items, setItems] = useState<ArtworkWithCreator[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadArtworks() {
-      setLoading(true);
-      const supabase = createClient();
-      let dbQuery = supabase
-        .from("artworks")
-        .select(
-          `
-          *,
-          profiles:creator_id (
-            display_name,
-            username,
-            avatar_url
-          )
-        `,
-        )
-        .eq("is_public", true)
-        .order("created_at", { ascending: false })
-        .limit(24);
-
-      const term = query?.trim();
-      if (term) {
-        dbQuery = dbQuery.or(`title.ilike.%${term}%,description.ilike.%${term}%`);
-      }
-
-      const { data } = await dbQuery;
-      if (!cancelled) {
-        setItems((data ?? []) as ArtworkWithCreator[]);
-        setLoading(false);
-      }
-    }
-
-    void loadArtworks();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [query]);
-
-  if (loading) {
-    return (
-      <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, index) => (
-          <div key={index} className="eldonia-card animate-pulse p-0">
-            <div className="aspect-4/3 bg-eldonia-surface-elevated" />
-            <div className="space-y-3 p-4">
-              <div className="h-3 w-20 rounded bg-eldonia-gold/20" />
-              <div className="h-4 w-3/4 rounded bg-eldonia-gold/10" />
-              <div className="h-3 w-1/2 rounded bg-eldonia-gold/10" />
-            </div>
-          </div>
-        ))}
-      </section>
-    );
-  }
 
   if (items.length === 0) {
     return (

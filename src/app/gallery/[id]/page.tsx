@@ -14,6 +14,7 @@ import {
   getArtworkComments,
   getArtworkEngagement,
 } from "@/lib/gallery/get-artwork-engagement";
+import { getPublicArtworkById } from "@/lib/gallery/get-public-artworks";
 import { createClient } from "@/lib/supabase/server";
 import type { ArtworkWithCreator } from "@/types/database";
 
@@ -41,31 +42,25 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const supabase = await createClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  const userId = session?.user?.id ?? null;
 
-  const { data: artwork } = await supabase
-    .from("artworks")
-    .select(
-      `
-      *,
-      profiles:creator_id (
-        display_name,
-        username,
-        avatar_url
-      )
-    `,
-    )
-    .eq("id", id)
-    .single();
+  const artwork = await getPublicArtworkById(id);
 
   if (!artwork) {
+    notFound();
+  }
+
+  if (!artwork.is_public && artwork.creator_id !== userId) {
     notFound();
   }
 
   const item = artwork as ArtworkWithCreator;
   const creatorName =
     item.profiles?.display_name ?? item.profiles?.username ?? pages.creatorFallback;
-  const userId = null;
-  const isOwner = false;
+  const isOwner = userId === item.creator_id;
 
   const [comments, engagement] = await Promise.all([
     withTimeout(getArtworkComments(id), []),

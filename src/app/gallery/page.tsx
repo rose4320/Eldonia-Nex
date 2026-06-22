@@ -3,6 +3,7 @@ import { GalleryToolbar } from "@/components/gallery/gallery-toolbar";
 import { PublicGalleryFeed } from "@/components/gallery/public-gallery-feed";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getPublicArtworks } from "@/lib/gallery/get-public-artworks";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
@@ -17,6 +18,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
 
   const term = q?.trim();
   const heading = term ? t.common.searchResults(term) : t.gallery.heading;
+  const items = await getPublicArtworks(q);
 
   return (
     <div className="eldonia-page">
@@ -38,7 +40,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
           </Link>
         </section>
 
-        <PublicGalleryFeed query={q} />
+        <PublicGalleryFeed items={items} query={q} />
       </main>
 
       <SiteFooter />

@@ -15,6 +15,7 @@ function buildFallbackProfile(user: User): Profile {
     bio: null,
     locale: "ja",
     is_creator: false,
+    subscription_plan: "free",
     created_at: now,
     updated_at: now,
   };

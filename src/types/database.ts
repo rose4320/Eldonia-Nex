@@ -8,6 +8,7 @@ export type Profile = {
   bio: string | null;
   locale: string;
   is_creator: boolean;
+  subscription_plan: "free" | "standard" | "pro";
   created_at: string;
   updated_at: string;
 };
@@ -56,6 +57,17 @@ export type UserNotification = {
   href: string | null;
   collab_request_id: string | null;
   is_read: boolean;
+  created_at: string;
+};
+
+export type UserPlanChange = {
+  id: string;
+  user_id: string;
+  from_plan: "free" | "standard" | "pro";
+  to_plan: "free" | "standard" | "pro";
+  payment_status: "not_required" | "pending" | "completed" | "failed";
+  stripe_session_id: string | null;
+  changed_via: "signup" | "settings" | "admin" | "stripe_webhook";
   created_at: string;
 };
 
@@ -414,6 +426,7 @@ export type Database = {
           bio?: string | null;
           locale?: string;
           is_creator?: boolean;
+          subscription_plan?: "free" | "standard" | "pro";
           created_at?: string;
           updated_at?: string;
         };
@@ -424,6 +437,7 @@ export type Database = {
           bio?: string | null;
           locale?: string;
           is_creator?: boolean;
+          subscription_plan?: "free" | "standard" | "pro";
           updated_at?: string;
         };
         Relationships: [];
@@ -898,6 +912,24 @@ export type Database = {
           stripe_session_id?: string | null;
           completed_at?: string | null;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_plan_changes: {
+        Row: UserPlanChange;
+        Insert: {
+          id?: string;
+          user_id: string;
+          from_plan: "free" | "standard" | "pro";
+          to_plan: "free" | "standard" | "pro";
+          payment_status?: "not_required" | "pending" | "completed" | "failed";
+          stripe_session_id?: string | null;
+          changed_via?: "signup" | "settings" | "admin" | "stripe_webhook";
+          created_at?: string;
+        };
+        Update: {
+          payment_status?: "not_required" | "pending" | "completed" | "failed";
+          stripe_session_id?: string | null;
         };
         Relationships: [];
       };

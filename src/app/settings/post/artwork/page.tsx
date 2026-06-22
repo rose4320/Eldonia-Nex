@@ -29,7 +29,7 @@ export default async function SettingsPostArtworkPage() {
         <h1 className="eldonia-heading eldonia-heading-sm mt-3">{pages.settings.postArtworkTitle}</h1>
         <p className="eldonia-body mt-1 text-sm">{pages.settings.postArtworkLead}</p>
         <section className="eldonia-card mt-6">
-          <UploadForm userId={user.id} successRedirect="/settings#posts" />
+          <UploadForm successRedirect="/settings#posts" />
         </section>
       </main>
       <SiteFooter />

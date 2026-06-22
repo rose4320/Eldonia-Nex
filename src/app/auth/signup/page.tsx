@@ -5,7 +5,7 @@ import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { isSupabaseBrowserConfigured } from "@/lib/supabase/env";
 
 type SignupPageProps = {
   searchParams: Promise<{ redirect_to?: string; ref?: string }>;
@@ -17,7 +17,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const params = await searchParams;
   const redirectTo = sanitizeRedirectTo(params.redirect_to);
   const referralCode = params.ref?.trim().toUpperCase() || null;
-  const supabaseConfigured = isSupabaseConfigured();
+  const supabaseConfigured = isSupabaseBrowserConfigured();
 
   return (
     <div className="eldonia-page flex min-h-full flex-1 items-center justify-center px-4 py-16">

@@ -4,7 +4,9 @@ import { getPortfolioForUser } from "@/lib/works/get-works";
 import { buildRecommendations } from "@/lib/settings/recommendations";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import type { Profile, UserNotification, UserSettings } from "@/types/database";
+import { isBasicsComplete } from "@/lib/settings/basics-completion";
+import type { Profile, UserNotification, UserOnboarding, UserSettings } from "@/types/database";
+import type { PlanPaymentStatus, UserPlanId } from "@/lib/plans/types";
 export type SettingsFinanceSummary = {
   totalSpent: number;
   paidOrderCount: number;
@@ -13,9 +15,15 @@ export type SettingsFinanceSummary = {
   estimatedEarnings: number;
 };
 
+export type UserPlanState = {
+  plan: UserPlanId;
+  paymentStatus: PlanPaymentStatus;
+};
+
 export type SettingsHubData = {
   profile: Profile;
   userSettings: UserSettings | null;
+  plan: UserPlanState;
   portfolio: Awaited<ReturnType<typeof getPortfolioForUser>>;
   recommendations: ReturnType<typeof buildRecommendations>;
   finance: SettingsFinanceSummary;
@@ -23,6 +31,7 @@ export type SettingsHubData = {
   unreadCount: number;
   artworkCount: number;
   openTicketCount: number;
+  basicsExpAwarded: boolean;
 };
 
 const EMPTY_SETTINGS: UserSettings = {
@@ -49,16 +58,6 @@ const EMPTY_SETTINGS: UserSettings = {
   updated_at: "",
 };
 
-function isBasicsComplete(settings: UserSettings | null, profile: Profile): boolean {
-  if (!settings) return false;
-  return Boolean(
-    settings.legal_name?.trim() &&
-      settings.phone?.trim() &&
-      settings.address_line1?.trim() &&
-      settings.bank_account_holder?.trim(),
-  ) && Boolean(profile.display_name?.trim());
-}
-
 export async function getSettingsHubData(
   userId: string,
   profile: Profile,
@@ -75,6 +74,8 @@ export async function getSettingsHubData(
     eventRes,
     ticketRes,
     notifRes,
+    onboardingRes,
+    basicsExpRes,
   ] = await Promise.all([
     supabase.from("user_settings").select("*").eq("user_id", userId).maybeSingle(),
     getPortfolioForUser(userId, { useSampleFallback: false }),
@@ -102,9 +103,25 @@ export async function getSettingsHubData(
       .eq("user_id", userId)
       .order("created_at", { ascending: false })
       .limit(50),
+    supabase.from("user_onboarding").select("*").eq("user_id", userId).maybeSingle(),
+    supabase
+      .from("user_exp_awards")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("action_type", "profile.basics")
+      .eq("reference_key", "profile.basics")
+      .maybeSingle(),
   ]);
 
   const userSettings = (settingsRes.data as UserSettings | null) ?? null;
+  const onboarding = (onboardingRes.data as UserOnboarding | null) ?? null;
+  const plan: UserPlanState = {
+    plan:
+      onboarding?.selected_plan ??
+      profile.subscription_plan ??
+      "free",
+    paymentStatus: onboarding?.payment_status ?? "not_required",
+  };
   const notifications = notifRes.error ? [] : ((notifRes.data ?? []) as UserNotification[]);
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -137,6 +154,7 @@ export async function getSettingsHubData(
   return {
     profile,
     userSettings,
+    plan,
     portfolio,
     recommendations,
     finance,
@@ -144,6 +162,7 @@ export async function getSettingsHubData(
     unreadCount,
     artworkCount: artworkRes.count ?? 0,
     openTicketCount: ticketRes.count ?? 0,
+    basicsExpAwarded: Boolean(basicsExpRes.data),
   };
 }
 

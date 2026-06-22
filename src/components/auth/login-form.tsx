@@ -4,11 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
-import { createClient } from "@/lib/supabase/client";
 import { resolvePostLoginPath } from "@/lib/auth/redirect";
 import {
   mapAuthError,
-  mapSupabaseAuthMessage,
   supabaseSetupMessage,
 } from "@/lib/supabase/env";
 
@@ -37,14 +35,16 @@ export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
     }
 
     try {
-      const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const loginResponse = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
 
-      if (signInError) {
-        setError(mapSupabaseAuthMessage(signInError.message));
+      const payload = (await loginResponse.json()) as { error?: string };
+
+      if (!loginResponse.ok) {
+        setError(payload.error ?? "ログインに失敗しました。");
         setLoading(false);
         return;
       }
