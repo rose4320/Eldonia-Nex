@@ -15,8 +15,8 @@ export function SupabaseSetupNotice() {
           に Project URL
         </li>
         <li>
-          <code className="text-eldonia-gold">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>{" "}
-          に anon public key
+          <code className="text-eldonia-gold">NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code>{" "}
+          に Publishable key（旧 anon key も可）
         </li>
         <li>設定後、<code className="text-eldonia-gold">npm run dev</code> を再起動</li>
       </ol>
