@@ -1,25 +1,53 @@
 const PLACEHOLDER_URL = "https://your-project.supabase.co";
-const PLACEHOLDER_KEY = "your-anon-key";
+const PLACEHOLDER_KEYS = new Set([
+  "your-anon-key",
+  "your-publishable-key",
+  "your-anon-key-from-supabase-status",
+]);
+
+export function getSupabaseUrl(): string {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+}
+
+/** Supabase Dashboard の Publishable Key（新形式）または anon JWT（旧形式） */
+export function getSupabasePublishableKey(): string {
+  return (
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+    ""
+  );
+}
+
+/** Dashboard の Secret Key（新形式）または service_role JWT（旧形式） */
+export function getSupabaseSecretKey(): string {
+  return (
+    process.env.SUPABASE_SECRET_KEY ??
+    process.env.SUPABASE_SERVICE_ROLE_KEY ??
+    ""
+  );
+}
 
 export function getSupabaseEnv() {
   return {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL ?? "",
-    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "",
+    url: getSupabaseUrl(),
+    publishableKey: getSupabasePublishableKey(),
   };
 }
 
 export function isSupabaseConfigured(): boolean {
-  const { url, anonKey } = getSupabaseEnv();
-  if (!url || !anonKey) return false;
+  const url = getSupabaseUrl();
+  const publishableKey = getSupabasePublishableKey();
+  if (!url || !publishableKey) return false;
   if (url === PLACEHOLDER_URL || url.includes("your-project")) return false;
-  if (anonKey === PLACEHOLDER_KEY || anonKey === "your-anon-key") return false;
+  if (PLACEHOLDER_KEYS.has(publishableKey)) return false;
   return true;
 }
 
 export function supabaseSetupMessage(): string {
   return (
     "Supabase が未設定です。.env.local に NEXT_PUBLIC_SUPABASE_URL と " +
-    "NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。"
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY（または NEXT_PUBLIC_SUPABASE_ANON_KEY）を設定し、" +
+    "開発サーバーを再起動してください。"
   );
 }
 
