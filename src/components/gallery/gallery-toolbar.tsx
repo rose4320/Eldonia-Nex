@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { galleryUploadHref } from "@/lib/gallery/upload-link";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { createClient } from "@/lib/supabase/server";
 
 type GalleryToolbarProps = {
   query?: string;
@@ -9,7 +11,11 @@ type GalleryToolbarProps = {
 export async function GalleryToolbar({ query }: GalleryToolbarProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
-  const uploadHref = "/auth/login?redirect_to=/settings/post/artwork";
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const uploadHref = galleryUploadHref(Boolean(user));
 
   return (
     <div className="eldonia-gallery-toolbar">

@@ -9,6 +9,8 @@ import type { ArtworkWithCreator } from "@/types/database";
 type PublicGalleryFeedProps = {
   items: ArtworkWithCreator[];
   query?: string;
+  uploadHref: string;
+  uploadLabel: string;
 };
 
 function previewUrl(artwork: ArtworkWithCreator): string | null {
@@ -17,7 +19,12 @@ function previewUrl(artwork: ArtworkWithCreator): string | null {
   return null;
 }
 
-export function PublicGalleryFeed({ items, query }: PublicGalleryFeedProps) {
+export function PublicGalleryFeed({
+  items,
+  query,
+  uploadHref,
+  uploadLabel,
+}: PublicGalleryFeedProps) {
   const locale = useLocale();
   const t = useContent();
 
@@ -27,11 +34,8 @@ export function PublicGalleryFeed({ items, query }: PublicGalleryFeedProps) {
         <p className="text-eldonia-text-muted">
           {query?.trim() ? t.gallery.emptySearch : t.gallery.empty}
         </p>
-        <Link
-          href="/auth/login?redirect_to=/settings/post/artwork"
-          className="eldonia-link mt-4 inline-block text-sm font-medium"
-        >
-          {t.common.loginToPost}
+        <Link href={uploadHref} className="eldonia-link mt-4 inline-block text-sm font-medium">
+          {uploadLabel}
         </Link>
       </section>
     );

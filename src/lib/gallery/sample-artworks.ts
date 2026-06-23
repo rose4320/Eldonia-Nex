@@ -68,6 +68,10 @@ export function filterShowcaseArtworks(
   );
 }
 
+export function isShowcaseArtworkId(id: string): boolean {
+  return SHOWCASE_ARTWORKS.some((artwork) => artwork.id === id);
+}
+
 export function getShowcaseArtworkById(id: string): ArtworkWithCreator | null {
   return SHOWCASE_ARTWORKS.find((artwork) => artwork.id === id) ?? null;
 }

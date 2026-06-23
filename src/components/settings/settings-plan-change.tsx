@@ -32,7 +32,7 @@ export function SettingsPlanChange({
 
     if (selectedPlan === currentPlan && paymentStatus !== "pending") {
       router.refresh();
-      router.push("/");
+      router.push("/settings/plan");
       return;
     }
 
@@ -63,7 +63,8 @@ export function SettingsPlanChange({
       }
 
       router.refresh();
-      router.push("/");
+      router.push("/settings/plan");
+      setLoading(false);
     } catch {
       setError(copy.changeFailed);
       setLoading(false);

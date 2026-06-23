@@ -23,10 +23,12 @@ export function TranslationPanel({
   const [translated, setTranslated] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(false);
 
   async function handleTranslate() {
     setLoading(true);
+    setError(null);
     try {
       const res = await fetch("/api/nexus/translate", {
         method: "POST",
@@ -39,14 +41,14 @@ export function TranslationPanel({
         error?: string;
       };
       if (!res.ok || !data.translated) {
-        alert(data.error ?? nexus.nexusErr);
+        setError(data.error ?? nexus.nexusErr);
         return;
       }
       setTranslated(data.translated);
       setMode(data.mode ?? null);
       setShowTranslation(true);
     } catch {
-      alert(nexus.nexusErr);
+      setError(nexus.nexusErr);
     } finally {
       setLoading(false);
     }
@@ -102,6 +104,7 @@ export function TranslationPanel({
           )}
         </p>
       )}
+      {error && <p className="eldonia-alert-error mt-2 text-xs">{error}</p>}
     </div>
   );
 }

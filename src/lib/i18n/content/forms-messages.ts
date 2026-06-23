@@ -91,6 +91,7 @@ export type FormsContent = {
     appsEmpty: string;
     applicantFallback: string;
     portfolioSnapshotLabel: string;
+    updateFailed: string;
   };
   portfolio: {
     headline: string;
@@ -233,6 +234,7 @@ const FORMS_JA: FormsContent = {
     appsEmpty: "応募はまだありません。",
     applicantFallback: "応募者",
     portfolioSnapshotLabel: "Portfolio",
+    updateFailed: "更新に失敗しました。時間をおいて再度お試しください。",
   },
   portfolio: {
     headline: "見出し",
@@ -375,6 +377,7 @@ const FORMS_EN: FormsContent = {
     appsEmpty: "No applications yet.",
     applicantFallback: "Applicant",
     portfolioSnapshotLabel: "Portfolio",
+    updateFailed: "Update failed. Please try again.",
   },
   portfolio: {
     headline: "Headline",
@@ -448,6 +451,7 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
       appsEmpty: "지원 없음",
       applicantFallback: "지원자",
       portfolioSnapshotLabel: "Portfolio",
+      updateFailed: "업데이트에 실패했습니다. 잠시 후 다시 시도해 주세요.",
     },
     notifications: { ...FORMS_EN.notifications, heading: "알림", open: "열기" },
     portfolio: { ...FORMS_EN.portfolio, submit: "저장" },
@@ -476,6 +480,7 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
       appsEmpty: "暂无申请",
       applicantFallback: "申请者",
       portfolioSnapshotLabel: "Portfolio",
+      updateFailed: "更新失败，请稍后重试。",
     },
     notifications: { ...FORMS_EN.notifications, heading: "通知", open: "打开" },
     portfolio: { ...FORMS_EN.portfolio, submit: "保存" },
