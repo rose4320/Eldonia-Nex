@@ -11,7 +11,7 @@ type ArtworkCommentsPanelProps = {
   artworkId: string;
   userId: string | null;
   loginRedirect: string;
-  showForm?: boolean;
+  readOnly?: boolean;
   className?: string;
 };
 
@@ -20,7 +20,7 @@ export function ArtworkCommentsPanel({
   artworkId,
   userId,
   loginRedirect,
-  showForm = true,
+  readOnly = false,
   className = "",
 }: ArtworkCommentsPanelProps) {
   const pages = useContent().pages;
@@ -43,7 +43,7 @@ export function ArtworkCommentsPanel({
           <ArtworkCommentList comments={comments} />
         </div>
 
-        {showForm && (
+        {!readOnly && (
           <footer className="shrink-0 border-t border-eldonia-border bg-eldonia-surface-elevated p-4">
             {userId ? (
               <ArtworkCommentForm

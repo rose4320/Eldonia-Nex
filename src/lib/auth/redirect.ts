@@ -5,10 +5,21 @@ export function sanitizeRedirectTo(value: string | null | undefined): string {
   return value;
 }
 
-/** ログイン後の遷移先（設定ループ時はトップへ） */
+const AUTH_LOOP_PREFIXES = [
+  "/auth/login",
+  "/auth/signup",
+  "/auth/callback",
+  "/auth/sign-out",
+];
+
+/** ログイン後の遷移先（認証ページへのループのみ防ぐ） */
 export function resolvePostLoginPath(redirectTo?: string | null): string {
   const target = sanitizeRedirectTo(redirectTo);
-  if (target === "/settings" || target.startsWith("/settings/")) {
+  if (
+    AUTH_LOOP_PREFIXES.some(
+      (prefix) => target === prefix || target.startsWith(`${prefix}/`),
+    )
+  ) {
     return "/";
   }
   return target;

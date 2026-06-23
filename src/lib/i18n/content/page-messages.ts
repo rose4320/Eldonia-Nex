@@ -25,6 +25,7 @@ export type PageMessages = {
     commentSending: string;
     commentsEmpty: string;
     loginToCommentFull: string;
+    showcaseReadOnly: string;
   };
   events: {
     back: string;
@@ -203,6 +204,8 @@ const PAGE_JA: PageMessages = {
     commentSending: "送信中…",
     commentsEmpty: "まだコメントはありません。",
     loginToCommentFull: "ログインしてコメントする →",
+    showcaseReadOnly:
+      "公式ショーケース作品のため、いいね・ファン登録・コラボ申請・コメントは利用できません。",
   },
   events: {
     back: "← EVENTS に戻る",
@@ -382,6 +385,8 @@ const PAGE_EN: PageMessages = {
     commentSending: "Sending…",
     commentsEmpty: "No comments yet.",
     loginToCommentFull: "Log in to comment →",
+    showcaseReadOnly:
+      "Official showcase work — likes, fan signup, collab requests, and comments are not available.",
   },
   events: {
     back: "← Back to EVENTS",
@@ -560,6 +565,8 @@ const PAGE_KO: PageMessages = {
     commentSending: "전송 중…",
     commentsEmpty: "아직 댓글이 없습니다.",
     loginToCommentFull: "로그인 후 댓글 →",
+    showcaseReadOnly:
+      "공식 쇼케이스 작품입니다. 좋아요·팬 등록·콜라보·댓글은 이용할 수 없습니다.",
   },
   events: {
     ...PAGE_EN.events,
@@ -709,6 +716,7 @@ const PAGE_ZH: PageMessages = {
     commentSending: "发送中…",
     commentsEmpty: "暂无评论。",
     loginToCommentFull: "登录后评论 →",
+    showcaseReadOnly: "官方展示作品，暂不支持点赞、粉丝、协作申请与评论。",
   },
   events: {
     ...PAGE_EN.events,

@@ -22,31 +22,58 @@ export function EmployerDashboard({ jobs, applications }: EmployerDashboardProps
   const { forms } = useContent();
   const employer = forms.employer;
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function updateJobStatus(jobId: string, status: string) {
+    setError(null);
     setLoadingId(jobId);
-    await fetch("/api/works/jobs", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobId, status }),
-    });
-    setLoadingId(null);
-    router.refresh();
+
+    try {
+      const response = await fetch("/api/works/jobs", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jobId, status }),
+      });
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setError(payload.error ?? employer.updateFailed);
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError(employer.updateFailed);
+    } finally {
+      setLoadingId(null);
+    }
   }
 
   async function updateApplicationStatus(applicationId: string, status: string) {
+    setError(null);
     setLoadingId(applicationId);
-    await fetch("/api/works/applications", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ applicationId, status }),
-    });
-    setLoadingId(null);
-    router.refresh();
+
+    try {
+      const response = await fetch("/api/works/applications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId, status }),
+      });
+      const payload = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setError(payload.error ?? employer.updateFailed);
+        return;
+      }
+      router.refresh();
+    } catch {
+      setError(employer.updateFailed);
+    } finally {
+      setLoadingId(null);
+    }
   }
 
   return (
     <div className="grid gap-8 lg:grid-cols-2">
+      {error && <p className="eldonia-alert-error lg:col-span-2">{error}</p>}
+
       <section className="space-y-4">
         <h2 className="eldonia-label">{employer.jobsHeading(jobs.length)}</h2>
         {jobs.length === 0 ? (

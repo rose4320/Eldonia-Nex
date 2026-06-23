@@ -45,12 +45,12 @@ export function TranslatableContent({
           source: sourceLocale,
         }),
       });
-      const data = (await res.json()) as { text?: string; error?: string };
-      if (!res.ok || !data.text) {
+      const data = (await res.json()) as { translated?: string; error?: string };
+      if (!res.ok || !data.translated) {
         setError(data.error ?? nexus.nexusErr);
         return;
       }
-      setTranslated(data.text);
+      setTranslated(data.translated);
     } catch {
       setError(nexus.nexusErr);
     } finally {
