@@ -1,4 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  filterShowcaseArtworks,
+  getShowcaseArtworkById,
+  mergeWithShowcaseArtworks,
+} from "@/lib/gallery/sample-artworks";
 import type { ArtworkWithCreator } from "@/types/database";
 
 const ARTWORK_SELECT = `
@@ -38,10 +43,13 @@ async function queryPublicArtworks(options: {
   const { data, error } = await dbQuery;
   if (error) {
     console.error("[gallery] getPublicArtworks failed:", error.message);
-    return [];
+    return filterShowcaseArtworks(options.query).slice(0, options.limit);
   }
 
-  return (data ?? []) as ArtworkWithCreator[];
+  return mergeWithShowcaseArtworks(
+    (data ?? []) as ArtworkWithCreator[],
+    options.query,
+  ).slice(0, options.limit);
 }
 
 export async function getPublicArtworks(
@@ -57,6 +65,9 @@ export async function getTopPublicArtworks(limit = 6): Promise<ArtworkWithCreato
 export async function getPublicArtworkById(
   id: string,
 ): Promise<ArtworkWithCreator | null> {
+  const showcase = getShowcaseArtworkById(id);
+  if (showcase) return showcase;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("artworks")
