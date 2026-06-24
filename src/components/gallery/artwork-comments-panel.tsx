@@ -11,7 +11,6 @@ type ArtworkCommentsPanelProps = {
   artworkId: string;
   userId: string | null;
   loginRedirect: string;
-  readOnly?: boolean;
   className?: string;
 };
 
@@ -20,7 +19,6 @@ export function ArtworkCommentsPanel({
   artworkId,
   userId,
   loginRedirect,
-  readOnly = false,
   className = "",
 }: ArtworkCommentsPanelProps) {
   const pages = useContent().pages;
@@ -43,26 +41,24 @@ export function ArtworkCommentsPanel({
           <ArtworkCommentList comments={comments} />
         </div>
 
-        {!readOnly && (
-          <footer className="shrink-0 border-t border-eldonia-border bg-eldonia-surface-elevated p-4">
-            {userId ? (
-              <ArtworkCommentForm
-                artworkId={artworkId}
-                userId={userId}
-                variant="fixed"
-              />
-            ) : (
-              <p className="eldonia-body text-center text-sm">
-                <Link
-                  href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
-                  className="eldonia-link"
-                >
-                  {pages.gallery.loginToCommentFull}
-                </Link>
-              </p>
-            )}
-          </footer>
-        )}
+        <footer className="shrink-0 border-t border-eldonia-border bg-eldonia-surface-elevated p-4">
+          {userId ? (
+            <ArtworkCommentForm
+              artworkId={artworkId}
+              userId={userId}
+              variant="fixed"
+            />
+          ) : (
+            <p className="eldonia-body text-center text-sm">
+              <Link
+                href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
+                className="eldonia-link"
+              >
+                {pages.gallery.loginToCommentFull}
+              </Link>
+            </p>
+          )}
+        </footer>
       </div>
     </aside>
   );

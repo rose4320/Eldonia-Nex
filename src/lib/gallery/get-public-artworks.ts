@@ -65,9 +65,6 @@ export async function getTopPublicArtworks(limit = 6): Promise<ArtworkWithCreato
 export async function getPublicArtworkById(
   id: string,
 ): Promise<ArtworkWithCreator | null> {
-  const showcase = getShowcaseArtworkById(id);
-  if (showcase) return showcase;
-
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("artworks")
@@ -75,10 +72,13 @@ export async function getPublicArtworkById(
     .eq("id", id)
     .maybeSingle();
 
-  if (error) {
-    console.error("[gallery] getPublicArtworkById failed:", error.message);
-    return null;
+  if (!error && data) {
+    return data as ArtworkWithCreator;
   }
 
-  return (data as ArtworkWithCreator | null) ?? null;
+  if (error) {
+    console.error("[gallery] getPublicArtworkById failed:", error.message);
+  }
+
+  return getShowcaseArtworkById(id);
 }

@@ -68,10 +68,6 @@ export function filterShowcaseArtworks(
   );
 }
 
-export function isShowcaseArtworkId(id: string): boolean {
-  return SHOWCASE_ARTWORKS.some((artwork) => artwork.id === id);
-}
-
 export function getShowcaseArtworkById(id: string): ArtworkWithCreator | null {
   return SHOWCASE_ARTWORKS.find((artwork) => artwork.id === id) ?? null;
 }
@@ -82,6 +78,10 @@ export function mergeWithShowcaseArtworks(
 ): ArtworkWithCreator[] {
   const showcase = filterShowcaseArtworks(query);
   const showcaseIds = new Set(showcase.map((artwork) => artwork.id));
-  const userArtworks = dbArtworks.filter((artwork) => !showcaseIds.has(artwork.id));
-  return [...showcase, ...userArtworks];
+  const fromDb = dbArtworks.filter((artwork) => showcaseIds.has(artwork.id));
+  const otherDb = dbArtworks.filter((artwork) => !showcaseIds.has(artwork.id));
+  const missingShowcase = showcase.filter(
+    (artwork) => !fromDb.some((row) => row.id === artwork.id),
+  );
+  return [...fromDb, ...missingShowcase, ...otherDb];
 }

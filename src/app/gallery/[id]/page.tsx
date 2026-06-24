@@ -15,7 +15,6 @@ import {
   getArtworkEngagement,
 } from "@/lib/gallery/get-artwork-engagement";
 import { getPublicArtworkById } from "@/lib/gallery/get-public-artworks";
-import { isShowcaseArtworkId } from "@/lib/gallery/sample-artworks";
 import { createClient } from "@/lib/supabase/server";
 import type { ArtworkWithCreator } from "@/types/database";
 
@@ -62,7 +61,6 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
   const creatorName =
     item.profiles?.display_name ?? item.profiles?.username ?? pages.creatorFallback;
   const isOwner = userId === item.creator_id;
-  const isShowcase = isShowcaseArtworkId(id);
 
   const [comments, engagement] = await Promise.all([
     withTimeout(getArtworkComments(id), []),
@@ -82,7 +80,7 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
       <SiteHeader />
       <GalleryToolbar />
 
-      <main className={`eldonia-main ${!userId && !isShowcase ? "pb-36" : "pb-8"} lg:pb-8`}>
+      <main className={`eldonia-main ${!userId ? "pb-36" : "pb-8"} lg:pb-8`}>
         <Link href="/gallery" className="eldonia-link text-sm">
           {pages.gallery.backToList}
         </Link>
@@ -165,33 +163,23 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                   </ul>
                 )}
 
-                {isShowcase && (
-                  <p className="rounded border border-eldonia-border bg-eldonia-surface-elevated px-4 py-3 text-sm text-eldonia-text-muted">
-                    {pages.gallery.showcaseReadOnly}
-                  </p>
-                )}
-
                 <div className="space-y-3 border-t border-eldonia-border pt-4">
-                  {!isShowcase && (
-                    <>
-                      <ArtworkLikeButtons
-                        artworkId={id}
-                        userId={userId}
-                        isOwner={isOwner}
-                        engagement={engagement}
-                        loginRedirect={loginRedirect}
-                      />
-                      <ArtworkEngagementActions
-                        artworkId={id}
-                        creatorId={item.creator_id}
-                        creatorName={creatorName}
-                        userId={userId}
-                        isOwner={isOwner}
-                        engagement={engagement}
-                        loginRedirect={loginRedirect}
-                      />
-                    </>
-                  )}
+                  <ArtworkLikeButtons
+                    artworkId={id}
+                    userId={userId}
+                    isOwner={isOwner}
+                    engagement={engagement}
+                    loginRedirect={loginRedirect}
+                  />
+                  <ArtworkEngagementActions
+                    artworkId={id}
+                    creatorId={item.creator_id}
+                    creatorName={creatorName}
+                    userId={userId}
+                    isOwner={isOwner}
+                    engagement={engagement}
+                    loginRedirect={loginRedirect}
+                  />
                 </div>
               </div>
             </article>
@@ -202,7 +190,6 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                 artworkId={id}
                 userId={userId}
                 loginRedirect={loginRedirect}
-                readOnly={isShowcase}
                 className="max-h-80"
               />
             </div>
@@ -213,12 +200,11 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
             artworkId={id}
             userId={userId}
             loginRedirect={loginRedirect}
-            readOnly={isShowcase}
             className="hidden lg:sticky lg:top-20 lg:flex lg:h-[calc(100dvh-6rem)]"
           />
         </div>
 
-        {!userId && !isShowcase && (
+        {!userId && (
           <div className="fixed inset-x-0 bottom-0 z-40 border-t border-eldonia-border bg-eldonia-surface-elevated p-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:hidden">
             <p className="eldonia-body text-center text-sm">
               <Link
