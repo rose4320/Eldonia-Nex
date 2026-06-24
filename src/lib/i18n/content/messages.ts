@@ -177,6 +177,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       confirmEmailSent: "確認メールを送信しました。受信トレイをご確認ください。",
       signupConfirmEmail:
         "確認メールを送信しました。メール内のリンクから登録を完了してください。",
+      authCallbackFailed:
+        "メール内のリンクからログインできませんでした。リンクの有効期限が切れている可能性があります。再度ログインするか、新規登録からやり直してください。",
     },
     settings: {
       heading: "ユーザー設定",
@@ -305,6 +307,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       confirmEmailSent: "Confirmation email sent. Check your inbox.",
       signupConfirmEmail:
         "We sent a confirmation email. Complete signup using the link inside.",
+      authCallbackFailed:
+        "We could not sign you in from the email link. It may have expired. Try logging in again or restart signup.",
     },
     settings: {
       heading: "User settings",
@@ -432,6 +436,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       hasAccount: "이미 계정이 있으신가요?",
       confirmEmailSent: "확인 메일을 보냈습니다. 받은편지함을 확인하세요.",
       signupConfirmEmail: "확인 메일을 보냈습니다. 메일의 링크로 가입을 완료하세요.",
+      authCallbackFailed:
+        "메일 링크로 로그인하지 못했습니다. 링크가 만료되었을 수 있습니다. 다시 로그인하거나 가입을 처음부터 진행해 주세요.",
     },
     settings: {
       heading: "사용자 설정",
@@ -559,6 +565,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       hasAccount: "已有账户？",
       confirmEmailSent: "已发送确认邮件，请查收。",
       signupConfirmEmail: "已发送确认邮件，请点击邮件中的链接完成注册。",
+      authCallbackFailed:
+        "无法通过邮件链接登录。链接可能已过期。请重新登录或从头开始注册。",
     },
     settings: {
       heading: "用户设置",

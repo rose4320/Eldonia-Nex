@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eldonia Nex</title>
+</head>
+<body style="margin:0;padding:0;background:#0a0a0a;color:#e8e0d0;font-family:Georgia,'Times New Roman',serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0a0a0a;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#121212;border:1px solid #3d3520;border-radius:8px;padding:32px 28px;">
+          <tr>
+            <td>
+              <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#c9a227;">Eldonia Nex</p>
+              {{if eq .Data.locale "ja"}}
+              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">メールアドレスの確認</h1>
+              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}{{.Data.display_name}} 様、{{else}}{{end}}Eldonia Nex へのご登録ありがとうございます。下のボタンからメールアドレスを確認し、登録を完了してください。</p>
+              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">登録を完了する</a></p>
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">ボタンが開けない場合は、次の URL をブラウザに貼り付けてください。<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              {{else if eq .Data.locale "ko"}}
+              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">이메일 확인</h1>
+              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}{{.Data.display_name}}님, {{else}}{{end}}Eldonia Nex 가입을 환영합니다. 아래 버튼을 눌러 이메일을 확인하고 가입을 완료해 주세요.</p>
+              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">가입 완료하기</a></p>
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">버튼이 작동하지 않으면 아래 URL을 브라우저에 붙여넣으세요.<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              {{else if eq .Data.locale "zh-CN"}}
+              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">确认电子邮件</h1>
+              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}{{.Data.display_name}}，{{else}}{{end}}欢迎加入 Eldonia Nex。请点击下方按钮确认邮箱并完成注册。</p>
+              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">完成注册</a></p>
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">若按钮无法打开，请将以下链接复制到浏览器：<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              {{else}}
+              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">Confirm your email</h1>
+              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}Hi {{.Data.display_name}}, {{else}}{{end}}thanks for joining Eldonia Nex. Click the button below to verify your email and finish signup.</p>
+              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">Complete signup</a></p>
+              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">If the button does not work, copy and paste this URL into your browser:<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              {{end}}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

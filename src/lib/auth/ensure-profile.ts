@@ -1,6 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
+import { parseUiLocale } from "@/lib/i18n/locale";
 import type { Profile } from "@/types/database";
 import type { User } from "@supabase/supabase-js";
+
+function profileLocale(user: User): string {
+  return parseUiLocale(user.user_metadata?.locale as string | undefined);
+}
 
 function buildFallbackProfile(user: User): Profile {
   const now = new Date().toISOString();
@@ -13,7 +18,7 @@ function buildFallbackProfile(user: User): Profile {
       "ユーザー",
     avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
     bio: null,
-    locale: "ja",
+    locale: profileLocale(user),
     is_creator: false,
     subscription_plan: "free",
     created_at: now,
@@ -45,6 +50,7 @@ export async function ensureProfile(user: User): Promise<Profile> {
     .insert({
       id: user.id,
       display_name: displayName,
+      locale: profileLocale(user),
     })
     .select("*")
     .single();
