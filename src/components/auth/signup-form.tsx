@@ -7,6 +7,8 @@ import { useContent } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
+import { buildAuthCallbackUrl } from "@/lib/auth/site-url";
+import { localeFromCountry } from "@/lib/i18n/country-locale";
 import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
   mapAuthError,
@@ -180,12 +182,15 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     email: string,
   ) {
     const username = draft.username.trim().toLowerCase() || null;
+    const country = draft.country.trim().toUpperCase() || "JP";
+    const locale = localeFromCountry(country);
     const { error: profileError } = await supabase.from("profiles").upsert(
       {
         id: currentUserId,
         username,
         display_name: draft.displayName.trim() || email.split("@")[0],
         is_creator: draft.isCreator,
+        locale,
       },
       { onConflict: "id" },
     );
@@ -200,7 +205,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
       {
         user_id: currentUserId,
         legal_name: draft.legalName.trim() || null,
-        country: draft.country.trim() || "JP",
+        country,
         phone: draft.phone.trim() || null,
       },
       { onConflict: "user_id" },
@@ -231,6 +236,9 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
         return;
       }
 
+      const country = draft.country.trim().toUpperCase() || "JP";
+      const locale = localeFromCountry(country);
+
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
@@ -239,8 +247,10 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
             display_name: draft.displayName.trim(),
             username: username || null,
             referral_code: referralCode,
+            country,
+            locale,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback?redirect_to=${encodeURIComponent(redirectTo)}`,
+          emailRedirectTo: buildAuthCallbackUrl(redirectTo, window.location.origin, locale),
         },
       });
 

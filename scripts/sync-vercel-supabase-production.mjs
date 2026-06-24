@@ -117,6 +117,7 @@ if (!publishable) {
 
 console.log("Updating Vercel production env...");
 upsertVercelEnv("NEXT_PUBLIC_SUPABASE_URL", url);
+upsertVercelEnv("NEXT_PUBLIC_SITE_URL", "https://eldonia-nex.com");
 upsertVercelEnv("SUPABASE_SECRET_KEY", secret);
 upsertVercelEnv("SUPABASE_SERVICE_ROLE_KEY", secret);
 

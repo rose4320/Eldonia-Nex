@@ -13,14 +13,19 @@ import {
 type LoginFormProps = {
   redirectTo: string;
   supabaseConfigured: boolean;
+  initialError?: string | null;
 };
 
-export function LoginForm({ redirectTo, supabaseConfigured }: LoginFormProps) {
+export function LoginForm({
+  redirectTo,
+  supabaseConfigured,
+  initialError = null,
+}: LoginFormProps) {
   const t = useContent();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(initialError);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {

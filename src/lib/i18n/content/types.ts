@@ -176,6 +176,7 @@ export type ContentCatalog = {
     hasAccount: string;
     confirmEmailSent: string;
     signupConfirmEmail: string;
+    authCallbackFailed: string;
   };
   settings: {
     heading: string;
