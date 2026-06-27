@@ -1,11 +1,43 @@
 import type { UiLocale } from "@/lib/i18n/locale";
 import type { HomeV2ModuleKey } from "@/lib/design/home-v2-assets";
 
+export type { HomeV2ModuleKey };
+
 export type HomeV2QuestStepKey = "participate" | "challenge" | "evaluated" | "rewards";
 export type HomeV2MetricKey = "exp" | "credit" | "revenue";
 export type HomeV2StatKey = "creators" | "quests" | "returns";
 
+export type HomeV2CirculationStepKey =
+  | "publish"
+  | "fans"
+  | "quality"
+  | "create"
+  | "expand"
+  | "loop";
+
+export type HomeV2CirculationStep = {
+  key: HomeV2CirculationStepKey;
+  title: string;
+  body: string;
+  modules: HomeV2ModuleKey[];
+};
+
+export type HomeV2SeoModuleDetail = {
+  key: HomeV2ModuleKey;
+  heading: string;
+  body: string;
+  linkLabel: string;
+};
+
 export type HomeV2Content = {
+  seo: {
+    metaTitle: string;
+    metaDescription: string;
+    platformHeading: string;
+    platformBody: string;
+    modulesHeading: string;
+    moduleDetails: HomeV2SeoModuleDetail[];
+  };
   hero: {
     title: string;
     subtitle: string;
@@ -22,6 +54,13 @@ export type HomeV2Content = {
   modules: {
     eyebrow: string;
     title: string;
+    circulation: {
+      eyebrow: string;
+      title: string;
+      lead: string;
+      loopLabel: string;
+      steps: HomeV2CirculationStep[];
+    };
     items: { key: HomeV2ModuleKey; name: string; body: string; link: string }[];
   };
   featuredWorks: {
@@ -57,13 +96,67 @@ export type HomeV2Content = {
 };
 
 const HOME_V2_JA: HomeV2Content = {
+  seo: {
+    metaTitle:
+      "Eldonia-Nex｜イラスト投稿・Quest・同人グッズ販売の総合プラットフォーム",
+    metaDescription:
+      "イラスト・VTuber・ゲームクリエイター向けのクリエイターコミュニティ＆ポートフォリオサイト。作品投稿、Quest挑戦、同人グッズ販売、VTuberイベント、コミュニティ交流まで、創作活動をひとつのNexusで。",
+    platformHeading: "イラスト・VTuber・ゲームクリエイターのための総合プラットフォーム",
+    platformBody:
+      "Eldonia-Nex（エルドニア・ネックス）は、イラスト投稿サイトとしての作品公開、Questによる挑戦とEXP獲得、ポートフォリオ作成、同人グッズ販売、VTuberイベントの開催、クリエイターコミュニティでの交流をひとつにつなぐ総合プラットフォームです。AI作品にも対応し、タグ検索で作品を発見できます。作品を投稿し、Questに参加し、Shopで販売し、Eventsでファンと出会う——創作活動の循環を、ブランド性を保ちながら検索エンジンにも伝わる形で提供します。",
+    modulesHeading: "6つのモジュールで創作活動を支える",
+    moduleDetails: [
+      {
+        key: "gallery",
+        heading: "Galleryとは",
+        body:
+          "Galleryは、Eldonia-Nexのイラスト投稿サイトです。イラスト・漫画・3D・AI作品などを公開でき、タグ検索で作品を見つけられます。ポートフォリオとして作品を蓄積し、閲覧数や評価を通じてクリエイターの信用を可視化します。ファンとの接点にもなり、ShopやEventsへの導線にもつながります。",
+        linkLabel: "Galleryで作品を見る",
+      },
+      {
+        key: "works",
+        heading: "Worksとは",
+        body:
+          "Worksは、ポートフォリオ管理とQuest参加実績の拠点です。Galleryの作品、Questでの挑戦記録、協業・受賞履歴を一覧し、クリエイターとしての信用を可視化します。",
+        linkLabel: "Worksでポートフォリオを見る",
+      },
+      {
+        key: "shop",
+        heading: "Shopとは",
+        body:
+          "Shopは、同人グッズ販売やデジタル素材の販売に対応するECモジュールです。クリエイターが作品を商品化し、ファンへ直接届けられます。グッズ、DLデータ、限定商品など、創作活動の収益化を支援します。Galleryで公開した作品からShopへの導線も自然につながります。",
+        linkLabel: "Shopで商品を見る",
+      },
+      {
+        key: "events",
+        heading: "Eventsとは",
+        body:
+          "Eventsは、VTuberイベント、ライブ配信、ワークショップ、展示会などの開催・参加を支援するモジュールです。オンライン・オフラインのイベント情報を一覧し、チケット申込や告知にも対応します。ファンとのリアルタイムな交流を生み出し、CommunityやGalleryと連携した企画も可能です。",
+        linkLabel: "Eventsを見る",
+      },
+      {
+        key: "community",
+        heading: "Communityとは",
+        body:
+          "Communityは、クリエイターコミュニティとしてスレッド形式の掲示板で交流できるモジュールです。作品感想、制作相談、Quest情報の共有など、創作者同士の対話に最適です。Galleryの作品やEventsの告知とも自然につながり、サイト内の回遊性も高めます。",
+        linkLabel: "Communityに参加する",
+      },
+      {
+        key: "quest",
+        heading: "Questとは",
+        body:
+          "Questは、管理者がユーザーへ投げかける挑戦の単位です。毎日ログインなどの簡単なQuestでEXPを獲得したり、企業案件では「新製品のPR動画を作れ」といった創作課題に挑戦できます。優秀作品には現金・PC・商品などのプレゼントが贈られ、参加者全員にEXPが付与され、ポートフォリオにも実績が記録されます。",
+        linkLabel: "Questに参加する",
+      },
+    ],
+  },
   hero: {
-    title: "Quest. Create. Earn.",
-    subtitle: "冒険が、創造を動かし、未来をつくる。",
+    title: "Eldonia-Nex",
+    subtitle: "イラスト・VTuber・ゲームクリエイターのための総合プラットフォーム",
     lead:
-      "Eldonia-Nex は、Quest・作品・コマース・コミュニティがひとつの循環になる創作経済圏です。経験値と信用が可視化され、挑戦が収益へつながる Nexus へ。",
+      "イラスト投稿サイト、Quest挑戦、ポートフォリオ作成、同人グッズ販売、VTuberイベント、クリエイターコミュニティ——作品・EXP・コマースがひとつの循環になる創作経済圏です。",
     ctaPrimary: "無料で始める",
-    ctaSecondary: "Questを探す",
+    ctaSecondary: "Questに参加する",
     stats: [
       { key: "creators", label: "Creators" },
       { key: "quests", label: "Quests in progress" },
@@ -73,55 +166,100 @@ const HOME_V2_JA: HomeV2Content = {
   questGuide: {
     eyebrow: "Questとは？",
     steps: [
-      { key: "participate", title: "参加する", body: "Quest に応募し、挑戦を始める" },
-      { key: "challenge", title: "挑戦する", body: "作品・実績・協力で成果を出す" },
-      { key: "evaluated", title: "評価される", body: "EXP・称号・信用が可視化される" },
-      { key: "rewards", title: "報酬を得る", body: "還元・依頼・販売へつながる" },
+      { key: "participate", title: "参加する", body: "管理者が公開したQuestを選び、条件を確認して参加する" },
+      { key: "challenge", title: "挑戦する", body: "ログインや作品制作など、Questの課題に取り組む" },
+      { key: "evaluated", title: "評価される", body: "EXPが付与され、挑戦記録がポートフォリオに残る" },
+      { key: "rewards", title: "報酬を得る", body: "優秀作品は現金・PC・商品など。全参加者にEXP" },
     ],
     metrics: [
-      { key: "exp", label: "EXP", body: "行動が経験値として蓄積" },
-      { key: "credit", label: "信用", body: "ポートフォリオと称号が信頼に" },
-      { key: "revenue", label: "収益", body: "創作活動が還元ループへ" },
+      { key: "exp", label: "EXP", body: "Quest参加・ログイン等が経験値に" },
+      { key: "credit", label: "信用", body: "Quest実績がポートフォリオの信頼に" },
+      { key: "revenue", label: "特典", body: "企業案件Questで現金・商品・PCなど" },
     ],
   },
   modules: {
     eyebrow: "Creator Modules",
     title: "創作経済圏の6つの扉",
+    circulation: {
+      eyebrow: "Creator Circulation",
+      title: "創作経済圏の巡回",
+      lead:
+        "作品にファンが付き、クオリティと評価が育ち、新たな作品とスピンオフが生まれる——6つの扉はこの循環を止めません。",
+      loopLabel: "循環",
+      steps: [
+        {
+          key: "publish",
+          title: "作品を公開",
+          body: "Galleryで作品を届け、最初の露出と反応を得る",
+          modules: ["gallery"],
+        },
+        {
+          key: "fans",
+          title: "ファンが集まる",
+          body: "CommunityとEventsで応援が集まり、作品に物語が付いていく",
+          modules: ["community", "events"],
+        },
+        {
+          key: "quality",
+          title: "評価が育つ",
+          body: "いいね・閲覧・EXPでクオリティと信用が可視化され、次の依頼への信頼になる",
+          modules: ["gallery", "works"],
+        },
+        {
+          key: "create",
+          title: "新たな創作へ",
+          body: "Quest参加でEXPと実績が積み、企業案件では賞品付きの挑戦にも",
+          modules: ["quest", "works"],
+        },
+        {
+          key: "expand",
+          title: "世界が広がる",
+          body: "Shopのグッズ化やEventsのスピンオフ企画で、作品の幅とファン層が拡張する",
+          modules: ["shop", "events"],
+        },
+        {
+          key: "loop",
+          title: "再び循環する",
+          body: "還元・信用・収益が次の扉へ還流し、創作経済圏は止まらない",
+          modules: ["gallery", "shop", "community"],
+        },
+      ],
+    },
     items: [
       {
         key: "quest",
         name: "Quest",
-        body: "求人・協業・制作依頼を Quest として発見・応募",
-        link: "Questを探す →",
+        body: "管理者発信の挑戦。ログインでEXP、企業案件では賞品付き創作Quest",
+        link: "Questに参加 →",
       },
       {
         key: "gallery",
         name: "Gallery",
-        body: "作品を公開し、ファンと評価を獲得",
+        body: "イラスト投稿サイト。作品公開・タグ検索・ポートフォリオ作成",
         link: "Galleryを見る →",
       },
       {
         key: "shop",
         name: "Shop",
-        body: "デジタル・物理商品を出品・販売",
+        body: "同人グッズ販売・デジタル素材の出品・販売",
         link: "Shopへ →",
       },
       {
         key: "events",
         name: "Events",
-        body: "ライブ・WS・展示などイベントを開催",
+        body: "VTuberイベント・ライブ・WS・展示の開催と参加",
         link: "Eventsへ →",
       },
       {
         key: "community",
         name: "Community",
-        body: "スレッドと交流でコミュニティを育てる",
+        body: "クリエイターコミュニティ。スレッドで交流・相談",
         link: "Communityへ →",
       },
       {
         key: "works",
         name: "Works",
-        body: "ポートフォリオと Quest 管理の拠点",
+        body: "ポートフォリオ管理・Quest参加実績の拠点",
         link: "Worksへ →",
       },
     ],
@@ -137,14 +275,14 @@ const HOME_V2_JA: HomeV2Content = {
   openQuests: {
     eyebrow: "Guild Quest Board",
     title: "公開中の Quest",
-    empty: "公開中のQuestは準備中です。WORKSで最初の募集を作成できます。",
+    empty: "公開中のQuestは準備中です。管理者が新しい挑戦を公開するまでお待ちください。",
     viewAll: "すべて見る →",
   },
   investor: {
     eyebrow: "Investors & Supporters",
     title: "初期支援者・共創パートナーを募集しています",
     lead:
-      "Eldonia-Nex は広告依存ではなく、クリエイターの成功に連動する成長モデルです。初期支援にはシリアル番号入りピンバッジを贈呈します。",
+      "Eldonia-Nex は広告依存ではなく、クリエイターの成功に連動する成長モデルです。1,000万人参加からGPU・フランチャイズ・UBIまで、長期展望を描いています。",
     perks: [
       { title: "初期参加", body: "ローンチ前から Nexus の設計に関与" },
       { title: "限定コミュニティ", body: "支援者向けディスカッションへ招待" },
@@ -174,13 +312,67 @@ const HOME_V2_JA: HomeV2Content = {
 };
 
 const HOME_V2_EN: HomeV2Content = {
+  seo: {
+    metaTitle:
+      "Eldonia-Nex | Illustration Portfolio, Creator Jobs & Fan Goods Marketplace",
+    metaDescription:
+      "A creator community and portfolio platform for illustrators, VTubers, and game creators. Publish art, join Quests, sell fan goods, host VTuber events, and grow your community in one Nexus.",
+    platformHeading: "An all-in-one platform for illustrators, VTubers, and game creators",
+    platformBody:
+      "Eldonia-Nex connects art publishing, Quest challenges and EXP, portfolio building, fan goods sales, VTuber events, and community discussion in one place. AI-assisted works are supported, and tag search helps audiences discover new art. Post work, join Quests, sell in Shop, meet fans at Events — a creator economy loop with strong brand identity and clear service value for search engines.",
+    modulesHeading: "Six modules that support creative work",
+    moduleDetails: [
+      {
+        key: "gallery",
+        heading: "What is Gallery?",
+        body:
+          "Gallery is Eldonia-Nex's illustration publishing hub. Share illustrations, comics, 3D art, and AI-assisted works, then discover art through tag search. Build a portfolio, gain visibility through views and engagement, and connect with fans while linking naturally to Shop and Events.",
+        linkLabel: "Browse Gallery",
+      },
+      {
+        key: "works",
+        heading: "What is Works?",
+        body:
+          "Works is your portfolio hub and Quest history. View Gallery pieces, Quest completions, and awards in one place to show creator credibility.",
+        linkLabel: "View portfolio in Works",
+      },
+      {
+        key: "shop",
+        heading: "What is Shop?",
+        body:
+          "Shop supports fan goods and digital product sales. Creators can turn work into products and deliver them directly to fans — physical goods, downloads, and limited items included. It links naturally from published Gallery work.",
+        linkLabel: "Visit Shop",
+      },
+      {
+        key: "events",
+        heading: "What is Events?",
+        body:
+          "Events supports VTuber streams, workshops, exhibitions, and other online or offline gatherings. List events, handle ticket requests, and build real-time fan engagement alongside Community and Gallery.",
+        linkLabel: "Browse Events",
+      },
+      {
+        key: "community",
+        heading: "What is Community?",
+        body:
+          "Community is a thread-based creator forum for feedback, production advice, and Quest discussion. It connects naturally to Gallery works and Events announcements while improving site navigation.",
+        linkLabel: "Join Community",
+      },
+      {
+        key: "quest",
+        heading: "What is a Quest?",
+        body:
+          "A Quest is a challenge published by admins for users. Simple Quests like daily login grant EXP; brand Quests might ask you to create a product promo video. Top entries win cash, PCs, or prizes — all participants earn EXP and portfolio records.",
+        linkLabel: "Join a Quest",
+      },
+    ],
+  },
   hero: {
-    title: "Quest. Create. Earn.",
-    subtitle: "Adventure drives creation — and creation shapes the future.",
+    title: "Eldonia-Nex",
+    subtitle: "An all-in-one platform for illustrators, VTubers, and game creators",
     lead:
-      "Eldonia-Nex is a creator economy where quests, works, commerce, and community form one loop. EXP and trust become visible, and every challenge can lead to revenue.",
+      "Illustration publishing, Quest challenges, portfolio building, fan goods sales, VTuber events, and community — work, EXP, and commerce in one creator economy loop.",
     ctaPrimary: "Start for free",
-    ctaSecondary: "Find Quests",
+    ctaSecondary: "Join Quests",
     stats: [
       { key: "creators", label: "Creators" },
       { key: "quests", label: "Quests in progress" },
@@ -190,26 +382,71 @@ const HOME_V2_EN: HomeV2Content = {
   questGuide: {
     eyebrow: "What is a Quest?",
     steps: [
-      { key: "participate", title: "Participate", body: "Apply to a Quest and begin the challenge" },
-      { key: "challenge", title: "Challenge", body: "Deliver work, results, and collaboration" },
-      { key: "evaluated", title: "Get evaluated", body: "EXP, titles, and trust become visible" },
-      { key: "rewards", title: "Earn rewards", body: "Connect to returns, commissions, and sales" },
+      { key: "participate", title: "Participate", body: "Pick an admin-published Quest and join when you meet the rules" },
+      { key: "challenge", title: "Challenge", body: "Complete the task — login streaks, creative submissions, and more" },
+      { key: "evaluated", title: "Get evaluated", body: "Earn EXP; your Quest record is added to your portfolio" },
+      { key: "rewards", title: "Earn rewards", body: "Top entries win cash, PCs, or products — all participants get EXP" },
     ],
     metrics: [
-      { key: "exp", label: "EXP", body: "Actions accumulate as experience" },
-      { key: "credit", label: "Trust", body: "Portfolio and titles build credibility" },
-      { key: "revenue", label: "Revenue", body: "Creative activity feeds the return loop" },
+      { key: "exp", label: "EXP", body: "Quest participation and logins build experience" },
+      { key: "credit", label: "Trust", body: "Quest history strengthens your portfolio" },
+      { key: "revenue", label: "Prizes", body: "Brand Quests offer cash, goods, and hardware" },
     ],
   },
   modules: {
     eyebrow: "Creator Modules",
     title: "Six doors into the creator economy",
+    circulation: {
+      eyebrow: "Creator Circulation",
+      title: "The creator economy circuit",
+      lead:
+        "Fans gather around work, quality and ratings grow, new pieces and spin-offs emerge — the six doors keep the loop moving.",
+      loopLabel: "Loop",
+      steps: [
+        {
+          key: "publish",
+          title: "Publish work",
+          body: "Share through Gallery and earn first exposure and feedback",
+          modules: ["gallery"],
+        },
+        {
+          key: "fans",
+          title: "Fans gather",
+          body: "Community and Events build support and story around the work",
+          modules: ["community", "events"],
+        },
+        {
+          key: "quality",
+          title: "Ratings rise",
+          body: "Likes, views, and EXP make quality and trust visible for the next commission",
+          modules: ["gallery", "works"],
+        },
+        {
+          key: "create",
+          title: "Create anew",
+          body: "Join Quests for EXP and records; brand Quests add prize-winning challenges",
+          modules: ["quest", "works"],
+        },
+        {
+          key: "expand",
+          title: "Expand the world",
+          body: "Shop goods and Event spin-offs widen the universe and fan base",
+          modules: ["shop", "events"],
+        },
+        {
+          key: "loop",
+          title: "Circulate again",
+          body: "Returns, trust, and revenue flow back into the next door — the loop never stops",
+          modules: ["gallery", "shop", "community"],
+        },
+      ],
+    },
     items: [
       {
         key: "quest",
         name: "Quest",
-        body: "Discover and apply to jobs, collaborations, and commissions",
-        link: "Find Quests →",
+        body: "Admin-published challenges — daily login EXP and brand Quests with prizes",
+        link: "Join Quests →",
       },
       {
         key: "gallery",
@@ -238,7 +475,7 @@ const HOME_V2_EN: HomeV2Content = {
       {
         key: "works",
         name: "Works",
-        body: "Your hub for portfolio and Quest management",
+        body: "Portfolio hub and Quest participation history",
         link: "Go to Works →",
       },
     ],
@@ -254,14 +491,14 @@ const HOME_V2_EN: HomeV2Content = {
   openQuests: {
     eyebrow: "Guild Quest Board",
     title: "Open Quests",
-    empty: "No open quests yet. Create the first listing in WORKS.",
+    empty: "No open Quests yet. New challenges will appear when admins publish them.",
     viewAll: "View all →",
   },
   investor: {
     eyebrow: "Investors & Supporters",
     title: "We welcome early supporters and co-build partners",
     lead:
-      "Eldonia-Nex grows with creator success, not ad dependence. Early supporters receive a serial-numbered pin badge.",
+      "Eldonia-Nex grows with creator success, not ad dependence. Our horizon spans 10M participants, GPU rental, franchising, and super basic income.",
     perks: [
       { title: "Early participation", body: "Shape the Nexus before launch" },
       { title: "Private community", body: "Join supporter-only discussions" },
@@ -292,6 +529,17 @@ const HOME_V2_EN: HomeV2Content = {
 
 const HOME_V2_KO: HomeV2Content = {
   ...HOME_V2_EN,
+  seo: {
+    ...HOME_V2_EN.seo,
+    metaTitle:
+      "Eldonia-Nex | 일러스트 게시·크리에이터 채용·동인 굿즈 판매 통합 플랫폼",
+    metaDescription:
+      "일러스트·VTuber·게임 크리에이터를 위한 커뮤니티 및 포트폴리오 사이트. 작품 게시, 채용 지원, 동인 굿즈 판매, VTuber 이벤트, 커뮤니티 교류를 하나의 Nexus에서.",
+    platformHeading: "일러스트·VTuber·게임 크리에이터를 위한 통합 플랫폼",
+    platformBody:
+      "Eldonia-Nex는 일러스트 게시, 크리에이터 채용, 포트폴리오 작성, 동인 굿즈 판매, VTuber 이벤트, 커뮤니티 교류를 하나로 연결하는 통합 플랫폼입니다. AI 작품도 지원하며, 태그 검색으로 작품을 발견할 수 있습니다.",
+    modulesHeading: "창작 활동을 지원하는 6개 모듈",
+  },
   hero: {
     ...HOME_V2_EN.hero,
     subtitle: "모험이 창작을 움직이고, 미래를 만듭니다.",
@@ -303,20 +551,65 @@ const HOME_V2_KO: HomeV2Content = {
   questGuide: {
     eyebrow: "Quest란?",
     steps: [
-      { key: "participate", title: "참여", body: "Quest에 지원하고 도전을 시작" },
-      { key: "challenge", title: "도전", body: "작품·성과·협업으로 결과를 만듦" },
-      { key: "evaluated", title: "평가", body: "EXP·칭호·신뢰가 가시화" },
-      { key: "rewards", title: "보상", body: "환원·의뢰·판매로 연결" },
+      { key: "participate", title: "참여", body: "관리자가 공개한 Quest를 선택하고 조건을 확인해 참여" },
+      { key: "challenge", title: "도전", body: "로그인·작품 제작 등 Quest 과제에 도전" },
+      { key: "evaluated", title: "평가", body: "EXP가 부여되고 포트폴리오에 기록" },
+      { key: "rewards", title: "보상", body: "우수작은 현금·PC·상품. 전원 EXP" },
     ],
     metrics: [
-      { key: "exp", label: "EXP", body: "행동이 경험치로 축적" },
-      { key: "credit", label: "신뢰", body: "포트폴리오와 칭호가 신뢰로" },
-      { key: "revenue", label: "수익", body: "창작 활동이 환원 루프로" },
+      { key: "exp", label: "EXP", body: "Quest 참여·로그인이 경험치로" },
+      { key: "credit", label: "신뢰", body: "Quest 실적이 포트폴리오 신뢰로" },
+      { key: "revenue", label: "특전", body: "기업 Quest에서 현금·상품·PC 등" },
     ],
   },
   modules: {
     ...HOME_V2_EN.modules,
     title: "창작 경제권의 6개의 문",
+    circulation: {
+      ...HOME_V2_EN.modules.circulation,
+      title: "창작 경제권 순환",
+      lead:
+        "작품에 팬이 모이고, 품질과 평가가 자라며, 새 작품과 스핀오프가 탄생합니다. 여섯 문은 이 순환을 멈추지 않습니다.",
+      loopLabel: "순환",
+      steps: [
+        {
+          key: "publish",
+          title: "작품 공개",
+          body: "Gallery에서 작품을 공개하고 첫 반응을 얻습니다",
+          modules: ["gallery"],
+        },
+        {
+          key: "fans",
+          title: "팬이 모인다",
+          body: "Community와 Events에서 응원이 모이고 작품에 이야기가 붙습니다",
+          modules: ["community", "events"],
+        },
+        {
+          key: "quality",
+          title: "평가가 자란다",
+          body: "좋아요·조회·EXP로 품질과 신뢰가 다음 의뢰로 이어집니다",
+          modules: ["gallery", "works"],
+        },
+        {
+          key: "create",
+          title: "새 창작으로",
+          body: "Quest 참여로 EXP와 실적을 쌓고, 기업 Quest에서는 상품도",
+          modules: ["quest", "works"],
+        },
+        {
+          key: "expand",
+          title: "세계가 넓어진다",
+          body: "Shop 굿즈와 Events 스핀오프로 작품의 폭이 확장됩니다",
+          modules: ["shop", "events"],
+        },
+        {
+          key: "loop",
+          title: "다시 순환",
+          body: "환원·신뢰·수익이 다음 문으로 흘러 순환이 이어집니다",
+          modules: ["gallery", "shop", "community"],
+        },
+      ],
+    },
   },
   featuredWorks: {
     eyebrow: "Top User Works",
@@ -329,7 +622,7 @@ const HOME_V2_KO: HomeV2Content = {
   openQuests: {
     eyebrow: "Guild Quest Board",
     title: "공개 Quest",
-    empty: "공개 Quest가 아직 없습니다. WORKS에서 첫 모집을 만들 수 있습니다.",
+    empty: "공개 Quest가 아직 없습니다. 관리자가 새로운 도전을 공개할 때까지 기다려 주세요.",
     viewAll: "모두 보기 →",
   },
   investor: {
@@ -360,6 +653,17 @@ const HOME_V2_KO: HomeV2Content = {
 
 const HOME_V2_ZH: HomeV2Content = {
   ...HOME_V2_EN,
+  seo: {
+    ...HOME_V2_EN.seo,
+    metaTitle:
+      "Eldonia-Nex｜插画投稿·创作者招聘·同人周边销售的综合平台",
+    metaDescription:
+      "面向插画师、VTuber、游戏创作者的社区与作品集网站。作品发布、招聘应聘、同人周边销售、VTuber 活动、社区交流，尽在一个 Nexus。",
+    platformHeading: "面向插画师、VTuber、游戏创作者的综合平台",
+    platformBody:
+      "Eldonia-Nex 将插画发布、创作者招聘、作品集制作、同人周边销售、VTuber 活动与社区交流连接在一起。支持 AI 作品，可通过标签搜索发现作品。",
+    modulesHeading: "六大模块支撑创作活动",
+  },
   hero: {
     ...HOME_V2_EN.hero,
     subtitle: "冒险驱动创作，创作塑造未来。",
@@ -371,20 +675,65 @@ const HOME_V2_ZH: HomeV2Content = {
   questGuide: {
     eyebrow: "什么是 Quest？",
     steps: [
-      { key: "participate", title: "参与", body: "申请 Quest，开始挑战" },
-      { key: "challenge", title: "挑战", body: "以作品、成果与协作交付结果" },
-      { key: "evaluated", title: "被评价", body: "EXP、称号与信用被可视化" },
-      { key: "rewards", title: "获得回报", body: "连接返还、委托与销售" },
+      { key: "participate", title: "参与", body: "选择管理员发布的 Quest，确认条件后参加" },
+      { key: "challenge", title: "挑战", body: "完成登录、作品制作等 Quest 任务" },
+      { key: "evaluated", title: "被评价", body: "获得 EXP，挑战记录写入作品集" },
+      { key: "rewards", title: "获得回报", body: "优秀作品获现金、PC、商品；全员 EXP" },
     ],
     metrics: [
-      { key: "exp", label: "EXP", body: "行动累积为经验值" },
-      { key: "credit", label: "信用", body: "作品集与称号建立信任" },
-      { key: "revenue", label: "收益", body: "创作活动进入返还循环" },
+      { key: "exp", label: "EXP", body: "Quest 参与与登录累积经验" },
+      { key: "credit", label: "信用", body: "Quest 实绩强化作品集信任" },
+      { key: "revenue", label: "特典", body: "企业 Quest 提供现金、商品、PC 等" },
     ],
   },
   modules: {
     ...HOME_V2_EN.modules,
     title: "创作经济体的六扇门",
+    circulation: {
+      ...HOME_V2_EN.modules.circulation,
+      title: "创作经济体巡回",
+      lead:
+        "作品吸引粉丝，质量与评价提升，新作与衍生不断出现——六扇门让循环持续运转。",
+      loopLabel: "循环",
+      steps: [
+        {
+          key: "publish",
+          title: "发布作品",
+          body: "在 Gallery 发布作品，获得首批曝光与反馈",
+          modules: ["gallery"],
+        },
+        {
+          key: "fans",
+          title: "粉丝聚集",
+          body: "Community 与 Events 让支持与故事围绕作品生长",
+          modules: ["community", "events"],
+        },
+        {
+          key: "quality",
+          title: "评价提升",
+          body: "点赞、浏览与 EXP 让质量与信用可见，并导向下一单委托",
+          modules: ["gallery", "works"],
+        },
+        {
+          key: "create",
+          title: "崭新创作",
+          body: "参与 Quest 累积 EXP 与实绩，企业 Quest 还有奖品挑战",
+          modules: ["quest", "works"],
+        },
+        {
+          key: "expand",
+          title: "世界扩展",
+          body: "Shop 周边与 Events 衍生企划让作品版图扩大",
+          modules: ["shop", "events"],
+        },
+        {
+          key: "loop",
+          title: "再次循环",
+          body: "回报、信任与收益回流至下一扇门，循环不止",
+          modules: ["gallery", "shop", "community"],
+        },
+      ],
+    },
   },
   featuredWorks: {
     eyebrow: "Top User Works",
@@ -397,7 +746,7 @@ const HOME_V2_ZH: HomeV2Content = {
   openQuests: {
     eyebrow: "Guild Quest Board",
     title: "公开 Quest",
-    empty: "暂无公开 Quest。可在 WORKS 创建第一条募集。",
+    empty: "暂无公开 Quest。管理员发布新挑战后将在此显示。",
     viewAll: "查看全部 →",
   },
   investor: {

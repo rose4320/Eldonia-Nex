@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eldonia NEX</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-container">
+        <img src="logo.png" alt="Eldonia NEXロゴ" class="logo-img" />
+        <span class="logo-text">Eldonia NEX</span>
+      </div>
+      <nav class="nav">
+        <a href="#quest">Quest</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#shop">Shop</a>
+        <a href="#events">Events</a>
+        <a href="#community">Community</a>
+        <a href="#works">Works</a>
+      </nav>
+      <div class="auth-links">
+        <a href="#login">ログイン</a>
+        <a href="#signup" class="signup-btn">新規登録</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero Section -->
+      <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1 class="hero-title">Quest. Create. Earn.</h1>
+          <p class="hero-tagline">冒険が、創造を動かし、未来をつくる。</p>
+          <p class="hero-description">Eldonia NEXは、クリエイターの挑戦＝Questを中心に、創造・交流・収益が循環する新しいプラットフォームです。</p>
+          <div class="hero-buttons">
+            <a href="#signup" class="primary-btn">無料で始める</a>
+            <a href="#quest" class="secondary-btn">Questを探す</a>
+          </div>
+          <div class="stats">
+            <div>
+              <strong>12,458</strong>
+              <span>クリエイター</span>
+            </div>
+            <div>
+              <strong>3,215</strong>
+              <span>Quest運行中</span>
+            </div>
+            <div>
+              <strong>¥38,932,100</strong>
+              <span>クリエイター還元額</span>
+            </div>
+          </div>
+        </div>
+        <!-- Quest explanation box on hero -->
+        <div class="quest-info">
+          <h2>Questとは？</h2>
+          <p>挑戦（Quest）を達成してEXPと信用を獲得。その積み重ねが、あなたの価値と収益につながります。</p>
+          <ul class="quest-steps">
+            <li>
+              <div class="step-icon">
+                <svg width="36" height="36" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- hand holding card icon: join to approximate step 1 -->
+                  <rect x="16" y="20" width="32" height="24" rx="4" ry="4"></rect>
+                  <path d="M24 20v-4h16v4"></path>
+                </svg>
+              </div>
+              <span>1. 参加する<br /><small>気になるQuestにエントリー</small></span>
+            </li>
+            <li>
+              <div class="step-icon">
+                <svg width="36" height="36" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- crossed swords to represent challenge -->
+                  <line x1="20" y1="44" x2="44" y2="20" />
+                  <line x1="20" y1="20" x2="44" y2="44" />
+                </svg>
+              </div>
+              <span>2. 挑戦する<br /><small>作品やスキルでミッションに挑戦</small></small></span>
+            </li>
+            <li>
+              <div class="step-icon">
+                <svg width="36" height="36" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- people with star to represent evaluation -->
+                  <circle cx="32" cy="24" r="6" />
+                  <path d="M20 44c0-6 6-10 12-10s12 4 12 10"></path>
+                  <polygon points="32,8 35,14 41,14 36,18 38,24 32,20 26,24 28,18 23,14 29,14" fill="#d4af37" stroke="none"></polygon>
+                </svg>
+              </div>
+              <span>3. 評価される<br /><small>コミュニティ評価・承認</small></span>
+            </li>
+            <li>
+              <div class="step-icon">
+                <svg width="36" height="36" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <!-- trophy -->
+                  <path d="M16 20h32v12c0 8-8 14-16 14s-16-6-16-14V20z" />
+                  <line x1="32" y1="46" x2="32" y2="56" />
+                  <line x1="24" y1="56" x2="40" y2="56" />
+                </svg>
+              </div>
+              <span>4. 報酬を得る<br /><small>EXP・信用・報酬を獲得</small></span>
+            </li>
+          </ul>
+          <div class="value-info">
+            <p class="value-title">あなたの成長が、すべての価値に変わる</p>
+            <div class="value-grid">
+              <div>
+                <strong>EXP</strong>
+                <p>経験値を貯めるとレベルが上がり、新しい機会を解放します。</p>
+              </div>
+              <div>
+                <strong>信用</strong>
+                <p>評価が高いほど、報酬率やチャンスが増えます。</p>
+              </div>
+              <div>
+                <strong>収益</strong>
+                <p>活動が活発なほど、将来的な収益に繋がります。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Modules Section -->
+      <section class="modules" id="modules">
+        <h2>クリエイター向けモジュール</h2>
+        <div class="module-grid">
+          <!-- Quest Module -->
+          <div class="module-card" id="quest">
+            <div class="module-icon">
+              <!-- Compass icon -->
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="32" cy="32" r="14" />
+                <line x1="32" y1="18" x2="32" y2="46" />
+                <line x1="18" y1="32" x2="46" y2="32" />
+                <line x1="24" y1="24" x2="40" y2="40" />
+                <line x1="40" y1="24" x2="24" y2="40" />
+              </svg>
+            </div>
+            <h3>Quest</h3>
+            <p>挑戦と成長の中心</p>
+            <a href="#quest" class="module-link">探す&nbsp;→</a>
+          </div>
+          <!-- Gallery Module -->
+          <div class="module-card" id="gallery">
+            <div class="module-icon">
+              <!-- Gallery icon: picture frame with mountain and sun -->
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="14" y="14" width="36" height="36" rx="4" ry="4" />
+                <path d="M22 40l10-12 8 10 6-8 6 10" />
+                <circle cx="26" cy="26" r="3" fill="#d4af37" stroke="none" />
+              </svg>
+            </div>
+            <h3>Gallery</h3>
+            <p>作品を投稿・展示</p>
+            <a href="#gallery" class="module-link">投稿する&nbsp;→</a>
+          </div>
+          <!-- Shop Module -->
+          <div class="module-card" id="shop">
+            <div class="module-icon">
+              <!-- Shop icon: shopping bag -->
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 24h24l4 20H16l4-20z" />
+                <path d="M24 28V18h16v10" />
+                <line x1="32" y1="18" x2="32" y2="28" />
+              </svg>
+            </div>
+            <h3>Shop</h3>
+            <p>グッズ・作品を販売</p>
+            <a href="#shop" class="module-link">販売する&nbsp;→</a>
+          </div>
+          <!-- Events Module -->
+          <div class="module-card" id="events">
+            <div class="module-icon">
+              <!-- Events icon: calendar with star -->
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="16" y="20" width="32" height="28" rx="3" ry="3" />
+                <line x1="20" y1="16" x2="20" y2="24" />
+                <line x1="44" y1="16" x2="44" y2="24" />
+                <polygon points="32,36 34,40 38,40 35,42 36,46 32,43 28,46 29,42 26,40 30,40" fill="#d4af37" stroke="none" />
+              </svg>
+            </div>
+            <h3>Events</h3>
+            <p>イベントを開催・参加</p>
+            <a href="#events" class="module-link">探す&nbsp;→</a>
+          </div>
+          <!-- Community Module -->
+          <div class="module-card" id="community">
+            <div class="module-icon">
+              <!-- Community icon: group of three people -->
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="32" cy="26" r="6" />
+                <circle cx="20" cy="28" r="4" />
+                <circle cx="44" cy="28" r="4" />
+                <path d="M16 44c0-6 4-10 10-10h12c6 0 10 4 10 10" />
+                <path d="M10 46c0-4 3-7 7-7h2" />
+                <path d="M52 46c0-4-3-7-7-7h-2" />
+              </svg>
+            </div>
+            <h3>Community</h3>
+            <p>仲間と繋がる</p>
+            <a href="#community" class="module-link">参加する&nbsp;→</a>
+          </div>
+          <!-- Works Module -->
+          <div class="module-card" id="works">
+            <div class="module-icon">
+              <!-- Works icon: briefcase -->
+              <svg width="40" height="40" viewBox="0 0 64 64" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="18" y="24" width="28" height="20" rx="2" ry="2" />
+                <path d="M28 24v-4h8v4" />
+                <line x1="18" y1="32" x2="46" y2="32" />
+              </svg>
+            </div>
+            <h3>Works</h3>
+            <p>仕事を依頼・受注</p>
+            <a href="#works" class="module-link">探す&nbsp;→</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Investor Section -->
+      <section class="investor-section" id="investors">
+        <div class="investor-content">
+          <h2>未来を共に創る、初期投資家・協力者を募集</h2>
+          <p>Eldonia NEXのビジョンに共感し、共に未来を創る仲間を募集しています。ご支援いただいた初期投資家・協力者の皆様には、感謝の証としてシリアルナンバー付きのバッジを贈呈いたします。</p>
+          <ul class="investor-benefits">
+            <li>プロジェクトの成長に参加</li>
+            <li>限定コミュニティへ招待</li>
+            <li>特別なリターンや体験</li>
+          </ul>
+          <a href="#contact" class="primary-btn">詳しく見る・お問い合わせ</a>
+        </div>
+        <div class="badge-info">
+          <img src="badge.png" alt="シリアルナンバー付きバッジ" class="badge-img" />
+          <div class="badge-legend">
+            <p>シリアル番号の仕様</p>
+            <p>発行年度（2桁）・カテゴリ別（2桁）・発行番号（連番）</p>
+            <p>例：24-01-0001</p>
+            <ul class="badge-categories">
+              <li>01&nbsp;Investor</li>
+              <li>02&nbsp;Partner</li>
+              <li>03&nbsp;Advisor</li>
+              <li>04&nbsp;Media</li>
+              <li>05&nbsp;Community</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer class="footer">
+      <p>© 2026 Eldonia NEX. All rights reserved.</p>
+    </footer>
+  </body>
+</html>

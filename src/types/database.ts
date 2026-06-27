@@ -8,6 +8,7 @@ export type Profile = {
   bio: string | null;
   locale: string;
   is_creator: boolean;
+  is_ops_admin?: boolean;
   subscription_plan: "free" | "standard" | "pro";
   created_at: string;
   updated_at: string;
@@ -344,6 +345,45 @@ export type JobApplication = {
   created_at: string;
 };
 
+export type QuestKind = "daily" | "brand" | "community";
+export type QuestStatus = "draft" | "open" | "closed";
+
+export type Quest = {
+  id: string;
+  title: string;
+  description: string;
+  kind: QuestKind;
+  status: QuestStatus;
+  exp_reward: number;
+  prize_summary: string | null;
+  submission_hint: string | null;
+  starts_at: string | null;
+  ends_at: string | null;
+  is_featured: boolean;
+  published_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type QuestParticipationStatus = "joined" | "submitted" | "completed" | "winner";
+
+export type QuestParticipation = {
+  id: string;
+  quest_id: string;
+  user_id: string;
+  status: QuestParticipationStatus;
+  submission_url: string | null;
+  submission_note: string | null;
+  exp_awarded: number;
+  portfolio_entry: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+};
+
+export type QuestParticipationWithQuest = QuestParticipation & {
+  quests: Quest | null;
+};
+
 export type Order = {
   id: string;
   user_id: string | null;
@@ -426,6 +466,7 @@ export type Database = {
           bio?: string | null;
           locale?: string;
           is_creator?: boolean;
+          is_ops_admin?: boolean;
           subscription_plan?: "free" | "standard" | "pro";
           created_at?: string;
           updated_at?: string;
@@ -437,6 +478,7 @@ export type Database = {
           bio?: string | null;
           locale?: string;
           is_creator?: boolean;
+          is_ops_admin?: boolean;
           subscription_plan?: "free" | "standard" | "pro";
           updated_at?: string;
         };
@@ -731,6 +773,64 @@ export type Database = {
           skills_required?: string[];
           status?: JobStatus;
           is_featured?: boolean;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      quests: {
+        Row: Quest;
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          kind?: QuestKind;
+          status?: QuestStatus;
+          exp_reward?: number;
+          prize_summary?: string | null;
+          submission_hint?: string | null;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          is_featured?: boolean;
+          published_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string;
+          kind?: QuestKind;
+          status?: QuestStatus;
+          exp_reward?: number;
+          prize_summary?: string | null;
+          submission_hint?: string | null;
+          starts_at?: string | null;
+          ends_at?: string | null;
+          is_featured?: boolean;
+          published_by?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      quest_participations: {
+        Row: QuestParticipation;
+        Insert: {
+          id?: string;
+          quest_id: string;
+          user_id: string;
+          status?: QuestParticipationStatus;
+          submission_url?: string | null;
+          submission_note?: string | null;
+          exp_awarded?: number;
+          portfolio_entry?: Record<string, unknown>;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: QuestParticipationStatus;
+          submission_url?: string | null;
+          submission_note?: string | null;
+          exp_awarded?: number;
+          portfolio_entry?: Record<string, unknown>;
           updated_at?: string;
         };
         Relationships: [];

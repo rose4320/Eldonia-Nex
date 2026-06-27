@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
-from users.views import referral_program_status
+from users.views import referral_program_status, sync_supabase_user_view
 from .views import community_page
 
 
@@ -43,6 +43,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/v1/health/", api_health_check, name="api_health"),
     path("api/v1/referrals/status/", referral_program_status, name="referral_program_status"),
+    path("api/v1/users/sync/", sync_supabase_user_view, name="sync_supabase_user"),
     path("community/", community_page, name="community"),
     # path('api/v1/users/', include('users.urls')),
     # path('api/v1/content/', include('content.urls')),

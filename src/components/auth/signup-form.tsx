@@ -8,6 +8,7 @@ import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { buildAuthCallbackUrl } from "@/lib/auth/site-url";
+import { buildSignupResumePath, draftFromUserMetadata } from "@/lib/onboarding/status";
 import { localeFromCountry } from "@/lib/i18n/country-locale";
 import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
@@ -97,6 +98,74 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
   const consentItems = signup.consents;
 
   const checkoutSuccess = searchParams.get("checkout") === "success";
+  const shouldResume = searchParams.get("resume") === "1";
+
+  useEffect(() => {
+    if (!shouldResume || checkoutSuccess) return;
+    if (!supabaseConfigured || !hasBrowserSupabaseConfig()) return;
+
+    let cancelled = false;
+
+    void (async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user || cancelled) return;
+
+      const metadataDraft = draftFromUserMetadata(user);
+      const stored = readStoredSignup().draft;
+      const resumedDraft: SignupDraft = {
+        ...stored,
+        email: user.email ?? stored.email,
+        displayName: stored.displayName || metadataDraft.displayName,
+        username: stored.username || metadataDraft.username,
+        country: stored.country || metadataDraft.country,
+      };
+
+      setUserId(user.id);
+      setDraft(resumedDraft);
+
+      const email = user.email?.trim().toLowerCase() ?? "";
+      if (email) {
+        const basicInfoError = await saveBasicInfo(supabase, user.id, email, resumedDraft);
+        if (basicInfoError && !cancelled) {
+          setError(basicInfoError);
+          return;
+        }
+      }
+
+      const { data: onboarding } = await supabase
+        .from("user_onboarding")
+        .select("completed_at")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (cancelled) return;
+
+      if (onboarding?.completed_at) {
+        window.location.assign(resolvePostLoginPath(redirectTo));
+        return;
+      }
+
+      if (!resumedDraft.username.trim()) {
+        setStep("basic");
+        setMessage(`${t.auth.signupConfirmEmail} ${signup.messages.confirmEmailContinue}`);
+        return;
+      }
+
+      setStep("plan");
+      setMessage(signup.messages.basicSaved);
+      void fetch("/api/auth/sync-django", { method: "POST" });
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // saveBasicInfo is stable enough for one-shot resume hydration
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldResume, checkoutSuccess, supabaseConfigured, redirectTo, signup.messages.basicSaved, signup.messages.confirmEmailContinue, t.auth.signupConfirmEmail]);
 
   useEffect(() => {
     if (!checkoutSuccess) return;
@@ -180,20 +249,24 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     supabase: SupabaseBrowserClient,
     currentUserId: string,
     email: string,
+    source: SignupDraft = draft,
   ) {
-    const username = draft.username.trim().toLowerCase() || null;
-    const country = draft.country.trim().toUpperCase() || "JP";
+    const username = source.username.trim().toLowerCase() || null;
+    const country = source.country.trim().toUpperCase() || "JP";
     const locale = localeFromCountry(country);
-    const { error: profileError } = await supabase.from("profiles").upsert(
-      {
-        id: currentUserId,
-        username,
-        display_name: draft.displayName.trim() || email.split("@")[0],
-        is_creator: draft.isCreator,
-        locale,
-      },
-      { onConflict: "id" },
-    );
+    const profilePayload = {
+      username,
+      display_name: source.displayName.trim() || email.split("@")[0],
+      is_creator: source.isCreator,
+      locale,
+    };
+
+    const { data: updatedProfile, error: profileError } = await supabase
+      .from("profiles")
+      .update(profilePayload)
+      .eq("id", currentUserId)
+      .select("id")
+      .maybeSingle();
 
     if (profileError) {
       return profileError.message.includes("profiles_username")
@@ -201,12 +274,25 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
         : profileError.message;
     }
 
+    if (!updatedProfile) {
+      const { error: insertError } = await supabase.from("profiles").insert({
+        id: currentUserId,
+        ...profilePayload,
+      });
+
+      if (insertError) {
+        return insertError.message.includes("profiles_username")
+          ? signup.messages.usernameTaken
+          : insertError.message;
+      }
+    }
+
     const { error: settingsError } = await supabase.from("user_settings").upsert(
       {
         user_id: currentUserId,
-        legal_name: draft.legalName.trim() || null,
+        legal_name: source.legalName.trim() || null,
         country,
-        phone: draft.phone.trim() || null,
+        phone: source.phone.trim() || null,
       },
       { onConflict: "user_id" },
     );
@@ -250,7 +336,11 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
             country,
             locale,
           },
-          emailRedirectTo: buildAuthCallbackUrl(redirectTo, window.location.origin, locale),
+          emailRedirectTo: buildAuthCallbackUrl(
+            buildSignupResumePath(sanitizeRedirectTo(redirectTo)),
+            window.location.origin,
+            locale,
+          ),
         },
       });
 
@@ -273,6 +363,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
           }
 
           await awardUserExp(supabase, "user.signup", "user.signup");
+          void fetch("/api/auth/sync-django", { method: "POST" });
         }
 
         router.refresh();
@@ -427,7 +518,9 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               minLength={3}
               pattern="[a-z0-9_]+"
               value={draft.username}
-              onChange={(event) => updateDraft("username", event.target.value)}
+              onChange={(event) =>
+                updateDraft("username", event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
+              }
               className="eldonia-input"
               placeholder="creator_name"
             />

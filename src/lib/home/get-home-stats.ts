@@ -16,7 +16,7 @@ export async function getHomePlatformStats(): Promise<HomePlatformStats> {
         .select("*", { count: "exact", head: true })
         .eq("is_creator", true),
       supabase
-        .from("job_listings")
+        .from("quests")
         .select("*", { count: "exact", head: true })
         .eq("status", "open"),
       supabase.from("orders").select("total_amount").eq("status", "paid"),

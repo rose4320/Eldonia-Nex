@@ -18,7 +18,7 @@ def _supabase_config() -> tuple[str, str]:
         or os.getenv("SUPABASE_URL")
         or ""
     ).rstrip("/")
-    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or ""
+    key = os.getenv("SUPABASE_SERVICE_ROLE_KEY") or os.getenv("SUPABASE_SECRET_KEY") or ""
     if not url or not key:
         raise SupabaseAnnouncementError(
             "Supabase が未設定です。.env に NEXT_PUBLIC_SUPABASE_URL と "

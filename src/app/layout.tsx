@@ -18,9 +18,12 @@ const notoSerifJp = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  title: "ELDONIA NEX",
+  title: {
+    default: "Eldonia-Nex｜イラスト投稿・クリエイター求人・同人グッズ販売の総合プラットフォーム",
+    template: "%s | Eldonia-Nex",
+  },
   description:
-    "A Fantasy Nexus for Creators — ファンを集め、作品を共有し、収益化する総合プラットフォーム",
+    "イラスト・VTuber・ゲームクリエイター向けのクリエイターコミュニティ＆ポートフォリオサイト。作品投稿、求人応募、同人グッズ販売、VTuberイベント、コミュニティ交流まで、創作活動をひとつのNexusで。",
   icons: {
     apple: "/logo.png",
     icon: "/logo.png",

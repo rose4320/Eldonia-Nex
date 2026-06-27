@@ -64,6 +64,45 @@ export type PageMessages = {
     manageLead: string;
     portfolioTitle: string;
     portfolioLead: string;
+    labelExp: string;
+    labelPrize: string;
+    questDailyTitle: string;
+    questDailyLead: string;
+    questDailyPerDay: string;
+    questParticipateTitle: string;
+    questParticipateLead: string;
+    questParticipateCta: string;
+    questParticipating: string;
+    questParticipateFailed: string;
+    questLoginRequired: string;
+    questLoginCta: string;
+    questJoinedTitle: string;
+    questJoinedLead: string;
+    questExpGained: string;
+    questViewPortfolio: string;
+    questPrizeLabel: string;
+    questSubmissionUrl: string;
+    questSubmissionNote: string;
+    questHistoryTitle: string;
+    questHistoryEmpty: string;
+    questHistoryUnknown: string;
+    questSubmissionLink: string;
+    questCreateTitle: string;
+    questCreateCta: string;
+    questCreating: string;
+    questCreateFailed: string;
+    questFieldTitle: string;
+    questFieldDescription: string;
+    questFieldKind: string;
+    questFieldExp: string;
+    questFieldPrize: string;
+    questFieldSubmissionHint: string;
+    questFieldFeatured: string;
+    questKindBrand: string;
+    questKindCommunity: string;
+    questKindDaily: string;
+    manageForbidden: string;
+    questPublishedTitle: string;
   };
   community: {
     toolbarSearch: string;
@@ -229,19 +268,58 @@ const PAGE_JA: PageMessages = {
   },
   works: {
     back: "← WORKS",
-    badgeFeatured: "Featured Guild Quest",
-    labelPoster: "求人主",
+    badgeFeatured: "Featured Quest",
+    labelPoster: "管理者",
     labelType: "種別",
-    labelPay: "報酬",
+    labelPay: "特典",
     labelLocation: "場所",
-    toolbarSearch: "Guild Quest を検索…",
-    toolbarSearchAria: "求人検索",
+    labelExp: "EXP",
+    labelPrize: "賞品",
+    toolbarSearch: "Quest を検索…",
+    toolbarSearchAria: "Quest検索",
     toolbarPortfolio: "ポートフォリオ",
-    toolbarManage: "Guild 管理",
-    manageTitle: "Guild 管理",
-    manageLead: "掲載中の求人と応募者を管理します。",
+    toolbarManage: "Quest管理",
+    manageTitle: "Quest 管理",
+    manageLead: "管理者が Quest を公開し、参加者の挑戦を促します。",
     portfolioTitle: "ポートフォリオ",
-    portfolioLead: "EXP / Lv / 称号を整え、応募時に自動添付されます。",
+    portfolioLead: "プロフィールと Quest 参加実績。EXP / Lv / 称号もここで確認できます。",
+    questDailyTitle: "デイリーログイン",
+    questDailyLead: "ログインするだけで EXP が付与されます。",
+    questDailyPerDay: "日",
+    questParticipateTitle: "Quest に参加",
+    questParticipateLead: "参加すると EXP が付与され、ポートフォリオに実績が記録されます。",
+    questParticipateCta: "参加する",
+    questParticipating: "参加中…",
+    questParticipateFailed: "参加に失敗しました。",
+    questLoginRequired: "Quest に参加するにはログインが必要です。",
+    questLoginCta: "ログイン",
+    questJoinedTitle: "参加済み",
+    questJoinedLead: "この Quest に参加しました。ポートフォリオに記録されています。",
+    questExpGained: "獲得EXP",
+    questViewPortfolio: "ポートフォリオで実績を見る →",
+    questPrizeLabel: "特典",
+    questSubmissionUrl: "提出URL（任意）",
+    questSubmissionNote: "メモ（任意）",
+    questHistoryTitle: "Quest 参加履歴",
+    questHistoryEmpty: "まだ Quest に参加していません。",
+    questHistoryUnknown: "Quest",
+    questSubmissionLink: "提出作品を見る",
+    questCreateTitle: "新規 Quest 公開",
+    questCreateCta: "Quest を公開",
+    questCreating: "公開中…",
+    questCreateFailed: "Quest の作成に失敗しました。",
+    questFieldTitle: "タイトル",
+    questFieldDescription: "説明",
+    questFieldKind: "種別",
+    questFieldExp: "EXP（参加時）",
+    questFieldPrize: "特典（現金・PC・商品など）",
+    questFieldSubmissionHint: "提出ヒント",
+    questFieldFeatured: "注目 Quest にする",
+    questKindBrand: "企業案件",
+    questKindCommunity: "コミュニティ",
+    questKindDaily: "デイリー",
+    manageForbidden: "Quest 管理は管理者のみ利用できます。",
+    questPublishedTitle: "公開中の Quest",
   },
   community: {
     toolbarSearch: "スレッドを検索…",
@@ -408,19 +486,58 @@ const PAGE_EN: PageMessages = {
   },
   works: {
     back: "← WORKS",
-    badgeFeatured: "Featured Guild Quest",
-    labelPoster: "Employer",
+    badgeFeatured: "Featured Quest",
+    labelPoster: "Admin",
     labelType: "Type",
-    labelPay: "Compensation",
+    labelPay: "Prizes",
     labelLocation: "Location",
-    toolbarSearch: "Search guild quests…",
-    toolbarSearchAria: "Search jobs",
+    labelExp: "EXP",
+    labelPrize: "Prizes",
+    toolbarSearch: "Search Quests…",
+    toolbarSearchAria: "Search Quests",
     toolbarPortfolio: "Portfolio",
-    toolbarManage: "Guild manage",
-    manageTitle: "Guild management",
-    manageLead: "Manage job listings and applicants.",
+    toolbarManage: "Quest admin",
+    manageTitle: "Quest admin",
+    manageLead: "Publish Quests for users — daily login, brand challenges, and more.",
     portfolioTitle: "Portfolio",
-    portfolioLead: "Set EXP / Lv / title — attached automatically when you apply.",
+    portfolioLead: "Profile and Quest history. View EXP, level, and title badge.",
+    questDailyTitle: "Daily login",
+    questDailyLead: "Log in to earn EXP automatically.",
+    questDailyPerDay: "day",
+    questParticipateTitle: "Join Quest",
+    questParticipateLead: "Participation grants EXP and adds a record to your portfolio.",
+    questParticipateCta: "Join",
+    questParticipating: "Joining…",
+    questParticipateFailed: "Could not join Quest.",
+    questLoginRequired: "Log in to join this Quest.",
+    questLoginCta: "Log in",
+    questJoinedTitle: "Joined",
+    questJoinedLead: "You joined this Quest. It is recorded on your portfolio.",
+    questExpGained: "EXP gained",
+    questViewPortfolio: "View portfolio →",
+    questPrizeLabel: "Prizes",
+    questSubmissionUrl: "Submission URL (optional)",
+    questSubmissionNote: "Note (optional)",
+    questHistoryTitle: "Quest history",
+    questHistoryEmpty: "No Quest participation yet.",
+    questHistoryUnknown: "Quest",
+    questSubmissionLink: "View submission",
+    questCreateTitle: "Publish Quest",
+    questCreateCta: "Publish",
+    questCreating: "Publishing…",
+    questCreateFailed: "Failed to create Quest.",
+    questFieldTitle: "Title",
+    questFieldDescription: "Description",
+    questFieldKind: "Kind",
+    questFieldExp: "EXP on join",
+    questFieldPrize: "Prizes (cash, PC, goods…)",
+    questFieldSubmissionHint: "Submission hint",
+    questFieldFeatured: "Featured Quest",
+    questKindBrand: "Brand",
+    questKindCommunity: "Community",
+    questKindDaily: "Daily",
+    manageForbidden: "Quest admin is for operators only.",
+    questPublishedTitle: "Published Quests",
   },
   community: {
     toolbarSearch: "Search threads…",

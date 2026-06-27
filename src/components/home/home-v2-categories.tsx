@@ -27,7 +27,7 @@ export function HomeV2Categories({ copy }: HomeV2CategoriesProps) {
       </div>
       <div className="home-v2-categories__cta">
         <p>{categories.ctaLead}</p>
-        <Link href="/help/contact" className="home-v2-btn home-v2-btn--outline">
+        <Link href="/investors" className="home-v2-btn home-v2-btn--outline">
           {categories.cta}
         </Link>
       </div>

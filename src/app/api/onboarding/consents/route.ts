@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
 import { createClient } from "@/lib/supabase/server";
 
 const REQUIRED_CONSENT_TYPES = [
@@ -92,6 +93,8 @@ export async function POST(request: Request) {
   if (onboardingError) {
     return NextResponse.json({ error: onboardingError.message }, { status: 400 });
   }
+
+  await syncDjangoUserFromSupabase(user, { subscriptionPlan: body.planId });
 
   return NextResponse.json({ ok: true });
 }

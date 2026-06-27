@@ -140,8 +140,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     },
     works: {
       heading: "Guild of Creators",
-      lead: "求人・協業マッチング。応募時にポートフォリオ（EXP / Lv / 称号）を自動添付。",
-      empty: "該当する求人がありません。",
+      lead: "管理者が公開する Quest に参加。EXP 獲得とポートフォリオ実績、企業案件では特典も。",
+      empty: "該当する Quest がありません。",
     },
     lab: {
       lead: "承認済みコラボ Lab の一覧です。",
@@ -270,8 +270,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     },
     works: {
       heading: "Guild of Creators",
-      lead: "Jobs and collab matching — portfolio (EXP / Lv / title) attached on apply.",
-      empty: "No jobs match your filters.",
+      lead: "Join admin-published Quests — earn EXP, build portfolio history, win brand prizes.",
+      empty: "No Quests match your filters.",
     },
     lab: {
       lead: "Your approved Collab Labs.",

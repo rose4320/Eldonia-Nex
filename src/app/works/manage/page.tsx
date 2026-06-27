@@ -2,14 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { EmployerDashboard } from "@/components/works/employer-dashboard";
-import { JobCreateForm } from "@/components/works/job-create-form";
+import { QuestCreateForm } from "@/components/works/quest-create-form";
 import { WorksToolbar } from "@/components/works/works-toolbar";
-import { localizeJobListings } from "@/lib/works/localize-job";
-import {
-  getApplicationsForPoster,
-  getMyJobListings,
-} from "@/lib/works/get-employer-works";
+import { formatQuestReward, questKindLabel } from "@/lib/quests/constants";
+import { getQuestListings } from "@/lib/quests/get-quests";
+import { isQuestAdmin } from "@/lib/quests/is-quest-admin";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
@@ -26,11 +23,11 @@ export default async function WorksManagePage() {
     redirect("/auth/login?redirect_to=/works/manage");
   }
 
-  const [jobs, applications] = await Promise.all([
-    getMyJobListings(user.id),
-    getApplicationsForPoster(user.id),
-  ]);
-  const localizedJobs = localizeJobListings(jobs, locale);
+  if (!(await isQuestAdmin(user.id))) {
+    redirect("/works?error=quest_admin_forbidden");
+  }
+
+  const quests = await getQuestListings({}, locale);
 
   return (
     <div className="eldonia-page">
@@ -45,8 +42,28 @@ export default async function WorksManagePage() {
         <p className="eldonia-body mt-2 text-sm">{pages.works.manageLead}</p>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[22rem_1fr]">
-          <JobCreateForm />
-          <EmployerDashboard jobs={localizedJobs} applications={applications} />
+          <QuestCreateForm />
+          <section className="eldonia-card space-y-4">
+            <h2 className="font-display text-lg text-[var(--eldonia-gold-light)]">
+              {pages.works.questPublishedTitle}
+            </h2>
+            <ul className="space-y-3">
+              {quests.map((quest) => (
+                <li
+                  key={quest.id}
+                  className="rounded-lg border border-[var(--eldonia-border)] p-4"
+                >
+                  <Link href={`/works/${quest.id}`} className="eldonia-link font-display">
+                    {quest.title}
+                  </Link>
+                  <p className="mt-1 text-xs text-[var(--eldonia-text-dim)]">
+                    {questKindLabel(quest.kind, locale)} · {formatQuestReward(quest.exp_reward, locale)} ·{" "}
+                    {quest.status}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
       </main>
 

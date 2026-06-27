@@ -31,7 +31,7 @@ export function HomeV2Investor({ copy }: HomeV2InvestorProps) {
             </li>
           ))}
         </ul>
-        <Link href="/help/contact" className="home-v2-btn home-v2-btn--primary">
+        <Link href="/investors" className="home-v2-btn home-v2-btn--primary">
           {investor.cta}
         </Link>
       </div>

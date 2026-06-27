@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+
+  <head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>ELDONIA NEX — Prototype v2</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+JP:wght@400;500;600&display=swap"
+
+      rel="stylesheet"
+
+    />
+
+    <link rel="icon" href="assets/logo.png" />
+
+    <link rel="stylesheet" href="styles.css" />
+
+  </head>
+
+  <body>
+
+    <div class="page">
+
+      <header class="site-header">
+
+        <div class="site-header__inner">
+
+          <div class="site-header__grid">
+
+            <!-- 左: ロゴ -->
+
+            <div class="site-header__col site-header__col--left">
+
+              <a class="brand" href="#">
+
+                <img src="assets/logo.png" alt="ELDONIA NEX" class="brand__logo" />
+
+                <span class="brand__text">
+
+                  <span class="brand__name">ELDONIA NEX</span>
+
+                  <span class="brand__sub">A Fantasy Nexus for Creators</span>
+
+                </span>
+
+              </a>
+
+            </div>
+
+
+
+            <!-- 中: ナビ + 検索 -->
+
+            <div class="site-header__col site-header__col--center">
+
+              <nav id="site-nav" class="site-nav" aria-label="Main"></nav>
+
+              <form id="header-search-form" class="header-search" action="#" method="get">
+
+                <input
+
+                  id="header-search-input"
+
+                  class="header-search__input"
+
+                  type="search"
+
+                  name="q"
+
+                  placeholder="Search the Nexus…"
+
+                />
+
+                <button id="header-search-submit" class="header-search__btn" type="submit">
+
+                  Search
+
+                </button>
+
+              </form>
+
+            </div>
+
+
+
+            <!-- 右: 言語 + 認証 -->
+
+            <div class="site-header__col site-header__col--right">
+
+              <div class="site-header__actions">
+
+                <select id="header-lang" class="header-lang" aria-label="Language">
+
+                  <option value="ja">日本語</option>
+
+                </select>
+
+                <a id="btn-login" class="btn btn--ghost" href="#">ログイン</a>
+
+                <a id="btn-signup" class="btn btn--primary" href="#">新規登録</a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+
+
+      <main>
+
+        <section class="hero" aria-labelledby="hero-title">
+
+          <div class="hero__copy">
+
+            <h1 id="hero-title" class="hero__title">Quest. Create. Earn.</h1>
+
+            <p id="hero-subtitle" class="hero__subtitle"></p>
+
+            <p id="hero-lead" class="hero__lead"></p>
+
+            <div class="hero__actions">
+
+              <a id="hero-cta-primary" class="btn btn--primary btn--lg" href="#">無料で始める</a>
+
+              <a id="hero-cta-secondary" class="btn btn--outline btn--lg" href="#modules">Questを探す</a>
+
+            </div>
+
+            <div id="hero-stats" class="hero__stats"></div>
+
+          </div>
+
+
+
+          <figure class="hero__visual">
+
+            <img src="assets/home-hero.png" alt="" class="hero__image" />
+
+          </figure>
+
+
+
+          <aside class="hero__aside">
+
+            <p id="quest-guide-eyebrow" class="eyebrow"></p>
+
+            <ol id="quest-steps" class="quest-steps"></ol>
+
+            <ul id="growth-metrics" class="growth-metrics"></ul>
+
+          </aside>
+
+        </section>
+
+
+
+        <section id="modules" class="section modules" aria-labelledby="modules-title">
+
+          <header class="section__head">
+
+            <p id="modules-eyebrow" class="eyebrow"></p>
+
+            <h2 id="modules-title" class="section__title"></h2>
+
+          </header>
+
+          <div id="module-grid" class="module-grid"></div>
+
+        </section>
+
+
+
+        <section class="section investor" aria-labelledby="investor-title">
+
+          <div class="investor__copy">
+
+            <p id="investor-eyebrow" class="eyebrow"></p>
+
+            <h2 id="investor-title" class="section__title"></h2>
+
+            <p id="investor-lead" class="section__lead"></p>
+
+            <ul id="investor-perks" class="investor-perks"></ul>
+
+            <a id="investor-cta" class="btn btn--primary" href="#contact">詳しく見る・お問い合わせ</a>
+
+          </div>
+
+          <div class="investor__visual">
+
+            <img
+
+              src="assets/investor-pin-badge.png"
+
+              alt="ELDONIA NEX 支援者ピンバッジ"
+
+              class="investor__badge"
+
+            />
+
+            <div class="serial-box">
+
+              <p id="serial-title" class="serial-box__title"></p>
+
+              <p id="serial-format" class="serial-box__format"></p>
+
+              <ul id="serial-parts" class="serial-box__parts"></ul>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+
+        <section id="contact" class="section categories">
+
+          <h2 id="categories-title" class="section__title section__title--sm"></h2>
+
+          <div id="category-row" class="category-row"></div>
+
+          <div class="categories__cta">
+
+            <p id="categories-cta-lead"></p>
+
+            <a id="categories-cta" class="btn btn--outline" href="#">お問い合わせ</a>
+
+          </div>
+
+        </section>
+
+      </main>
+
+
+
+      <footer class="site-footer">
+
+        <div class="site-footer__inner">
+
+          <div class="site-footer__divider" aria-hidden="true"></div>
+
+
+
+          <div class="site-footer__brand">
+
+            <a class="brand brand--footer" href="#">
+
+              <img src="assets/logo.png" alt="ELDONIA NEX" class="brand__logo" />
+
+              <span class="brand__text">
+
+                <span class="brand__name">ELDONIA NEX</span>
+
+                <span class="brand__sub">A Fantasy Nexus for Creators</span>
+
+              </span>
+
+            </a>
+
+          </div>
+
+
+
+          <div class="site-footer__grid">
+
+            <div class="site-footer__col">
+
+              <h2 id="footer-tech-title" class="eyebrow"></h2>
+
+              <ul id="footer-tech-list" class="footer-list"></ul>
+
+            </div>
+
+
+
+            <div class="site-footer__col">
+
+              <h2 id="footer-help-title" class="eyebrow"></h2>
+
+              <ul id="footer-help-list" class="footer-list"></ul>
+
+              <h3 id="footer-sitemap-title" class="eyebrow site-footer__subhead"></h3>
+
+              <ul id="footer-sitemap" class="footer-sitemap"></ul>
+
+            </div>
+
+
+
+            <div class="site-footer__col">
+
+              <h2 id="footer-partners-title" class="eyebrow"></h2>
+
+              <ul id="footer-partners-list" class="footer-partners"></ul>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="site-footer__copy">
+
+          <p id="footer-copy"></p>
+
+          <p id="footer-note" class="site-footer__note"></p>
+
+        </div>
+
+      </footer>
+
+    </div>
+
+
+
+    <script src="ja.js"></script>
+
+  </body>
+
+</html>
+
+
