@@ -1,0 +1,331 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  /* Dark theme background and text color */
+  background-color: #0d0e13;
+  color: #f2f2f2;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: #0d0e13;
+  color: #d4af37;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+/* Logo container */
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+/* Logo image */
+.logoImg {
+  width: 40px;
+  height: 40px;
+}
+
+/* Logo text */
+.logoText {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.nav a {
+  margin: 0 0.8rem;
+  padding: 0.4rem;
+  color: #f2f2f2;
+  transition: color 0.2s;
+}
+
+.nav a:hover {
+  color: #d4af37;
+}
+
+.authLinks a {
+  margin-left: 1rem;
+  color: #d4af37;
+  font-weight: 500;
+}
+
+.signupButton {
+  padding: 0.4rem 0.8rem;
+  background-color: transparent;
+  border: 2px solid #d4af37;
+  border-radius: 0.25rem;
+  color: #d4af37;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.signupButton:hover {
+  background-color: #d4af37;
+  color: #0d0e13;
+}
+
+/* Hero Section */
+.hero {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5rem 2rem;
+  /* Create a dark gradient with a subtle golden radial highlight to evoke the magical ring */
+  background: radial-gradient(circle at 70% 30%, rgba(212, 175, 55, 0.3), transparent 50%), linear-gradient(135deg, #0d0e13 0%, #151929 100%);
+  color: #f2f2f2;
+}
+
+.heroText {
+  flex: 1 1 60%;
+  max-width: 600px;
+}
+
+.heroTitle {
+  font-size: 3.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #d4af37;
+}
+
+.heroSubtitle {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #b0b0c0;
+}
+
+.heroButtons a {
+  display: inline-block;
+  margin-right: 1rem;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 1rem;
+}
+
+.primaryButton {
+  background-color: #d4af37;
+  color: #0d0e13;
+}
+
+.primaryButton:hover {
+  background-color: #e8c66d;
+}
+
+.secondaryButton {
+  border: 2px solid #d4af37;
+  color: #d4af37;
+  padding: 0.8rem 1.6rem;
+  border-radius: 0.5rem;
+}
+
+.secondaryButton:hover {
+  background-color: #d4af37;
+  color: #0d0e13;
+}
+
+.stats {
+  display: flex;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+.stats div {
+  text-align: left;
+}
+
+.stats strong {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #d4af37;
+}
+
+.stats span {
+  font-size: 0.9rem;
+  color: #b0b0c0;
+}
+
+.heroInfo {
+  flex: 1 1 35%;
+  margin-top: 2rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.heroInfo h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #d4af37;
+}
+
+.heroInfo p {
+  margin: 0;
+  color: #b0b0c0;
+}
+
+/* Modules Section */
+.modules {
+  padding: 4rem 2rem;
+  background-color: #131524;
+  color: #f2f2f2;
+}
+
+.modules h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  color: #d4af37;
+}
+
+.moduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+.moduleCard {
+  background: #1f2234;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.moduleCard h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  color: #d4af37;
+}
+
+.moduleCard p {
+  flex-grow: 1;
+  margin-bottom: 1rem;
+  color: #b0b0c0;
+}
+
+.moduleCard a {
+  color: #d4af37;
+  font-weight: 500;
+  align-self: flex-start;
+  transition: color 0.2s;
+}
+
+.moduleCard a:hover {
+  color: #e8c66d;
+}
+
+/* Investor Section */
+.investorSection {
+  padding: 4rem 2rem;
+  background-color: #0d0e13;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.investorText {
+  flex: 1 1 55%;
+  color: #f2f2f2;
+}
+
+.investorText h2 {
+  margin-top: 0;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #d4af37;
+}
+
+.investorText p {
+  margin-bottom: 1rem;
+  color: #b0b0c0;
+}
+
+.investorText ul {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 1.5rem;
+  color: #b0b0c0;
+}
+
+/* Styled list items with golden bullet for investor section */
+.investorText ul li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.investorText ul li::before {
+  content: '•';
+  margin-right: 0.5rem;
+  color: #d4af37;
+}
+
+.investorBadge {
+  flex: 1 1 35%;
+  background-color: #1f2234;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.badgeImage {
+  width: 100%;
+  height: 200px;
+  background-color: rgba(212, 175, 55, 0.1);
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  background-image: url('badge.png');
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.badgeCategories {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.badgeCategories li {
+  background-color: #1f2234;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.25rem;
+  font-size: 0.85rem;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  color: #d4af37;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: #0d0e13;
+  color: #b0b0c0;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}

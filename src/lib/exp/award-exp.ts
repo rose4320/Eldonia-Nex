@@ -9,6 +9,8 @@ export type ExpActionType =
   | "event.create"
   | "job.create"
   | "job.apply"
+  | "auth.daily_login"
+  | "quest.participate"
   | "community.thread"
   | "community.reply"
   | "comment.create"

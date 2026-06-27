@@ -1,4 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
+import { tryDailyLoginExp } from "@/lib/quests/daily-login-exp";
 import { mapSupabaseAuthMessage } from "@/lib/supabase/env";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 
@@ -20,13 +22,18 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json({ ok: true });
   const supabase = createRouteHandlerClient(request, response);
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     return NextResponse.json(
       { error: mapSupabaseAuthMessage(error.message) },
       { status: 401 },
     );
+  }
+
+  if (data.user) {
+    await syncDjangoUserFromSupabase(data.user);
+    await tryDailyLoginExp(supabase);
   }
 
   return response;

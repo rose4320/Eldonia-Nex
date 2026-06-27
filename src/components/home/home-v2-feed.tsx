@@ -1,16 +1,16 @@
 import Link from "next/link";
 import { HomeV2Reveal } from "@/components/home/home-v2-reveal";
 import { categoryLabel } from "@/lib/gallery/constants";
+import { formatQuestReward, questKindLabel } from "@/lib/quests/constants";
 import type { HomeV2Content } from "@/lib/i18n/content/home-v2-messages";
 import type { UiLocale } from "@/lib/i18n/locale";
-import { formatBudget, jobTypeLabel } from "@/lib/works/constants";
-import type { ArtworkWithCreator, JobListingWithPoster } from "@/types/database";
+import type { ArtworkWithCreator, Quest } from "@/types/database";
 
 type HomeV2FeedProps = {
   copy: HomeV2Content;
   locale: UiLocale;
   topArtworks: ArtworkWithCreator[];
-  quests: JobListingWithPoster[];
+  quests: Quest[];
   creatorFallback: string;
 };
 
@@ -111,8 +111,9 @@ export function HomeV2Feed({
                 <span className="home-v2-quest-row__body">
                   <strong>{quest.title}</strong>
                   <small>
-                    {jobTypeLabel(quest.job_type, locale)} /{" "}
-                    {formatBudget(quest.budget_min, quest.budget_max, locale)}
+                    {questKindLabel(quest.kind, locale)} /{" "}
+                    {formatQuestReward(quest.exp_reward, locale)}
+                    {quest.prize_summary ? ` / 🎁 ${quest.prize_summary}` : ""}
                   </small>
                 </span>
               </Link>

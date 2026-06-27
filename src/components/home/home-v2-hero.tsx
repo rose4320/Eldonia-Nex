@@ -18,12 +18,27 @@ export function HomeV2Hero({ copy, stats, locale }: HomeV2HeroProps) {
   const { hero, questGuide } = copy;
 
   return (
-    <section className="home-v2-hero home-v2-hero--live" aria-labelledby="home-v2-hero-title">
+    <section
+      className="home-v2-hero home-v2-hero--live home-v2-hero--backdrop"
+      aria-labelledby="home-v2-hero-title"
+    >
+      <div className="home-v2-hero__backdrop" aria-hidden="true">
+        <Image
+          src={HOME_V2_ASSETS.hero}
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="home-v2-hero__backdrop-image"
+        />
+      </div>
+      <div className="home-v2-hero__scrim" aria-hidden="true" />
+
       <div className="home-v2-hero__copy">
         <h1 id="home-v2-hero-title" className="home-v2-hero__title home-v2-enter home-v2-enter--1">
           {hero.title}
         </h1>
-        <p className="home-v2-hero__subtitle home-v2-enter home-v2-enter--2">{hero.subtitle}</p>
+        <h2 className="home-v2-hero__subtitle home-v2-enter home-v2-enter--2">{hero.subtitle}</h2>
         <p className="home-v2-hero__lead home-v2-enter home-v2-enter--3">{hero.lead}</p>
         <div className="home-v2-hero__actions home-v2-enter home-v2-enter--4">
           <Link href="/auth/signup" className="home-v2-btn home-v2-btn--primary home-v2-btn--lg">
@@ -45,17 +60,6 @@ export function HomeV2Hero({ copy, stats, locale }: HomeV2HeroProps) {
           ))}
         </div>
       </div>
-
-      <figure className="home-v2-hero__visual">
-        <Image
-          src={HOME_V2_ASSETS.hero}
-          alt=""
-          width={640}
-          height={800}
-          className="home-v2-hero__image"
-          priority
-        />
-      </figure>
 
       <aside className="home-v2-hero__aside home-v2-enter home-v2-enter--4">
         <p className="home-v2-eyebrow">{questGuide.eyebrow}</p>

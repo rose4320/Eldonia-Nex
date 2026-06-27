@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { PortfolioForm } from "@/components/works/portfolio-form";
+import { QuestHistory } from "@/components/works/quest-history";
 import { WorksToolbar } from "@/components/works/works-toolbar";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { getUserQuestHistory } from "@/lib/quests/get-quests";
 import { createClient } from "@/lib/supabase/server";
 import { getPortfolioForUser } from "@/lib/works/get-works";
 
@@ -21,7 +23,10 @@ export default async function PortfolioPage() {
     redirect("/auth/login?redirect_to=/works/portfolio");
   }
 
-  const portfolio = await getPortfolioForUser(user.id, { useSampleFallback: false });
+  const [portfolio, questHistory] = await Promise.all([
+    getPortfolioForUser(user.id, { useSampleFallback: false }),
+    getUserQuestHistory(user.id),
+  ]);
 
   return (
     <div className="eldonia-page">
@@ -36,6 +41,7 @@ export default async function PortfolioPage() {
         <p className="eldonia-body mt-2 text-sm">{pages.works.portfolioLead}</p>
 
         <PortfolioForm userId={user.id} portfolio={portfolio} />
+        <QuestHistory entries={questHistory} />
       </main>
 
       <SiteFooter />

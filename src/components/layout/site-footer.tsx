@@ -20,6 +20,7 @@ const HELP_LINKS = [
   { href: "/help/guides", label: { ja: "利用ガイド", en: "Guides", ko: "가이드", "zh-CN": "使用指南" } },
   { href: "/help/contact", label: { ja: "お問い合わせ", en: "Contact", ko: "문의", "zh-CN": "联系我们" } },
   { href: "/help/tickets", label: { ja: "マイチケット", en: "My Tickets", ko: "내 티켓", "zh-CN": "我的工单" } },
+  { href: "/investors", label: { ja: "投資家・共創パートナー", en: "Investors", ko: "Investors", "zh-CN": "投资者" } },
 ];
 
 const PARTNERS = [

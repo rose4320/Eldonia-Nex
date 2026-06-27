@@ -1,33 +1,33 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { JobCard } from "@/components/works/job-card";
+import { QuestCard } from "@/components/works/quest-card";
 import { WorksToolbar } from "@/components/works/works-toolbar";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import { jobTypeOptions } from "@/lib/i18n/taxonomy";
-import { getJobListings } from "@/lib/works/get-works";
+import { questKindOptions } from "@/lib/quests/constants";
+import { getQuestListings } from "@/lib/quests/get-quests";
 
 type WorksPageProps = {
-  searchParams: Promise<{ q?: string; type?: string }>;
+  searchParams: Promise<{ q?: string; kind?: string }>;
 };
 
 export default async function WorksPage({ searchParams }: WorksPageProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
-  const { q, type = "all" } = await searchParams;
-  const jobs = await getJobListings({ q, type }, locale);
-  const jobTypes = jobTypeOptions(locale);
+  const { q, kind = "all" } = await searchParams;
+  const quests = await getQuestListings({ q, kind }, locale);
+  const kinds = questKindOptions(locale);
 
   return (
     <div className="eldonia-page">
       <SiteHeader />
-      <WorksToolbar query={q} type={type} />
+      <WorksToolbar query={q} type={kind} />
 
       <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-6 py-8">
         <section className="space-y-2">
-          <p className="eldonia-eyebrow">WORKS</p>
+          <p className="eldonia-eyebrow">QUEST</p>
           <h1 className="eldonia-heading eldonia-heading-lg">{t.works.heading}</h1>
           <p className="eldonia-body text-sm">{t.works.lead}</p>
         </section>
@@ -35,12 +35,12 @@ export default async function WorksPage({ searchParams }: WorksPageProps) {
         <EldoniaDivider />
 
         <nav className="flex flex-wrap gap-2">
-          {[{ value: "all", label: t.common.all }, ...jobTypes].map((item) => {
+          {[{ value: "all", label: t.common.all }, ...kinds].map((item) => {
             const params = new URLSearchParams();
-            if (item.value !== "all") params.set("type", item.value);
+            if (item.value !== "all") params.set("kind", item.value);
             if (q?.trim()) params.set("q", q.trim());
             const href = params.toString() ? `/works?${params}` : "/works";
-            const active = type === item.value;
+            const active = kind === item.value;
             return (
               <Link
                 key={item.value}
@@ -58,10 +58,10 @@ export default async function WorksPage({ searchParams }: WorksPageProps) {
         </nav>
 
         <section className="grid gap-4 lg:grid-cols-2">
-          {jobs.length === 0 ? (
+          {quests.length === 0 ? (
             <p className="eldonia-body col-span-full py-16 text-center">{t.works.empty}</p>
           ) : (
-            jobs.map((job) => <JobCard key={job.id} job={job} />)
+            quests.map((quest) => <QuestCard key={quest.id} quest={quest} />)
           )}
         </section>
       </main>
