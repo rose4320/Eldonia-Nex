@@ -177,6 +177,25 @@ export type ContentCatalog = {
     confirmEmailSent: string;
     signupConfirmEmail: string;
     authCallbackFailed: string;
+    forgotPasswordLink: string;
+    forgotPasswordTitle: string;
+    forgotPasswordLead: string;
+    forgotPasswordSubmit: string;
+    forgotPasswordLoading: string;
+    forgotPasswordSent: string;
+    forgotPasswordFailed: string;
+    resetPasswordTitle: string;
+    resetPasswordLead: string;
+    newPassword: string;
+    confirmPassword: string;
+    resetPasswordSubmit: string;
+    resetPasswordLoading: string;
+    resetPasswordFailed: string;
+    passwordMismatch: string;
+    backToLogin: string;
+    oauthDivider: string;
+    continueWithGoogle: string;
+    oauthLoading: string;
   };
   settings: {
     heading: string;

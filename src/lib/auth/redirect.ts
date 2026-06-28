@@ -10,6 +10,7 @@ const AUTH_LOOP_PREFIXES = [
   "/auth/signup",
   "/auth/callback",
   "/auth/sign-out",
+  "/auth/forgot-password",
 ];
 
 function isSignupResumePath(pathname: string): boolean {

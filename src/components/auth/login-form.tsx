@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { resolvePostLoginPath } from "@/lib/auth/redirect";
 import {
   mapAuthError,
@@ -80,9 +81,17 @@ export function LoginForm({
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="eldonia-label">
-          {t.auth.password}
-        </label>
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="password" className="eldonia-label">
+            {t.auth.password}
+          </label>
+          <Link
+            href="/auth/forgot-password"
+            className="eldonia-link text-xs font-medium"
+          >
+            {t.auth.forgotPasswordLink}
+          </Link>
+        </div>
         <input
           id="password"
           type="password"
@@ -103,6 +112,8 @@ export function LoginForm({
       >
         {loading ? t.auth.loginLoading : t.auth.loginSubmit}
       </button>
+
+      <OAuthButtons redirectTo={redirectTo} />
 
       <p className="text-center text-sm text-eldonia-text-muted">
         {t.auth.noAccount}{" "}

@@ -29,6 +29,16 @@ export type SignupContent = {
     phone: string;
     creatorToggle: string;
     submit: string;
+    rulesTitle: string;
+    hints: {
+      displayName: string;
+      username: string;
+      email: string;
+      password: string;
+      legalName: string;
+      country: string;
+      phone: string;
+    };
   };
   plan: {
     eyebrow: string;
@@ -94,6 +104,16 @@ const SIGNUP_JA: SignupContent = {
     phone: "電話番号（任意）",
     creatorToggle: "クリエイターとして作品投稿・販売・イベント参加を始める",
     submit: "基本情報を保存して次へ",
+    rulesTitle: "入力ルール",
+    hints: {
+      displayName: "必須。サイト上に表示される名前です。",
+      username: "必須。3〜30文字。半角英小文字・数字・アンダースコア（a-z, 0-9, _）のみ。他ユーザーと重複不可。",
+      email: "必須。有効なメール形式。ログインと確認メールに使用します。",
+      password: "必須。8文字以上。",
+      legalName: "任意。請求・本人確認で使用する場合があります。",
+      country: "国コード2文字（例: JP, US）。確認メールの言語判定に使用します。",
+      phone: "任意。ハイフンあり・なしどちらでも入力できます。",
+    },
   },
   plan: {
     eyebrow: "Plan Selection",
@@ -129,7 +149,8 @@ const SIGNUP_JA: SignupContent = {
   },
   messages: {
     basicSaved: "基本情報を保存しました。次にプランを選択してください。",
-    confirmEmailContinue: "メール認証後にログインし、登録フローを続けてください。",
+    confirmEmailContinue:
+      "確認メールを送信しました。メール内のリンクを開くと、プラン選択から登録を続けられます（別途ログインは不要です）。",
     paymentComplete: "決済が完了しました。最後に規約を項目ごとに確認してください。",
     freePlanSelected: "Free プランを選択しました。規約を項目ごとに確認してください。",
     paymentSkipped: "登録フロー確認のため、決済をスキップして規約確認へ進みます。",
@@ -249,6 +270,17 @@ const SIGNUP_EN: SignupContent = {
     phone: "Phone (optional)",
     creatorToggle: "Act as a creator — post artwork, sell, and host events",
     submit: "Save & continue",
+    rulesTitle: "Input rules",
+    hints: {
+      displayName: "Required. Shown publicly on your profile.",
+      username:
+        "Required. 3–30 characters. Lowercase letters, digits, and underscores (a-z, 0-9, _) only. Must be unique.",
+      email: "Required. Valid email format. Used for login and confirmation emails.",
+      password: "Required. At least 8 characters.",
+      legalName: "Optional. Used for billing or identity verification when needed.",
+      country: "2-letter country code (e.g. JP, US). Used to choose confirmation email language.",
+      phone: "Optional. Hyphens are allowed.",
+    },
   },
   plan: {
     eyebrow: "Plan Selection",
@@ -284,7 +316,8 @@ const SIGNUP_EN: SignupContent = {
   },
   messages: {
     basicSaved: "Profile saved. Choose a plan next.",
-    confirmEmailContinue: "After confirming email, log in to continue signup.",
+    confirmEmailContinue:
+      "We sent a confirmation email. Open the link inside to continue signup from plan selection—no separate login step.",
     paymentComplete: "Payment complete. Review each agreement to finish.",
     freePlanSelected: "Free plan selected. Review each agreement to finish.",
     paymentSkipped: "Payment is skipped for signup flow testing. Review agreements to finish.",
@@ -398,6 +431,8 @@ export const SIGNUP_CONTENT: Record<UiLocale, SignupContent> = {
     messages: {
       ...SIGNUP_EN.messages,
       basicSaved: "저장되었습니다. 플랜을 선택하세요.",
+      confirmEmailContinue:
+        "확인 메일을 보냈습니다. 메일의 링크를 열면 별도 로그인 없이 플랜 선택부터 가입을 이어갈 수 있습니다.",
       flowComplete: "Eldonia-Nex에 오신 것을 환영합니다!",
     },
   },
@@ -410,6 +445,8 @@ export const SIGNUP_CONTENT: Record<UiLocale, SignupContent> = {
     messages: {
       ...SIGNUP_EN.messages,
       basicSaved: "已保存。请选择方案。",
+      confirmEmailContinue:
+        "已发送确认邮件。点击邮件中的链接即可从方案选择继续注册，无需另行登录。",
       flowComplete: "欢迎来到 Eldonia-Nex！",
     },
   },

@@ -1,65 +1,52 @@
 import type { Metadata } from "next";
-import { SiteFooter } from "@/components/layout/site-footer";
-import { SiteHeader } from "@/components/layout/site-header";
-import { HomeV2Categories } from "@/components/home/home-v2-categories";
-import { HomeV2Feed } from "@/components/home/home-v2-feed";
-import { HomeV2Hero } from "@/components/home/home-v2-hero";
-import { HomeV2Investor } from "@/components/home/home-v2-investor";
-import { HomeV2Modules } from "@/components/home/home-v2-modules";
-import { HomeV2SeoOverview } from "@/components/home/home-v2-seo-overview";
-import { getTopPublicArtworks } from "@/lib/gallery/get-public-artworks";
-import { getHomePlatformStats } from "@/lib/home/get-home-stats";
-import { getHomeV2Content } from "@/lib/i18n/content/home-v2-messages";
-import { getContent } from "@/lib/i18n/content/messages";
-import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import { getQuestListings } from "@/lib/quests/get-quests";
+import { LpCtaSection } from "@/components/sections/lp-cta-section";
+import { LpFooter } from "@/components/sections/lp-footer";
+import { LpHeader } from "@/components/sections/lp-header";
+import { LpHeroSection } from "@/components/sections/lp-hero-section";
+import { LpPlansSection } from "@/components/sections/lp-plans-section";
+import { LpReferralSection } from "@/components/sections/lp-referral-section";
+import { LpRewardsSection } from "@/components/sections/lp-rewards-section";
+import { LpServicesSection } from "@/components/sections/lp-services-section";
+import { LpTranslationSection } from "@/components/sections/lp-translation-section";
+import { LpWorldSection } from "@/components/sections/lp-world-section";
+import { LpPageFrame } from "@/components/ui/lp-page-frame";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
+import { LP_SEO } from "@/lib/lp/content";
 
-export async function generateMetadata(): Promise<Metadata> {
-  const locale = await getUiLocale();
-  const copy = getHomeV2Content(locale);
+export const metadata: Metadata = {
+  title: LP_SEO.title,
+  description: LP_SEO.description,
+  openGraph: {
+    title: LP_SEO.title,
+    description: LP_SEO.description,
+    type: "website",
+  },
+};
 
-  return {
-    title: copy.seo.metaTitle,
-    description: copy.seo.metaDescription,
-    openGraph: {
-      title: copy.seo.metaTitle,
-      description: copy.seo.metaDescription,
-      type: "website",
-    },
-  };
-}
-
-export default async function HomePage() {
-  const locale = await getUiLocale();
-  const copy = getHomeV2Content(locale);
-  const t = getContent(locale);
-
-  const [stats, topArtworks, quests] = await Promise.all([
-    getHomePlatformStats(),
-    getTopPublicArtworks(6),
-    getQuestListings({}, locale),
-  ]);
-
+export default function HomePage() {
   return (
-    <div className="eldonia-page">
-      <SiteHeader />
-
-      <main className="home-v2-main">
-        <HomeV2Hero copy={copy} stats={stats} locale={locale} />
-        <HomeV2Modules copy={copy} />
-        <HomeV2SeoOverview copy={copy} />
-        <HomeV2Feed
-          copy={copy}
-          locale={locale}
-          topArtworks={topArtworks}
-          quests={quests}
-          creatorFallback={t.pages.creatorFallback}
-        />
-        <HomeV2Investor copy={copy} />
-        <HomeV2Categories copy={copy} />
-      </main>
-
-      <SiteFooter />
+    <div className="lp-page min-h-screen text-[#e8d5a3]">
+      <LpPageFrame>
+        <LpHeader />
+        <main>
+          <LpHeroSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpWorldSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpServicesSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpTranslationSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpPlansSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpReferralSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpRewardsSection />
+          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
+          <LpCtaSection />
+        </main>
+        <LpFooter />
+      </LpPageFrame>
     </div>
   );
 }

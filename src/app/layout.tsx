@@ -45,8 +45,9 @@ export default async function RootLayout({
       lang={htmlLang(locale)}
       translate="no"
       className={`notranslate ${cinzel.variable} ${notoSerifJp.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <LocaleProvider locale={locale}>{children}</LocaleProvider>
       </body>
     </html>
