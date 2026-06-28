@@ -380,6 +380,13 @@ logs
 /static/
 /staticfiles/
 
+# Auto-installed GCP/Datacloud agent skills (clutters explorer & git)
+.cursor/skills/
+.gemini/
+
+# Local credentials (never commit)
+googleworkspace.json
+
 # Local secrets file (do not commit)
 env.md
 .vercel

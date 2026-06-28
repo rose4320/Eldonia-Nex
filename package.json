@@ -1,16 +1,20 @@
 {
   "name": "eldonia-nex",
-  "version": "0.3.1",
+  "version": "0.4.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
+    "aset:sync": "node scripts/sync-aset-to-public.mjs",
+    "prebuild": "node scripts/sync-aset-to-public.mjs",
+    "predev": "node scripts/sync-aset-to-public.mjs",
     "prototype:home": "npx serve prototype/home-v2 -p 5199",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
-    "supabase:status": "supabase status"
+    "supabase:status": "supabase status",
+    "supabase:sync-auth": "node scripts/sync-supabase-auth-urls.mjs && node scripts/sync-supabase-auth-email-templates.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

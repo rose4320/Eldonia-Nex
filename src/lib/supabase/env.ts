@@ -93,5 +93,11 @@ export function mapSupabaseAuthMessage(message: string): string {
   if (normalized.includes("user already registered")) {
     return "このメールアドレスは既に登録されています。ログインするか別のメールをお使いください。";
   }
+  if (normalized.includes("password should be at least")) {
+    return "パスワードは 6 文字以上にしてください。";
+  }
+  if (normalized.includes("same password")) {
+    return "新しいパスワードは現在のパスワードと異なる必要があります。";
+  }
   return message;
 }

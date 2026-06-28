@@ -2,7 +2,13 @@ import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  return updateSession(request);
+  const response = await updateSession(request);
+
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    response.headers.set("x-admin-path", request.nextUrl.pathname);
+  }
+
+  return response;
 }
 
 export const config = {

@@ -10,6 +10,7 @@ import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { buildAuthCallbackUrl } from "@/lib/auth/site-url";
 import { buildSignupResumePath, draftFromUserMetadata } from "@/lib/onboarding/status";
 import { localeFromCountry } from "@/lib/i18n/country-locale";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
   mapAuthError,
@@ -151,7 +152,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
 
       if (!resumedDraft.username.trim()) {
         setStep("basic");
-        setMessage(`${t.auth.signupConfirmEmail} ${signup.messages.confirmEmailContinue}`);
+        setMessage(signup.messages.confirmEmailContinue);
         return;
       }
 
@@ -165,7 +166,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     };
     // saveBasicInfo is stable enough for one-shot resume hydration
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldResume, checkoutSuccess, supabaseConfigured, redirectTo, signup.messages.basicSaved, signup.messages.confirmEmailContinue, t.auth.signupConfirmEmail]);
+  }, [shouldResume, checkoutSuccess, supabaseConfigured, redirectTo, signup.messages.basicSaved, signup.messages.confirmEmailContinue]);
 
   useEffect(() => {
     if (!checkoutSuccess) return;
@@ -373,7 +374,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
         return;
       }
 
-      setMessage(`${t.auth.signupConfirmEmail} ${signup.messages.confirmEmailContinue}`);
+      setMessage(signup.messages.confirmEmailContinue);
       setLoading(false);
     } catch (caught) {
       setError(mapAuthError(caught));
@@ -490,7 +491,47 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
       {renderProgress()}
 
       {step === "basic" && (
+        <div className="mb-6 flex justify-center">
+          <OAuthButtons redirectTo={redirectTo} signup referralCode={referralCode} />
+        </div>
+      )}
+
+      {step === "basic" && (
         <form onSubmit={handleBasicSubmit} className="grid gap-4 sm:grid-cols-2">
+          <div className="sm:col-span-2 rounded-md border border-eldonia-border bg-eldonia-gold/5 p-4">
+            <p className="eldonia-label">{signup.basic.rulesTitle}</p>
+            <ul className="mt-3 space-y-2 text-sm leading-6 text-eldonia-text-muted">
+              <li>
+                <span className="font-medium text-eldonia-text">{signup.basic.displayName}:</span>{" "}
+                {signup.basic.hints.displayName}
+              </li>
+              <li>
+                <span className="font-medium text-eldonia-text">{signup.basic.username}:</span>{" "}
+                {signup.basic.hints.username}
+              </li>
+              <li>
+                <span className="font-medium text-eldonia-text">{t.auth.email}:</span>{" "}
+                {signup.basic.hints.email}
+              </li>
+              <li>
+                <span className="font-medium text-eldonia-text">{t.auth.password}:</span>{" "}
+                {signup.basic.hints.password}
+              </li>
+              <li>
+                <span className="font-medium text-eldonia-text">{signup.basic.legalName}:</span>{" "}
+                {signup.basic.hints.legalName}
+              </li>
+              <li>
+                <span className="font-medium text-eldonia-text">{signup.basic.country}:</span>{" "}
+                {signup.basic.hints.country}
+              </li>
+              <li>
+                <span className="font-medium text-eldonia-text">{signup.basic.phone}:</span>{" "}
+                {signup.basic.hints.phone}
+              </li>
+            </ul>
+          </div>
+
           <div className="flex flex-col gap-1">
             <label htmlFor="display-name" className="eldonia-label">
               {signup.basic.displayName}
@@ -504,6 +545,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => updateDraft("displayName", event.target.value)}
               className="eldonia-input"
             />
+            <p className="eldonia-hint">{signup.basic.hints.displayName}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -516,6 +558,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               autoComplete="username"
               required
               minLength={3}
+              maxLength={30}
               pattern="[a-z0-9_]+"
               value={draft.username}
               onChange={(event) =>
@@ -524,6 +567,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               className="eldonia-input"
               placeholder="creator_name"
             />
+            <p className="eldonia-hint">{signup.basic.hints.username}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -539,6 +583,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => updateDraft("email", event.target.value)}
               className="eldonia-input"
             />
+            <p className="eldonia-hint">{signup.basic.hints.email}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -555,6 +600,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => setPassword(event.target.value)}
               className="eldonia-input"
             />
+            <p className="eldonia-hint">{signup.basic.hints.password}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -569,9 +615,10 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => updateDraft("legalName", event.target.value)}
               className="eldonia-input"
             />
+            <p className="eldonia-hint">{signup.basic.hints.legalName}</p>
           </div>
 
-          <div className="grid grid-cols-[7rem_1fr] gap-3">
+          <div className="grid grid-cols-[7rem_1fr] gap-3 sm:col-span-2">
             <div className="flex flex-col gap-1">
               <label htmlFor="country" className="eldonia-label">
                 {signup.basic.country}
@@ -580,10 +627,13 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
                 id="country"
                 type="text"
                 maxLength={2}
+                minLength={2}
+                required
                 value={draft.country}
                 onChange={(event) => updateDraft("country", event.target.value.toUpperCase())}
                 className="eldonia-input"
               />
+              <p className="eldonia-hint">{signup.basic.hints.country}</p>
             </div>
             <div className="flex flex-col gap-1">
               <label htmlFor="phone" className="eldonia-label">
@@ -597,6 +647,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
                 onChange={(event) => updateDraft("phone", event.target.value)}
                 className="eldonia-input"
               />
+              <p className="eldonia-hint">{signup.basic.hints.phone}</p>
             </div>
           </div>
 

@@ -9,11 +9,7 @@ const LOCAL_REDIRECT_URLS = [
   "http://127.0.0.1:3000",
   "http://127.0.0.1:3000/auth/callback",
 ];
-const PRODUCTION_REDIRECT_URLS = [
-  PRODUCTION_SITE_URL,
-  `${PRODUCTION_SITE_URL}/auth/callback`,
-  `${PRODUCTION_SITE_URL}/**`,
-];
+const PRODUCTION_REDIRECT_URLS = [`${PRODUCTION_SITE_URL}/**`];
 
 function loadFile(path) {
   const env = {};

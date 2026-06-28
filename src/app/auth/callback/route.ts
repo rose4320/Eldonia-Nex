@@ -57,8 +57,9 @@ export async function GET(request: NextRequest) {
         const isSignupReturn =
           rawRedirect?.startsWith("/auth/signup") ||
           destination.startsWith("/auth/signup");
+        const isPasswordReset = destination.startsWith("/auth/reset-password");
 
-        if (!onboardingComplete && !isSignupReturn) {
+        if (!onboardingComplete && !isSignupReturn && !isPasswordReset) {
           const finalRedirect =
             rawRedirect && sanitizeRedirectTo(rawRedirect) !== "/"
               ? sanitizeRedirectTo(rawRedirect)

@@ -76,6 +76,11 @@ async function main() {
     join(TEMPLATE_DIR, "auth-confirmation-subject.txt"),
     "utf8",
   ).trim();
+  const recoveryContent = readFileSync(join(TEMPLATE_DIR, "auth-recovery.html"), "utf8");
+  const recoverySubject = readFileSync(
+    join(TEMPLATE_DIR, "auth-recovery-subject.txt"),
+    "utf8",
+  ).trim();
 
   const headers = {
     Authorization: `Bearer ${accessToken}`,
@@ -90,6 +95,8 @@ async function main() {
       body: JSON.stringify({
         mailer_subjects_confirmation: confirmationSubject,
         mailer_templates_confirmation_content: confirmationContent,
+        mailer_subjects_recovery: recoverySubject,
+        mailer_templates_recovery_content: recoveryContent,
       }),
     },
   );
@@ -99,7 +106,7 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("Supabase confirmation email templates updated (ja / en / ko / zh-CN).");
+  console.log("Supabase auth email templates updated (confirmation + recovery, ja/en/ko/zh-CN).");
 }
 
 main().catch((error) => {
