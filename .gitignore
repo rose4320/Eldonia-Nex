@@ -324,6 +324,9 @@ Desktop.ini
 *.webp
 
 # Exception: Keep essential frontend assets
+!aset/
+!aset/**
+!aset/**/*.png
 !public/
 !public/**
 !frontend/public/**/*.png
