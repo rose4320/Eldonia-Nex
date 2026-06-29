@@ -15,6 +15,7 @@ aset/
 ├── lab_icon_1024.png
 ├── lp/
 │   ├── hero.png                  # Hero 背景（魔法都市・月夜）
+│   ├── cta-bg.png                # CTA 最背面（テラス・月夜都市）
 │   ├── world.png                 # World セクション背景
 │   ├── pin-badge.png             # EN 記念ピンバッジ
 │   ├── globe.png                 # Translation 地球儀

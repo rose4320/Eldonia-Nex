@@ -1,5 +1,5 @@
 /** LP brand assets — source: repo root `aset/` → synced to `public/aset/` */
-const LP_ASSET_VERSION = "0.4.2";
+const LP_ASSET_VERSION = "0.4.3";
 
 function lpAsset(path: string): string {
   return `${path}?v=${LP_ASSET_VERSION}`;
@@ -11,7 +11,7 @@ export const LP_ASSETS = {
   world: lpAsset("/aset/lp/world.png"),
   pinBadge: lpAsset("/aset/lp/pin-badge.png"),
   globe: lpAsset("/aset/lp/globe.png"),
-  ctaBg: lpAsset("/aset/lp/hero.png"),
+  ctaBg: lpAsset("/aset/lp/cta-bg.png"),
   owl: lpAsset("/aset/lp/owl.png"),
   borders: {
     sheet: lpAsset("/aset/lp/border-sheet.png"),
