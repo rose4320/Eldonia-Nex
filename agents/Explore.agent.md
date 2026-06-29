@@ -1,5 +1,8 @@
 # Explore エージェント
 
+**所属部署**: Development（Sub Agent）  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: リポジトリを素早く読み取り、質問応答やコード探索を行うサブエージェント。
 
 **使い方**: `runSubagent` を使って `agentName: "Explore"` を指定してください。"thoroughness" パラメータで `quick`/`medium`/`thorough` を指定できます。

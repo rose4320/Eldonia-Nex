@@ -180,12 +180,26 @@ export type CollabRequest = {
   updated_at: string;
 };
 
+export type PendingCollabRequest = {
+  id: string;
+  message: string | null;
+  created_at: string;
+  requester: {
+    display_name: string | null;
+    username: string | null;
+  };
+};
+
 export type ArtworkEngagementState = {
   fanCount: number;
   isFan: boolean;
   collabRequest: Pick<CollabRequest, "id" | "status" | "message"> | null;
   likeCount: number;
   isLiked: boolean;
+  /** この作品に紐づく Lab に参加している（または作者で Lab あり） */
+  labAvailable: boolean;
+  /** 作品作者向け: 未処理のコラボ申請 */
+  pendingCollabRequests: PendingCollabRequest[];
 };
 
 export type ArtworkLike = {

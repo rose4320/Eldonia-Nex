@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
@@ -16,7 +17,7 @@ type CollabLabWorkspaceProps = {
 export function CollabLabWorkspace({ labData, userId }: CollabLabWorkspaceProps) {
   const router = useRouter();
   const locale = useLocale();
-  const { engagement } = useContent();
+  const { engagement, pages } = useContent();
   const lab = engagement.lab;
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +57,14 @@ export function CollabLabWorkspace({ labData, userId }: CollabLabWorkspaceProps)
         <p className="eldonia-eyebrow text-[0.65rem]">Collab Lab</p>
         <h1 className="eldonia-heading eldonia-heading-sm mt-1">{labData.lab.title}</h1>
         <p className="eldonia-body mt-2 text-sm">{lab.lead}</p>
+        <div className="mt-3 flex flex-wrap gap-3 text-sm">
+          <Link href={`/gallery/${labData.lab.artwork_id}`} className="eldonia-link">
+            {pages.lab.viewArtwork}
+          </Link>
+          <Link href="/lab" className="eldonia-link">
+            {pages.lab.allLabs}
+          </Link>
+        </div>
         <ul className="mt-4 flex flex-wrap gap-2">
           {labData.members.map((member) => {
             const name =

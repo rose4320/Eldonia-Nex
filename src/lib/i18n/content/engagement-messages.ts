@@ -17,6 +17,9 @@ export type EngagementContent = {
   errCollab: string;
   collabAccept: string;
   collabDecline: string;
+  openLab: string;
+  pendingCollabHeading: (n: number) => string;
+  ownerCollabHint: string;
   lab: {
     lead: string;
     memberFallback: string;
@@ -51,6 +54,9 @@ const ENGAGEMENT_JA: EngagementContent = {
   errCollab: "コラボ申請に失敗しました。",
   collabAccept: "許可",
   collabDecline: "却下",
+  openLab: "Lab を開く",
+  pendingCollabHeading: (n) => `コラボ申請（${n}件）`,
+  ownerCollabHint: "コラボ申請が届くとここで承認できます。承認後、共同作業用 Lab が作成されます。",
   lab: {
     lead: "承認されたメンバーで共同作業できる Lab です。メモや進捗を共有しましょう。",
     memberFallback: "メンバー",
@@ -85,6 +91,9 @@ const ENGAGEMENT_EN: EngagementContent = {
   errCollab: "Could not send collab request.",
   collabAccept: "Accept",
   collabDecline: "Decline",
+  openLab: "Open Lab",
+  pendingCollabHeading: (n) => `Collab requests (${n})`,
+  ownerCollabHint: "Incoming collab requests appear here. Accepting creates a shared Lab.",
   lab: {
     lead: "Collaborate with approved members. Share notes and progress here.",
     memberFallback: "Member",
@@ -109,6 +118,9 @@ export const ENGAGEMENT_CONTENT: Record<UiLocale, EngagementContent> = {
     cancel: "취소",
     collabAccept: "승인",
     collabDecline: "거절",
+    openLab: "Lab 열기",
+    pendingCollabHeading: (n) => `콜라보 신청 (${n}건)`,
+    ownerCollabHint: "콜라보 신청이 오면 여기서 승인할 수 있습니다.",
     lab: { ...ENGAGEMENT_EN.lab, notesHeading: "공유 메모", postSubmit: "Lab에 게시" },
   },
   "zh-CN": {
@@ -120,6 +132,9 @@ export const ENGAGEMENT_CONTENT: Record<UiLocale, EngagementContent> = {
     cancel: "取消",
     collabAccept: "同意",
     collabDecline: "拒绝",
+    openLab: "打开 Lab",
+    pendingCollabHeading: (n) => `合作申请（${n}条）`,
+    ownerCollabHint: "合作申请将显示在此。同意后创建共享 Lab。",
     lab: { ...ENGAGEMENT_EN.lab, notesHeading: "共享备忘", postSubmit: "发布到 Lab" },
   },
 };

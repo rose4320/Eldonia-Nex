@@ -146,6 +146,8 @@ export type ContentCatalog = {
   lab: {
     lead: string;
     empty: string;
+    flowHint: string;
+    memberCount: (n: number) => string;
   };
   help: {
     eyebrow: string;

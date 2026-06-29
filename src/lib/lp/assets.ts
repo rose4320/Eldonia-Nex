@@ -1,5 +1,5 @@
 /** LP brand assets — source: repo root `aset/` → synced to `public/aset/` */
-const LP_ASSET_VERSION = "0.4.3";
+const LP_ASSET_VERSION = "0.5.0";
 
 function lpAsset(path: string): string {
   return `${path}?v=${LP_ASSET_VERSION}`;
@@ -22,11 +22,16 @@ export const LP_ASSETS = {
     dividerCrest: lpAsset("/aset/lp/borders/divider-crest.png"),
   },
   modules: {
-    gallery: lpAsset("/aset/gallery_icon_1024.png"),
-    community: lpAsset("/aset/community_icon_1024.png"),
-    shop: lpAsset("/aset/shop_icon_1024.png"),
-    event: lpAsset("/aset/event_icon_1024.png"),
-    work: lpAsset("/aset/work_icon_1024.png"),
+    gallery: lpAsset("/aset/icons/modules/icon-gallery.png"),
+    community: lpAsset("/aset/icons/modules/icon-community.png"),
+    shop: lpAsset("/aset/icons/modules/icon-shop.png"),
+    event: lpAsset("/aset/icons/modules/icon-events.png"),
+    work: lpAsset("/aset/icons/modules/icon-works.png"),
     lab: lpAsset("/aset/lab_icon_1024.png"),
+  },
+  features: {
+    gallery: lpAsset("/aset/icons/modules/icon-gallery.png"),
+    global: lpAsset("/aset/lp/globe.png"),
+    market: lpAsset("/aset/icons/modules/icon-shop.png"),
   },
 } as const;

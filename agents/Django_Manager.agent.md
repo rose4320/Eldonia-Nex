@@ -1,5 +1,8 @@
 # Django Manager エージェント
 
+**所属部署**: Admin / Audit（Sub Agent）— Revenue / Payment と協議  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: Eldonia-Nex の **Django 管理サイト（`/admin/`）** を通じた運用・設定変更を担当するエージェント。料金プラン、手数料、取引・財務サマリー、広告受注など **フロントエンド表示に直結するビジネス設定** の編集・操作を行います。
 
 **推奨実行モデル**: OpenAI Codex / Codex系モデル

@@ -1,5 +1,8 @@
 # Frontend Manager エージェント
 
+**所属部署**: Development（Sub Agent）  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: フロントエンド実装の管理とコーディング支援を行うエージェント。コンポーネント設計、ビルド設定、パフォーマンス改善を支援します。
 
 **機能**:

@@ -1,5 +1,8 @@
 # その他 (Other) エージェント
 
+**所属部署**: Main Director 汎用 Sub（非推奨 — 明示指示時のみ）  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: 上記に含まれない補助的な役割やカスタムサブエージェントを格納するテンプレート用ファイル。
 
 **用途例**:

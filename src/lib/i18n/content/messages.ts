@@ -146,6 +146,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     lab: {
       lead: "承認済みコラボ Lab の一覧です。",
       empty: "参加中の Lab はまだありません。",
+      flowHint: "GALLEY で作品を見つける → コラボ申請 → 承認後、共同作業用 Lab が作成されます。",
+      memberCount: (n) => `メンバー ${n} 人`,
     },
     help: {
       eyebrow: "Help Center",
@@ -295,6 +297,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     lab: {
       lead: "Your approved Collab Labs.",
       empty: "No Labs yet.",
+      flowHint: "Find artwork in GALLEY → request collab → after approval, work together in a shared Lab.",
+      memberCount: (n) => `${n} member${n === 1 ? "" : "s"}`,
     },
     help: {
       eyebrow: "Help Center",
@@ -444,6 +448,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     lab: {
       lead: "승인된 Collab Lab 목록입니다.",
       empty: "참여 중인 Lab이 없습니다.",
+      flowHint: "GALLEY에서 작품 찾기 → 콜라보 신청 → 승인 후 Lab에서 공동 작업.",
+      memberCount: (n) => `멤버 ${n}명`,
     },
     help: {
       eyebrow: "Help Center",
@@ -592,6 +598,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     lab: {
       lead: "已批准的 Collab Lab 列表。",
       empty: "暂无 Lab。",
+      flowHint: "在 GALLEY 发现作品 → 申请合作 → 批准后进入共享 Lab 协作。",
+      memberCount: (n) => `${n} 位成员`,
     },
     help: {
       eyebrow: "Help Center",

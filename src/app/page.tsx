@@ -25,26 +25,28 @@ export const metadata: Metadata = {
 
 export default function HomePage() {
   return (
-    <div className="lp-page min-h-screen text-[#e8d5a3]">
+    <div className="lp-page min-h-screen text-[#f8f1df]">
       <LpPageFrame>
-        <LpHeader />
-        <main>
-          <LpHeroSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpWorldSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpServicesSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpTranslationSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpPlansSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpReferralSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpRewardsSection />
-          <LpSectionRule className="mx-auto my-2 max-w-4xl" />
-          <LpCtaSection />
-        </main>
+        <div className="relative">
+          <LpHeader />
+          <main>
+            <LpHeroSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpWorldSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpServicesSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpTranslationSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpPlansSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpReferralSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpRewardsSection />
+            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpCtaSection />
+          </main>
+        </div>
         <LpFooter />
       </LpPageFrame>
     </div>

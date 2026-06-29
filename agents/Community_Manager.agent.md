@@ -1,5 +1,9 @@
 # Community Manager エージェント
 
+**所属部署**: Community  
+**Sub Agent**: `Frontend_Manager`, `Backend_Manager`, `UI_UX_Designer`  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: Eldonia-Nex COMMUNITY モジュールの設計・実装・運用。**Discord / Reddit 型 UX** をベースに、Dark Fantasy（黒×金）のブランドを維持します。
 
 **推奨実行モデル**: OpenAI Codex / Codex系モデル

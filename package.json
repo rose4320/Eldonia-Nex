@@ -1,6 +1,6 @@
 {
   "name": "eldonia-nex",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -14,7 +14,10 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
-    "supabase:sync-auth": "node scripts/sync-supabase-auth-urls.mjs && node scripts/sync-supabase-auth-email-templates.mjs"
+    "supabase:sync-auth": "node scripts/sync-supabase-auth-urls.mjs && node scripts/sync-supabase-auth-email-templates.mjs && node scripts/sync-supabase-auth-smtp.mjs && node scripts/sync-supabase-auth-google.mjs",
+    "supabase:sync-templates": "node scripts/sync-supabase-auth-email-templates.mjs",
+    "supabase:sync-smtp": "node scripts/sync-supabase-auth-smtp.mjs",
+    "supabase:sync-google": "node scripts/sync-supabase-auth-google.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

@@ -1,1 +1,1 @@
-{{if eq .Data.locale "ja"}}Eldonia Nex — パスワード再設定{{else if eq .Data.locale "ko"}}Eldonia Nex — 비밀번호 재설정{{else if eq .Data.locale "zh-CN"}}Eldonia Nex — 重置密码{{else}}Eldonia Nex — Reset your password{{end}}
+{{if eq .Data.locale "ja"}}【Eldonia Nex】パスワード再設定{{else if eq .Data.locale "ko"}}【Eldonia Nex】비밀번호 재설정{{else if eq .Data.locale "zh-CN"}}【Eldonia Nex】重置密码{{else}}【Eldonia Nex】Reset your password{{end}}

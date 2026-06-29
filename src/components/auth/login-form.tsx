@@ -44,10 +44,10 @@ export function LoginForm({
       const loginResponse = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, redirectTo }),
       });
 
-      const payload = (await loginResponse.json()) as { error?: string };
+      const payload = (await loginResponse.json()) as { error?: string; destination?: string };
 
       if (!loginResponse.ok) {
         setError(payload.error ?? "ログインに失敗しました。");
@@ -56,7 +56,7 @@ export function LoginForm({
       }
 
       router.refresh();
-      window.location.assign(resolvePostLoginPath(redirectTo));
+      window.location.assign(payload.destination ?? resolvePostLoginPath(redirectTo));
     } catch (caught) {
       setError(mapAuthError(caught));
       setLoading(false);

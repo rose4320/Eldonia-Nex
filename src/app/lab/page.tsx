@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { getUserLabs } from "@/lib/gallery/get-user-labs";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { getContent } from "@/lib/i18n/content/messages";
 import { createClient } from "@/lib/supabase/server";
@@ -14,29 +15,8 @@ export default async function LabHubPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let labs: {
-    id: string;
-    title: string;
-    artwork_id: string;
-    created_at: string;
-  }[] = [];
-
-  if (user) {
-    const { data: memberships } = await supabase
-      .from("collab_lab_members")
-      .select("lab_id")
-      .eq("user_id", user.id);
-
-    const labIds = (memberships ?? []).map((row) => row.lab_id);
-    if (labIds.length > 0) {
-      const { data } = await supabase
-        .from("collab_labs")
-        .select("id, title, artwork_id, created_at")
-        .in("id", labIds)
-        .order("created_at", { ascending: false });
-      labs = data ?? [];
-    }
-  }
+  const labs = user ? await getUserLabs(user.id) : [];
+  const dateLocale = locale === "ja" ? "ja-JP" : locale === "ko" ? "ko-KR" : "en-US";
 
   return (
     <div className="eldonia-page">
@@ -45,6 +25,7 @@ export default async function LabHubPage() {
         <p className="eldonia-eyebrow">LAB</p>
         <h1 className="eldonia-heading eldonia-heading-lg">LAB</h1>
         <p className="eldonia-body mt-2 text-sm">{t.lab.lead}</p>
+        <p className="eldonia-hint mt-2 text-xs">{t.lab.flowHint}</p>
 
         <div className="my-8">
           <EldoniaDivider />
@@ -71,14 +52,31 @@ export default async function LabHubPage() {
               <li key={lab.id}>
                 <Link
                   href={`/gallery/${lab.artwork_id}/lab`}
-                  className="eldonia-card block transition hover:border-eldonia-gold/50"
+                  className="eldonia-card flex gap-4 transition hover:border-eldonia-gold/50"
                 >
-                  <p className="font-display text-sm font-semibold text-eldonia-gold-light">
-                    {lab.title}
-                  </p>
-                  <p className="eldonia-hint mt-1 text-xs">
-                    {new Date(lab.created_at).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US")}
-                  </p>
+                  {lab.artworkThumb ? (
+                    <img
+                      src={lab.artworkThumb}
+                      alt=""
+                      className="h-16 w-16 shrink-0 rounded-md border border-eldonia-border object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-md border border-eldonia-border bg-eldonia-surface text-xs text-eldonia-text-dim">
+                      LAB
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-sm font-semibold text-eldonia-gold-light">
+                      {lab.title}
+                    </p>
+                    <p className="eldonia-body mt-1 truncate text-xs text-eldonia-text-muted">
+                      {lab.artworkTitle}
+                    </p>
+                    <p className="eldonia-hint mt-2 text-xs">
+                      {t.lab.memberCount(lab.memberCount)} ·{" "}
+                      {new Date(lab.created_at).toLocaleDateString(dateLocale)}
+                    </p>
+                  </div>
                 </Link>
               </li>
             ))}

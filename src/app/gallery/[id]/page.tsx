@@ -70,6 +70,8 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
       collabRequest: null,
       likeCount: 0,
       isLiked: false,
+      labAvailable: false,
+      pendingCollabRequests: [],
     }),
   ]);
 
@@ -179,6 +181,8 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                     isOwner={isOwner}
                     engagement={engagement}
                     loginRedirect={loginRedirect}
+                    pendingCollabRequests={engagement.pendingCollabRequests}
+                    labAvailable={engagement.labAvailable}
                   />
                 </div>
               </div>

@@ -1,5 +1,8 @@
 # 要望受付 (Request Intake) エージェント
 
+**所属部署**: Main Director（Sub Agent）  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: ユーザー/顧客からの要望を受け付け、構造化してプロダクトチームに渡すエージェント。
 
 **機能**:

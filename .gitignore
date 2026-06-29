@@ -393,3 +393,4 @@ googleworkspace.json
 # Local secrets file (do not commit)
 env.md
 .vercel
+.env*

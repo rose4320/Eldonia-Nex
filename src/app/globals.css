@@ -2697,15 +2697,21 @@ body {
 
 /* ── Landing page (brand LP) ── */
 .lp-page {
-  --lp-bg-base: #020408;
-  --lp-bg-surface: #060b14;
-  --lp-bg-elevated: #0a101a;
-  --lp-bg-overlay: #030508;
-  color: #e8d5a3;
+  --lp-bg-base: #020817;
+  --lp-bg-deep: #050b16;
+  --lp-bg-surface: rgba(5, 14, 30, 0.86);
+  --lp-bg-elevated: rgba(9, 22, 42, 0.78);
+  --lp-bg-overlay: #020817;
+  --lp-gold: #d6a84f;
+  --lp-gold-light: #f0c978;
+  --lp-violet: #7c5cff;
+  --lp-text-main: #f8f1df;
+  --lp-text-soft: #d8c8a8;
+  --lp-text-muted: #9e927d;
+  color: var(--lp-text-main);
   background:
-    radial-gradient(ellipse at 50% -5%, rgba(18, 28, 56, 0.28) 0%, transparent 42%),
-    radial-gradient(ellipse at 80% 100%, rgba(8, 14, 32, 0.35) 0%, transparent 50%),
-    var(--lp-bg-base);
+    radial-gradient(circle at top, rgba(45, 88, 150, 0.28), transparent 40%),
+    linear-gradient(180deg, #020817 0%, #050b16 45%, #020817 100%);
 }
 
 /* Page outer ornate frame — border-image 9-slice (744×202 asset) */
@@ -2715,7 +2721,7 @@ body {
 
 .lp-ornate-frame,
 .lp-cta-frame {
-  --lp-frame-image: url("/aset/lp/borders/frame-ornate.png?v=0.4.3");
+  --lp-frame-image: url("/aset/lp/borders/frame-ornate.png?v=0.5.0");
   --lp-frame-slice: 100 150 100 150;
   --lp-frame-width: clamp(1.125rem, 2.2vw, 1.75rem);
   border-style: solid;
@@ -2907,6 +2913,33 @@ body {
 }
 
 /* Hero — left-heavy overlay mask so the city art shows on the right */
+.lp-hero {
+  min-height: 720px;
+}
+
+@media (max-width: 639px) {
+  .lp-hero__content {
+    text-align: center;
+  }
+
+  .lp-hero__content .max-w-2xl {
+    margin-inline: auto;
+  }
+}
+
+.lp-card--hover {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.lp-card--hover:hover {
+  border-color: rgba(214, 168, 79, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(240, 201, 120, 0.08),
+    0 0 22px rgba(214, 168, 79, 0.14);
+}
+
 .lp-hero__shade-left {
   position: absolute;
   inset: 0;
@@ -3046,7 +3079,7 @@ body {
   background:
     linear-gradient(180deg, rgba(3, 5, 8, 0.52) 0%, rgba(3, 5, 8, 0.38) 45%, rgba(2, 4, 8, 0.58) 100%),
     linear-gradient(90deg, rgba(2, 4, 8, 0.55) 0%, rgba(2, 4, 8, 0.18) 42%, rgba(2, 4, 8, 0.06) 100%),
-    url("/aset/lp/cta-bg.png?v=0.4.3") center / cover no-repeat;
+    url("/aset/lp/cta-bg.png?v=0.5.0") center / cover no-repeat;
   opacity: 1;
 }
 

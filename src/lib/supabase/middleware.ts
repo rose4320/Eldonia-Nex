@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { resolvePostLoginPath } from "@/lib/auth/redirect";
+import {
+  buildSignupResumePath,
+  hasCompletedOnboarding,
+  resolveAuthenticatedDestination,
+} from "@/lib/onboarding/status";
 import { getSupabaseServerKey, getSupabaseUrl } from "@/lib/supabase/env";
 import type { Database } from "@/types/database";
 
@@ -78,13 +82,19 @@ export async function updateSession(request: NextRequest) {
   const user = await getUserWithTimeout(supabase);
 
   if (user && pathname === "/auth/login") {
-    const redirectTo = resolvePostLoginPath(
+    const destination = await resolveAuthenticatedDestination(
+      supabase,
+      user.id,
       request.nextUrl.searchParams.get("redirect_to"),
     );
-    const home = request.nextUrl.clone();
-    home.pathname = redirectTo;
-    home.search = "";
-    return NextResponse.redirect(home);
+    return NextResponse.redirect(new URL(destination, request.url));
+  }
+
+  if (user && isProtectedPath(pathname)) {
+    const onboardingComplete = await hasCompletedOnboarding(supabase, user.id);
+    if (!onboardingComplete) {
+      return NextResponse.redirect(new URL(buildSignupResumePath(pathname), request.url));
+    }
   }
 
   if (!user && isProtectedPath(pathname)) {

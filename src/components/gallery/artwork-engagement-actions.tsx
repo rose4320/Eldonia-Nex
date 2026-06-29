@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
+import { ArtworkOwnerCollabPanel } from "@/components/gallery/artwork-owner-collab-panel";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
 import type { ArtworkEngagementState } from "@/types/database";
@@ -16,6 +17,8 @@ type ArtworkEngagementActionsProps = {
   isOwner: boolean;
   engagement: ArtworkEngagementState;
   loginRedirect: string;
+  pendingCollabRequests?: ArtworkEngagementState["pendingCollabRequests"];
+  labAvailable?: boolean;
 };
 
 export function ArtworkEngagementActions({
@@ -26,6 +29,8 @@ export function ArtworkEngagementActions({
   isOwner,
   engagement,
   loginRedirect,
+  pendingCollabRequests = [],
+  labAvailable = false,
 }: ArtworkEngagementActionsProps) {
   const router = useRouter();
   const { engagement: copy } = useContent();
@@ -39,9 +44,13 @@ export function ArtworkEngagementActions({
 
   if (isOwner) {
     return (
-      <p className="text-xs text-eldonia-text-muted">
-        {copy.ownerFans(creatorName, fanCount)}
-      </p>
+      <ArtworkOwnerCollabPanel
+        artworkId={artworkId}
+        creatorName={creatorName}
+        fanCount={fanCount}
+        pendingRequests={pendingCollabRequests}
+        labAvailable={labAvailable}
+      />
     );
   }
 
@@ -182,6 +191,15 @@ export function ArtworkEngagementActions({
         <p className="text-xs text-eldonia-text-muted">
           {copy.collabLabel(collabStatusLabel(collabRequest.status))}
         </p>
+      )}
+
+      {(labAvailable || collabRequest?.status === "accepted") && (
+        <Link
+          href={`/gallery/${artworkId}/lab`}
+          className="eldonia-btn-primary inline-flex text-sm"
+        >
+          {copy.openLab}
+        </Link>
       )}
 
       {showCollabForm && !collabPending && userId && (

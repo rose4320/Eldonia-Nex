@@ -3,37 +3,105 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
   <title>Eldonia Nex</title>
 </head>
-<body style="margin:0;padding:0;background:#0a0a0a;color:#e8e0d0;font-family:Georgia,'Times New Roman',serif;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0a0a0a;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#000000;color:#e8d5a3;font-family:Georgia,'Times New Roman',Times,serif;-webkit-font-smoothing:antialiased;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;">
+    {{if eq .Data.locale "ja"}}ネクサスの扉が開かれます。メールアドレスを確認して、あなたの冒険を始めましょう。{{else if eq .Data.locale "ko"}}넥서스의 문이 열립니다. 이메일을 확인하고 모험을 시작하세요.{{else if eq .Data.locale "zh-CN"}}Nexus 之门即将开启。请确认邮箱，开启您的冒险。{{else}}The gates of the Nexus await. Verify your email and begin your journey.{{end}}
+  </div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#000000;padding:40px 16px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:520px;background:#121212;border:1px solid #3d3520;border-radius:8px;padding:32px 28px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;">
           <tr>
-            <td>
-              <p style="margin:0 0 8px;font-size:12px;letter-spacing:0.2em;text-transform:uppercase;color:#c9a227;">Eldonia Nex</p>
+            <td align="center" style="padding-bottom:24px;">
+              <p style="margin:0;font-size:11px;letter-spacing:0.35em;text-transform:uppercase;color:#c9a84c;">ELDONIA NEX</p>
+              <p style="margin:8px 0 0;font-size:12px;color:#5c5340;font-style:italic;">A Fantasy Nexus for Creators</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#0c0c0c;border:1px solid rgba(201,168,76,0.28);border-radius:10px;padding:36px 32px;">
               {{if eq .Data.locale "ja"}}
-              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">メールアドレスの確認</h1>
-              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}{{.Data.display_name}} 様、{{else}}{{end}}Eldonia Nex へのご登録ありがとうございます。下のボタンからメールアドレスを確認し、登録を完了してください。</p>
-              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">登録を完了する</a></p>
-              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">ボタンが開けない場合は、次の URL をブラウザに貼り付けてください。<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#9a8b6a;">YOUR JOURNEY BEGINS</p>
+              <h1 style="margin:0 0 18px;font-size:24px;line-height:1.35;font-weight:600;color:#e8d5a3;">ネクサスへの扉が、<br />いま開かれようとしています</h1>
+              <p style="margin:0 0 8px;line-height:1.75;font-size:15px;color:#9a8b6a;">{{if .Data.display_name}}{{.Data.display_name}} 様{{else}}クリエイター様{{end}}</p>
+              <p style="margin:0 0 16px;line-height:1.85;font-size:15px;color:#9a8b6a;">このたびは Eldonia Nex へのご登録、誠にありがとうございます。<br />作品を紡ぎ、ファンと出会い、共創の物語を育てる——<strong style="color:#e8d5a3;font-weight:600;">あなただけの冒険</strong>が、ここから始まります。</p>
+              <p style="margin:0 0 28px;line-height:1.85;font-size:15px;color:#9a8b6a;">まずは下のボタンからメールアドレスをご確認ください。確認が完了すると、プラン選択と規約への同意を経て、ネクサスの世界へ正式にお進みいただけます。</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 28px;">
+                <tr>
+                  <td style="border-radius:6px;background:linear-gradient(180deg,#c9a84c 0%,#8a6d1f 100%);">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:bold;color:#000000;text-decoration:none;border-radius:6px;">冒険を始める（メールを確認する）</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 12px;font-size:13px;line-height:1.65;color:#5c5340;">ボタンが開けない場合は、次の URL をブラウザに貼り付けてください。</p>
+              <p style="margin:0;padding:14px;background:#050505;border:1px solid rgba(201,168,76,0.18);border-radius:6px;font-size:12px;line-height:1.6;color:#9a8b6a;word-break:break-all;">{{ .ConfirmationURL }}</p>
+              <p style="margin:20px 0 0;font-size:12px;line-height:1.75;color:#5c5340;">心当たりのない場合は、このメールを破棄してください。リンクの有効期限が切れた場合は、<a href="https://eldonia-nex.com/auth/signup" style="color:#c9a84c;">新規登録</a>から再度お手続きいただけます。</p>
+              <p style="margin:16px 0 0;font-size:13px;line-height:1.75;color:#9a8b6a;font-style:italic;">さあ、ネクサスでお会いしましょう。</p>
+              <p style="margin:12px 0 0;font-size:11px;line-height:1.65;color:#5c5340;">※ 本メールは送信専用です。ご不明点は <a href="mailto:support@eldonia-nex.com" style="color:#c9a84c;">support@eldonia-nex.com</a> まで。</p>
               {{else if eq .Data.locale "ko"}}
-              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">이메일 확인</h1>
-              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}{{.Data.display_name}}님, {{else}}{{end}}Eldonia Nex 가입을 환영합니다. 아래 버튼을 눌러 이메일을 확인하고 가입을 완료해 주세요.</p>
-              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">가입 완료하기</a></p>
-              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">버튼이 작동하지 않으면 아래 URL을 브라우저에 붙여넣으세요.<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#9a8b6a;">YOUR JOURNEY BEGINS</p>
+              <h1 style="margin:0 0 18px;font-size:24px;line-height:1.35;font-weight:600;color:#e8d5a3;">넥서스의 문이<br />지금 열리려 합니다</h1>
+              <p style="margin:0 0 8px;line-height:1.75;font-size:15px;color:#9a8b6a;">{{if .Data.display_name}}{{.Data.display_name}}님{{else}}크리에이터님{{end}}</p>
+              <p style="margin:0 0 16px;line-height:1.85;font-size:15px;color:#9a8b6a;">Eldonia Nex 가입을 진심으로 환영합니다.<br />작품을 만들고, 팬을 만나고, 함께 이야기를 키워 가는——<strong style="color:#e8d5a3;font-weight:600;">당신만의 모험</strong>이 여기서 시작됩니다.</p>
+              <p style="margin:0 0 28px;line-height:1.85;font-size:15px;color:#9a8b6a;">아래 버튼으로 이메일을 확인해 주세요. 확인 후 플랜 선택과 약관 동의를 마치면 넥서스 세계로 들어가실 수 있습니다.</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 28px;">
+                <tr>
+                  <td style="border-radius:6px;background:linear-gradient(180deg,#c9a84c 0%,#8a6d1f 100%);">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:bold;color:#000000;text-decoration:none;border-radius:6px;">모험 시작하기（이메일 확인）</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 12px;font-size:13px;line-height:1.65;color:#5c5340;">버튼이 작동하지 않으면 아래 URL을 브라우저에 붙여넣으세요.</p>
+              <p style="margin:0;padding:14px;background:#050505;border:1px solid rgba(201,168,76,0.18);border-radius:6px;font-size:12px;line-height:1.6;color:#9a8b6a;word-break:break-all;">{{ .ConfirmationURL }}</p>
+              <p style="margin:16px 0 0;font-size:13px;line-height:1.75;color:#9a8b6a;font-style:italic;">넥서스에서 만나요.</p>
+              <p style="margin:12px 0 0;font-size:11px;line-height:1.65;color:#5c5340;">본 메일은 발신 전용입니다. 문의: <a href="mailto:support@eldonia-nex.com" style="color:#c9a84c;">support@eldonia-nex.com</a></p>
               {{else if eq .Data.locale "zh-CN"}}
-              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">确认电子邮件</h1>
-              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}{{.Data.display_name}}，{{else}}{{end}}欢迎加入 Eldonia Nex。请点击下方按钮确认邮箱并完成注册。</p>
-              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">完成注册</a></p>
-              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">若按钮无法打开，请将以下链接复制到浏览器：<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#9a8b6a;">YOUR JOURNEY BEGINS</p>
+              <h1 style="margin:0 0 18px;font-size:24px;line-height:1.35;font-weight:600;color:#e8d5a3;">通往 Nexus 的大门<br />即将为您开启</h1>
+              <p style="margin:0 0 8px;line-height:1.75;font-size:15px;color:#9a8b6a;">{{if .Data.display_name}}{{.Data.display_name}}{{else}}创作者{{end}}，您好</p>
+              <p style="margin:0 0 16px;line-height:1.85;font-size:15px;color:#9a8b6a;">衷心欢迎加入 Eldonia Nex。<br />创作作品、结识粉丝、共育故事——<strong style="color:#e8d5a3;font-weight:600;">属于您的冒险</strong>，将从这里启程。</p>
+              <p style="margin:0 0 28px;line-height:1.85;font-size:15px;color:#9a8b6a;">请先点击下方按钮确认邮箱。完成后选择方案并同意条款，即可正式进入 Nexus 世界。</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 28px;">
+                <tr>
+                  <td style="border-radius:6px;background:linear-gradient(180deg,#c9a84c 0%,#8a6d1f 100%);">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:bold;color:#000000;text-decoration:none;border-radius:6px;">开启冒险（确认邮箱）</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 12px;font-size:13px;line-height:1.65;color:#5c5340;">若按钮无法打开，请将以下链接复制到浏览器：</p>
+              <p style="margin:0;padding:14px;background:#050505;border:1px solid rgba(201,168,76,0.18);border-radius:6px;font-size:12px;line-height:1.6;color:#9a8b6a;word-break:break-all;">{{ .ConfirmationURL }}</p>
+              <p style="margin:16px 0 0;font-size:13px;line-height:1.75;color:#9a8b6a;font-style:italic;">我们在 Nexus 等您。</p>
+              <p style="margin:12px 0 0;font-size:11px;line-height:1.65;color:#5c5340;">本邮件为系统自动发送。如需帮助请联系 <a href="mailto:support@eldonia-nex.com" style="color:#c9a84c;">support@eldonia-nex.com</a></p>
               {{else}}
-              <h1 style="margin:0 0 16px;font-size:22px;color:#f5ecd7;">Confirm your email</h1>
-              <p style="margin:0 0 20px;line-height:1.7;color:#cfc6b3;">{{if .Data.display_name}}Hi {{.Data.display_name}}, {{else}}{{end}}thanks for joining Eldonia Nex. Click the button below to verify your email and finish signup.</p>
-              <p style="margin:0 0 24px;"><a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:12px 24px;background:#c9a227;color:#0a0a0a;text-decoration:none;border-radius:4px;font-weight:bold;">Complete signup</a></p>
-              <p style="margin:0;font-size:13px;line-height:1.6;color:#8f8778;">If the button does not work, copy and paste this URL into your browser:<br /><span style="word-break:break-all;">{{ .ConfirmationURL }}</span></p>
+              <p style="margin:0 0 10px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#9a8b6a;">YOUR JOURNEY BEGINS</p>
+              <h1 style="margin:0 0 18px;font-size:24px;line-height:1.35;font-weight:600;color:#e8d5a3;">The gates of the Nexus<br />are opening for you</h1>
+              <p style="margin:0 0 8px;line-height:1.75;font-size:15px;color:#9a8b6a;">{{if .Data.display_name}}Dear {{.Data.display_name}},{{else}}Dear Creator,{{end}}</p>
+              <p style="margin:0 0 16px;line-height:1.85;font-size:15px;color:#9a8b6a;">Thank you for registering with Eldonia Nex.<br />Share your work, meet your fans, and grow stories together——<strong style="color:#e8d5a3;font-weight:600;">your adventure</strong> starts here.</p>
+              <p style="margin:0 0 28px;line-height:1.85;font-size:15px;color:#9a8b6a;">Please confirm your email address using the button below. Once verified, you can choose your plan, accept the terms, and step fully into the Nexus.</p>
+              <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 28px;">
+                <tr>
+                  <td style="border-radius:6px;background:linear-gradient(180deg,#c9a84c 0%,#8a6d1f 100%);">
+                    <a href="{{ .ConfirmationURL }}" style="display:inline-block;padding:14px 32px;font-size:15px;font-weight:bold;color:#000000;text-decoration:none;border-radius:6px;">Begin your journey (confirm email)</a>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:0 0 12px;font-size:13px;line-height:1.65;color:#5c5340;">If the button does not work, copy and paste this URL into your browser:</p>
+              <p style="margin:0;padding:14px;background:#050505;border:1px solid rgba(201,168,76,0.18);border-radius:6px;font-size:12px;line-height:1.6;color:#9a8b6a;word-break:break-all;">{{ .ConfirmationURL }}</p>
+              <p style="margin:16px 0 0;font-size:13px;line-height:1.75;color:#9a8b6a;font-style:italic;">We look forward to seeing you in the Nexus.</p>
+              <p style="margin:12px 0 0;font-size:11px;line-height:1.65;color:#5c5340;">This is an automated message. For help, contact <a href="mailto:support@eldonia-nex.com" style="color:#c9a84c;">support@eldonia-nex.com</a>.</p>
               {{end}}
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-top:24px;">
+              <p style="margin:0 0 6px;font-size:12px;color:#5c5340;">
+                <a href="https://eldonia-nex.com" style="color:#c9a84c;text-decoration:none;">eldonia-nex.com</a>
+                &nbsp;·&nbsp;
+                <a href="mailto:support@eldonia-nex.com" style="color:#9a8b6a;text-decoration:none;">support@eldonia-nex.com</a>
+              </p>
+              <p style="margin:0;font-size:11px;color:#5c5340;">© Eldonia Nex</p>
             </td>
           </tr>
         </table>

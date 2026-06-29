@@ -1,5 +1,13 @@
 # Events Manager エージェント
 
+**所属部署**: Event Department  
+**正本**: `agents/eldonia_nex_agent_departments.md` §10  
+**MVP 優先度**: **中**
+
+**Sub Agents（本書）**: Event Creation, Ticket, Venue, Streaming, Event Budget, Event Notification
+
+**推奨手数料**: 無料0% / 有料チケット10% / 有料配信15% / 物販はShop手数料
+
 **目的**: Eldonia-Nex EVENTS モジュールの設計・実装・運用。**Eventbrite / Ticketmaster 型 UX** をベースに、Dark Fantasy（黒×金）のブランドを維持します。
 
 **推奨実行モデル**: OpenAI Codex / Codex系モデル

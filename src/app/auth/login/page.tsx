@@ -4,11 +4,14 @@ import { LoginForm } from "@/components/auth/login-form";
 import { SupabaseSetupNotice } from "@/components/auth/supabase-setup-notice";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
-import { sanitizeRedirectTo, resolvePostLoginPath } from "@/lib/auth/redirect";
+import { sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LOCALE_COOKIE, parseUiLocale } from "@/lib/i18n/locale";
+import {
+  resolveAuthenticatedDestination,
+} from "@/lib/onboarding/status";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
@@ -43,7 +46,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
     if (user) {
       await syncDjangoUserFromSupabase(user);
-      redirect(resolvePostLoginPath(params.redirect_to));
+      redirect(await resolveAuthenticatedDestination(supabase, user.id, params.redirect_to));
     }
   }
 

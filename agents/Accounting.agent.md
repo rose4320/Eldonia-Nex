@@ -1,5 +1,8 @@
 # 経理 (Accounting) エージェント
 
+**所属部署**: Revenue / Payment（Sub Agent）  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: プロジェクトの経理・費用管理をサポートするエージェント。予算管理、費用レポート、請求書ドラフト支援を行います。
 
 **機能**:

@@ -1,80 +1,73 @@
-このフォルダはエージェントとサブエージェントのテンプレートを格納します。
+# Eldonia–Nex エージェント
 
-利用方針 — Codex ベースのワークフロー
-- ここにあるテンプレートは主に OpenAI Codex（code-davinci-002 等）を想定した `runSubagent` 呼び出しの雛形です。
-- 実行時は `OPENAI_API_KEY` を安全に設定し、利用規約と社内ポリシーに従ってください。
+**正本**: [`eldonia_nex_agent_departments.md`](./eldonia_nex_agent_departments.md)
 
-用意済みエージェント（Codex 用）:
-- `Explore.agent.md` — リポジトリ探索用サブエージェント
-- `Project_Producer.agent.md` — プロジェクト企画・推進
-- `UI_UX_Designer.agent.md` — UI/UX 設計支援
-- `Frontend_Manager.agent.md` — フロントエンド実装管理
-- `Backend_Manager.agent.md` — バックエンド実装管理（Supabase 主）
-- `Django_Manager.agent.md` — Django Admin 運用（料金・財務・広告受注、Backend_Manager と協議）
-- `Accounting.agent.md` — 経理・費用管理
-- `Support_Desk_Manager.agent.md` — サポートデスク運用
-- `Shop_Manager.agent.md` — SHOP（Amazon 型 EC × Eldonia デザイン）
-- `Events_Manager.agent.md` — EVENTS（チケット UX × Eldonia デザイン）
-- `Community_Manager.agent.md` — COMMUNITY（掲示板 × Eldonia デザイン）
-- `Works_Manager.agent.md` — WORKS（求人・ポートフォリオ × Eldonia デザイン）
-- `Request_Intake.agent.md` — 要望受付・構造化
-- `Other.agent.md` — その他テンプレート
-- `Explore.agent.md` — リポジトリ探索（既存）
+Main Director Agent を中心に、19 部署 + Sub Agent で運営する。
 
-使い方（例）:
+## 全体構成
 
-```js
-runSubagent({
-  agentName: "Project_Producer",
-  prompt: "Create a 3-month roadmap for a marketplace MVP with 3 engineers",
-  model: "code-davinci-002",
-  params: { deadline: "2026-09-30" }
-})
+```text
+Main Director Agent
+├─ Product Strategy
+├─ Development（Frontend / Backend / Database …）
+├─ Design
+├─ Gallery ──→ Lab（コラボ制作の核）
+├─ Community / Shop / Event / Works
+├─ Quest / Fan Notification / Portfolio・Passport
+├─ Revenue・Payment / Translation / Moderation・Safety
+└─ Support / Marketing / Admin・Audit
 ```
 
-注意事項:
-- 機密情報（API キー、顧客データ等）はエージェント呼び出し時に直接渡さないでください。
-- 自動実行で外部システムへ変更を加える場合は必ず承認ポリシーを設定してください。
+**コアフロー**: Gallery 作品 → コラボ → Lab → Shop/Event/Portfolio/Works 展開
 
-テンプレートの拡張:
-- 各 `*.agent.md` に入力パラメータ例、期待出力フォーマット、セキュリティ注意を追記してください。
+## Main Director
 
-## Cursor 分担開発（推奨ワークフロー）
+| Sub Agent | ファイル |
+|-----------|---------|
+| Request Intake | `Request_Intake.agent.md` |
+| Project Producer | `Project_Producer.agent.md` |
+| Explore | `Explore.agent.md` |
 
-現行アプリはルート `src/` + Supabase。Cursor セッションでは次の流れで進めます。
+## 部署 Agent 一覧
 
-```
-ユーザー要望
-  → Request_Intake（構造化・優先度）
-  → Project_Producer（計画・依存関係）
-  → 担当エージェント実装
-       UI_UX_Designer … 見た目・コンポーネント規約
-       Frontend_Manager … src/app, src/components
-       Backend_Manager … supabase/migrations, database.ts, API Routes
-       Django_Manager … backend/, /admin/, 料金・財務・広告（Backend_Manager と協議）
-       Support_Desk_Manager … src/app/help
-       Shop_Manager … src/app/shop, src/components/shop
-       Events_Manager … src/app/events, src/components/events
-       Community_Manager … src/app/community, src/components/community
-       Works_Manager … src/app/works, src/components/works
-  → lint + build 確認
-  → 日本語で報告（担当・変更・次タスク）
-```
+| 部署 | ファイル | パス例 |
+|------|---------|--------|
+| Product Strategy | `Product_Strategy.agent.md` | `docs/` |
+| Design | `UI_UX_Designer.agent.md` | デザインシステム |
+| Gallery | `Gallery_Manager.agent.md` | `src/app/gallery/` |
+| Community | `Community_Manager.agent.md` | `src/app/community/` |
+| Shop | `Shop_Manager.agent.md` | `src/app/shop/` |
+| Event | `Events_Manager.agent.md` | `src/app/events/` |
+| Works | `Works_Manager.agent.md` | `src/app/works/` |
+| Lab | `Lab_Manager.agent.md` | `src/app/lab/` |
+| Quest | `Quest_Manager.agent.md` | `/api/quests` |
+| Fan Notification | `Fan_Notification_Manager.agent.md` | 通知 |
+| Portfolio / Passport | `Portfolio_Passport_Manager.agent.md` | `works/portfolio/` |
+| Revenue / Payment | `Revenue_Payment_Manager.agent.md` | Stripe |
+| Translation | `Translation_Manager.agent.md` | i18n |
+| Moderation / Safety | `Moderation_Safety_Manager.agent.md` | 通報 |
+| Support | `Support_Desk_Manager.agent.md` | `src/app/help/` |
+| Marketing | `Marketing_Manager.agent.md` | LP |
+| Admin / Audit | `Admin_Audit_Manager.agent.md` | `/admin` |
+
+Development Sub: `Frontend_Manager`, `Backend_Manager`, `Django_Manager`, `Accounting`
+
+## MVP 優先（§24）
+
+| 優先 | 部署 |
+|------|------|
+| **高** | Development, Design, Gallery, **Lab**, Works, Shop, Fan Notification |
+| **中** | Event, Portfolio/Passport, Revenue/Payment, Translation, Moderation/Safety |
+| **後** | Quest, Marketing |
+
+## 運用ルール（§22）
+
+**自動 OK**: 通知配信、手数料計算、翻訳、レコメンド、FAQ下書き、lint/build 等
+
+**人間承認**: 料金・手数料変更、返金、アカウント停止、規約変更、スポンサー契約、本番デプロイ等
+
+## データ保持（§23）
+
+原則物理削除しない（非公開・アーカイブ・匿名化）。
 
 永続ルール: `.cursor/rules/divided-development.mdc`
-
-### モジュール優先順位（バックログ）
-
-| 優先 | モジュール | 状態 |
-|------|-----------|------|
-| — | GALLEY | 初期実装済 |
-| — | ヘルプ/サポート | 初期実装済 |
-| — | SHOP | 初期実装済 |
-| — | EVENTS | 初期実装済 |
-| — | COMMUNITY | 初期実装済 |
-| — | WORKS | 初期実装済 |
-| — | Stripe カート/決済 | 初期実装済（要 STRIPE_*  env） |
-| — | Django 運用コンソール | Admin 稼働・Django_Manager 定義済 |
-
-次の機能指示は「モジュール名 + やりたいこと」で OK（例: 「SHOP に商品一覧を追加」「Plan 料金を Admin で変更」）。
-

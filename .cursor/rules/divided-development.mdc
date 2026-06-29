@@ -1,50 +1,68 @@
 ---
-description: Eldonia-Nex 分担開発 — エージェント役割と作業フロー
+description: Eldonia-Nex 分担開発 — 部署 Agent と作業フロー（正本 agents/eldonia_nex_agent_departments.md）
 alwaysApply: true
 ---
 
 # 分担開発ワークフロー
 
-## 現行スタック（優先）
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
+## 現行スタック（Development Department）
 
 - **Frontend**: ルート `src/`（Next.js 16 + Supabase SSR）
-- **Backend/DB**: `supabase/migrations/` + RLS（ユーザー向けアプリ）
-- **Django 運用**: `backend/` + `/admin/` — 料金・財務・広告受注等（`Django_Manager`、Backend_Manager と協議）
-- **デザイン**: `agents/UI_UX_Designer.agent.md`（Dark Fantasy / 黒×金）
+- **Backend/DB**: `supabase/migrations/` + RLS
+- **Django**: `backend/` + `/admin/`（Revenue/Payment・Admin/Audit 協議）
+- **Next Admin**: `src/app/admin/`（拡張中）
+- **Design**: `agents/UI_UX_Designer.agent.md`（LP は紫アクセント可）
 
-## エージェント分担
+## 指揮系
 
-| 役割 | 定義 | 担当範囲 |
-|------|------|----------|
-| Request_Intake | 要望の構造化 | ユーザー指示 → タスク分解・優先度 |
-| Project_Producer | 企画・推進 | ロードマップ、依存関係、完了条件 |
-| UI_UX_Designer | デザイン | 色・フォント・コンポーネント規約 |
-| Frontend_Manager | FE 実装 | `src/app/`, `src/components/`, `src/lib/` |
-| Backend_Manager | BE/DB（Supabase） | `supabase/migrations/`, `src/types/database.ts`, API Routes |
-| Django_Manager | Django 運用 | `backend/`, `/admin/`, 料金・財務・広告設定（Backend_Manager と協議） |
-| Support_Desk_Manager | サポート | `src/app/help/`, チケット・FAQ |
-| Shop_Manager | SHOP | `src/app/shop/`, `agents/Shop_Manager.agent.md` |
-| Events_Manager | EVENTS | `src/app/events/`, `agents/Events_Manager.agent.md` |
-| Community_Manager | COMMUNITY | `src/app/community/`, `agents/Community_Manager.agent.md` |
-| Works_Manager | WORKS | `src/app/works/`, `agents/Works_Manager.agent.md` |
-| Explore | 調査 | 読み取り専用のコード探索 |
+```
+ユーザー要望
+  → Main Director Agent
+  → 担当部署 Agent
+  → Sub Agent
+  → Verify → 日本語報告
+```
 
-## 作業手順（各タスク）
+Main Director Sub: `Request_Intake`, `Project_Producer`, `Explore`
 
-1. **Intake** — 要望を分類し、担当エージェントを決める
-2. **Plan** — 変更ファイル・マイグレーション要否を明示
-3. **Implement** — 担当範囲のみ編集（UI/UX 規約に従う）
-4. **Verify** — `npm run lint` + `npm run build`（Django 変更時は `manage.py check` + Admin 確認）
-5. **Report** — 担当エージェント名・変更概要・次タスクを日本語で報告
+## コアフロー（Gallery → Lab）
 
-## サブエージェント利用
+```text
+Gallery作品 → コラボ申請 → 作者承認 → チーム → Labルーム → 共同制作
+→ Gallery / Shop / Event / Portfolio / Works へ展開
+```
 
-- 広範探索 → `explore` サブエージェント
-- 独立した FE/BE 作業 → 可能なら並列 `Task` で分担
-- 大きな機能は 1 モジュールずつ（GALLEY → SHOP → EVENTS …）
+## MVP 優先（§24）
 
-## 禁止・注意
+| 優先 | 部署 |
+|------|------|
+| **高** | Development, Design, Gallery, **Lab**, Works, Shop, **Fan Notification** |
+| **中** | Event, Portfolio/Passport, Revenue/Payment, Translation, Moderation/Safety |
+| **後** | Quest, Marketing |
 
-- 機密（API キー）をコミット・エージェントプロンプトに含めない
-- 旧 `frontend/` を触るのは明示指示がある場合のみ
-- デバッグログ（`#region agent log`）を残さない
+Community / Support / Admin/Audit / Product Strategy は Main Director が割当。
+
+## 自動実行 OK（§22）
+
+通知配信、収益・手数料計算、翻訳、レコメンド、スパム検知、レポート、FAQ下書き、ダッシュボード集計 + lint/build/探索/Preview
+
+## 人間承認必須（§22 + 開発）
+
+アカウント停止、報酬没収、大きな返金、法務判断、規約・手数料・料金変更、スポンサー契約、個人情報対応 + **本番デプロイ、本番 DB/RLS、Admin 権限**
+
+## データ保持（§23）
+
+原則物理削除しない。非公開・アーカイブ・匿名化・監査ログ。法令対応時のみ限定削除。
+
+## 作業手順
+
+1. Intake → 2. Plan（承認要否） → 3. Implement → 4. Verify → 5. Report
+
+## 禁止
+
+- 機密をコミット・プロンプトに含めない
+- 旧 `frontend/` は明示指示時のみ
+- `#region agent log` を残さない
+- §22 承認必須を Sub Agent 単独実行しない

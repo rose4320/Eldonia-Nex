@@ -25,6 +25,21 @@
 3. **SPF** を `eldonia-nex.com` の DNS（TXT）に設定
 4. （任意）billing@ / info@ も support@ に転送するか、IMAP で個別監視
 
+### 1.2.1 さくら SMTP（送信）— 確定値
+
+| 項目 | 値 |
+|------|-----|
+| SMTP ホスト | `elbonianex.sakura.ne.jp` |
+| ポート | **587**（STARTTLS・推奨）または 465（SMTPS） |
+| SMTP 認証ユーザー | `support@elbonianex.sakura.ne.jp` |
+| パスワード | メール作成時に設定したメールパスワード |
+| 表示用 From（推奨） | `support@eldonia-nex.com` |
+| 送信者名 | `Eldonia Nex` |
+
+**注意:** 独自ドメイン `eldonia-nex.com` で受信していても、**SMTP サーバーは初期ドメイン `elbonianex.sakura.ne.jp`** を使います。SMTP 認証は必須です。
+
+From アドレス `support@eldonia-nex.com` で届かない場合は、Supabase の `smtp_admin_email` を `support@elbonianex.sakura.ne.jp` に変更して再試行してください。
+
 ### 1.3 アプリとの対応（コード）
 
 | 項目 | 現状 |
@@ -52,20 +67,51 @@
 ### 1.5 Vercel 環境変数（メール実装時）
 
 ```env
-SMTP_HOST=<さくら SMTP ホスト>
+SMTP_HOST=elbonianex.sakura.ne.jp
 SMTP_PORT=587
-SMTP_USER=support@eldonia-nex.com
+SMTP_USER=support@elbonianex.sakura.ne.jp
 SMTP_PASS=<メールボックスのパスワード>
 SMTP_FROM=support@eldonia-nex.com
 SMTP_FROM_NAME=Eldonia Nex Support
-
-# IMAP 受信（予定）
-IMAP_HOST=<さくら IMAP ホスト>
-IMAP_PORT=993
-IMAP_USER=support@eldonia-nex.com
-IMAP_PASS=<同上>
-INBOUND_EMAIL_SECRET=<Webhook / Cron 用ランダム文字列>
 ```
+
+---
+
+## 1.6 Supabase Auth 用 SMTP（確認メール・パスワードリセット）
+
+**用途:** 新規登録の確認メール、パスワードリセット等（Supabase Auth が送信）
+
+**Dashboard:** https://supabase.com/dashboard/project/evrklfqdyptuelulgcdy/auth/smtp
+
+| 項目 | 値 |
+|------|-----|
+| Enable custom SMTP | ON |
+| Host | `elbonianex.sakura.ne.jp` |
+| Port | `587` |
+| Username | `noreply@elbonianex.sakura.ne.jp` |
+| Password | （noreply メールボックスのパスワード） |
+| Sender email | `noreply@eldonia-nex.com` |
+| Sender name | `Eldonia Nex` |
+
+問い合わせ先はメール本文の `support@eldonia-nex.com`（人間対応用）。
+
+### CLI で一括反映（推奨）
+
+1. `.env.production.supabase.example` をコピー → `.env.production.supabase`
+2. `SUPABASE_ACCESS_TOKEN` と `SUPABASE_SMTP_PASS` を記入
+3. 実行:
+
+```bash
+npm run supabase:sync-smtp
+```
+
+または URL・テンプレート・SMTP をまとめて:
+
+```bash
+npm run supabase:sync-auth
+```
+
+**確認:** 本番 https://eldonia-nex.com/auth/signup でテスト登録 → 受信トレイ（迷惑メール含む）を確認。
 
 ---
 
@@ -122,33 +168,73 @@ http://127.0.0.1:3000/auth/callback
 
 コールバック処理: `src/app/auth/callback/route.ts`
 
-### 2.5 Google OAuth（有効化する場合）
+### 2.5 Google OAuth（本番で「Google で続行」を使う）
 
-#### Supabase Dashboard
+**現状:** Supabase 側は `external_google_enabled: false`（未設定）。  
+**必要:** Google Cloud で OAuth アプリを **公開** し、Client ID / Secret を Supabase に登録。
 
-**Authentication → Providers → Google** を有効化し、Google Cloud の Client ID / Secret を入力。
+#### A. Google Cloud Console（あなたが行う作業）
 
-#### Google Cloud Console
+1. [Google Cloud Console](https://console.cloud.google.com/) → プロジェクト選択（または新規作成）
+2. **API とサービス → OAuth 同意画面**
+   - User Type: **外部**
+   - アプリ名: `Eldonia Nex`
+   - ユーザーサポートメール: `support@eldonia-nex.com`
+   - 承認済みドメイン: `eldonia-nex.com`
+   - スコープ: `email`, `profile`, `openid`（デフォルトで可）
+   - **公開ステータス → 「アプリを公開」**（Testing のままだとテストユーザー以外ログイン不可）
+3. **API とサービス → 認証情報 → 認証情報を作成 → OAuth クライアント ID**
+   - アプリケーションの種類: **ウェブアプリケーション**
+   - 名前: `Eldonia Nex (Supabase Auth)`
+   - **承認済み JavaScript 生成元**（任意）:
+     ```
+     https://eldonia-nex.com
+     ```
+   - **承認済みリダイレクト URI**（必須）:
+     ```
+     https://evrklfqdyptuelulgcdy.supabase.co/auth/v1/callback
+     ```
+4. 表示された **クライアント ID** と **クライアント シークレット** を控える
 
-**Authorized redirect URIs** に以下を追加:
+#### B. Supabase に反映（CLI）
 
-```
-https://evrklfqdyptuelulgcdy.supabase.co/auth/v1/callback
-```
-
-ローカル Supabase CLI 利用時のみ追加:
-
-```
-http://127.0.0.1:54321/auth/v1/callback
-```
-
-#### Vercel 環境変数
+`.env.production.supabase` に追加:
 
 ```env
-GOOGLE_OAUTH2_CLIENT_ID=<Google Client ID>
-GOOGLE_OAUTH2_CLIENT_SECRET=<Google Client Secret>
+GOOGLE_OAUTH2_CLIENT_ID=....apps.googleusercontent.com
+GOOGLE_OAUTH2_CLIENT_SECRET=....
+```
+
+実行:
+
+```bash
+npm run supabase:sync-google
+```
+
+または Dashboard: [Providers → Google](https://supabase.com/dashboard/project/evrklfqdyptuelulgcdy/auth/providers)
+
+#### C. Vercel（ボタン表示）
+
+```env
 NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true
 ```
+
+（未設定でも Supabase 設定があればボタンは表示されます。明示的に `false` にしていない限り ON）
+
+#### D. 動作確認
+
+1. https://eldonia-nex.com/auth/login → **Google で続行**
+2. 初回 Google ログイン → `/auth/signup?resume=1` 経由で **プラン・規約** まで進む（メール確認は不要）
+3. 以降は通常ログイン
+
+#### リダイレクト URI 一覧（再掲）
+
+| 用途 | URL |
+|------|-----|
+| Supabase（Google 必須） | `https://evrklfqdyptuelulgcdy.supabase.co/auth/v1/callback` |
+| アプリ（Supabase 設定済み） | `https://eldonia-nex.com/**` |
+
+コールバック処理: `src/app/auth/callback/route.ts`
 
 ---
 
@@ -201,11 +287,14 @@ npm run supabase:sync-auth
 |------------|------|
 | `scripts/sync-supabase-auth-urls.mjs` | Site URL + Redirect URLs |
 | `scripts/sync-supabase-auth-email-templates.mjs` | 確認・リセットメールテンプレート |
+| `scripts/sync-supabase-auth-smtp.mjs` | さくら SMTP（確認メール送信） |
 
 ---
 
 ## 6. 設定チェックリスト
 
+- [ ] Supabase **カスタム SMTP**（さくら `elbonianex.sakura.ne.jp:587`）を設定
+- [ ] `npm run supabase:sync-smtp` 実行後、本番 signup で確認メール受信テスト
 - [ ] Supabase **Site URL** = `https://eldonia-nex.com`
 - [ ] Supabase **Redirect URLs** に `https://eldonia-nex.com/**` を登録
 - [ ] Vercel **NEXT_PUBLIC_SITE_URL** = `https://eldonia-nex.com`

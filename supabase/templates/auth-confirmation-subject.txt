@@ -1,1 +1,1 @@
-{{if eq .Data.locale "ja"}}Eldonia Nex — メールアドレスの確認{{else if eq .Data.locale "ko"}}Eldonia Nex — 이메일 확인{{else if eq .Data.locale "zh-CN"}}Eldonia Nex — 确认电子邮件{{else}}Eldonia Nex — Confirm your email{{end}}
+{{if eq .Data.locale "ja"}}【Eldonia Nex】ネクサスへの招待 — メールアドレスの確認{{else if eq .Data.locale "ko"}}【Eldonia Nex】넥서스로의 초대 — 이메일 확인{{else if eq .Data.locale "zh-CN"}}【Eldonia Nex】通往 Nexus 的邀请 — 确认邮箱{{else}}【Eldonia Nex】Your invitation to the Nexus — Confirm your email{{end}}

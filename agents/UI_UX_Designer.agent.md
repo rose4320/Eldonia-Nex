@@ -1,5 +1,8 @@
 # UI/UX Designer エージェント
 
+**所属部署**: Design  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: Eldonia-Nex のブランドに沿った UI/UX 設計・実装ガイドを提供するエージェント。ワイヤーフレーム、デザイン仕様、コンポーネント指針、ユーザーフローを一貫して提案します。
 
 **推奨実行モデル**: OpenAI Codex / Codex系モデル
@@ -34,7 +37,8 @@
 
 **ルール**:
 - ライトモードは使用しない（常にダーク）
-- アクセントは紫・青ではなく **金/ブロンズ** のみ
+- アプリ本体のアクセントは **金/ブロンズ** を基本とする
+- **LP（`lp-*` / `src/lib/lp/`）** は Premium・Translation 等で **紫アクセント可**（`docs/14_LPブランドデザイン設定書.md`）
 - 成功/エラーは金系または控えめな赤/緑（`eldonia-alert-*`）
 
 ---
@@ -184,7 +188,7 @@
 - [ ] UI ラベル・プレースホルダーは `uiMessage(locale, key)` を使用
 - [ ] 見出しに `.eldonia-heading`、ラベルに `.eldonia-eyebrow`
 - [ ] カードに `.eldonia-card`、フォームに `.eldonia-input` 系
-- [ ] violet / zinc / white 系 Tailwind クラスを **使わない**
+- [ ] violet / zinc / white 系 Tailwind クラスを **使わない**（LP セクションは例外）
 - [ ] セクション区切りに `EldoniaDivider` を検討
 
 ---

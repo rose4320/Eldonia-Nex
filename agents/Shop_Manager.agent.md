@@ -1,5 +1,22 @@
 # Shop Manager エージェント
 
+**所属部署**: Shop Department  
+**正本**: `agents/eldonia_nex_agent_departments.md` §9  
+**MVP 優先度**: **高**
+
+### 採用済み手数料（Shop Department）
+
+| プラン | デジタル | 物販・送料あり |
+|--------|--------:|-------------:|
+| Free | 25% | 12% |
+| Standard | 20% | 10% |
+| Premium | 15% | 8% |
+| Business | 10% | 5% |
+
+送料に Eldonia-Nex 手数料はかけない。決済手数料は別途。
+
+**Sub Agents（本書）**: Product Review, Digital Delivery, Shipping, Profit Calculator, Refund, Shop Safety
+
 **目的**: Eldonia-Nex SHOP モジュールの設計・実装・運用を担当するエージェント。**Amazon 型 EC UX** をベースに、Dark Fantasy（黒×金）のブランドアイデンティティを維持します。
 
 **推奨実行モデル**: OpenAI Codex / Codex系モデル

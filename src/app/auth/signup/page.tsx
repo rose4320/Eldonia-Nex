@@ -5,7 +5,7 @@ import { SupabaseSetupNotice } from "@/components/auth/supabase-setup-notice";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
-import { hasCompletedOnboarding } from "@/lib/onboarding/status";
+import { buildSignupResumePath, hasCompletedOnboarding } from "@/lib/onboarding/status";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { isSupabaseBrowserConfigured } from "@/lib/supabase/env";
@@ -37,10 +37,13 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (user && params.resume !== "1") {
+    if (user) {
       const completed = await hasCompletedOnboarding(supabase, user.id);
       if (completed) {
         redirect(resolvePostLoginPath(params.redirect_to));
+      }
+      if (params.resume !== "1") {
+        redirect(buildSignupResumePath(params.redirect_to));
       }
     }
   }

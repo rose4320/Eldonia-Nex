@@ -14,19 +14,21 @@ export function LpHeroSection() {
           fill
           priority
           sizes="100vw"
-          className="object-cover object-[center_40%] lg:object-[60%_40%]"
+          className="object-cover object-[center_40%] lg:object-[62%_38%]"
         />
         <div className="lp-hero__shade-left" aria-hidden />
         <div className="lp-hero__shade-bottom" aria-hidden />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8 lg:pt-24">
+      <div className="lp-hero__content relative mx-auto max-w-[1200px] px-4 pb-10 pt-[7.5rem] sm:px-6 sm:pb-14 sm:pt-28 lg:px-8 lg:pt-32">
         <div className="max-w-2xl">
-          <h1 className="font-display text-3xl font-bold leading-tight tracking-wide text-[#e8d5a3] sm:text-4xl lg:text-[2.75rem]">
+          <h1 className="whitespace-pre-line font-display text-3xl font-bold leading-tight tracking-wide text-[#f8f1df] sm:text-4xl lg:text-[2.75rem]">
             {LP_HERO.title}
           </h1>
-          <p className="mt-5 text-sm leading-7 text-[#c9c4b8] sm:text-base">{LP_HERO.lead}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <p className="mt-5 whitespace-pre-line text-sm leading-7 text-[#d8c8a8] sm:text-base">
+            {LP_HERO.lead}
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 sm:justify-start">
             <LpButton href="/auth/signup">{LP_HERO.primaryCta}</LpButton>
             <LpButton href="#services" variant="outline">
               {LP_HERO.secondaryCta}
@@ -34,7 +36,7 @@ export function LpHeroSection() {
           </div>
         </div>
 
-        <div className="mt-12 lg:mt-16">
+        <div className="mt-10 lg:mt-14">
           <LpFeatureCards />
         </div>
       </div>

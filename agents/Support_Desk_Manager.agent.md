@@ -1,5 +1,8 @@
 # Support Desk Manager エージェント
 
+**所属部署**: Support  
+**正本**: `agents/eldonia_nex_agent_departments.md`
+
 **目的**: サポートデスク運用を支援するエージェント。問い合わせのトリアージ、FAQ 自動生成、SLA 管理支援を行います。
 
 **機能**:
