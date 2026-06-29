@@ -13,7 +13,7 @@ function copyRecursive(src, dest) {
   mkdirSync(dest, { recursive: true });
 
   for (const entry of readdirSync(src)) {
-    if (entry === "README.md") continue;
+    if (entry === "README.md" || entry === ".gitignore") continue;
     const from = join(src, entry);
     const to = join(dest, entry);
     if (statSync(from).isDirectory()) {
