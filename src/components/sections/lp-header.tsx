@@ -33,18 +33,23 @@ export function LpHeader() {
           : "border-b border-transparent bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[72px] max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between gap-4 px-4 sm:px-6 lg:h-[76px]">
         <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image
             src={LP_ASSETS.logo}
             alt="Eldonia–Nex"
-            width={44}
-            height={44}
-            className="rounded-full ring-1 ring-[#d6a84f]/55"
+            width={48}
+            height={48}
+            className="bg-[#020817]/70"
             priority
           />
-          <span className="font-display text-sm font-semibold tracking-[0.14em] text-[#f8f1df] sm:text-base">
-            Eldonia–Nex
+          <span className="flex flex-col items-center text-center leading-none">
+            <span className="font-display text-base font-semibold tracking-[0.12em] text-[#f8f1df] sm:text-lg">
+              Eldonia–Nex
+            </span>
+            <span className="mt-1 font-display text-[0.52rem] tracking-[0.18em] text-[#d8c8a8]/75 uppercase sm:text-[0.58rem]">
+              A Fantasy Nexus for Creators
+            </span>
           </span>
         </Link>
 
@@ -53,7 +58,7 @@ export function LpHeader() {
             <a
               key={item.href}
               href={item.href}
-              className="rounded px-3 py-2 font-display text-[0.65rem] font-semibold tracking-[0.14em] text-[#d8c8a8] transition hover:text-[#f0c978] lg:text-xs"
+              className="rounded px-2.5 py-2 font-display text-[0.62rem] font-semibold tracking-[0.13em] text-[#d8c8a8] transition hover:text-[#f0c978] lg:text-[0.68rem]"
             >
               {item.label}
             </a>
@@ -61,7 +66,7 @@ export function LpHeader() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-2">
-          <LpButton href="/auth/signup" variant="outline" className="hidden px-4 py-2 text-[0.65rem] sm:inline-flex">
+          <LpButton href="/auth/signup" variant="outline" className="hidden px-4 py-2 text-[0.62rem] sm:inline-flex">
             Join Beta
           </LpButton>
 
@@ -116,3 +121,4 @@ export function LpHeader() {
     </header>
   );
 }
+

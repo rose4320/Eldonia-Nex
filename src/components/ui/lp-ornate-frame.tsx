@@ -25,9 +25,9 @@ export function LpOrnateFrame({
           <Image
             src={LP_ASSETS.logo}
             alt=""
-            width={variant === "page" ? 52 : 48}
-            height={variant === "page" ? 52 : 48}
-            className="rounded-full"
+            width={variant === "page" ? 72 : 56}
+            height={variant === "page" ? 72 : 56}
+            className="lp-ornate-frame__crest-logo rounded-full"
           />
         </div>
       )}

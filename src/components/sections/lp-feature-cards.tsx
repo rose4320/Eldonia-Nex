@@ -7,22 +7,22 @@ export function LpFeatureCards() {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       {LP_FEATURE_CARDS.map((card) => (
-        <LpCard key={card.key} hover className="p-4">
+        <LpCard key={card.key} hover className="lp-feature-card p-4">
           <div className="flex items-start gap-3">
-            <span className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded border border-[#d6a84f]/40 bg-[rgba(5,14,30,0.72)]">
+            <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[#d6a84f]/60 bg-[rgba(5,14,30,0.92)]">
               <Image
                 src={LP_ASSETS.features[card.key as keyof typeof LP_ASSETS.features]}
                 alt=""
-                width={28}
-                height={28}
-                className="object-contain opacity-90"
+                width={32}
+                height={32}
+                className="object-contain opacity-100"
               />
             </span>
             <div>
-              <p className="font-display text-sm font-semibold tracking-wider text-[#f8f1df]">
+              <p className="font-display text-sm font-semibold tracking-wider text-[#fff4d5]">
                 {card.title}
               </p>
-              <p className="mt-1 text-xs leading-5 text-[#9e927d]">{card.body}</p>
+              <p className="mt-1 text-xs leading-5 text-[#d8c8a8]">{card.body}</p>
             </div>
           </div>
         </LpCard>

@@ -2695,7 +2695,6 @@ body {
   }
 }
 
-/* ── Landing page (brand LP) ── */
 .lp-page {
   --lp-bg-base: #020817;
   --lp-bg-deep: #050b16;
@@ -2714,23 +2713,33 @@ body {
     linear-gradient(180deg, #020817 0%, #050b16 45%, #020817 100%);
 }
 
-/* Page outer ornate frame — border-image 9-slice (744×202 asset) */
+.lp-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 6%, rgba(214, 168, 79, 0.08), transparent 18rem),
+    radial-gradient(circle at 12% 28%, rgba(124, 92, 255, 0.08), transparent 16rem),
+    linear-gradient(180deg, rgba(2, 8, 23, 0.18), rgba(2, 8, 23, 0.86));
+}
+
+.lp-page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Page outer ornate frame 窶・border-image 9-slice (744ﾃ・02 asset) */
 .lp-page-frame__shell {
-  min-height: calc(100vh - 2rem);
+  min-height: 100vh;
 }
 
 .lp-ornate-frame,
 .lp-cta-frame {
-  --lp-frame-image: url("/aset/lp/borders/frame-ornate.png?v=0.5.0");
-  --lp-frame-slice: 100 150 100 150;
-  --lp-frame-width: clamp(1.125rem, 2.2vw, 1.75rem);
-  border-style: solid;
-  border-color: transparent;
-  border-width: var(--lp-frame-width);
-  border-image-source: var(--lp-frame-image);
-  border-image-slice: var(--lp-frame-slice);
-  border-image-width: var(--lp-frame-width);
-  border-image-repeat: stretch;
+  --lp-frame-width: 0;
+  border: 0;
+  border-image: none;
   background-color: var(--lp-bg-base, #020408);
   background-clip: padding-box;
 }
@@ -2746,27 +2755,40 @@ body {
 }
 
 .lp-ornate-frame--page {
-  --lp-frame-width: clamp(1.375rem, 2.8vw, 2.125rem);
+  --lp-frame-width: 1px;
+  border: 0;
+  border-image: none;
+  border-color: transparent;
+  background-color: transparent;
 }
 
 .lp-ornate-frame--page .lp-ornate-frame__body {
-  padding: 2.25rem 0.75rem 1.25rem;
+  padding: 0;
+}
+
+.lp-ornate-frame__crest-logo {
+  display: block;
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 1px solid rgba(214, 168, 79, 0.45);
+  border-radius: 999px;
+  background: rgba(2, 8, 23, 0.88);
 }
 
 @media (min-width: 640px) {
   .lp-ornate-frame--page .lp-ornate-frame__body {
-    padding: 2.75rem 1.5rem 2rem;
+    padding: 0;
   }
 }
 
 @media (min-width: 1024px) {
   .lp-ornate-frame--page .lp-ornate-frame__body {
-    padding: 3rem 2.5rem 2.5rem;
+    padding: 0;
   }
 }
 
 .lp-ornate-frame--box {
-  --lp-frame-width: clamp(1rem, 2vw, 1.625rem);
+  --lp-frame-width: 0;
 }
 
 .lp-ornate-frame--box .lp-ornate-frame__body {
@@ -2774,7 +2796,7 @@ body {
 }
 
 .lp-ornate-frame--official {
-  --lp-frame-width: clamp(0.9375rem, 1.8vw, 1.5rem);
+  --lp-frame-width: 0;
 }
 
 .lp-ornate-frame--official .lp-ornate-frame__body {
@@ -2784,6 +2806,14 @@ body {
 .lp-ornate-box__content {
   position: relative;
   z-index: 1;
+}
+
+.lp-ornate-box__content > *,
+.lp-gold-frame__inner > *,
+.lp-rewards-panel > *,
+.lp-cta-frame__inner > * {
+  position: relative;
+  z-index: 2;
 }
 
 /* Section title with fading gold lines */
@@ -2811,7 +2841,7 @@ body {
 }
 
 .lp-section-title__line::after {
-  content: "◆";
+  content: "✦";
   position: absolute;
   top: 50%;
   font-size: 0.35rem;
@@ -2864,24 +2894,44 @@ body {
   );
 }
 
-.lp-section-rule--star {
+.lp-section-rule--simple,
+.lp-section-rule--ornate,
+.lp-section-rule--compact,
+.lp-section-rule--flourish {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 1.75rem;
-  background: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: min(88vw, 1040px) auto;
   opacity: 1;
 }
 
-.lp-section-rule--star::before {
-  content: "✦";
-  font-size: 0.5rem;
-  color: rgba(197, 160, 89, 0.65);
-  text-shadow: 0 0 10px rgba(197, 160, 89, 0.35);
-  padding: 0 1.5rem;
-  background:
-    linear-gradient(90deg, transparent, rgba(197, 160, 89, 0.45), transparent) center / 100% 1px
-      no-repeat;
+.lp-section-rule--simple::before,
+.lp-section-rule--ornate::before,
+.lp-section-rule--compact::before,
+.lp-section-rule--flourish::before {
+  content: none;
+}
+
+.lp-section-rule--simple {
+  height: clamp(3.6rem, 5.2vw, 4.5rem);
+  background-image: url("/aset/ln1.png?v=0.5.4");
+}
+
+.lp-section-rule--ornate {
+  height: clamp(4.8rem, 6.8vw, 6.2rem);
+  background-image: url("/aset/ln3.png?v=0.5.4");
+}
+
+.lp-section-rule--compact {
+  height: clamp(5.2rem, 7.2vw, 6.7rem);
+  background-image: url("/aset/ln3-2.png?v=0.5.4");
+}
+
+.lp-section-rule--flourish {
+  height: clamp(4.8rem, 6.8vw, 6.3rem);
+  background-image: url("/aset/ln4.png?v=0.5.4");
 }
 
 /* Footer gold divider (CSS fade lines + fixed logo) */
@@ -2909,15 +2959,132 @@ body {
 }
 
 .lp-gold-frame__inner {
+  position: relative;
   overflow: hidden;
 }
 
-/* Hero — left-heavy overlay mask so the city art shows on the right */
+.lp-world-panel,
+.lp-translation-panel {
+  position: relative;
+}
+
+.lp-world-corner,
+.lp-panel-corner {
+  position: absolute;
+  z-index: 9;
+  width: clamp(4.2rem, 6.4vw, 6.4rem);
+  aspect-ratio: 1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.78;
+}
+
+.lp-world-corner--top-left,
+.lp-panel-corner--top-left {
+  top: -0.15rem;
+  left: -0.45rem;
+  background-image: url("/aset/cn1.png?v=0.5.4");
+}
+
+.lp-world-corner--top-right,
+.lp-panel-corner--top-right {
+  top: -0.15rem;
+  right: -0.45rem;
+  background-image: url("/aset/cn2.png?v=0.5.4");
+}
+
+.lp-world-corner--bottom-left,
+.lp-panel-corner--bottom-left {
+  bottom: -0.35rem;
+  left: -0.45rem;
+  background-image: url("/aset/cn3.png?v=0.5.4");
+}
+
+.lp-world-corner--bottom-right,
+.lp-panel-corner--bottom-right {
+  right: -0.45rem;
+  bottom: -0.35rem;
+  background-image: url("/aset/cn4.png?v=0.5.4");
+}
+
+/* Rewards panel: push corners further outward */
+.lp-rewards-panel .lp-panel-corner--top-left {
+  top: -0.9rem;
+  left: -1.1rem;
+}
+
+.lp-rewards-panel .lp-panel-corner--top-right {
+  top: -0.9rem;
+  right: -1.1rem;
+}
+
+.lp-rewards-panel .lp-panel-corner--bottom-left {
+  bottom: -0.9rem;
+  left: -1.1rem;
+}
+
+.lp-rewards-panel .lp-panel-corner--bottom-right {
+  right: -1.1rem;
+  bottom: -0.9rem;
+}
+
+/* Hero 窶・left-heavy overlay mask so the city art shows on the right */
 .lp-hero {
-  min-height: 720px;
+  min-height: 470px;
+  border-bottom: 1px solid rgba(214, 168, 79, 0.28);
 }
 
 @media (max-width: 639px) {
+  .lp-page-frame {
+    padding-inline: 0.25rem;
+  }
+
+  .lp-world-corner,
+  .lp-panel-corner {
+    width: 3.25rem;
+    opacity: 0.62;
+  }
+
+  .lp-world-corner--top-left,
+  .lp-panel-corner--top-left {
+    top: -0.05rem;
+    left: -0.2rem;
+  }
+
+  .lp-world-corner--top-right,
+  .lp-panel-corner--top-right {
+    top: -0.05rem;
+    right: -0.2rem;
+  }
+
+  .lp-world-corner--bottom-left,
+  .lp-panel-corner--bottom-left {
+    left: -0.2rem;
+  }
+
+  .lp-world-corner--bottom-right,
+  .lp-panel-corner--bottom-right {
+    right: -0.2rem;
+  }
+
+  .lp-section-rule--simple {
+    height: 3rem;
+  }
+
+  .lp-section-rule--ornate,
+  .lp-section-rule--flourish {
+    height: 4.4rem;
+  }
+
+  .lp-section-rule--compact {
+    height: 4.9rem;
+  }
+
+  .lp-hero {
+    min-height: 560px;
+  }
+
   .lp-hero__content {
     text-align: center;
   }
@@ -2938,6 +3105,60 @@ body {
   box-shadow:
     inset 0 1px 0 rgba(240, 201, 120, 0.08),
     0 0 22px rgba(214, 168, 79, 0.14);
+}
+
+.lp-page-frame {
+  max-width: 1120px;
+}
+
+.lp-header--scrolled {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.32);
+}
+
+.lp-card--hover,
+.lp-feature-card,
+.lp-service-card,
+.lp-plan-card {
+  background:
+    linear-gradient(180deg, rgba(15, 32, 56, 0.9), rgba(4, 10, 20, 0.96)),
+    radial-gradient(circle at top left, rgba(214, 168, 79, 0.1), transparent 55%);
+}
+
+.lp-feature-card {
+  border-color: rgba(214, 168, 79, 0.5);
+}
+
+.lp-service-card__icon {
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(214, 168, 79, 0.32);
+  background:
+    linear-gradient(135deg, rgba(214, 168, 79, 0.12), transparent),
+    rgba(2, 8, 23, 0.72);
+  box-shadow: inset 0 0 18px rgba(214, 168, 79, 0.06);
+}
+
+.lp-plan-card {
+  min-height: 100%;
+}
+
+.lp-referral-panel {
+  background:
+    linear-gradient(90deg, rgba(214, 168, 79, 0.07), transparent 34%, rgba(124, 92, 255, 0.06)),
+    rgba(3, 9, 19, 0.92);
+}
+
+.lp-rewards-panel {
+  position: relative;
+  border-radius: 1rem;
+  padding: 1rem;
+  background:
+    radial-gradient(circle at 14% 36%, rgba(214, 168, 79, 0.12), transparent 18rem),
+    linear-gradient(180deg, rgba(5, 14, 30, 0.78), rgba(2, 8, 23, 0.86));
+}
+
+.lp-rewards-panel .lp-panel-corner {
+  z-index: 0;
 }
 
 .lp-hero__shade-left {
@@ -3061,7 +3282,7 @@ body {
   opacity: 0.7;
 }
 
-/* ── LP CTA section ── */
+/* 笏笏 LP CTA section 笏笏 */
 .lp-cta-frame {
   --lp-frame-width: clamp(1rem, 2vw, 1.625rem);
 }
@@ -3072,6 +3293,16 @@ body {
   background: var(--lp-bg-base, #020408);
 }
 
+.lp-cta-frame__inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 82% 44%, rgba(214, 168, 79, 0.16), transparent 12rem),
+    linear-gradient(90deg, rgba(2, 8, 23, 0.12), transparent 60%);
+}
+
 .lp-cta-frame__bg {
   position: absolute;
   inset: 0;
@@ -3079,7 +3310,7 @@ body {
   background:
     linear-gradient(180deg, rgba(3, 5, 8, 0.52) 0%, rgba(3, 5, 8, 0.38) 45%, rgba(2, 4, 8, 0.58) 100%),
     linear-gradient(90deg, rgba(2, 4, 8, 0.55) 0%, rgba(2, 4, 8, 0.18) 42%, rgba(2, 4, 8, 0.06) 100%),
-    url("/aset/lp/cta-bg.png?v=0.5.0") center / cover no-repeat;
+    url("/aset/lp/cta-bg.png?v=0.5.4") center / cover no-repeat;
   opacity: 1;
 }
 
@@ -3228,3 +3459,5 @@ body {
     animation: none;
   }
 }
+
+

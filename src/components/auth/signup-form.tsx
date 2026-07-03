@@ -8,9 +8,7 @@ import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { buildAuthCallbackUrl } from "@/lib/auth/site-url";
-import { buildSignupResumePath, draftFromUserMetadata } from "@/lib/onboarding/status";
 import { localeFromCountry } from "@/lib/i18n/country-locale";
-import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
   mapAuthError,
@@ -99,74 +97,6 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
   const consentItems = signup.consents;
 
   const checkoutSuccess = searchParams.get("checkout") === "success";
-  const shouldResume = searchParams.get("resume") === "1";
-
-  useEffect(() => {
-    if (!shouldResume || checkoutSuccess) return;
-    if (!supabaseConfigured || !hasBrowserSupabaseConfig()) return;
-
-    let cancelled = false;
-
-    void (async () => {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user || cancelled) return;
-
-      const metadataDraft = draftFromUserMetadata(user);
-      const stored = readStoredSignup().draft;
-      const resumedDraft: SignupDraft = {
-        ...stored,
-        email: user.email ?? stored.email,
-        displayName: stored.displayName || metadataDraft.displayName,
-        username: stored.username || metadataDraft.username,
-        country: stored.country || metadataDraft.country,
-      };
-
-      setUserId(user.id);
-      setDraft(resumedDraft);
-
-      const email = user.email?.trim().toLowerCase() ?? "";
-      if (email) {
-        const basicInfoError = await saveBasicInfo(supabase, user.id, email, resumedDraft);
-        if (basicInfoError && !cancelled) {
-          setError(basicInfoError);
-          return;
-        }
-      }
-
-      const { data: onboarding } = await supabase
-        .from("user_onboarding")
-        .select("completed_at")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-      if (cancelled) return;
-
-      if (onboarding?.completed_at) {
-        window.location.assign(resolvePostLoginPath(redirectTo));
-        return;
-      }
-
-      if (!resumedDraft.username.trim()) {
-        setStep("basic");
-        setMessage(signup.messages.confirmEmailContinue);
-        return;
-      }
-
-      setStep("plan");
-      setMessage(signup.messages.basicSaved);
-      void fetch("/api/auth/sync-django", { method: "POST" });
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-    // saveBasicInfo is stable enough for one-shot resume hydration
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [shouldResume, checkoutSuccess, supabaseConfigured, redirectTo, signup.messages.basicSaved, signup.messages.confirmEmailContinue]);
 
   useEffect(() => {
     if (!checkoutSuccess) return;
@@ -250,24 +180,20 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
     supabase: SupabaseBrowserClient,
     currentUserId: string,
     email: string,
-    source: SignupDraft = draft,
   ) {
-    const username = source.username.trim().toLowerCase() || null;
-    const country = source.country.trim().toUpperCase() || "JP";
+    const username = draft.username.trim().toLowerCase() || null;
+    const country = draft.country.trim().toUpperCase() || "JP";
     const locale = localeFromCountry(country);
-    const profilePayload = {
-      username,
-      display_name: source.displayName.trim() || email.split("@")[0],
-      is_creator: source.isCreator,
-      locale,
-    };
-
-    const { data: updatedProfile, error: profileError } = await supabase
-      .from("profiles")
-      .update(profilePayload)
-      .eq("id", currentUserId)
-      .select("id")
-      .maybeSingle();
+    const { error: profileError } = await supabase.from("profiles").upsert(
+      {
+        id: currentUserId,
+        username,
+        display_name: draft.displayName.trim() || email.split("@")[0],
+        is_creator: draft.isCreator,
+        locale,
+      },
+      { onConflict: "id" },
+    );
 
     if (profileError) {
       return profileError.message.includes("profiles_username")
@@ -275,25 +201,12 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
         : profileError.message;
     }
 
-    if (!updatedProfile) {
-      const { error: insertError } = await supabase.from("profiles").insert({
-        id: currentUserId,
-        ...profilePayload,
-      });
-
-      if (insertError) {
-        return insertError.message.includes("profiles_username")
-          ? signup.messages.usernameTaken
-          : insertError.message;
-      }
-    }
-
     const { error: settingsError } = await supabase.from("user_settings").upsert(
       {
         user_id: currentUserId,
-        legal_name: source.legalName.trim() || null,
+        legal_name: draft.legalName.trim() || null,
         country,
-        phone: source.phone.trim() || null,
+        phone: draft.phone.trim() || null,
       },
       { onConflict: "user_id" },
     );
@@ -337,11 +250,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
             country,
             locale,
           },
-          emailRedirectTo: buildAuthCallbackUrl(
-            buildSignupResumePath(sanitizeRedirectTo(redirectTo)),
-            window.location.origin,
-            locale,
-          ),
+          emailRedirectTo: buildAuthCallbackUrl(redirectTo, window.location.origin, locale),
         },
       });
 
@@ -374,7 +283,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
         return;
       }
 
-      setMessage(signup.messages.confirmEmailContinue);
+      setMessage(`${t.auth.signupConfirmEmail} ${signup.messages.confirmEmailContinue}`);
       setLoading(false);
     } catch (caught) {
       setError(mapAuthError(caught));
@@ -491,47 +400,7 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
       {renderProgress()}
 
       {step === "basic" && (
-        <div className="mb-6 flex justify-center">
-          <OAuthButtons redirectTo={redirectTo} signup referralCode={referralCode} />
-        </div>
-      )}
-
-      {step === "basic" && (
         <form onSubmit={handleBasicSubmit} className="grid gap-4 sm:grid-cols-2">
-          <div className="sm:col-span-2 rounded-md border border-eldonia-border bg-eldonia-gold/5 p-4">
-            <p className="eldonia-label">{signup.basic.rulesTitle}</p>
-            <ul className="mt-3 space-y-2 text-sm leading-6 text-eldonia-text-muted">
-              <li>
-                <span className="font-medium text-eldonia-text">{signup.basic.displayName}:</span>{" "}
-                {signup.basic.hints.displayName}
-              </li>
-              <li>
-                <span className="font-medium text-eldonia-text">{signup.basic.username}:</span>{" "}
-                {signup.basic.hints.username}
-              </li>
-              <li>
-                <span className="font-medium text-eldonia-text">{t.auth.email}:</span>{" "}
-                {signup.basic.hints.email}
-              </li>
-              <li>
-                <span className="font-medium text-eldonia-text">{t.auth.password}:</span>{" "}
-                {signup.basic.hints.password}
-              </li>
-              <li>
-                <span className="font-medium text-eldonia-text">{signup.basic.legalName}:</span>{" "}
-                {signup.basic.hints.legalName}
-              </li>
-              <li>
-                <span className="font-medium text-eldonia-text">{signup.basic.country}:</span>{" "}
-                {signup.basic.hints.country}
-              </li>
-              <li>
-                <span className="font-medium text-eldonia-text">{signup.basic.phone}:</span>{" "}
-                {signup.basic.hints.phone}
-              </li>
-            </ul>
-          </div>
-
           <div className="flex flex-col gap-1">
             <label htmlFor="display-name" className="eldonia-label">
               {signup.basic.displayName}
@@ -545,7 +414,6 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => updateDraft("displayName", event.target.value)}
               className="eldonia-input"
             />
-            <p className="eldonia-hint">{signup.basic.hints.displayName}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -558,16 +426,12 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               autoComplete="username"
               required
               minLength={3}
-              maxLength={30}
               pattern="[a-z0-9_]+"
               value={draft.username}
-              onChange={(event) =>
-                updateDraft("username", event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))
-              }
+              onChange={(event) => updateDraft("username", event.target.value)}
               className="eldonia-input"
               placeholder="creator_name"
             />
-            <p className="eldonia-hint">{signup.basic.hints.username}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -583,7 +447,6 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => updateDraft("email", event.target.value)}
               className="eldonia-input"
             />
-            <p className="eldonia-hint">{signup.basic.hints.email}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -600,7 +463,6 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => setPassword(event.target.value)}
               className="eldonia-input"
             />
-            <p className="eldonia-hint">{signup.basic.hints.password}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -615,10 +477,9 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               onChange={(event) => updateDraft("legalName", event.target.value)}
               className="eldonia-input"
             />
-            <p className="eldonia-hint">{signup.basic.hints.legalName}</p>
           </div>
 
-          <div className="grid grid-cols-[7rem_1fr] gap-3 sm:col-span-2">
+          <div className="grid grid-cols-[7rem_1fr] gap-3">
             <div className="flex flex-col gap-1">
               <label htmlFor="country" className="eldonia-label">
                 {signup.basic.country}
@@ -627,13 +488,10 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
                 id="country"
                 type="text"
                 maxLength={2}
-                minLength={2}
-                required
                 value={draft.country}
                 onChange={(event) => updateDraft("country", event.target.value.toUpperCase())}
                 className="eldonia-input"
               />
-              <p className="eldonia-hint">{signup.basic.hints.country}</p>
             </div>
             <div className="flex flex-col gap-1">
               <label htmlFor="phone" className="eldonia-label">
@@ -647,7 +505,6 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
                 onChange={(event) => updateDraft("phone", event.target.value)}
                 className="eldonia-input"
               />
-              <p className="eldonia-hint">{signup.basic.hints.phone}</p>
             </div>
           </div>
 

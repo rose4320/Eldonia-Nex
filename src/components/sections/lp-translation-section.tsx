@@ -5,11 +5,15 @@ import { LP_TRANSLATION } from "@/lib/lp/content";
 
 export function LpTranslationSection() {
   return (
-    <section className="px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1200px]">
-        <LpOrnateBox className="p-4 sm:p-6 lg:p-8">
-          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,240px)_1fr_minmax(0,180px)] lg:gap-10">
-            <div className="relative mx-auto aspect-square w-full max-w-[220px] lg:max-w-none">
+    <section className="px-3 py-5 sm:px-5 lg:px-6">
+      <div className="lp-translation-panel mx-auto max-w-[1240px]">
+        <span className="lp-panel-corner lp-panel-corner--top-left" aria-hidden />
+        <span className="lp-panel-corner lp-panel-corner--top-right" aria-hidden />
+        <span className="lp-panel-corner lp-panel-corner--bottom-left" aria-hidden />
+        <span className="lp-panel-corner lp-panel-corner--bottom-right" aria-hidden />
+        <LpOrnateBox className="p-3 sm:p-4 lg:p-5">
+          <div className="grid items-center gap-5 lg:grid-cols-[minmax(0,220px)_1fr_minmax(0,150px)] lg:gap-7">
+            <div className="relative mx-auto aspect-square w-full max-w-[190px] lg:max-w-none">
               <div className="lp-globe-figure relative h-full w-full">
                 <Image
                   src={LP_ASSETS.globe}
@@ -22,12 +26,12 @@ export function LpTranslationSection() {
             </div>
 
             <div className="text-center lg:text-left">
-              <h2 className="font-display text-2xl font-semibold tracking-wide text-[#f8f1df] sm:text-3xl">
+              <h2 className="font-display text-xl font-semibold tracking-wide text-[#f8f1df] sm:text-2xl">
                 {LP_TRANSLATION.title}
               </h2>
-              <ul className="mt-6 space-y-4">
+              <ul className="mt-4 grid gap-2">
                 {LP_TRANSLATION.items.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm leading-7 text-[#d8c8a8]">
+                  <li key={item} className="flex items-start gap-3 text-xs leading-5 text-[#d8c8a8] sm:text-sm">
                     <span className="mt-0.5 shrink-0 text-[#d6a84f]" aria-hidden>
                       ✓
                     </span>
@@ -38,15 +42,13 @@ export function LpTranslationSection() {
             </div>
 
             <div className="flex justify-center lg:justify-end">
-              <div className="lp-translation-icon flex h-28 w-28 flex-col items-center justify-center rounded-lg border border-[#7c5cff]/45 bg-[rgba(5,14,30,0.86)] shadow-[0_0_24px_rgba(124,92,255,0.22)]">
-                <div className="flex items-center gap-2">
-                  <span className="font-display text-2xl font-bold text-[#7c5cff]">A</span>
-                  <span className="text-[#7c5cff]/80" aria-hidden>
-                    ⇄
-                  </span>
-                  <span className="font-display text-2xl font-bold text-[#f8f1df]">あ</span>
-                </div>
-              </div>
+              <Image
+                src={LP_ASSETS.translation}
+                alt="多言語翻訳を示すネオンアイコン"
+                width={160}
+                height={160}
+                className="lp-translation-image h-28 w-28 rounded-lg object-cover sm:h-32 sm:w-32 lg:h-36 lg:w-36"
+              />
             </div>
           </div>
         </LpOrnateBox>
@@ -54,3 +56,5 @@ export function LpTranslationSection() {
     </section>
   );
 }
+
+

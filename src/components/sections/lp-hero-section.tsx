@@ -20,15 +20,15 @@ export function LpHeroSection() {
         <div className="lp-hero__shade-bottom" aria-hidden />
       </div>
 
-      <div className="lp-hero__content relative mx-auto max-w-[1200px] px-4 pb-10 pt-[7.5rem] sm:px-6 sm:pb-14 sm:pt-28 lg:px-8 lg:pt-32">
-        <div className="max-w-2xl">
-          <h1 className="whitespace-pre-line font-display text-3xl font-bold leading-tight tracking-wide text-[#f8f1df] sm:text-4xl lg:text-[2.75rem]">
+      <div className="lp-hero__content relative mx-auto max-w-[1240px] px-4 pb-6 pt-[5.5rem] sm:px-6 sm:pb-8 sm:pt-24 lg:pt-24">
+        <div className="max-w-[34rem]">
+          <h1 className="whitespace-pre-line font-display text-[2.05rem] font-bold leading-tight tracking-wide text-[#f8f1df] drop-shadow-[0_2px_18px_rgba(0,0,0,0.75)] sm:text-4xl lg:text-[2.8rem]">
             {LP_HERO.title}
           </h1>
-          <p className="mt-5 whitespace-pre-line text-sm leading-7 text-[#d8c8a8] sm:text-base">
+          <p className="mt-4 max-w-[28rem] whitespace-pre-line text-xs leading-6 text-[#e5d4ad] sm:text-sm">
             {LP_HERO.lead}
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3 sm:justify-start">
+          <div className="mt-6 flex flex-wrap justify-center gap-3 sm:justify-start">
             <LpButton href="/auth/signup">{LP_HERO.primaryCta}</LpButton>
             <LpButton href="#services" variant="outline">
               {LP_HERO.secondaryCta}
@@ -36,7 +36,7 @@ export function LpHeroSection() {
           </div>
         </div>
 
-        <div className="mt-10 lg:mt-14">
+        <div className="mt-7 max-w-[34rem] lg:mt-8">
           <LpFeatureCards />
         </div>
       </div>

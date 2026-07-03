@@ -1,62 +1,44 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { User } from "@supabase/supabase-js";
-import type { Database } from "@/types/database";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
+import type { Database } from "@/types/database";
 
-export function buildSignupResumePath(finalRedirect?: string | null): string {
+type AppSupabaseClient = SupabaseClient<Database>;
+
+export function buildSignupResumePath(redirectTo?: string | null): string {
+  const destination = sanitizeRedirectTo(redirectTo);
   const params = new URLSearchParams({ resume: "1" });
-  const safe = finalRedirect ? sanitizeRedirectTo(finalRedirect) : "/";
-  if (safe !== "/") {
-    params.set("redirect_to", safe);
+
+  if (destination !== "/") {
+    params.set("redirect_to", destination);
   }
+
   return `/auth/signup?${params.toString()}`;
 }
 
 export async function hasCompletedOnboarding(
-  supabase: SupabaseClient<Database>,
+  supabase: AppSupabaseClient,
   userId: string,
 ): Promise<boolean> {
-  try {
-    const { data } = await supabase
-      .from("user_onboarding")
-      .select("completed_at")
-      .eq("user_id", userId)
-      .maybeSingle();
+  const { data, error } = await supabase
+    .from("user_onboarding")
+    .select("completed_at")
+    .eq("user_id", userId)
+    .maybeSingle();
 
-    return Boolean(data?.completed_at);
-  } catch {
+  if (error) {
     return false;
   }
+
+  return Boolean(data?.completed_at);
 }
 
-/** ログイン済みユーザーの遷移先（オンボーディング未完了なら signup resume へ） */
 export async function resolveAuthenticatedDestination(
-  supabase: SupabaseClient<Database>,
+  supabase: AppSupabaseClient,
   userId: string,
   redirectTo?: string | null,
 ): Promise<string> {
-  const complete = await hasCompletedOnboarding(supabase, userId);
-  if (!complete) {
-    const safe = redirectTo ? sanitizeRedirectTo(redirectTo) : "/";
-    return buildSignupResumePath(safe !== "/" ? safe : null);
-  }
-  return resolvePostLoginPath(redirectTo);
-}
+  const destination = resolvePostLoginPath(redirectTo);
+  const onboardingComplete = await hasCompletedOnboarding(supabase, userId);
 
-export function draftFromUserMetadata(user: User): {
-  displayName: string;
-  username: string;
-  country: string;
-} {
-  const metadata = user.user_metadata ?? {};
-  return {
-    displayName:
-      (typeof metadata.display_name === "string" ? metadata.display_name : "") ||
-      user.email?.split("@")[0] ||
-      "",
-    username:
-      typeof metadata.username === "string" ? metadata.username.toLowerCase() : "",
-    country:
-      typeof metadata.country === "string" ? metadata.country.toUpperCase() : "JP",
-  };
+  return onboardingComplete ? destination : buildSignupResumePath(destination);
 }

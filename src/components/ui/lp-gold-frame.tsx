@@ -8,7 +8,7 @@ type LpGoldFrameProps = {
 
 export function LpGoldFrame({ children, className = "" }: LpGoldFrameProps) {
   return (
-    <LpOrnateFrame variant="box" showCrest className={className}>
+    <LpOrnateFrame variant="box" className={className}>
       <div className="lp-gold-frame__inner overflow-hidden">{children}</div>
     </LpOrnateFrame>
   );

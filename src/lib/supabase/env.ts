@@ -81,6 +81,12 @@ export function mapAuthError(error: unknown): string {
 
 export function mapSupabaseAuthMessage(message: string): string {
   const normalized = message.toLowerCase();
+  if (normalized.includes("fetch failed")) {
+    return (
+      "Supabase に接続できません。ローカル開発では Docker Desktop と " +
+      "Supabase を起動してから再度お試しください。"
+    );
+  }
   if (normalized.includes("invalid login credentials")) {
     return (
       "メールアドレスまたはパスワードが正しくありません。" +

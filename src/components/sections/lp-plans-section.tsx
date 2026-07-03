@@ -5,36 +5,36 @@ import { LP_PLANS } from "@/lib/lp/content";
 
 export function LpPlansSection() {
   return (
-    <section id="plans" className="scroll-mt-24 px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1200px]">
-        <LpSectionTitle className="mb-10">Plans</LpSectionTitle>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <section id="plans" className="scroll-mt-24 px-3 py-6 sm:px-5 lg:px-6">
+      <div className="mx-auto max-w-[1240px]">
+        <LpSectionTitle className="mb-5">Plans</LpSectionTitle>
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           {LP_PLANS.map((plan) => (
             <LpCard
               key={plan.id}
               glow={plan.featured ? "purple" : "none"}
               hover={!plan.featured}
-              className={`relative flex flex-col p-5 ${plan.featured ? "lg:-mt-2 lg:pb-7" : ""}`}
+              className={`lp-plan-card relative flex flex-col p-4 ${plan.featured ? "lg:-mt-2 lg:pb-5" : ""}`}
             >
               {"badge" in plan && plan.badge && (
                 <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full border border-[#7c5cff]/60 bg-[#1a1035]/95 px-3 py-0.5 text-[0.65rem] font-semibold tracking-wider text-[#c4b5fd]">
                   {plan.badge}
                 </span>
               )}
-              <p className="font-display text-lg font-semibold tracking-wider text-[#f8f1df]">
+              <p className="font-display text-base font-semibold tracking-wider text-[#f8f1df]">
                 {plan.name}
               </p>
-              <p className="mt-2 font-display text-2xl text-[#d6a84f]">
+              <p className="mt-1.5 font-display text-2xl text-[#d6a84f]">
                 {plan.price}
                 {plan.period && (
                   <span className="mt-1 block text-sm font-normal text-[#9e927d]">{plan.period}</span>
                 )}
               </p>
-              <ul className="mt-5 flex-1 space-y-2.5">
+              <ul className="mt-4 flex-1 space-y-1.5">
                 {plan.features.map((feature) => (
                   <li
                     key={feature}
-                    className="flex items-start gap-2 text-xs leading-5 text-[#d8c8a8] sm:text-sm"
+                    className="flex items-start gap-2 text-[0.72rem] leading-5 text-[#d8c8a8] sm:text-xs"
                   >
                     <span className="text-[#d6a84f]" aria-hidden>
                       ✓
@@ -43,7 +43,7 @@ export function LpPlansSection() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-6">
+              <div className="mt-4">
                 <LpButton
                   href={plan.href}
                   variant={plan.featured ? "purple" : plan.id === "free" ? "primary" : "outline"}
@@ -59,3 +59,5 @@ export function LpPlansSection() {
     </section>
   );
 }
+
+

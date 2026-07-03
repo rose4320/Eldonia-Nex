@@ -1,11 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
-import {
-  buildSignupResumePath,
-  hasCompletedOnboarding,
-} from "@/lib/onboarding/status";
 import { tryDailyLoginExp } from "@/lib/quests/daily-login-exp";
-import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
+import { resolvePostLoginPath } from "@/lib/auth/redirect";
 import { LOCALE_COOKIE, parseUiLocale } from "@/lib/i18n/locale";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 
@@ -41,37 +37,15 @@ export async function GET(request: NextRequest) {
   }
 
   if (code) {
-    const cookieResponse = NextResponse.next({ request });
-    const supabase = createRouteHandlerClient(request, cookieResponse);
+    const response = NextResponse.redirect(`${origin}${redirectTo}`);
+    const supabase = createRouteHandlerClient(request, response);
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      let destination = redirectTo;
-
       if (data.user) {
         await syncDjangoUserFromSupabase(data.user);
         await tryDailyLoginExp(supabase);
-
-        const onboardingComplete = await hasCompletedOnboarding(supabase, data.user.id);
-        const rawRedirect = searchParams.get("redirect_to");
-        const isSignupReturn =
-          rawRedirect?.startsWith("/auth/signup") ||
-          destination.startsWith("/auth/signup");
-        const isPasswordReset = destination.startsWith("/auth/reset-password");
-
-        if (!onboardingComplete && !isSignupReturn && !isPasswordReset) {
-          const finalRedirect =
-            rawRedirect && sanitizeRedirectTo(rawRedirect) !== "/"
-              ? sanitizeRedirectTo(rawRedirect)
-              : null;
-          destination = buildSignupResumePath(finalRedirect);
-        }
       }
-
-      const response = NextResponse.redirect(`${origin}${destination}`);
-      cookieResponse.cookies.getAll().forEach((cookie) => {
-        response.cookies.set(cookie);
-      });
       const locale =
         (data.user?.user_metadata?.locale as string | undefined) ?? localeParam;
       applyLocaleCookie(response, locale ?? null);

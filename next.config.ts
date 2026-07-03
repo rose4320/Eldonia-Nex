@@ -5,7 +5,13 @@ const nextConfig: NextConfig = {
   images: {
     localPatterns: [
       {
+        pathname: "/logo.png",
+      },
+      {
         pathname: "/aset/**",
+      },
+      {
+        pathname: "/design/**",
       },
     ],
   },

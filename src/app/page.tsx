@@ -31,19 +31,19 @@ export default function HomePage() {
           <LpHeader />
           <main>
             <LpHeroSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
             <LpWorldSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />
             <LpServicesSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="ornate" />
             <LpTranslationSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
             <LpPlansSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="ornate" />
             <LpReferralSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />
             <LpRewardsSection />
-            <LpSectionRule className="mx-auto my-2 max-w-4xl" variant="star" />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="flourish" />
             <LpCtaSection />
           </main>
         </div>
