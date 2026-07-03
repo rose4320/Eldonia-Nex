@@ -210,6 +210,8 @@ export type PageMessages = {
   };
   lab: {
     galleryLink: string;
+    viewArtwork: string;
+    allLabs: string;
   };
   shop: {
     badgeBestseller: string;
@@ -428,6 +430,8 @@ const PAGE_JA: PageMessages = {
   },
   lab: {
     galleryLink: "GALLEY →",
+    viewArtwork: "作品を見る",
+    allLabs: "Lab 一覧",
   },
   shop: {
     badgeBestseller: "Realm Bestseller",
@@ -646,6 +650,8 @@ const PAGE_EN: PageMessages = {
   },
   lab: {
     galleryLink: "GALLEY →",
+    viewArtwork: "View artwork",
+    allLabs: "All Labs",
   },
   shop: {
     badgeBestseller: "Realm Bestseller",

@@ -180,12 +180,26 @@ export type CollabRequest = {
   updated_at: string;
 };
 
+export type PendingCollabRequest = {
+  id: string;
+  message: string | null;
+  created_at: string;
+  requester: {
+    display_name: string | null;
+    username: string | null;
+  };
+};
+
 export type ArtworkEngagementState = {
   fanCount: number;
   isFan: boolean;
   collabRequest: Pick<CollabRequest, "id" | "status" | "message"> | null;
   likeCount: number;
   isLiked: boolean;
+  /** Whether a Lab is available for this artwork (joined lab or owner has one). */
+  labAvailable: boolean;
+  /** Pending collaboration requests for the artwork owner. */
+  pendingCollabRequests: PendingCollabRequest[];
 };
 
 export type ArtworkLike = {
