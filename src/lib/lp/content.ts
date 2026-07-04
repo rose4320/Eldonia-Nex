@@ -13,8 +13,8 @@ export const LP_FOOTER_LINKS = [
   { href: "#start", label: "スタートガイド" },
   { href: "/help", label: "運営会社" },
   { href: "/help/contact", label: "お問い合わせ" },
-  { href: "/auth/signup", label: "利用規約" },
-  { href: "/auth/signup", label: "プライバシーポリシー" },
+  { href: "/terms", label: "利用規約" },
+  { href: "/privacy", label: "プライバシーポリシー" },
 ] as const;
 
 export const LP_HERO = {

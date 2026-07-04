@@ -28,6 +28,9 @@ export const metadata: Metadata = {
     apple: "/logo.png",
     icon: "/logo.png",
   },
+  verification: {
+    google: "-JOnvm1Knj7CZ24dcJkWHqQMSl4xvnbHd0tv_YSYoNA",
+  },
   other: {
     google: "notranslate",
   },
