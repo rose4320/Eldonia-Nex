@@ -467,9 +467,39 @@ export type SupportTicketMessage = {
   created_at: string;
 };
 
+export type PrelaunchRegistration = {
+  id: string;
+  email: string;
+  locale: string | null;
+  referral_code: string | null;
+  source: string;
+  user_agent: string | null;
+  created_at: string;
+};
+
 export type Database = {
   public: {
     Tables: {
+      prelaunch_registrations: {
+        Row: PrelaunchRegistration;
+        Insert: {
+          id?: string;
+          email: string;
+          locale?: string | null;
+          referral_code?: string | null;
+          source?: string;
+          user_agent?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          email?: string;
+          locale?: string | null;
+          referral_code?: string | null;
+          source?: string;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: Profile;
         Insert: {

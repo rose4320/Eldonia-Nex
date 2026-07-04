@@ -814,9 +814,11 @@ body {
 
 /* ── Header / Footer ── */
 .eldonia-header {
-  border-bottom: 1px solid var(--eldonia-border);
-  background: rgba(0, 0, 0, 0.92);
-  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(214, 168, 79, 0.28);
+  background:
+    linear-gradient(180deg, rgba(3, 10, 24, 0.96), rgba(2, 8, 23, 0.9)),
+    radial-gradient(circle at 50% -40%, rgba(214, 168, 79, 0.1), transparent 60%);
+  backdrop-filter: blur(10px);
 }
 
 .eldonia-header-desktop {
@@ -941,8 +943,10 @@ body {
 
 .eldonia-footer {
   margin-top: auto;
-  border-top: 1px solid var(--eldonia-border);
-  background: var(--eldonia-surface);
+  border-top: 1px solid rgba(214, 168, 79, 0.28);
+  background:
+    linear-gradient(180deg, rgba(2, 8, 23, 0.92), rgba(5, 11, 22, 0.98)),
+    radial-gradient(circle at 50% 120%, rgba(214, 168, 79, 0.08), transparent 55%);
 }
 
 .eldonia-footer-brand {
@@ -1369,18 +1373,23 @@ body {
 .eldonia-thread-card,
 .eldonia-job-card {
   display: block;
-  border-radius: 0.5rem;
-  border: 1px solid var(--eldonia-border);
-  background: var(--eldonia-surface-elevated);
-  padding: 1rem;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(214, 168, 79, 0.32);
+  background:
+    linear-gradient(165deg, rgba(15, 32, 56, 0.9) 0%, rgba(4, 10, 20, 0.96) 100%),
+    radial-gradient(circle at 12% 0%, rgba(214, 168, 79, 0.12), transparent 55%);
+  padding: 1.15rem;
+  box-shadow: inset 0 1px 0 rgba(240, 201, 120, 0.06);
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
 .eldonia-board-card:hover,
 .eldonia-thread-card:hover,
 .eldonia-job-card:hover {
-  border-color: var(--eldonia-border-strong);
-  box-shadow: 0 0 24px rgba(201, 168, 76, 0.1);
+  border-color: rgba(214, 168, 79, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(240, 201, 120, 0.1),
+    0 0 26px rgba(214, 168, 79, 0.16);
   transform: translateY(-2px);
 }
 
@@ -2895,6 +2904,7 @@ body {
 }
 
 .lp-section-rule--simple,
+.lp-section-rule--seal,
 .lp-section-rule--ornate,
 .lp-section-rule--compact,
 .lp-section-rule--flourish {
@@ -2916,22 +2926,27 @@ body {
 
 .lp-section-rule--simple {
   height: clamp(3.6rem, 5.2vw, 4.5rem);
-  background-image: url("/aset/ln1.png?v=0.5.4");
+  background-image: url("/aset/ln1.png?v=0.6.0");
+}
+
+.lp-section-rule--seal {
+  height: clamp(6rem, 8.5vw, 8rem);
+  background-image: url("/aset/ln2.png?v=0.6.0");
 }
 
 .lp-section-rule--ornate {
   height: clamp(4.8rem, 6.8vw, 6.2rem);
-  background-image: url("/aset/ln3.png?v=0.5.4");
+  background-image: url("/aset/ln3.png?v=0.6.0");
 }
 
 .lp-section-rule--compact {
   height: clamp(5.2rem, 7.2vw, 6.7rem);
-  background-image: url("/aset/ln3-2.png?v=0.5.4");
+  background-image: url("/aset/ln3-2.png?v=0.6.0");
 }
 
 .lp-section-rule--flourish {
   height: clamp(4.8rem, 6.8vw, 6.3rem);
-  background-image: url("/aset/ln4.png?v=0.5.4");
+  background-image: url("/aset/ln4.png?v=0.6.0");
 }
 
 /* Footer gold divider (CSS fade lines + fixed logo) */
@@ -2984,28 +2999,28 @@ body {
 .lp-panel-corner--top-left {
   top: -0.15rem;
   left: -0.45rem;
-  background-image: url("/aset/cn1.png?v=0.5.4");
+  background-image: url("/aset/cn1.png?v=0.6.0");
 }
 
 .lp-world-corner--top-right,
 .lp-panel-corner--top-right {
   top: -0.15rem;
   right: -0.45rem;
-  background-image: url("/aset/cn2.png?v=0.5.4");
+  background-image: url("/aset/cn2.png?v=0.6.0");
 }
 
 .lp-world-corner--bottom-left,
 .lp-panel-corner--bottom-left {
   bottom: -0.35rem;
   left: -0.45rem;
-  background-image: url("/aset/cn3.png?v=0.5.4");
+  background-image: url("/aset/cn3.png?v=0.6.0");
 }
 
 .lp-world-corner--bottom-right,
 .lp-panel-corner--bottom-right {
   right: -0.45rem;
   bottom: -0.35rem;
-  background-image: url("/aset/cn4.png?v=0.5.4");
+  background-image: url("/aset/cn4.png?v=0.6.0");
 }
 
 /* Rewards panel: push corners further outward */
@@ -3070,6 +3085,10 @@ body {
 
   .lp-section-rule--simple {
     height: 3rem;
+  }
+
+  .lp-section-rule--seal {
+    height: 5.5rem;
   }
 
   .lp-section-rule--ornate,
@@ -3310,7 +3329,7 @@ body {
   background:
     linear-gradient(180deg, rgba(3, 5, 8, 0.52) 0%, rgba(3, 5, 8, 0.38) 45%, rgba(2, 4, 8, 0.58) 100%),
     linear-gradient(90deg, rgba(2, 4, 8, 0.55) 0%, rgba(2, 4, 8, 0.18) 42%, rgba(2, 4, 8, 0.06) 100%),
-    url("/aset/lp/cta-bg.png?v=0.5.4") center / cover no-repeat;
+    url("/aset/lp/cta-bg.png?v=0.6.0") center / cover no-repeat;
   opacity: 1;
 }
 
@@ -3461,3 +3480,168 @@ body {
 }
 
 
+
+/* ── Home (トップ) LP 調の装飾 ── */
+.lp-home-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(214, 168, 79, 0.3);
+  min-height: 340px;
+  display: flex;
+  align-items: center;
+}
+
+.lp-home-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.lp-home-hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(2, 8, 23, 0.94) 0%, rgba(2, 8, 23, 0.72) 42%, rgba(2, 8, 23, 0.18) 100%),
+    linear-gradient(180deg, transparent 40%, rgba(2, 8, 23, 0.85) 100%);
+}
+
+.lp-home-hero__body {
+  position: relative;
+  z-index: 3;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  width: 100%;
+}
+
+.lp-home-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.lp-home-corner {
+  position: absolute;
+  z-index: 6;
+  width: clamp(3.4rem, 5vw, 5rem);
+  aspect-ratio: 1;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.85;
+}
+
+.lp-home-corner--tl { top: 0.5rem; left: 0.5rem; background-image: url("/aset/cn1.png?v=0.6.0"); }
+.lp-home-corner--tr { top: 0.5rem; right: 0.5rem; background-image: url("/aset/cn2.png?v=0.6.0"); }
+.lp-home-corner--bl { bottom: 0.5rem; left: 0.5rem; background-image: url("/aset/cn3.png?v=0.6.0"); }
+.lp-home-corner--br { right: 0.5rem; bottom: 0.5rem; background-image: url("/aset/cn4.png?v=0.6.0"); }
+
+.lp-home-stat {
+  border: 1px solid rgba(214, 168, 79, 0.28);
+  border-radius: 0.75rem;
+  background: rgba(3, 9, 19, 0.55);
+  backdrop-filter: blur(4px);
+  padding: 0.75rem 1rem;
+}
+
+.lp-home-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-family: var(--font-cinzel), serif;
+  font-weight: 700;
+}
+
+.lp-home-rank-badge--1 { background: linear-gradient(180deg, #f0c978, #c9992f); color: #2a1c05; }
+.lp-home-rank-badge--2 { background: linear-gradient(180deg, #dfe6ef, #9aa7ba); color: #1b2430; }
+.lp-home-rank-badge--3 { background: linear-gradient(180deg, #e0a97a, #b4713f); color: #2a1405; }
+
+@media (max-width: 639px) {
+  .lp-home-corner { width: 2.75rem; opacity: 0.7; }
+}
+
+/* ── LP reveal アニメーション（フワッと出現/消える） ── */
+.lp-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.lp-reveal--visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ── ホバー拡大（ズーム）効果 ── */
+.lp-card--hover {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.lp-card--hover:hover {
+  transform: translateY(-3px) scale(1.025);
+}
+
+.eldonia-job-card:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* パネル内画像のズーム（親 .lp-home-panel / .group ホバー時） */
+.lp-home-panel img,
+.lp-globe-figure img {
+  transition: transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.lp-home-panel:hover img,
+.group:hover .lp-globe-figure img {
+  transform: scale(1.06);
+}
+
+/* モジュールアイコンのズーム */
+.group:hover .lp-module-icon {
+  transform: scale(1.12);
+}
+
+.lp-module-icon {
+  transition: transform 0.3s ease;
+}
+
+/* ヒーロー背景の緩やかズーム */
+.lp-home-hero__bg {
+  transition: transform 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.lp-home-hero:hover .lp-home-hero__bg {
+  transform: scale(1.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-card--hover:hover,
+  .eldonia-job-card:hover,
+  .lp-home-panel:hover img,
+  .group:hover .lp-globe-figure img,
+  .group:hover .lp-module-icon,
+  .lp-home-hero:hover .lp-home-hero__bg {
+    transform: none;
+  }
+}

@@ -1,6 +1,6 @@
 type LpSectionRuleProps = {
   className?: string;
-  variant?: "fade" | "simple" | "ornate" | "compact" | "flourish";
+  variant?: "fade" | "simple" | "seal" | "ornate" | "compact" | "flourish";
 };
 
 /** Horizontal gold divider between LP sections. */

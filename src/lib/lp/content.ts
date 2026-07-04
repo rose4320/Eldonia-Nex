@@ -173,6 +173,10 @@ export const LP_CTA = {
   lead: "事前登録で、ベータ版の先行案内と限定特典をお届けします。",
   placeholder: "メールアドレスを入力",
   submit: "事前登録する",
+  submitting: "送信中...",
+  success: "事前登録を受け付けました。ベータ先行案内をお送りします。",
+  alreadyRegistered: "このメールアドレスは既に登録済みです。",
+  error: "登録に失敗しました。時間をおいて再度お試しください。",
 };
 
 export const LP_FOOTER = {

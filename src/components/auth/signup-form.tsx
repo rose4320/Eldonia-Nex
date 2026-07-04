@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
+import { OAuthButtons } from "@/components/auth/oauth-buttons";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
@@ -525,6 +526,10 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
           >
             {loading ? t.auth.signupLoading : signup.basic.submit}
           </button>
+
+          <div className="sm:col-span-2 flex justify-center">
+            <OAuthButtons redirectTo={redirectTo} signup referralCode={referralCode} />
+          </div>
         </form>
       )}
 

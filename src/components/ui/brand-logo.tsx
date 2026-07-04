@@ -4,26 +4,31 @@ import Link from "next/link";
 type BrandLogoProps = {
   showSubtitle?: boolean;
   size?: "sm" | "md" | "lg" | "xl";
+  href?: string;
 };
 
 const sizes = {
   sm: { image: 32, title: "text-sm", subtitle: "text-[0.55rem]" },
   md: { image: 40, title: "text-base", subtitle: "text-[0.6rem]" },
   lg: { image: 56, title: "text-xl", subtitle: "text-[0.65rem]" },
-  xl: { image: 66, title: "text-2xl", subtitle: "text-[0.72rem]" },
+  xl: { image: 79, title: "text-2xl", subtitle: "text-[0.72rem]" },
 };
 
-export function BrandLogo({ showSubtitle = false, size = "md" }: BrandLogoProps) {
+export function BrandLogo({
+  showSubtitle = false,
+  size = "md",
+  href = "/home",
+}: BrandLogoProps) {
   const config = sizes[size];
 
   return (
-    <Link href="/" className="group flex items-center gap-3">
+    <Link href={href} className="group flex items-center gap-3">
       <Image
         src="/logo.png"
         alt="ELDONIA NEX"
         width={config.image}
         height={config.image}
-        className="rounded-full ring-1 ring-eldonia-gold/40 transition group-hover:ring-eldonia-gold/70"
+        className="rounded-md object-contain transition group-hover:brightness-110"
         priority
       />
       <div className="leading-tight">

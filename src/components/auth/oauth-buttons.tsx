@@ -1,8 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import type { ReactNode } from "react";
 import { useContent } from "@/components/providers/locale-provider";
-import { isGoogleAuthEnabled, signInWithGoogle } from "@/lib/auth/oauth";
+import {
+  enabledOAuthProviders,
+  signInWithProvider,
+  type OAuthProvider,
+} from "@/lib/auth/oauth";
 import { mapAuthError } from "@/lib/supabase/env";
 
 type OAuthButtonsProps = {
@@ -11,25 +16,56 @@ type OAuthButtonsProps = {
   referralCode?: string | null;
 };
 
+const PROVIDER_META: Record<
+  OAuthProvider,
+  { label: string; icon: ReactNode; bg: string; fg: string }
+> = {
+  google: {
+    label: "Google",
+    icon: <GoogleIcon />,
+    bg: "#ffffff",
+    fg: "#1f1f1f",
+  },
+  facebook: {
+    label: "Facebook",
+    icon: <FacebookIcon />,
+    bg: "#1877f2",
+    fg: "#ffffff",
+  },
+  twitter: {
+    label: "X",
+    icon: <XIcon />,
+    bg: "#000000",
+    fg: "#ffffff",
+  },
+  discord: {
+    label: "Discord",
+    icon: <DiscordIcon />,
+    bg: "#5865f2",
+    fg: "#ffffff",
+  },
+};
+
 export function OAuthButtons({
   redirectTo,
   signup = false,
   referralCode = null,
 }: OAuthButtonsProps) {
   const t = useContent();
-  const [loading, setLoading] = useState(false);
+  const [pending, setPending] = useState<OAuthProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  if (!isGoogleAuthEnabled()) {
+  const providers = enabledOAuthProviders();
+  if (providers.length === 0) {
     return null;
   }
 
-  async function handleGoogleSignIn() {
+  async function handleSignIn(provider: OAuthProvider) {
     setError(null);
-    setLoading(true);
+    setPending(provider);
 
     try {
-      await signInWithGoogle({
+      await signInWithProvider(provider, {
         redirectTo,
         origin: window.location.origin,
         signup,
@@ -37,7 +73,7 @@ export function OAuthButtons({
       });
     } catch (caught) {
       setError(mapAuthError(caught));
-      setLoading(false);
+      setPending(null);
     }
   }
 
@@ -49,15 +85,26 @@ export function OAuthButtons({
         <span className="h-px flex-1 bg-eldonia-border" />
       </div>
 
-      <button
-        type="button"
-        onClick={handleGoogleSignIn}
-        disabled={loading}
-        className="eldonia-btn-secondary flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        <GoogleIcon />
-        {loading ? t.auth.oauthLoading : t.auth.continueWithGoogle}
-      </button>
+      <div className="grid grid-cols-2 gap-2">
+        {providers.map((provider) => {
+          const meta = PROVIDER_META[provider];
+          const isPending = pending === provider;
+          return (
+            <button
+              key={provider}
+              type="button"
+              onClick={() => handleSignIn(provider)}
+              disabled={pending !== null}
+              className="flex items-center justify-center gap-2 rounded-md border border-eldonia-border px-3 py-2.5 text-sm font-medium transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ backgroundColor: meta.bg, color: meta.fg }}
+              aria-label={`${meta.label}`}
+            >
+              {meta.icon}
+              <span>{isPending ? t.auth.oauthLoading : meta.label}</span>
+            </button>
+          );
+        })}
+      </div>
 
       {error && <p className="eldonia-alert-error text-sm">{error}</p>}
     </div>
@@ -83,6 +130,30 @@ function GoogleIcon() {
         fill="#EA4335"
         d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
       />
+    </svg>
+  );
+}
+
+function FacebookIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93zm-1.29 19.5h2.04L6.48 3.24H4.29z" />
+    </svg>
+  );
+}
+
+function DiscordIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M20.32 4.37A19.8 19.8 0 0 0 15.45 3a13.6 13.6 0 0 0-.62 1.27 18.3 18.3 0 0 0-5.66 0A13 13 0 0 0 8.55 3a19.7 19.7 0 0 0-4.88 1.37C.55 8.98-.3 13.48.13 17.92a19.9 19.9 0 0 0 6.03 3.05c.49-.66.92-1.36 1.29-2.1-.71-.27-1.39-.6-2.03-.99.17-.13.34-.26.5-.4a14.2 14.2 0 0 0 12.16 0c.16.14.33.27.5.4-.64.39-1.32.72-2.03.99.37.74.8 1.44 1.29 2.1a19.9 19.9 0 0 0 6.03-3.05c.5-5.15-.85-9.61-3.55-13.55zM8.02 15.33c-1.18 0-2.15-1.08-2.15-2.42s.95-2.42 2.15-2.42 2.17 1.09 2.15 2.42c0 1.34-.95 2.42-2.15 2.42zm7.96 0c-1.18 0-2.15-1.08-2.15-2.42s.95-2.42 2.15-2.42 2.17 1.09 2.15 2.42c0 1.34-.94 2.42-2.15 2.42z" />
     </svg>
   );
 }

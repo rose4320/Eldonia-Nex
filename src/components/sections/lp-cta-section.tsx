@@ -6,15 +6,53 @@ import { LpCtaFrame } from "@/components/ui/lp-cta-frame";
 import { LpCtaOwl } from "@/components/ui/lp-cta-owl";
 import { LP_CTA } from "@/lib/lp/content";
 
+type SubmitStatus = "idle" | "loading" | "success" | "duplicate" | "error";
+
 export function LpCtaSection() {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<SubmitStatus>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!email.trim()) return;
-    window.location.href = `/auth/signup?email=${encodeURIComponent(email.trim())}`;
-    setSubmitted(true);
+    const trimmed = email.trim();
+    if (!trimmed || status === "loading") return;
+
+    setStatus("loading");
+    setErrorMessage(null);
+
+    try {
+      const response = await fetch("/api/prelaunch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: trimmed,
+          locale: typeof navigator !== "undefined" ? navigator.language : undefined,
+        }),
+      });
+      const payload = (await response.json()) as {
+        ok?: boolean;
+        alreadyRegistered?: boolean;
+        error?: string;
+      };
+
+      if (!response.ok || !payload.ok) {
+        setErrorMessage(payload.error ?? LP_CTA.error);
+        setStatus("error");
+        return;
+      }
+
+      setEmail("");
+      setStatus(payload.alreadyRegistered ? "duplicate" : "success");
+
+      // 事前登録完了後、少し待ってトップ（Home）ページへ遷移
+      window.setTimeout(() => {
+        window.location.assign("/home?registered=1");
+      }, 1400);
+    } catch {
+      setErrorMessage(LP_CTA.error);
+      setStatus("error");
+    }
   }
 
   return (
@@ -38,15 +76,22 @@ export function LpCtaSection() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                   placeholder={LP_CTA.placeholder}
-                  className="min-w-0 flex-1 rounded-md border border-[#c5a059]/45 bg-[#060b14]/90 px-4 py-2.5 text-sm text-[#e8d5a3] shadow-[inset_0_1px_0_rgba(120,140,180,0.05)] placeholder:text-[#5c5340] focus:border-[#c5a059] focus:outline-none focus:ring-2 focus:ring-[#c5a059]/25"
+                  disabled={status === "loading"}
+                  className="min-w-0 flex-1 rounded-md border border-[#c5a059]/45 bg-[#060b14]/90 px-4 py-2.5 text-sm text-[#e8d5a3] shadow-[inset_0_1px_0_rgba(120,140,180,0.05)] placeholder:text-[#5c5340] focus:border-[#c5a059] focus:outline-none focus:ring-2 focus:ring-[#c5a059]/25 disabled:opacity-60"
                 />
                 <LpButton type="submit" className="shrink-0 px-6">
-                  {LP_CTA.submit}
+                  {status === "loading" ? LP_CTA.submitting : LP_CTA.submit}
                 </LpButton>
               </form>
 
-              {submitted && (
-                <p className="mt-4 text-sm text-[#9a8b6a]">登録ページへ移動します…</p>
+              {status === "success" && (
+                <p className="mt-4 text-sm text-[#8fd19e]">{LP_CTA.success}</p>
+              )}
+              {status === "duplicate" && (
+                <p className="mt-4 text-sm text-[#d8c8a8]">{LP_CTA.alreadyRegistered}</p>
+              )}
+              {status === "error" && (
+                <p className="mt-4 text-sm text-[#e0a3a3]">{errorMessage ?? LP_CTA.error}</p>
               )}
             </div>
 
