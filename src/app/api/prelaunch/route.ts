@@ -1,8 +1,18 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * 試験段階の事前登録:
+ * - メールを prelaunch_registrations に保存
+ * - そのメールで Supabase アカウントを自動作成（既存なら再利用）
+ * - 最上級プラン(pro)を付与しオンボーディング完了扱いにする
+ * - サーバー側でログインしセッション Cookie を発行 → そのまま /home へ入れる
+ *
+ * 本格運用ではこの自動ログイン/自動 pro 付与を廃止し、プラン選択・決済導線に差し替える。
+ */
 export async function POST(request: NextRequest) {
   let body: { email?: string; locale?: string; referralCode?: string | null };
   try {
@@ -31,7 +41,9 @@ export async function POST(request: NextRequest) {
   const referralCode = body.referralCode?.trim().slice(0, 64) || null;
   const userAgent = request.headers.get("user-agent")?.slice(0, 500) ?? null;
 
-  const { error } = await admin.from("prelaunch_registrations").insert({
+  // 1) 事前登録メールを保存（重複でも続行）
+  let alreadyRegistered = false;
+  const { error: insertError } = await admin.from("prelaunch_registrations").insert({
     email,
     locale,
     referral_code: referralCode,
@@ -39,16 +51,75 @@ export async function POST(request: NextRequest) {
     user_agent: userAgent,
   });
 
-  if (error) {
-    // 23505 = unique_violation: 既に登録済みでも成功扱いにする
-    if (error.code === "23505") {
-      return NextResponse.json({ ok: true, alreadyRegistered: true });
+  if (insertError) {
+    if (insertError.code === "23505") {
+      alreadyRegistered = true;
+    } else {
+      return NextResponse.json(
+        { error: "登録に失敗しました。時間をおいて再度お試しください。" },
+        { status: 500 },
+      );
     }
+  }
+
+  // 2) アカウントを自動作成 or 取得（試験段階のみの動作）
+  const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
+  let userId: string | null = null;
+
+  const { data: created, error: createError } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
+
+  if (created?.user) {
+    userId = created.user.id;
+  } else {
+    // 既存ユーザーとみなし、id を取得してパスワードを再設定
+    const { data: linkData } = await admin.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+    });
+    if (linkData?.user) {
+      userId = linkData.user.id;
+      await admin.auth.admin.updateUserById(userId, {
+        password,
+        email_confirm: true,
+      });
+    }
+  }
+
+  if (!userId) {
     return NextResponse.json(
-      { error: "登録に失敗しました。時間をおいて再度お試しください。" },
+      { error: createError?.message ?? "アカウント作成に失敗しました。" },
       { status: 500 },
     );
   }
 
-  return NextResponse.json({ ok: true });
+  // 3) 最上級プラン付与＋オンボーディング完了扱い（試験段階）
+  await admin.from("profiles").update({ subscription_plan: "pro" }).eq("id", userId);
+  await admin.from("user_onboarding").upsert(
+    {
+      user_id: userId,
+      selected_plan: "pro",
+      payment_status: "not_required",
+      completed_at: new Date().toISOString(),
+    },
+    { onConflict: "user_id" },
+  );
+
+  // 4) サーバー側でログインしてセッション Cookie を発行
+  const response = NextResponse.json({ ok: true, alreadyRegistered, loggedIn: true });
+  const supabase = createRouteHandlerClient(request, response);
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (signInError) {
+    // ログインに失敗しても登録自体は成功しているので success 扱い（/home では未ログイン→LP）
+    return NextResponse.json({ ok: true, alreadyRegistered, loggedIn: false });
+  }
+
+  return response;
 }

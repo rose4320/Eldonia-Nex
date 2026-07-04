@@ -177,6 +177,16 @@ export const LP_CTA = {
   success: "事前登録を受け付けました。ベータ先行案内をお送りします。",
   alreadyRegistered: "このメールアドレスは既に登録済みです。",
   error: "登録に失敗しました。時間をおいて再度お試しください。",
+  thankTitle: "ご登録ありがとうございます！",
+  thankBody:
+    "ベータ版の先行案内と限定特典を、ご登録のメールアドレスにお届けします。公開までもうしばらくお待ちください。",
+  thankDuplicateTitle: "すでにご登録済みです",
+  thankDuplicateBody:
+    "このメールアドレスは既に登録されています。公開の準備が整い次第、先行案内をお送りします。",
+  thankGoHome: "ホームへ",
+  thankClose: "閉じる",
+  thankCarryOver:
+    "試験期間中のご利用データ（作品・EXP・実績など）は、本格運用の開始後もそのまま引き継がれます。安心してお試しください。",
 };
 
 export const LP_FOOTER = {

@@ -44,11 +44,6 @@ export function LpCtaSection() {
 
       setEmail("");
       setStatus(payload.alreadyRegistered ? "duplicate" : "success");
-
-      // 事前登録完了後、少し待ってトップ（Home）ページへ遷移
-      window.setTimeout(() => {
-        window.location.assign("/home?registered=1");
-      }, 1400);
     } catch {
       setErrorMessage(LP_CTA.error);
       setStatus("error");
@@ -84,12 +79,6 @@ export function LpCtaSection() {
                 </LpButton>
               </form>
 
-              {status === "success" && (
-                <p className="mt-4 text-sm text-[#8fd19e]">{LP_CTA.success}</p>
-              )}
-              {status === "duplicate" && (
-                <p className="mt-4 text-sm text-[#d8c8a8]">{LP_CTA.alreadyRegistered}</p>
-              )}
               {status === "error" && (
                 <p className="mt-4 text-sm text-[#e0a3a3]">{errorMessage ?? LP_CTA.error}</p>
               )}
@@ -101,6 +90,69 @@ export function LpCtaSection() {
           </div>
         </LpCtaFrame>
       </div>
+
+      {(status === "success" || status === "duplicate") && (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="prelaunch-thanks-title"
+          onClick={() => setStatus("idle")}
+        >
+          <div
+            className="lp-cta-thanks relative w-full max-w-md rounded-2xl border border-[#c5a059]/50 bg-[#0a1120]/95 px-7 py-9 text-center shadow-[0_24px_60px_rgba(0,0,0,0.6)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setStatus("idle")}
+              aria-label={LP_CTA.thankClose}
+              className="absolute right-4 top-4 text-[#9a8b6a] transition-colors hover:text-[#e8d5a3]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M6 6l12 12M18 6L6 18" />
+              </svg>
+            </button>
+
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-[#c5a059]/60 bg-[#c5a059]/10">
+              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e8d5a3" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+
+            <h3
+              id="prelaunch-thanks-title"
+              className="mt-5 font-display text-xl font-semibold tracking-wide text-[#e8d5a3]"
+            >
+              {status === "duplicate" ? LP_CTA.thankDuplicateTitle : LP_CTA.thankTitle}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-[#b6a884]">
+              {status === "duplicate" ? LP_CTA.thankDuplicateBody : LP_CTA.thankBody}
+            </p>
+
+            <p className="mt-4 rounded-lg border border-[#c5a059]/25 bg-[#c5a059]/5 px-4 py-3 text-xs leading-6 text-[#9a8b6a]">
+              {LP_CTA.thankCarryOver}
+            </p>
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
+              <LpButton
+                type="button"
+                className="px-8"
+                onClick={() => window.location.assign("/home")}
+              >
+                {LP_CTA.thankGoHome}
+              </LpButton>
+              <button
+                type="button"
+                onClick={() => setStatus("idle")}
+                className="rounded-md border border-[#c5a059]/35 px-6 py-2.5 text-sm text-[#b6a884] transition-colors hover:border-[#c5a059]/60 hover:text-[#e8d5a3]"
+              >
+                {LP_CTA.thankClose}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
