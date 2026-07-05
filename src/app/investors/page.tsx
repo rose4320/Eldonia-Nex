@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { HOME_V2_ASSETS } from "@/lib/design/home-v2-assets";
 import { getInvestorContent } from "@/lib/i18n/content/investor-messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { PAGE_ICONS } from "@/lib/layout/module-icons";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getUiLocale();
@@ -27,14 +29,17 @@ export default async function InvestorsPage() {
   const copy = getInvestorContent(locale);
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
 
-      <main className="eldonia-main eldonia-main-narrow">
-        <section className="eldonia-investor-panel space-y-5">
-          <p className="eldonia-eyebrow">{copy.hero.eyebrow}</p>
-          <h1 className="eldonia-heading eldonia-heading-lg max-w-3xl">{copy.hero.title}</h1>
-          <p className="max-w-3xl text-sm leading-7 text-eldonia-text-muted">{copy.hero.lead}</p>
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-12 px-4 py-10 sm:px-6 lg:px-8">
+        <section className="eldonia-investor-panel">
+          <PageIntro
+            eyebrow={copy.hero.eyebrow}
+            title={copy.hero.title}
+            lead={copy.hero.lead}
+            iconSrc={PAGE_ICONS.investors}
+          />
         </section>
 
         <section className="mt-12 space-y-4">

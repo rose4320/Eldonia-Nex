@@ -15,11 +15,11 @@ export function UserAvatarLink({ displayName, avatarUrl }: UserAvatarLinkProps) 
   return (
     <Link
       href="/settings"
-      className="group relative flex items-center gap-2 rounded-full border border-eldonia-gold/30 p-0.5 transition hover:border-eldonia-gold/60"
+      className="group relative flex items-center gap-2 transition"
       aria-label={settingsUi.avatarSettings(displayName)}
       title={pages.settings.avatarSettings}
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-eldonia-surface ring-1 ring-eldonia-gold/20">
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden bg-eldonia-surface">
         {avatarUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -29,7 +29,7 @@ export function UserAvatarLink({ displayName, avatarUrl }: UserAvatarLinkProps) 
           </span>
         )}
       </span>
-      <span className="hidden text-sm text-eldonia-text-muted group-hover:text-eldonia-gold-light sm:inline">
+      <span className="hidden max-w-28 truncate text-sm text-eldonia-text-muted group-hover:text-eldonia-gold-light sm:inline">
         {displayName}
       </span>
     </Link>

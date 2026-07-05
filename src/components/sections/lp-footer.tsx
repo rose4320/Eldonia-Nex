@@ -18,13 +18,13 @@ export function LpFooter() {
 
           <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2" aria-label="Footer">
             {LP_FOOTER_LINKS.map((item) => (
-              <a
-                key={item.label}
+              <Link
+                key={item.href}
                 href={item.href}
                 className="font-display text-[0.65rem] tracking-[0.1em] text-[#9e927d] hover:text-[#f0c978]"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -49,4 +49,3 @@ export function LpFooter() {
     </footer>
   );
 }
-

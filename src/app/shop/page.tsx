@@ -1,14 +1,16 @@
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ProductCard } from "@/components/shop/product-card";
 import { ShopHeroStrip } from "@/components/shop/shop-hero-strip";
 import { ShopSidebar } from "@/components/shop/shop-sidebar";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
-import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getShopProducts } from "@/lib/shop/get-products";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { realmLabel } from "@/lib/shop/constants";
 
 type ShopPageProps = {
@@ -29,18 +31,19 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
         : t.shop.heading;
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
       <ShopToolbar query={q} />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-6 py-8">
-        <section className="space-y-2">
-          <p className="eldonia-eyebrow">SHOP</p>
-          <h1 className="eldonia-heading eldonia-heading-lg">{heading}</h1>
-          <p className="eldonia-body text-sm">{t.shop.lead}</p>
-        </section>
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+        <PageIntro
+          eyebrow="SHOP"
+          title={heading}
+          lead={t.shop.lead}
+          iconSrc={MODULE_ICONS.shop}
+        />
 
-        <EldoniaDivider />
+        <LpSectionRule />
 
         <div className="grid gap-8 lg:grid-cols-[14rem_1fr]">
           <ShopSidebar activeCategory={category} query={q} />

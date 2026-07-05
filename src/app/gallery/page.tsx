@@ -1,12 +1,13 @@
-import Link from "next/link";
 import { GalleryToolbar } from "@/components/gallery/gallery-toolbar";
 import { PublicGalleryFeed } from "@/components/gallery/public-gallery-feed";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
+import { getGalleryFeedEngagement } from "@/lib/gallery/get-gallery-feed-engagement";
 import { getPublicArtworks } from "@/lib/gallery/get-public-artworks";
-import { galleryUploadHref } from "@/lib/gallery/upload-link";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { createClient } from "@/lib/supabase/server";
 
 type GalleryPageProps = {
@@ -21,34 +22,31 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  const uploadHref = galleryUploadHref(Boolean(user));
 
   const term = q?.trim();
   const heading = term ? t.common.searchResults(term) : t.gallery.heading;
   const items = await getPublicArtworks(q);
+  const engagementMap = await getGalleryFeedEngagement(items, user?.id ?? null);
+  const engagementByArtwork = Object.fromEntries(engagementMap);
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
       <GalleryToolbar query={q} />
 
-      <main className="eldonia-main">
-        <section className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="eldonia-eyebrow">GALLEY</p>
-            <h1 className="eldonia-heading eldonia-heading-lg mt-1">{heading}</h1>
-            <p className="eldonia-body mt-2 text-sm">{t.gallery.lead}</p>
-          </div>
-          <Link href={uploadHref} className="eldonia-btn-primary">
-            {t.gallery.upload}
-          </Link>
-        </section>
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+        <PageIntro
+          eyebrow="GALLERY"
+          title={heading}
+          lead={t.gallery.lead}
+          iconSrc={MODULE_ICONS.gallery}
+        />
 
         <PublicGalleryFeed
           items={items}
           query={q}
-          uploadHref={uploadHref}
-          uploadLabel={user ? t.gallery.upload : t.common.loginToPost}
+          engagementByArtwork={engagementByArtwork}
+          userId={user?.id ?? null}
         />
       </main>
 

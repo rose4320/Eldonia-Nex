@@ -1,22 +1,28 @@
 import Link from "next/link";
 import { HelpNav } from "@/components/support/help-nav";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { PAGE_ICONS } from "@/lib/layout/module-icons";
 
 export default async function GuidesPage() {
   const locale = await getUiLocale();
-  const { guides } = getContent(locale);
+  const { guides, help } = getContent(locale);
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
 
-      <main className="eldonia-main">
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
         <section className="space-y-4">
-          <h1 className="eldonia-heading eldonia-heading-lg">{guides.title}</h1>
-          <p className="eldonia-body text-sm">{guides.lead}</p>
+          <PageIntro
+            eyebrow={help.eyebrow}
+            title={guides.title}
+            lead={guides.lead}
+            iconSrc={PAGE_ICONS.help}
+          />
           <HelpNav current="/help/guides" />
         </section>
 
@@ -35,7 +41,7 @@ export default async function GuidesPage() {
                 href={guide.link.href}
                 className="eldonia-link mt-4 inline-block text-sm font-medium"
               >
-                {guide.link.label} →
+                {guide.link.label}
               </Link>
             </article>
           ))}

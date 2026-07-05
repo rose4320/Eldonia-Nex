@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ExpBar } from "@/components/settings/exp-bar";
@@ -12,10 +13,11 @@ import { SettingsPortfolioSummary } from "@/components/settings/settings-portfol
 import { SettingsPostHub } from "@/components/settings/settings-post-hub";
 import { SettingsRecommendations } from "@/components/settings/settings-recommendations";
 import { SettingsReferralCard } from "@/components/settings/settings-referral-card";
-import { UserAvatarLink } from "@/components/settings/user-avatar-link";
-import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { LpReveal } from "@/components/ui/lp-reveal";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { PAGE_ICONS } from "@/lib/layout/module-icons";
 import { getSettingsHubData, mergeUserSettings } from "@/lib/settings/get-settings-data";
 import { ensureProfile } from "@/lib/auth/ensure-profile";
 import { getReferralProgramData } from "@/lib/referrals/get-referral-program";
@@ -40,40 +42,61 @@ export default async function SettingsPage() {
   const titleBadge = data.portfolio?.title_badge ?? null;
   const settings = mergeUserSettings(user.id, data.userSettings);
 
+  const displayName =
+    data.profile.display_name ?? data.profile.username ?? t.pages.userFallback;
+  const avatarUrl = data.profile.avatar_url;
+  const initial = displayName.slice(0, 1).toUpperCase();
+
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
 
-      <main className="eldonia-main">
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
+        {/* Hero band */}
+        <section className="lp-home-hero">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/aset/lp/hero.png?v=0.6.0" alt="" className="lp-home-hero__bg" />
+          <div className="lp-home-hero__scrim" aria-hidden />
+          <span className="lp-home-corner lp-home-corner--tl" aria-hidden />
+          <span className="lp-home-corner lp-home-corner--tr" aria-hidden />
+          <span className="lp-home-corner lp-home-corner--bl" aria-hidden />
+          <span className="lp-home-corner lp-home-corner--br" aria-hidden />
+
+          <div className="lp-home-hero__body">
+            <PageIntro
+              eyebrow="SETTINGS"
+              title={displayName}
+              lead={t.settings.lead}
+              iconSrc={PAGE_ICONS.settings}
+              action={
+                <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#d6a84f]/50 bg-[#060b14]">
+                  {avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="font-display text-2xl text-[#f0c978]">{initial}</span>
+                  )}
+                </span>
+              }
+            />
+
+            <div className="mt-6 max-w-xl">
+              <ExpBar expPoints={expPoints} titleBadge={titleBadge} />
+            </div>
+          </div>
+        </section>
+
         <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
           <SettingsNav />
 
-          <div className="min-w-0 flex-1 space-y-10">
-            <section className="eldonia-card">
-              <div className="flex flex-wrap items-center gap-4">
-                <UserAvatarLink
-                  displayName={
-                    data.profile.display_name ??
-                    data.profile.username ??
-                    t.pages.userFallback
-                  }
-                  avatarUrl={data.profile.avatar_url}
-                />
-                <div className="flex-1">
-                  <p className="eldonia-eyebrow">Settings</p>
-                  <h1 className="eldonia-heading eldonia-heading-sm">{t.settings.heading}</h1>
-                  <p className="eldonia-body mt-1 text-sm">{t.settings.lead}</p>
-                </div>
-              </div>
-              <div className="mt-6">
-                <ExpBar expPoints={expPoints} titleBadge={titleBadge} />
-              </div>
-            </section>
+          <div className="min-w-0 flex-1 space-y-8">
+            <LpReveal>
+              <SettingsRecommendations items={data.recommendations} />
+            </LpReveal>
 
-            <SettingsRecommendations items={data.recommendations} />
-            <EldoniaDivider />
+            <LpSectionRule variant="simple" />
 
-            <section id="basics" className="scroll-mt-24 space-y-4">
+            <LpReveal as="section" id="basics" className="scroll-mt-24 space-y-4">
               <h2 className="eldonia-eyebrow">{t.pages.settings.sectionBasics}</h2>
               <div className="eldonia-card">
                 <SettingsBasicsForm
@@ -85,18 +108,41 @@ export default async function SettingsPage() {
                   basicsExpAwarded={data.basicsExpAwarded}
                 />
               </div>
-            </section>
+            </LpReveal>
 
-            <SettingsPostHub />
-            <SettingsReferralCard referral={referral} />
-            <SettingsPortfolioSummary portfolio={data.portfolio} />
-            <SettingsFinance finance={data.finance} />
-            <SettingsNotificationPrefs userId={user.id} settings={settings} />
-            <SettingsNotifications notifications={data.notifications} userId={user.id} />
+            <LpSectionRule variant="simple" />
+
+            <LpReveal>
+              <SettingsPostHub />
+            </LpReveal>
+
+            <LpReveal>
+              <SettingsReferralCard referral={referral} />
+            </LpReveal>
+
+            <LpSectionRule variant="simple" />
+
+            <LpReveal>
+              <SettingsPortfolioSummary portfolio={data.portfolio} />
+            </LpReveal>
+
+            <LpReveal>
+              <SettingsFinance finance={data.finance} />
+            </LpReveal>
+
+            <LpSectionRule variant="simple" />
+
+            <LpReveal>
+              <SettingsNotificationPrefs userId={user.id} settings={settings} />
+            </LpReveal>
+
+            <LpReveal>
+              <SettingsNotifications notifications={data.notifications} userId={user.id} />
+            </LpReveal>
           </div>
         </div>
 
-        <p className="eldonia-hint mt-8 text-center text-xs">
+        <p className="eldonia-hint mt-4 text-center text-xs">
           <Link href="/" className="eldonia-link">
             {t.pages.settings.backHome}
           </Link>

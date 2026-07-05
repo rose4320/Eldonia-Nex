@@ -1,8 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
-import { galleryUploadHref } from "@/lib/gallery/upload-link";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import { createClient } from "@/lib/supabase/server";
 
 type GalleryToolbarProps = {
   query?: string;
@@ -11,20 +10,22 @@ type GalleryToolbarProps = {
 export async function GalleryToolbar({ query }: GalleryToolbarProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  const uploadHref = galleryUploadHref(Boolean(user));
 
   return (
     <div className="eldonia-gallery-toolbar">
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-6 py-3">
+      <div className="mx-auto flex max-w-[1240px] flex-wrap items-center gap-4 px-4 py-3 sm:px-6">
         <Link
           href="/gallery"
-          className="eldonia-eyebrow shrink-0 hover:text-eldonia-gold-light"
+          className="flex shrink-0 items-center gap-2 hover:opacity-90"
         >
-          GALLEY
+          <Image
+            src="/aset/icons/modules/icon-gallery.png"
+            alt=""
+            width={28}
+            height={28}
+            className="rounded-sm"
+          />
+          <span className="eldonia-eyebrow hover:text-eldonia-gold-light">GALLERY</span>
         </Link>
 
         <form action="/gallery" method="get" className="eldonia-gallery-search min-w-48 flex-1">
@@ -40,10 +41,6 @@ export async function GalleryToolbar({ query }: GalleryToolbarProps) {
             {t.common.search}
           </button>
         </form>
-
-        <Link href={uploadHref} className="eldonia-btn-ghost shrink-0 text-xs">
-          {t.gallery.upload}
-        </Link>
       </div>
     </div>
   );

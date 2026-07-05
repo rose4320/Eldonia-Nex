@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { HelpNav } from "@/components/support/help-nav";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SLA_INFO } from "@/lib/support/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { PAGE_ICONS } from "@/lib/layout/module-icons";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function HelpPage() {
@@ -16,14 +18,17 @@ export default async function HelpPage() {
   } = await supabase.auth.getUser();
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
 
-      <main className="eldonia-main">
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
         <section className="space-y-4">
-          <p className="eldonia-eyebrow">{t.help.eyebrow}</p>
-          <h1 className="eldonia-heading eldonia-heading-lg">{t.help.heading}</h1>
-          <p className="max-w-2xl text-sm leading-7 text-eldonia-text-muted">{t.help.lead}</p>
+          <PageIntro
+            eyebrow={t.help.eyebrow}
+            title={t.help.heading}
+            lead={t.help.lead}
+            iconSrc={PAGE_ICONS.help}
+          />
           <HelpNav current="/help" />
         </section>
 

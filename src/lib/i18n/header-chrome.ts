@@ -3,6 +3,7 @@ export const HEADER_LABELS = {
   login: "Login",
   signup: "Sign up",
   logout: "Logout",
+  cart: "Cart",
   menu: "Menu",
   menuClose: "Close",
   searchPlaceholder: "Search the Nexus…",

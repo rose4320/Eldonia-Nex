@@ -427,12 +427,20 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
               autoComplete="username"
               required
               minLength={3}
+              maxLength={30}
               pattern="[a-z0-9_]+"
+              title={signup.basic.hints.username}
               value={draft.username}
-              onChange={(event) => updateDraft("username", event.target.value)}
+              onChange={(event) =>
+                updateDraft(
+                  "username",
+                  event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""),
+                )
+              }
               className="eldonia-input"
               placeholder="creator_name"
             />
+            <p className="eldonia-hint">{signup.basic.hints.username}</p>
           </div>
 
           <div className="flex flex-col gap-1">

@@ -1,14 +1,16 @@
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { EventCard } from "@/components/events/event-card";
 import { EventsHeroStrip } from "@/components/events/events-hero-strip";
 import { EventsSidebar } from "@/components/events/events-sidebar";
 import { EventsToolbar } from "@/components/events/events-toolbar";
-import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getEvents } from "@/lib/events/get-events";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { realmLabel } from "@/lib/events/constants";
 
 type EventsPageProps = {
@@ -30,18 +32,19 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
         : t.events.heading;
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
       <EventsToolbar query={q} />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-6 py-8">
-        <section className="space-y-2">
-          <p className="eldonia-eyebrow">EVENTS</p>
-          <h1 className="eldonia-heading eldonia-heading-lg">{heading}</h1>
-          <p className="eldonia-body text-sm">{t.events.lead}</p>
-        </section>
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+        <PageIntro
+          eyebrow="EVENTS"
+          title={heading}
+          lead={t.events.lead}
+          iconSrc={MODULE_ICONS.events}
+        />
 
-        <EldoniaDivider />
+        <LpSectionRule />
 
         <div className="grid gap-8 lg:grid-cols-[14rem_1fr]">
           <EventsSidebar

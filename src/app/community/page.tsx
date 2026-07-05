@@ -1,13 +1,15 @@
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { BoardCard } from "@/components/community/board-card";
 import { CommunityToolbar } from "@/components/community/community-toolbar";
 import { ThreadCard } from "@/components/community/thread-card";
 import { ThreadPagination } from "@/components/community/thread-pagination";
-import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { getCommunityBoards, getCommunityThreadsPaginated } from "@/lib/community/get-community";
 
 type CommunityPageProps = {
@@ -23,18 +25,19 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   const { threads, totalPages, total } = await getCommunityThreadsPaginated({ q, page });
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
       <CommunityToolbar query={q} />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-6 py-8">
-        <section className="space-y-2">
-          <p className="eldonia-eyebrow">COMMUNITY</p>
-          <h1 className="eldonia-heading eldonia-heading-lg">{t.community.heading}</h1>
-          <p className="eldonia-body text-sm">{t.community.lead}</p>
-        </section>
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+        <PageIntro
+          eyebrow="COMMUNITY"
+          title={t.community.heading}
+          lead={t.community.lead}
+          iconSrc={MODULE_ICONS.community}
+        />
 
-        <EldoniaDivider />
+        <LpSectionRule />
 
         <section>
           <h2 className="eldonia-label">{t.community.boardsHeading}</h2>

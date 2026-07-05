@@ -1,11 +1,13 @@
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { QuestCard } from "@/components/works/quest-card";
 import { WorksToolbar } from "@/components/works/works-toolbar";
-import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { questKindOptions } from "@/lib/quests/constants";
 import { getQuestListings } from "@/lib/quests/get-quests";
 
@@ -21,18 +23,19 @@ export default async function WorksPage({ searchParams }: WorksPageProps) {
   const kinds = questKindOptions(locale);
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
       <WorksToolbar query={q} type={kind} />
 
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-6 py-8">
-        <section className="space-y-2">
-          <p className="eldonia-eyebrow">QUEST</p>
-          <h1 className="eldonia-heading eldonia-heading-lg">{t.works.heading}</h1>
-          <p className="eldonia-body text-sm">{t.works.lead}</p>
-        </section>
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+        <PageIntro
+          eyebrow="QUEST"
+          title={t.works.heading}
+          lead={t.works.lead}
+          iconSrc={MODULE_ICONS.quest}
+        />
 
-        <EldoniaDivider />
+        <LpSectionRule />
 
         <nav className="flex flex-wrap gap-2">
           {[{ value: "all", label: t.common.all }, ...kinds].map((item) => {

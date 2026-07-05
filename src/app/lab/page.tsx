@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getUserLabs } from "@/lib/gallery/get-user-labs";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { getContent } from "@/lib/i18n/content/messages";
+import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function LabHubPage() {
@@ -19,17 +21,18 @@ export default async function LabHubPage() {
   const dateLocale = locale === "ja" ? "ja-JP" : locale === "ko" ? "ko-KR" : "en-US";
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
-      <main className="eldonia-main">
-        <p className="eldonia-eyebrow">LAB</p>
-        <h1 className="eldonia-heading eldonia-heading-lg">LAB</h1>
-        <p className="eldonia-body mt-2 text-sm">{t.lab.lead}</p>
-        <p className="eldonia-hint mt-2 text-xs">{t.lab.flowHint}</p>
+      <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+        <PageIntro
+          eyebrow="LAB"
+          title="LAB"
+          lead={t.lab.lead}
+          hint={t.lab.flowHint}
+          iconSrc={MODULE_ICONS.lab}
+        />
 
-        <div className="my-8">
-          <EldoniaDivider />
-        </div>
+        <LpSectionRule />
 
         {!user ? (
           <div className="eldonia-card text-center">

@@ -1,31 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { ContentLine } from "@/components/i18n/content-line";
-import { useContent, useLocale } from "@/components/providers/locale-provider";
-import { categoryLabel, formatDate } from "@/lib/gallery/constants";
+import { useContent } from "@/components/providers/locale-provider";
+import { GalleryArtworkCard } from "@/components/gallery/gallery-artwork-card";
+import type { GalleryArtworkEngagement } from "@/lib/gallery/get-gallery-feed-engagement";
 import type { ArtworkWithCreator } from "@/types/database";
 
 type PublicGalleryFeedProps = {
   items: ArtworkWithCreator[];
   query?: string;
-  uploadHref: string;
-  uploadLabel: string;
+  engagementByArtwork: Record<string, GalleryArtworkEngagement>;
+  userId: string | null;
 };
-
-function previewUrl(artwork: ArtworkWithCreator): string | null {
-  if (artwork.thumbnail_url) return artwork.thumbnail_url;
-  if (artwork.media_type === "image") return artwork.media_url;
-  return null;
-}
 
 export function PublicGalleryFeed({
   items,
   query,
-  uploadHref,
-  uploadLabel,
+  engagementByArtwork,
+  userId,
 }: PublicGalleryFeedProps) {
-  const locale = useLocale();
   const t = useContent();
 
   if (items.length === 0) {
@@ -34,61 +26,31 @@ export function PublicGalleryFeed({
         <p className="text-eldonia-text-muted">
           {query?.trim() ? t.gallery.emptySearch : t.gallery.empty}
         </p>
-        <Link href={uploadHref} className="eldonia-link mt-4 inline-block text-sm font-medium">
-          {uploadLabel}
-        </Link>
       </section>
     );
   }
 
+  const defaultEngagement: GalleryArtworkEngagement = {
+    fanCount: 0,
+    likeCount: 0,
+    creatorExp: 0,
+    creatorLevel: 1,
+    isFan: false,
+    isLiked: false,
+    collabStatus: null,
+    isOwner: false,
+  };
+
   return (
     <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((artwork) => {
-        const imageUrl = previewUrl(artwork);
-        const creatorName =
-          artwork.profiles?.display_name ??
-          artwork.profiles?.username ??
-          t.pages.creatorFallback;
-
-        return (
-          <Link
-            key={artwork.id}
-            href={`/gallery/${artwork.id}`}
-            className="group eldonia-card overflow-hidden p-0 transition-shadow hover:shadow-md"
-          >
-            <div className="relative aspect-4/3 bg-eldonia-surface">
-              {imageUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={imageUrl}
-                  alt={artwork.title}
-                  className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
-                />
-              ) : (
-                <div className="flex h-full items-center justify-center text-sm font-medium uppercase tracking-wider text-eldonia-text-dim">
-                  {artwork.media_type}
-                </div>
-              )}
-            </div>
-            <div className="space-y-1 p-4">
-              <p className="eldonia-eyebrow text-[0.65rem]">
-                {categoryLabel(artwork.category, locale)}
-              </p>
-              <ContentLine
-                text={artwork.title}
-                locale={locale}
-                as="h2"
-                className="line-clamp-1 font-display font-semibold text-eldonia-gold-light"
-                hintClassName="eldonia-localized-hint text-xs"
-              />
-              <p className="text-sm text-eldonia-text-muted">{creatorName}</p>
-              <p className="text-xs text-eldonia-text-dim">
-                {formatDate(artwork.created_at, locale)}
-              </p>
-            </div>
-          </Link>
-        );
-      })}
+      {items.map((artwork) => (
+        <GalleryArtworkCard
+          key={artwork.id}
+          artwork={artwork}
+          engagement={engagementByArtwork[artwork.id] ?? defaultEngagement}
+          userId={userId}
+        />
+      ))}
     </section>
   );
 }

@@ -11,7 +11,7 @@ const sizes = {
   sm: { image: 32, title: "text-sm", subtitle: "text-[0.55rem]" },
   md: { image: 40, title: "text-base", subtitle: "text-[0.6rem]" },
   lg: { image: 56, title: "text-xl", subtitle: "text-[0.65rem]" },
-  xl: { image: 79, title: "text-2xl", subtitle: "text-[0.72rem]" },
+  xl: { image: 104, title: "text-2xl", subtitle: "text-[0.72rem]" },
 };
 
 export function BrandLogo({
@@ -31,15 +31,15 @@ export function BrandLogo({
         className="rounded-md object-contain transition group-hover:brightness-110"
         priority
       />
-      <div className="leading-tight">
+      <div className="leading-tight text-center">
         <span
-          className={`font-display block font-bold tracking-[0.18em] text-eldonia-gold-light ${config.title}`}
+          className={`font-display block font-bold tracking-[0.18em] text-[#d8ab45] ${config.title}`}
         >
           ELDONIA NEX
         </span>
         {showSubtitle && (
           <span
-            className={`font-display block tracking-[0.22em] text-eldonia-text-dim uppercase ${config.subtitle}`}
+            className={`font-display block tracking-[0.22em] text-[#cca03f] uppercase ${config.subtitle}`}
           >
             A Fantasy Nexus for Creators
           </span>

@@ -6,16 +6,12 @@ export const LP_NAV = [
   { href: "#start", label: "Start" },
 ] as const;
 
-export const LP_FOOTER_LINKS = [
-  { href: "#services", label: "サービス一覧" },
-  { href: "#world", label: "ワールドガイド" },
-  { href: "#plans", label: "料金プラン" },
-  { href: "#start", label: "スタートガイド" },
-  { href: "/help", label: "運営会社" },
-  { href: "/help/contact", label: "お問い合わせ" },
-  { href: "/terms", label: "利用規約" },
-  { href: "/privacy", label: "プライバシーポリシー" },
-] as const;
+import { LP_FOOTER_NAV_LINKS } from "@/lib/layout/footer-links";
+
+export const LP_FOOTER_LINKS = LP_FOOTER_NAV_LINKS.map(({ href, label }) => ({
+  href,
+  label: label.ja,
+}));
 
 export const LP_HERO = {
   title: "創造者たちが集い、\n次の世界をひらく。",
