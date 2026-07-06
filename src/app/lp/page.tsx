@@ -23,9 +23,7 @@ export const metadata: Metadata = {
   },
 };
 
-/** マーケ LP — 認証不要の静的ページとして配信 */
-export const dynamic = "force-static";
-
+/** マーケ LP — 認証不要（middleware で未ログイン / から誘導） */
 export default function MarketingLandingPage() {
   return (
     <div className="lp-page min-h-screen text-[#f8f1df]">
