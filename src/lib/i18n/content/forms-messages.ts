@@ -53,6 +53,8 @@ export type FormsContent = {
     errNoFile: string;
     errNoThumbnail: string;
     errFormat: string;
+    errPayloadTooLarge: string;
+    errUploadMedia: string;
     errSave: string;
   };
   product: {
@@ -214,6 +216,8 @@ const FORMS_JA: FormsContent = {
     errNoFile: "ファイルを選択してください。",
     errNoThumbnail: "サムネイル画像を選択してください。",
     errFormat: "対応していないファイル形式です。",
+    errPayloadTooLarge: "ファイルが大きすぎます。音声・動画はブラウザから直接アップロードされます。",
+    errUploadMedia: "ファイルのアップロードに失敗しました。",
     errSave: "作品の登録に失敗しました。",
   },
   product: {
@@ -375,6 +379,8 @@ const FORMS_EN: FormsContent = {
     errNoFile: "Please select a file.",
     errNoThumbnail: "Please select a thumbnail image.",
     errFormat: "Unsupported file format.",
+    errPayloadTooLarge: "The file is too large for a single server upload.",
+    errUploadMedia: "Could not upload the file.",
     errSave: "Could not save artwork.",
   },
   product: {

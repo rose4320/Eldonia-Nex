@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
+import { uploadArtworkMediaBundle } from "@/lib/gallery/client-upload-artwork";
 import {
   artworkNeedsThumbnail,
   categoryLabel,
@@ -11,6 +12,7 @@ import {
   isThumbnailImageFile,
 } from "@/lib/gallery/constants";
 import { artworkCategoryOptions } from "@/lib/i18n/taxonomy";
+import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import type { ArtworkMediaType } from "@/types/database";
 
 type UploadFormProps = {
@@ -125,23 +127,61 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
 
     setLoading(true);
 
-    const body = new FormData();
-    body.append("file", file);
-    if (thumbnailFile) {
-      body.append("thumbnail", thumbnailFile);
-    }
-    body.append("title", title.trim());
-    body.append("description", description.trim());
-    body.append("category", category);
-    body.append("tags", tags);
-
     try {
+      if (!hasBrowserSupabaseConfig()) {
+        setError(upload.errSave);
+        setLoading(false);
+        return;
+      }
+
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setError(upload.errSave);
+        setLoading(false);
+        return;
+      }
+
+      const uploaded = await uploadArtworkMediaBundle(
+        supabase,
+        user.id,
+        file,
+        resolvedMediaType === "image" ? null : thumbnailFile,
+      );
+
       const response = await fetch("/api/gallery/artworks", {
         method: "POST",
         credentials: "same-origin",
-        body,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title.trim(),
+          description: description.trim(),
+          category,
+          tags,
+          media_type: uploaded.mediaType,
+          media_url: uploaded.mediaUrl,
+          thumbnail_url: uploaded.thumbnailUrl,
+        }),
       });
-      const payload = (await response.json()) as { id?: string; error?: string };
+
+      let payload: { id?: string; error?: string } = {};
+      const raw = await response.text();
+      if (raw) {
+        try {
+          payload = JSON.parse(raw) as { id?: string; error?: string };
+        } catch {
+          payload = {};
+        }
+      }
+
+      if (response.status === 413) {
+        setError(upload.errPayloadTooLarge);
+        setLoading(false);
+        return;
+      }
 
       if (!response.ok || !payload.id) {
         setError(payload.error ?? upload.errSave);
@@ -151,8 +191,18 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
 
       router.push(successRedirect ?? `/gallery/${payload.id}`);
       router.refresh();
-    } catch {
-      setError(upload.errSave);
+    } catch (cause) {
+      if (cause instanceof Error) {
+        if (cause.message === "UNSUPPORTED_FORMAT") {
+          setError(upload.errFormat);
+        } else if (cause.message === "THUMBNAIL_REQUIRED") {
+          setError(upload.errNoThumbnail);
+        } else {
+          setError(`${upload.errUploadMedia} ${cause.message}`);
+        }
+      } else {
+        setError(upload.errSave);
+      }
       setLoading(false);
     }
   }
