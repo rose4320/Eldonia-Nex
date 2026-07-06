@@ -7,15 +7,12 @@ import { createPortal } from "react-dom";
 import { LpButton } from "@/components/ui/lp-button";
 import { LP_ASSETS } from "@/lib/lp/assets";
 import { LP_NAV } from "@/lib/lp/content";
+import { useIsClient } from "@/lib/react/use-is-client";
 
 export function LpHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsClient();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);

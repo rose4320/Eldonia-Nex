@@ -13,6 +13,7 @@ import type { UiLocale } from "@/lib/i18n/locale";
 import { HEADER_LABELS } from "@/lib/i18n/header-chrome";
 import { MODULE_NAV_LINKS } from "@/lib/layout/nav-links";
 import type { CollabNotification } from "@/lib/notifications/get-notifications";
+import { useIsClient } from "@/lib/react/use-is-client";
 
 type MobileNavProps = {
   locale: UiLocale;
@@ -52,11 +53,7 @@ export function MobileNav({
   titleBadge,
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useIsClient();
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";

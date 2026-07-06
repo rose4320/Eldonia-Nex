@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 import { isChunkLoadError, reloadOnceForChunkError } from "@/lib/navigation/chunk-error";
 
@@ -38,9 +39,9 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           >
             戻る
           </button>
-          <a href="/gallery" className="eldonia-link text-xs">
+          <Link href="/gallery" className="eldonia-link text-xs">
             Gallery へ
-          </a>
+          </Link>
         </div>
       </div>
     </div>
