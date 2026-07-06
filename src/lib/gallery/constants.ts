@@ -179,3 +179,14 @@ export function formatDate(iso: string, locale: UiLocale = "ja"): string {
     day: "numeric",
   }).format(new Date(iso));
 }
+
+/** ギャラリー一覧・詳細で使うカバー画像 URL */
+export function artworkCoverUrl(artwork: {
+  thumbnail_url: string | null;
+  media_type: import("@/types/database").ArtworkMediaType;
+  media_url: string;
+}): string | null {
+  if (artwork.thumbnail_url) return artwork.thumbnail_url;
+  if (artwork.media_type === "image") return artwork.media_url;
+  return null;
+}

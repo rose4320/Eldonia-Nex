@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArtworkMediaHero } from "@/components/gallery/artwork-media-hero";
 import { ArtworkCommentsPanel } from "@/components/gallery/artwork-comments-panel";
 import { ArtworkEngagementActions } from "@/components/gallery/artwork-engagement-actions";
 import { ArtworkLikeButtons } from "@/components/gallery/artwork-like-buttons";
@@ -91,38 +92,7 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
           <div className="min-w-0 space-y-4">
             <article className="eldonia-card overflow-hidden p-0">
               <div className="bg-eldonia-surface">
-                {item.media_type === "image" && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={item.media_url}
-                    alt={item.title}
-                    className="max-h-[70vh] w-full object-contain"
-                  />
-                )}
-                {item.media_type === "video" && (
-                  <video
-                    src={item.media_url}
-                    controls
-                    className="max-h-[70vh] w-full bg-black"
-                  />
-                )}
-                {item.media_type === "audio" && (
-                  <div className="flex items-center justify-center px-6 py-16">
-                    <audio src={item.media_url} controls className="w-full max-w-lg" />
-                  </div>
-                )}
-                {item.media_type === "document" && (
-                  <div className="flex items-center justify-center px-6 py-16">
-                    <a
-                      href={item.media_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="eldonia-btn-primary"
-                    >
-                      {pages.gallery.openPdf}
-                    </a>
-                  </div>
-                )}
+                <ArtworkMediaHero artwork={item} openPdfLabel={pages.gallery.openPdf} />
               </div>
 
               <div className="space-y-4 p-6 lg:p-8">
