@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build / Lint / Test (frontend)
+    name: Build / Lint / Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,25 +17,17 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
-        working-directory: frontend
         run: npm ci
 
       - name: Lint
-        working-directory: frontend
-        run: npm run lint --if-present
+        run: npm run lint
 
       - name: Build
-        working-directory: frontend
-        run: npm run build --if-present
+        run: npm run build
 
       - name: Test
-        working-directory: frontend
         run: npm test --if-present
-
-
-
-

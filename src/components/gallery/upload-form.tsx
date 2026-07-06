@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import {
@@ -34,27 +34,25 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
 
   const needsThumbnail = detected != null && detected.mediaType !== "image";
 
-  useEffect(() => {
-    if (!thumbnailFile) {
-      setThumbnailPreview(null);
-      return;
-    }
-    const url = URL.createObjectURL(thumbnailFile);
-    setThumbnailPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [thumbnailFile]);
-
   function handleFileChange(selected: File | null) {
     setFile(selected);
     const info = selected ? detectCategoryFromFile(selected) : null;
     setDetected(info);
     setImageCategory(info?.mediaType === "image" ? info.category : null);
     if (info?.mediaType === "image") {
+      setThumbnailPreview((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
       setThumbnailFile(null);
     }
   }
 
   function handleThumbnailChange(selected: File | null) {
+    setThumbnailPreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return selected ? URL.createObjectURL(selected) : null;
+    });
     setThumbnailFile(selected);
   }
 
