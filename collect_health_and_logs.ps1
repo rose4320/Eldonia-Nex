@@ -1,6 +1,9 @@
 curl.exe -sS http://localhost:8000/api/v1/health/ -o backend_health.json
 if ($LASTEXITCODE -eq 0) { Write-Output 'BACKEND_HEALTH_OK' } else { Write-Output 'BACKEND_HEALTH_FAIL' }
 
+curl.exe -sS http://localhost:3000/api/health -o frontend_health.json
+if ($LASTEXITCODE -eq 0) { Write-Output 'FRONTEND_API_HEALTH_OK' } else { Write-Output 'FRONTEND_API_HEALTH_FAIL' }
+
 curl.exe -sS http://localhost:3000 -o frontend_index.html
 if ($LASTEXITCODE -eq 0) { Write-Output 'FRONTEND_OK' } else { Write-Output 'FRONTEND_FAIL' }
 

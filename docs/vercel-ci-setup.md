@@ -37,6 +37,23 @@ git push origin main
 
 成功すると https://eldonia-nex.com に反映されます。
 
+デプロイ後、CI は `https://eldonia-nex.com/api/health` でヘルスチェックを実行します。
+
+### ヘルスチェック（手動）
+
+```bash
+# ローカル
+npm run health:check
+
+# 本番
+npm run health:check:prod
+# または
+curl -s https://eldonia-nex.com/api/health | jq
+```
+
+`status`: `healthy`（正常） / `degraded`（Supabase 等の依存先に問題）  
+速度監視: Vercel Analytics + Speed Insights（本番のみ、`layout.tsx`）
+
 ビルドは **Vercel 側** で実行されます（環境変数を Edge Middleware まで確実に渡すため）。
 
 ## ローカルから手動デプロイ

@@ -25,7 +25,7 @@ alwaysApply: true
   → Verify → 日本語報告
 ```
 
-Main Director Sub: `Request_Intake`, `Project_Producer`, `Explore`
+Main Director Sub: `Main_Director`, `Request_Intake`, `Project_Producer`, `Explore` — 索引 `.cursor/AGENTS.md`
 
 ## コアフロー（Gallery → Lab）
 

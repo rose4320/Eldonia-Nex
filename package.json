@@ -8,6 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
+    "health:check": "node scripts/health-check.mjs",
+    "health:check:prod": "node scripts/health-check.mjs https://eldonia-nex.com",
     "aset:sync": "node scripts/sync-aset-to-public.mjs",
     "prebuild": "node scripts/sync-aset-to-public.mjs",
     "prototype:home": "npx serve prototype/home-v2 -p 5199",
@@ -22,6 +24,8 @@
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.1",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "next": "16.2.9",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
