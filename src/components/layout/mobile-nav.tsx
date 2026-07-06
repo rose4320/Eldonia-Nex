@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HeaderLanguageSelect } from "@/components/layout/header-language-select";
 import { HeaderSearch } from "@/components/layout/header-search";
 import { NotificationBell } from "@/components/layout/notification-bell";
@@ -26,6 +26,22 @@ type MobileNavProps = {
   titleBadge: string | null;
 };
 
+function MobileMenuIcon({ open }: { open: boolean }) {
+  if (open) {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  );
+}
+
 export function MobileNav({
   locale,
   user,
@@ -36,76 +52,119 @@ export function MobileNav({
 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [open]);
+
   return (
-    <div className="eldonia-header-mobile border-t border-eldonia-border px-4 py-3 sm:px-6 lg:hidden">
-      <div className="flex items-center justify-between gap-3">
-        <BrandLogo size="sm" showSubtitle />
-        <button
-          type="button"
-          className="eldonia-btn-ghost text-xs"
-          aria-expanded={open}
-          aria-controls="mobile-nav-panel"
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? HEADER_LABELS.menuClose : HEADER_LABELS.menu}
-        </button>
+    <>
+      <div className="eldonia-header-mobile border-t border-eldonia-border px-4 py-3 sm:px-6 lg:hidden" style={{ ["--eldonia-mobile-header-h" as string]: "3.75rem" }}>
+        <div className="flex items-center justify-between gap-3">
+          <BrandLogo size="sm" showSubtitle />
+          <button
+            type="button"
+            className="eldonia-mobile-menu-toggle"
+            aria-expanded={open}
+            aria-controls="mobile-nav-panel"
+            aria-label={open ? HEADER_LABELS.menuClose : HEADER_LABELS.menu}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <MobileMenuIcon open={open} />
+          </button>
+        </div>
       </div>
 
       {open && (
-        <div id="mobile-nav-panel" className="mt-4 space-y-4 border-t border-eldonia-border pt-4">
-          <nav className="flex flex-wrap gap-1">
-            {MODULE_NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="eldonia-nav-link"
-                onClick={() => setOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
-          <HeaderSearch />
-
-          <div className="flex flex-wrap items-center gap-2">
-            <HeaderLanguageSelect locale={locale} />
-            {user ? (
-              <>
-                <NotificationBell
-                  key={`mobile-${user.id}-${unreadCount}`}
-                  userId={user.id}
-                  notifications={notifications}
-                  unreadCount={unreadCount}
-                />
-                <UserAvatarLink displayName={user.displayName} avatarUrl={user.avatarUrl} />
-                <form action="/auth/sign-out" method="post">
-                  <button type="submit" className="eldonia-btn-ghost text-xs">
-                    {HEADER_LABELS.logout}
-                  </button>
-                </form>
-              </>
-            ) : (
-              <>
-                <Link href="/auth/login" className="eldonia-btn-ghost text-xs">
-                  {HEADER_LABELS.login}
+        <>
+          <button
+            type="button"
+            className="eldonia-mobile-menu-backdrop lg:hidden"
+            aria-label={HEADER_LABELS.menuClose}
+            onClick={() => setOpen(false)}
+          />
+          <div
+            id="mobile-nav-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label={HEADER_LABELS.menu}
+            className="eldonia-mobile-menu-panel lg:hidden"
+          >
+            <nav className="flex flex-col gap-1">
+              {MODULE_NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="eldonia-mobile-menu-link"
+                  onClick={() => setOpen(false)}
+                >
+                  {link.label}
                 </Link>
-                <Link href="/auth/signup" className="eldonia-btn-primary text-xs">
-                  {HEADER_LABELS.signup}
-                </Link>
-              </>
+              ))}
+            </nav>
+
+            <HeaderSearch />
+
+            <div className="flex flex-wrap items-center gap-2">
+              <HeaderLanguageSelect locale={locale} />
+              {user ? (
+                <>
+                  <NotificationBell
+                    key={`mobile-${user.id}-${unreadCount}`}
+                    userId={user.id}
+                    notifications={notifications}
+                    unreadCount={unreadCount}
+                  />
+                  <UserAvatarLink displayName={user.displayName} avatarUrl={user.avatarUrl} />
+                  <form action="/auth/sign-out" method="post">
+                    <button type="submit" className="eldonia-btn-ghost text-xs">
+                      {HEADER_LABELS.logout}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/auth/login?redirect_to=%2F"
+                    className="eldonia-btn-ghost text-xs"
+                    onClick={() => setOpen(false)}
+                  >
+                    {HEADER_LABELS.login}
+                  </Link>
+                  <Link
+                    href="/auth/signup?redirect_to=%2F"
+                    className="eldonia-btn-primary text-xs"
+                    onClick={() => setOpen(false)}
+                  >
+                    {HEADER_LABELS.signup}
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {user && (
+              <ExpBarCompact
+                expPoints={expPoints}
+                titleBadge={titleBadge}
+                locale={locale}
+              />
             )}
           </div>
-
-          {user && (
-            <ExpBarCompact
-              expPoints={expPoints}
-              titleBadge={titleBadge}
-              locale={locale}
-            />
-          )}
-        </div>
+        </>
       )}
-    </div>
+    </>
   );
 }
