@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { LpButton } from "@/components/ui/lp-button";
 import { LP_ASSETS } from "@/lib/lp/assets";
 import { LP_NAV } from "@/lib/lp/content";
@@ -10,6 +11,11 @@ import { LP_NAV } from "@/lib/lp/content";
 export function LpHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 32);
@@ -112,49 +118,52 @@ export function LpHeader() {
         </div>
       </header>
 
-      {menuOpen && (
-        <>
-          <button
-            type="button"
-            className="lp-mobile-menu-backdrop lg:hidden"
-            aria-label="メニューを閉じる"
-            onClick={() => setMenuOpen(false)}
-          />
-          <nav
-            id="lp-mobile-nav"
-            className="lp-mobile-menu-panel lg:hidden"
-            aria-label="Mobile"
-          >
-            <ul className="space-y-1">
-              {LP_NAV.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="block rounded px-3 py-2.5 font-display text-xs tracking-[0.12em] text-[#d8c8a8] hover:bg-[#d6a84f]/8 hover:text-[#f0c978]"
+      {menuOpen &&
+        mounted &&
+        createPortal(
+          <>
+            <button
+              type="button"
+              className="lp-mobile-menu-backdrop lg:hidden"
+              aria-label="メニューを閉じる"
+              onClick={() => setMenuOpen(false)}
+            />
+            <nav
+              id="lp-mobile-nav"
+              className="lp-mobile-menu-panel lg:hidden"
+              aria-label="Mobile"
+            >
+              <ul className="space-y-1">
+                {LP_NAV.map((item) => (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      className="block rounded px-3 py-2.5 font-display text-xs tracking-[0.12em] text-[#d8c8a8] hover:bg-[#d6a84f]/8 hover:text-[#f0c978]"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+                <li className="pt-2">
+                  <Link
+                    href="/auth/login?redirect_to=%2F"
+                    className="block rounded border border-[#d6a84f]/40 px-3 py-2.5 text-center font-display text-[0.65rem] font-semibold tracking-[0.14em] text-[#f8f1df] uppercase transition hover:border-[#d6a84f] hover:text-[#f0c978]"
                     onClick={() => setMenuOpen(false)}
                   >
-                    {item.label}
-                  </a>
+                    Login
+                  </Link>
                 </li>
-              ))}
-              <li className="pt-2">
-                <Link
-                  href="/auth/login?redirect_to=%2F"
-                  className="block rounded border border-[#d6a84f]/40 px-3 py-2.5 text-center font-display text-[0.65rem] font-semibold tracking-[0.14em] text-[#f8f1df] uppercase transition hover:border-[#d6a84f] hover:text-[#f0c978]"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Login
-                </Link>
-              </li>
-              <li>
-                <LpButton href="/auth/signup?redirect_to=%2F" variant="outline" className="w-full text-[0.65rem]">
-                  Join Beta
-                </LpButton>
-              </li>
-            </ul>
-          </nav>
-        </>
-      )}
+                <li>
+                  <LpButton href="/auth/signup?redirect_to=%2F" variant="outline" className="w-full text-[0.65rem]">
+                    Join Beta
+                  </LpButton>
+                </li>
+              </ul>
+            </nav>
+          </>,
+          document.body,
+        )}
     </>
   );
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Noto_Serif_JP } from "next/font/google";
 import { LocaleProvider } from "@/components/providers/locale-provider";
+import { NavigationRecovery } from "@/components/providers/navigation-recovery";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { htmlLang } from "@/lib/i18n/content/messages";
 import "./globals.css";
@@ -50,7 +51,10 @@ export default async function RootLayout({
       className={`notranslate ${cinzel.variable} ${notoSerifJp.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <LocaleProvider locale={locale}>{children}</LocaleProvider>
+        <LocaleProvider locale={locale}>
+          <NavigationRecovery />
+          {children}
+        </LocaleProvider>
       </body>
     </html>
   );
