@@ -34,6 +34,13 @@ export type FormsContent = {
     previewAudio: string;
     previewVideo: string;
     previewDocument: string;
+    stepWork: string;
+    stepThumbnail: string;
+    stepDetails: string;
+    thumbnailWaiting: string;
+    thumbnailNotNeeded: string;
+    previewEmpty: string;
+    required: string;
     typeAuto: (label: string) => string;
     type: string;
     typeHint: (label: string) => string;
@@ -187,6 +194,13 @@ const FORMS_JA: FormsContent = {
     previewAudio: "音声プレビュー",
     previewVideo: "動画プレビュー",
     previewDocument: "PDF ドキュメント",
+    stepWork: "① 作品ファイル",
+    stepThumbnail: "② サムネイル画像",
+    stepDetails: "③ 作品情報",
+    thumbnailWaiting: "先に ① の作品ファイルを選んでください。音声・動画・PDF の場合はここでカバー画像を追加します。",
+    thumbnailNotNeeded: "画像作品は ① のファイルがギャラリー表示に使われます。サムネイルの追加は不要です。",
+    previewEmpty: "① で作品ファイルを選ぶと、ここに再生プレビューとギャラリー表示が現れます。",
+    required: "必須",
     typeAuto: (label) => `種別: ${label}（ファイル形式から自動判定）`,
     type: "種別",
     typeHint: (label) =>
@@ -341,6 +355,13 @@ const FORMS_EN: FormsContent = {
     previewAudio: "Audio preview",
     previewVideo: "Video preview",
     previewDocument: "PDF document",
+    stepWork: "① Artwork file",
+    stepThumbnail: "② Thumbnail image",
+    stepDetails: "③ Details",
+    thumbnailWaiting: "Select an artwork file in step ① first. Audio, video, and PDF need a cover image here.",
+    thumbnailNotNeeded: "For images, step ① is used in the gallery. No separate thumbnail needed.",
+    previewEmpty: "Select a file in step ① to see playback and gallery preview here.",
+    required: "Required",
     typeAuto: (label) => `Type: ${label} (detected from file)`,
     type: "Type",
     typeHint: (label) =>
@@ -480,6 +501,13 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
       previewGallery: "갤러리 표시",
       previewUntitled: "(제목 없음)",
       previewNoThumbnail: "썸네일을 선택하면 여기에 표시됩니다",
+      stepWork: "① 작품 파일",
+      stepThumbnail: "② 썸네일",
+      stepDetails: "③ 작품 정보",
+      thumbnailWaiting: "먼저 ①에서 작품 파일을 선택하세요.",
+      thumbnailNotNeeded: "이미지 작품은 ① 파일이 갤러리 표지로 사용됩니다.",
+      previewEmpty: "①에서 파일을 선택하면 미리보기가 표시됩니다.",
+      required: "필수",
       errNoThumbnail: "썸네일 이미지를 선택해 주세요.",
       submit: "작품 게시",
       submitting: "게시 중…",
@@ -521,6 +549,13 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
       previewGallery: "画廊展示效果",
       previewUntitled: "（未填写标题）",
       previewNoThumbnail: "选择缩略图后将显示在此处",
+      stepWork: "① 作品文件",
+      stepThumbnail: "② 缩略图",
+      stepDetails: "③ 作品信息",
+      thumbnailWaiting: "请先在 ① 中选择作品文件。",
+      thumbnailNotNeeded: "图片作品将直接使用 ① 的文件作为封面。",
+      previewEmpty: "在 ① 中选择文件后，此处会显示预览。",
+      required: "必填",
       errNoThumbnail: "请选择缩略图。",
       submit: "发布作品",
       submitting: "发布中…",

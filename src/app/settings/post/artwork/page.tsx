@@ -22,13 +22,13 @@ export default async function SettingsPostArtworkPage() {
   return (
     <div className="eldonia-page">
       <SiteHeader />
-      <main className="eldonia-main eldonia-main-narrow">
+      <main className="eldonia-main artwork-upload-page">
         <Link href="/settings#posts" className="eldonia-link text-sm">
           {pages.settings.back}
         </Link>
         <h1 className="eldonia-heading eldonia-heading-sm mt-3">{pages.settings.postArtworkTitle}</h1>
-        <p className="eldonia-body mt-1 text-sm">{pages.settings.postArtworkLead}</p>
-        <section className="eldonia-card mt-6">
+        <p className="eldonia-body mt-1 text-base text-[#d4c4a8]">{pages.settings.postArtworkLead}</p>
+        <section className="artwork-upload-shell mt-6">
           <UploadForm successRedirect="/settings#posts" />
         </section>
       </main>

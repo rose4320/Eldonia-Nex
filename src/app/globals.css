@@ -3680,3 +3680,317 @@ body {
     transform: none;
   }
 }
+
+/* ── Artwork upload (settings/post/artwork) — high contrast, no glow ── */
+.artwork-upload-page {
+  max-width: 72rem;
+}
+
+.artwork-upload-shell {
+  border: 1px solid #6b5528;
+  border-radius: 0.75rem;
+  background: #12110f;
+  padding: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .artwork-upload-shell {
+    padding: 1.5rem;
+  }
+}
+
+.artwork-upload__grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .artwork-upload__grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(16rem, 0.95fr);
+    gap: 1.75rem;
+    align-items: start;
+  }
+}
+
+.artwork-upload__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.artwork-upload__section {
+  border: 1px solid #4a4030;
+  border-radius: 0.5rem;
+  background: #1a1814;
+  padding: 1rem 1.125rem;
+}
+
+.artwork-upload__section--thumbnail.is-active {
+  border-color: #c9a84c;
+  background: #1f1b14;
+}
+
+.artwork-upload__section--thumbnail.is-waiting {
+  opacity: 0.92;
+}
+
+.artwork-upload__section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.875rem;
+}
+
+.artwork-upload__section-title {
+  font-family: var(--font-noto-serif-jp), serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f2e6cc;
+  letter-spacing: 0.02em;
+}
+
+.artwork-upload__badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #8b6914;
+  border-radius: 999px;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #f0d898;
+  background: #2a2218;
+}
+
+.artwork-upload__label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e8dcc4;
+}
+
+.artwork-upload__field {
+  margin-bottom: 0.875rem;
+}
+
+.artwork-upload__field:last-child {
+  margin-bottom: 0;
+}
+
+.artwork-upload__control,
+.artwork-upload__file {
+  width: 100%;
+  border-radius: 0.375rem;
+  border: 1px solid #5c4f38;
+  background: #0f0e0c;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.9375rem;
+  color: #f5f0e6;
+  outline: none;
+}
+
+.artwork-upload__control:focus,
+.artwork-upload__file:focus {
+  border-color: #c9a84c;
+  box-shadow: none;
+}
+
+.artwork-upload__file::file-selector-button {
+  margin-right: 0.75rem;
+  border: 1px solid #6b5528;
+  border-radius: 0.25rem;
+  background: #2a2218;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #f0d898;
+  cursor: pointer;
+}
+
+.artwork-upload__file::file-selector-button:hover {
+  background: #352a1c;
+}
+
+.artwork-upload__hint {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: #b8a888;
+}
+
+.artwork-upload__filename {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #f0d898;
+  word-break: break-all;
+}
+
+.artwork-upload__detected {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: #d4b86a;
+}
+
+.artwork-upload__error {
+  border: 1px solid #8b3030;
+  border-radius: 0.375rem;
+  background: #241414;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: #f5b8b8;
+}
+
+.artwork-upload__submit {
+  align-self: flex-start;
+}
+
+.artwork-upload__preview {
+  border: 1px solid #4a4030;
+  border-radius: 0.5rem;
+  background: #141210;
+  padding: 1rem 1.125rem;
+}
+
+@media (min-width: 960px) {
+  .artwork-upload__preview {
+    position: sticky;
+    top: 5.5rem;
+  }
+}
+
+.artwork-upload__preview-title {
+  margin-bottom: 0.875rem;
+  font-family: var(--font-noto-serif-jp), serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f2e6cc;
+}
+
+.artwork-upload__preview-empty {
+  display: flex;
+  min-height: 14rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #4a4030;
+  border-radius: 0.375rem;
+  background: #0f0e0c;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.artwork-upload__preview-empty p {
+  max-width: 18rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #b8a888;
+}
+
+.artwork-upload__preview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.artwork-upload__media-frame {
+  overflow: hidden;
+  border: 1px solid #4a4030;
+  border-radius: 0.375rem;
+  background: #0a0908;
+}
+
+.artwork-upload__media-image {
+  display: block;
+  max-height: 14rem;
+  width: 100%;
+  object-fit: contain;
+}
+
+.artwork-upload__media-block {
+  border: 1px solid #4a4030;
+  border-radius: 0.375rem;
+  background: #0f0e0c;
+  padding: 0.75rem;
+}
+
+.artwork-upload__media-video {
+  display: block;
+  max-height: 14rem;
+  width: 100%;
+  border-radius: 0.25rem;
+  background: #0a0908;
+}
+
+.artwork-upload__pdf {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.artwork-upload__pdf-icon {
+  flex-shrink: 0;
+  font-family: var(--font-cinzel), serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #d4b86a;
+}
+
+.artwork-upload__gallery-card {
+  overflow: hidden;
+  border: 1px solid #5c4f38;
+  border-radius: 0.375rem;
+  background: #1a1814;
+}
+
+.artwork-upload__gallery-label {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #b8a888;
+  border-bottom: 1px solid #3a3228;
+}
+
+.artwork-upload__gallery-cover {
+  aspect-ratio: 16 / 9;
+  background: #0a0908;
+}
+
+.artwork-upload__gallery-placeholder {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.artwork-upload__gallery-placeholder span {
+  font-size: 2rem;
+  color: #6b5c40;
+}
+
+.artwork-upload__gallery-placeholder p {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: #9a8870;
+}
+
+.artwork-upload__gallery-meta {
+  border-top: 1px solid #3a3228;
+  padding: 0.625rem 0.75rem;
+}
+
+.artwork-upload__gallery-title {
+  font-family: var(--font-cinzel), serif;
+  font-size: 0.9375rem;
+  color: #f0d898;
+}
+
+.artwork-upload__gallery-desc {
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #b8a888;
+}
