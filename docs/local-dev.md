@@ -2,18 +2,16 @@
 
 ## いちばん簡単な方法（Docker 不要）
 
-本番と同じデータで UI を確認する場合、`.env.local` で **クラウド Supabase** を有効にします。
+**本番と同じ Supabase プロジェクト**（`sszlycovwefpyxjllbns`）を `.env.local` に設定してください。  
+投稿した音楽・画像はこちらに保存されています。
 
 ```env
-# クラウド Supabase（推奨: Docker なしで動く）
-NEXT_PUBLIC_SUPABASE_URL=https://evrklfqdyptuelulgcdy.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://sszlycovwefpyxjllbns.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-SUPABASE_SECRET_KEY=sb_secret_...
-
-# ローカル Supabase（Docker + supabase start が必要なときだけ有効化）
-# NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
-# ...
+SUPABASE_SECRET_KEY=...  # service_role JWT
 ```
+
+> 旧プロジェクト `evrklfqdyptuelulgcdy` を向けると、公式シード作品だけ表示され、**自分の投稿は出ません**。
 
 起動:
 
