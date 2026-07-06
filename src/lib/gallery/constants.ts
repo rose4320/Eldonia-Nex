@@ -111,6 +111,16 @@ export function isThumbnailImageFile(file: File): boolean {
   return ext ? ["jpg", "jpeg", "png", "gif", "webp"].includes(ext) : false;
 }
 
+/** 音声・動画・PDF など、サムネイル画像が必要な作品か */
+export function artworkNeedsThumbnail(file: File | null): boolean {
+  if (!file) return false;
+  const info = detectCategoryFromFile(file);
+  if (info) return info.mediaType !== "image";
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  if (!ext) return false;
+  return ["mp3", "wav", "flac", "m4a", "mp4", "mov", "webm", "pdf"].includes(ext);
+}
+
 export function detectCategoryFromFile(file: File): {
   mediaType: import("@/types/database").ArtworkMediaType;
   category: string;

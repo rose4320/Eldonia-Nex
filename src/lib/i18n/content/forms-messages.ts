@@ -27,6 +27,13 @@ export type FormsContent = {
     thumbnail: string;
     thumbnailHint: string;
     thumbnailPreview: string;
+    previewTitle: string;
+    previewGallery: string;
+    previewUntitled: string;
+    previewNoThumbnail: string;
+    previewAudio: string;
+    previewVideo: string;
+    previewDocument: string;
     typeAuto: (label: string) => string;
     type: string;
     typeHint: (label: string) => string;
@@ -173,6 +180,13 @@ const FORMS_JA: FormsContent = {
     thumbnail: "サムネイル画像",
     thumbnailHint: "音声・動画・PDF は一覧表示用の画像が必要です（JPEG / PNG / GIF / WebP）",
     thumbnailPreview: "サムネイルプレビュー",
+    previewTitle: "プレビュー",
+    previewGallery: "ギャラリーでの見え方",
+    previewUntitled: "（タイトル未入力）",
+    previewNoThumbnail: "サムネイルを選ぶとここに表示されます",
+    previewAudio: "音声プレビュー",
+    previewVideo: "動画プレビュー",
+    previewDocument: "PDF ドキュメント",
     typeAuto: (label) => `種別: ${label}（ファイル形式から自動判定）`,
     type: "種別",
     typeHint: (label) =>
@@ -320,6 +334,13 @@ const FORMS_EN: FormsContent = {
     thumbnail: "Thumbnail image",
     thumbnailHint: "Audio, video, and PDF need a cover image for the gallery (JPEG / PNG / GIF / WebP)",
     thumbnailPreview: "Thumbnail preview",
+    previewTitle: "Preview",
+    previewGallery: "Gallery appearance",
+    previewUntitled: "(No title yet)",
+    previewNoThumbnail: "Select a thumbnail to preview here",
+    previewAudio: "Audio preview",
+    previewVideo: "Video preview",
+    previewDocument: "PDF document",
     typeAuto: (label) => `Type: ${label} (detected from file)`,
     type: "Type",
     typeHint: (label) =>
@@ -455,6 +476,10 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
       file: "파일",
       thumbnail: "썸네일 이미지",
       thumbnailHint: "오디오·동영상·PDF는 갤러리 표시용 이미지가 필요합니다",
+      previewTitle: "미리보기",
+      previewGallery: "갤러리 표시",
+      previewUntitled: "(제목 없음)",
+      previewNoThumbnail: "썸네일을 선택하면 여기에 표시됩니다",
       errNoThumbnail: "썸네일 이미지를 선택해 주세요.",
       submit: "작품 게시",
       submitting: "게시 중…",
@@ -492,6 +517,10 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
       file: "文件",
       thumbnail: "缩略图",
       thumbnailHint: "音频·视频·PDF 需要封面图用于画廊展示",
+      previewTitle: "预览",
+      previewGallery: "画廊展示效果",
+      previewUntitled: "（未填写标题）",
+      previewNoThumbnail: "选择缩略图后将显示在此处",
       errNoThumbnail: "请选择缩略图。",
       submit: "发布作品",
       submitting: "发布中…",
