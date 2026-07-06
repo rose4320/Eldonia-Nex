@@ -37,6 +37,8 @@ git push origin main
 
 成功すると https://eldonia-nex.com に反映されます。
 
+ビルドは **Vercel 側** で実行されます（環境変数を Edge Middleware まで確実に渡すため）。
+
 ## ローカルから手動デプロイ
 
 Secret 未設定時や緊急時:
