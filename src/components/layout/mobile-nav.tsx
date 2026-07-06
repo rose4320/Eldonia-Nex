@@ -4,28 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { HeaderLanguageSelect } from "@/components/layout/header-language-select";
-import { HeaderSearch } from "@/components/layout/header-search";
-import { NotificationBell } from "@/components/layout/notification-bell";
-import { ExpBarCompact } from "@/components/settings/exp-bar-compact";
-import { UserAvatarLink } from "@/components/settings/user-avatar-link";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import type { UiLocale } from "@/lib/i18n/locale";
 import { HEADER_LABELS } from "@/lib/i18n/header-chrome";
 import { MODULE_NAV_LINKS } from "@/lib/layout/nav-links";
-import type { CollabNotification } from "@/lib/notifications/get-notifications";
 import { useIsClient } from "@/lib/react/use-is-client";
 
 type MobileNavProps = {
   locale: UiLocale;
   user: {
-    id: string;
     displayName: string;
-    avatarUrl: string | null;
   } | null;
-  notifications: CollabNotification[];
-  unreadCount: number;
-  expPoints: number;
-  titleBadge: string | null;
 };
 
 function MobileMenuIcon({ open }: { open: boolean }) {
@@ -44,14 +33,7 @@ function MobileMenuIcon({ open }: { open: boolean }) {
   );
 }
 
-export function MobileNav({
-  locale,
-  user,
-  notifications,
-  unreadCount,
-  expPoints,
-  titleBadge,
-}: MobileNavProps) {
+export function MobileNav({ locale, user }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const mounted = useIsClient();
 
@@ -73,6 +55,17 @@ export function MobileNav({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open]);
 
+  function closeMenu() {
+    setOpen(false);
+  }
+
+  function navigateFromMenu(href: string) {
+    closeMenu();
+    window.setTimeout(() => {
+      window.location.assign(href);
+    }, 0);
+  }
+
   const menuOverlay =
     open && mounted
       ? createPortal(
@@ -81,7 +74,7 @@ export function MobileNav({
               type="button"
               className="eldonia-mobile-menu-backdrop lg:hidden"
               aria-label={HEADER_LABELS.menuClose}
-              onClick={() => setOpen(false)}
+              onClick={closeMenu}
             />
             <div
               id="mobile-nav-panel"
@@ -92,30 +85,28 @@ export function MobileNav({
             >
               <nav className="flex flex-col gap-1">
                 {MODULE_NAV_LINKS.map((link) => (
-                  <a
+                  <button
                     key={link.href}
-                    href={link.href}
-                    className="eldonia-mobile-menu-link"
-                    onClick={() => setOpen(false)}
+                    type="button"
+                    className="eldonia-mobile-menu-link text-left"
+                    onClick={() => navigateFromMenu(link.href)}
                   >
                     {link.label}
-                  </a>
+                  </button>
                 ))}
               </nav>
 
-              <HeaderSearch />
-
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2 border-t border-eldonia-border pt-3">
                 <HeaderLanguageSelect locale={locale} />
                 {user ? (
                   <>
-                    <NotificationBell
-                      key={`mobile-${user.id}-${unreadCount}`}
-                      userId={user.id}
-                      notifications={notifications}
-                      unreadCount={unreadCount}
-                    />
-                    <UserAvatarLink displayName={user.displayName} avatarUrl={user.avatarUrl} />
+                    <Link
+                      href="/settings"
+                      className="eldonia-btn-ghost text-xs"
+                      onClick={closeMenu}
+                    >
+                      {user.displayName}
+                    </Link>
                     <form action="/auth/sign-out" method="post">
                       <button type="submit" className="eldonia-btn-ghost text-xs">
                         {HEADER_LABELS.logout}
@@ -124,31 +115,23 @@ export function MobileNav({
                   </>
                 ) : (
                   <>
-                    <Link
-                      href="/auth/login?redirect_to=%2F"
+                    <button
+                      type="button"
                       className="eldonia-btn-ghost text-xs"
-                      onClick={() => setOpen(false)}
+                      onClick={() => navigateFromMenu("/auth/login?redirect_to=%2F")}
                     >
                       {HEADER_LABELS.login}
-                    </Link>
-                    <Link
-                      href="/auth/signup?redirect_to=%2F"
+                    </button>
+                    <button
+                      type="button"
                       className="eldonia-btn-primary text-xs"
-                      onClick={() => setOpen(false)}
+                      onClick={() => navigateFromMenu("/auth/signup?redirect_to=%2F")}
                     >
                       {HEADER_LABELS.signup}
-                    </Link>
+                    </button>
                   </>
                 )}
               </div>
-
-              {user && (
-                <ExpBarCompact
-                  expPoints={expPoints}
-                  titleBadge={titleBadge}
-                  locale={locale}
-                />
-              )}
             </div>
           </>,
           document.body,

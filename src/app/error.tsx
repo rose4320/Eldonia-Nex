@@ -1,17 +1,22 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect } from "react";
-import { isChunkLoadError, reloadOnceForChunkError } from "@/lib/navigation/chunk-error";
+import {
+  hardReload,
+  isRecoverableNavigationError,
+  reloadOnceForChunkError,
+} from "@/lib/navigation/chunk-error";
 
 type ErrorPageProps = {
   error: Error & { digest?: string };
   reset: () => void;
 };
 
-export default function ErrorPage({ error, reset }: ErrorPageProps) {
+export default function ErrorPage({ error }: ErrorPageProps) {
   useEffect(() => {
-    if (isChunkLoadError(error)) {
+    console.error("[eldonia] route error:", error.message, error.digest);
+
+    if (isRecoverableNavigationError(error)) {
       reloadOnceForChunkError();
     }
   }, [error]);
@@ -28,7 +33,7 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           <button
             type="button"
             className="eldonia-btn-primary text-xs"
-            onClick={() => reset()}
+            onClick={() => hardReload()}
           >
             再読み込み
           </button>
@@ -39,10 +44,17 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           >
             戻る
           </button>
-          <Link href="/gallery" className="eldonia-link text-xs">
+          <button
+            type="button"
+            className="eldonia-link text-xs"
+            onClick={() => window.location.assign("/gallery")}
+          >
             Gallery へ
-          </Link>
+          </button>
         </div>
+        {error.digest && (
+          <p className="eldonia-hint mt-4 text-[0.65rem]">Ref: {error.digest}</p>
+        )}
       </div>
     </div>
   );

@@ -43,6 +43,20 @@ async function withTimeout<T>(
 }
 
 export async function SiteHeader() {
+  try {
+    return await renderSiteHeader();
+  } catch (error) {
+    console.error("[SiteHeader] render failed:", error);
+    const locale = await getUiLocale();
+    return (
+      <header className="eldonia-header relative">
+        <MobileNav locale={locale} user={null} />
+      </header>
+    );
+  }
+}
+
+async function renderSiteHeader() {
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const supabase = await createClient();
@@ -178,11 +192,7 @@ export async function SiteHeader() {
 
       <MobileNav
         locale={locale}
-        user={user ? { id: user.id, displayName: displayName ?? pages.userFallback, avatarUrl } : null}
-        notifications={notifications}
-        unreadCount={unreadCount}
-        expPoints={expPoints}
-        titleBadge={titleBadge}
+        user={user ? { displayName: displayName ?? pages.userFallback } : null}
       />
     </header>
   );

@@ -39,6 +39,17 @@ export function LpHeader() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [menuOpen]);
 
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  function navigateFromMenu(href: string) {
+    closeMenu();
+    window.setTimeout(() => {
+      window.location.assign(href);
+    }, 0);
+  }
+
   return (
     <>
       <header
@@ -123,7 +134,7 @@ export function LpHeader() {
               type="button"
               className="lp-mobile-menu-backdrop lg:hidden"
               aria-label="メニューを閉じる"
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
             />
             <nav
               id="lp-mobile-nav"
@@ -133,23 +144,23 @@ export function LpHeader() {
               <ul className="space-y-1">
                 {LP_NAV.map((item) => (
                   <li key={item.href}>
-                    <a
-                      href={item.href}
-                      className="block rounded px-3 py-2.5 font-display text-xs tracking-[0.12em] text-[#d8c8a8] hover:bg-[#d6a84f]/8 hover:text-[#f0c978]"
-                      onClick={() => setMenuOpen(false)}
+                    <button
+                      type="button"
+                      className="block w-full rounded px-3 py-2.5 text-left font-display text-xs tracking-[0.12em] text-[#d8c8a8] hover:bg-[#d6a84f]/8 hover:text-[#f0c978]"
+                      onClick={() => navigateFromMenu(item.href)}
                     >
                       {item.label}
-                    </a>
+                    </button>
                   </li>
                 ))}
                 <li className="pt-2">
-                  <Link
-                    href="/auth/login?redirect_to=%2F"
-                    className="block rounded border border-[#d6a84f]/40 px-3 py-2.5 text-center font-display text-[0.65rem] font-semibold tracking-[0.14em] text-[#f8f1df] uppercase transition hover:border-[#d6a84f] hover:text-[#f0c978]"
-                    onClick={() => setMenuOpen(false)}
+                  <button
+                    type="button"
+                    className="block w-full rounded border border-[#d6a84f]/40 px-3 py-2.5 text-center font-display text-[0.65rem] font-semibold tracking-[0.14em] text-[#f8f1df] uppercase transition hover:border-[#d6a84f] hover:text-[#f0c978]"
+                    onClick={() => navigateFromMenu("/auth/login?redirect_to=%2F")}
                   >
                     Login
-                  </Link>
+                  </button>
                 </li>
                 <li>
                   <LpButton href="/auth/signup?redirect_to=%2F" variant="outline" className="w-full text-[0.65rem]">

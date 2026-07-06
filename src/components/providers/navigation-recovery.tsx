@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
   clearChunkReloadGuard,
-  isChunkLoadError,
+  isRecoverableNavigationError,
   reloadOnceForChunkError,
 } from "@/lib/navigation/chunk-error";
 
@@ -13,12 +13,12 @@ export function NavigationRecovery() {
 
   useEffect(() => {
     function handleError(event: ErrorEvent) {
-      if (!isChunkLoadError(event.error ?? event.message)) return;
+      if (!isRecoverableNavigationError(event.error ?? event.message)) return;
       reloadOnceForChunkError();
     }
 
     function handleRejection(event: PromiseRejectionEvent) {
-      if (!isChunkLoadError(event.reason)) return;
+      if (!isRecoverableNavigationError(event.reason)) return;
       reloadOnceForChunkError();
     }
 
