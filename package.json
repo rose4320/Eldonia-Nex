@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint src",
     "aset:sync": "node scripts/sync-aset-to-public.mjs",
     "prebuild": "node scripts/sync-aset-to-public.mjs",
-    "predev": "node scripts/sync-aset-to-public.mjs",
     "prototype:home": "npx serve prototype/home-v2 -p 5199",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",

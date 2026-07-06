@@ -24,10 +24,18 @@ function copyRecursive(src, dest) {
   }
 }
 
-if (!existsSync(SOURCE)) {
-  console.warn("sync-aset: aset/ not found — skip");
+try {
+  if (!existsSync(SOURCE)) {
+    console.warn("sync-aset: aset/ not found — skip");
+    process.exit(0);
+  }
+
+  copyRecursive(SOURCE, TARGET);
+  console.log("Synced aset/ → public/aset/");
+} catch (error) {
+  console.warn("sync-aset: failed — continuing without sync");
+  if (error instanceof Error) {
+    console.warn(error.message);
+  }
   process.exit(0);
 }
-
-copyRecursive(SOURCE, TARGET);
-console.log("Synced aset/ → public/aset/");

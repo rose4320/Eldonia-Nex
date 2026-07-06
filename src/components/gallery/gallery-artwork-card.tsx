@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ContentLine } from "@/components/i18n/content-line";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
-import { categoryLabel, formatDate } from "@/lib/gallery/constants";
+import { artworkCoverUrl, categoryLabel, formatDate } from "@/lib/gallery/constants";
 import type { GalleryArtworkEngagement } from "@/lib/gallery/get-gallery-feed-engagement";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
@@ -16,12 +16,6 @@ type GalleryArtworkCardProps = {
   engagement: GalleryArtworkEngagement;
   userId: string | null;
 };
-
-function previewUrl(artwork: ArtworkWithCreator): string | null {
-  if (artwork.thumbnail_url) return artwork.thumbnail_url;
-  if (artwork.media_type === "image") return artwork.media_url;
-  return null;
-}
 
 export function GalleryArtworkCard({
   artwork,
@@ -43,7 +37,9 @@ export function GalleryArtworkCard({
   const [loading, setLoading] = useState<"fan" | "collab" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const imageUrl = previewUrl(artwork);
+  const imageUrl = artworkCoverUrl(artwork);
+  const actionButtonClass =
+    "eldonia-btn-secondary px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-45";
   const creatorName =
     artwork.profiles?.display_name ??
     artwork.profiles?.username ??
@@ -186,65 +182,72 @@ export function GalleryArtworkCard({
           </span>
         </div>
 
-        {!engagement.isOwner && (
-          <div
-            className="flex flex-wrap items-center gap-2"
-            onClick={stopCardNav}
-            onKeyDown={(event) => event.stopPropagation()}
-          >
-            {!userId ? (
-              <>
-                <Link
-                  href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
-                  className="eldonia-btn-secondary px-3 py-1.5 text-xs"
-                >
-                  {copy.fanRegister}
-                </Link>
-                <Link
-                  href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
-                  className="eldonia-btn-secondary px-3 py-1.5 text-xs"
-                >
-                  {copy.collabRequest}
-                </Link>
-              </>
-            ) : (
-              <>
+        <div
+          className="gallery-artwork-card__actions flex min-h-[1.875rem] flex-wrap items-center gap-2"
+          onClick={stopCardNav}
+          onKeyDown={(event) => event.stopPropagation()}
+        >
+          {engagement.isOwner ? (
+            <>
+              <button type="button" disabled className={actionButtonClass}>
+                {copy.fanRegister}
+              </button>
+              <button type="button" disabled className={actionButtonClass}>
+                {copy.collabRequest}
+              </button>
+            </>
+          ) : !userId ? (
+            <>
+              <Link
+                href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
+                className={actionButtonClass}
+              >
+                {copy.fanRegister}
+              </Link>
+              <Link
+                href={`/auth/login?redirect_to=${encodeURIComponent(loginRedirect)}`}
+                className={actionButtonClass}
+              >
+                {copy.collabRequest}
+              </Link>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={toggleFan}
+                disabled={loading === "fan"}
+                className={`${actionButtonClass} disabled:opacity-60 ${
+                  isFan ? "border-eldonia-gold/60 text-eldonia-gold" : ""
+                }`}
+              >
+                {loading === "fan"
+                  ? copy.processing
+                  : isFan
+                    ? copy.fanRegistered
+                    : copy.fanRegister}
+              </button>
+
+              {collabPending ? (
+                <span className="eldonia-badge eldonia-badge-ready px-2 py-1 text-[0.65rem]">
+                  {collabStatusLabel("pending")}
+                </span>
+              ) : (
                 <button
                   type="button"
-                  onClick={toggleFan}
-                  disabled={loading === "fan"}
-                  className={`eldonia-btn-secondary px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-60 ${
-                    isFan ? "border-eldonia-gold/60 text-eldonia-gold" : ""
-                  }`}
+                  onClick={(event) => {
+                    stopCardNav(event);
+                    setShowCollabForm((open) => !open);
+                  }}
+                  disabled={loading === "collab"}
+                  className={`${actionButtonClass} disabled:opacity-60`}
                 >
-                  {loading === "fan"
-                    ? copy.processing
-                    : isFan
-                      ? copy.fanRegistered
-                      : copy.fanRegister}
+                  {copy.collabRequest}
                 </button>
-
-                {collabPending ? (
-                  <span className="eldonia-badge eldonia-badge-ready px-2 py-1 text-[0.65rem]">
-                    {collabStatusLabel("pending")}
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      stopCardNav(event);
-                      setShowCollabForm((open) => !open);
-                    }}
-                    disabled={loading === "collab"}
-                    className="eldonia-btn-secondary px-3 py-1.5 text-xs disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {copy.collabRequest}
-                  </button>
-                )}
-              </>
-            )}
-          </div>
-        )}
+              )}
+            </>
+          )}
+        </div>
 
         {showCollabForm && !collabPending && userId && !engagement.isOwner && (
           <form
