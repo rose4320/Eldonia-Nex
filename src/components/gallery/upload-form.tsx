@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import {
   categoryLabel,
   detectCategoryFromFile,
   IMAGE_ARTWORK_CATEGORY_VALUES,
+  isThumbnailImageFile,
 } from "@/lib/gallery/constants";
 import { artworkCategoryOptions } from "@/lib/i18n/taxonomy";
 
@@ -24,16 +25,37 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [detected, setDetected] = useState<ReturnType<typeof detectCategoryFromFile>>(null);
   const [imageCategory, setImageCategory] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const needsThumbnail = detected != null && detected.mediaType !== "image";
+
+  useEffect(() => {
+    if (!thumbnailFile) {
+      setThumbnailPreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(thumbnailFile);
+    setThumbnailPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [thumbnailFile]);
 
   function handleFileChange(selected: File | null) {
     setFile(selected);
     const info = selected ? detectCategoryFromFile(selected) : null;
     setDetected(info);
     setImageCategory(info?.mediaType === "image" ? info.category : null);
+    if (info?.mediaType === "image") {
+      setThumbnailFile(null);
+    }
+  }
+
+  function handleThumbnailChange(selected: File | null) {
+    setThumbnailFile(selected);
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -55,10 +77,24 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
     const category =
       mediaType === "image" && imageCategory ? imageCategory : fileInfo.category;
 
+    if (mediaType !== "image") {
+      if (!thumbnailFile) {
+        setError(upload.errNoThumbnail);
+        return;
+      }
+      if (!isThumbnailImageFile(thumbnailFile)) {
+        setError(upload.errFormat);
+        return;
+      }
+    }
+
     setLoading(true);
 
     const body = new FormData();
     body.append("file", file);
+    if (thumbnailFile) {
+      body.append("thumbnail", thumbnailFile);
+    }
     body.append("title", title.trim());
     body.append("description", description.trim());
     body.append("category", category);
@@ -96,7 +132,7 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
           id="file"
           type="file"
           required
-          accept="image/*,video/mp4,video/quicktime,audio/mpeg,audio/wav,audio/flac,application/pdf"
+          accept="image/*,video/mp4,video/quicktime,video/webm,audio/mpeg,audio/mp3,audio/wav,audio/flac,audio/mp4,audio/x-m4a,application/pdf,.mp3,.wav,.flac,.m4a,.pdf"
           onChange={(event) => handleFileChange(event.target.files?.[0] ?? null)}
           className="eldonia-input"
         />
@@ -107,6 +143,33 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
           </p>
         )}
       </div>
+
+      {needsThumbnail && (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="thumbnail" className="eldonia-label">
+            {upload.thumbnail}
+          </label>
+          <input
+            id="thumbnail"
+            type="file"
+            required
+            accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp"
+            onChange={(event) => handleThumbnailChange(event.target.files?.[0] ?? null)}
+            className="eldonia-input"
+          />
+          <p className="text-xs text-eldonia-text-muted">{upload.thumbnailHint}</p>
+          {thumbnailPreview && (
+            <div className="mt-2 overflow-hidden rounded-md border border-eldonia-gold/20">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={thumbnailPreview}
+                alt={upload.thumbnailPreview}
+                className="aspect-video w-full max-w-xs object-cover"
+              />
+            </div>
+          )}
+        </div>
+      )}
 
       {detected?.mediaType === "image" && (
         <div className="flex flex-col gap-1">

@@ -10,7 +10,7 @@ export function LpFooter() {
       </div>
       <div className="mx-auto max-w-[1240px] px-4 py-5 sm:px-6">
         <div className="flex flex-col items-center gap-4">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/lp" className="flex items-center gap-3">
             <span className="font-display text-sm tracking-[0.14em] text-[#f8f1df]">
               Eldonia–Nex
             </span>

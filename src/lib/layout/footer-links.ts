@@ -19,18 +19,18 @@ export function localizedFooterLabel(
   return record[locale] ?? record.ja;
 }
 
-/** 未ログイン LP（`/`）向け — セクションアンカーは LP 内 */
+/** 未ログイン LP（`/lp`）向け — セクションアンカーは LP 内 */
 export const LP_FOOTER_NAV_LINKS: FooterNavLink[] = [
   {
-    href: "/#services",
+    href: "/lp#services",
     label: { ja: "サービス一覧", en: "Services", ko: "서비스", "zh-CN": "服务一览" },
   },
   {
-    href: "/#world",
+    href: "/lp#world",
     label: { ja: "ワールドガイド", en: "World Guide", ko: "월드 가이드", "zh-CN": "世界指南" },
   },
   {
-    href: "/#plans",
+    href: "/lp#plans",
     label: { ja: "料金プラン", en: "Plans", ko: "요금 플랜", "zh-CN": "定价方案" },
   },
   {
@@ -58,11 +58,11 @@ export const LP_FOOTER_NAV_LINKS: FooterNavLink[] = [
 /** ログイン後 SiteFooter 向け — Home / アプリ内ルート */
 export const SITE_FOOTER_NAV_LINKS: FooterNavLink[] = [
   {
-    href: "/home#modules",
+    href: "/#modules",
     label: { ja: "サービス一覧", en: "Services", ko: "서비스", "zh-CN": "服务一览" },
   },
   {
-    href: "/home#world",
+    href: "/#world",
     label: { ja: "ワールドガイド", en: "World Guide", ko: "월드 가이드", "zh-CN": "世界指南" },
   },
   {

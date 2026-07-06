@@ -31,6 +31,16 @@ function isProtectedPath(pathname: string): boolean {
   return /^\/community\/b\/[^/]+\/new$/.test(pathname);
 }
 
+function needsAuthLookup(pathname: string): boolean {
+  return (
+    isProtectedPath(pathname) ||
+    pathname === "/auth/login" ||
+    pathname === "/" ||
+    pathname === "/home" ||
+    pathname === "/lp"
+  );
+}
+
 async function getUserWithTimeout(
   supabase: ReturnType<typeof createServerClient<Database>>,
 ) {
@@ -50,9 +60,12 @@ async function getUserWithTimeout(
 
 export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const needsAuthLookup = isProtectedPath(pathname) || pathname === "/auth/login";
 
-  if (!needsAuthLookup) {
+  if (pathname === "/home") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  if (!needsAuthLookup(pathname)) {
     return NextResponse.next({ request });
   }
 
@@ -80,6 +93,14 @@ export async function updateSession(request: NextRequest) {
   );
 
   const user = await getUserWithTimeout(supabase);
+
+  if (!user && pathname === "/") {
+    return NextResponse.redirect(new URL("/lp", request.url));
+  }
+
+  if (user && pathname === "/lp") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
 
   if (user && pathname === "/auth/login") {
     const destination = await resolveAuthenticatedDestination(

@@ -34,7 +34,7 @@ export function LpHeader() {
       }`}
     >
       <div className="mx-auto flex h-[68px] max-w-[1240px] items-center justify-between gap-4 px-4 sm:px-6 lg:h-[76px]">
-        <Link href="/" className="flex shrink-0 items-center gap-3">
+        <Link href="/lp" className="flex shrink-0 items-center gap-3">
           <Image
             src={LP_ASSETS.logo}
             alt="Eldonia–Nex"
@@ -67,13 +67,13 @@ export function LpHeader() {
 
         <div className="flex shrink-0 items-center gap-2">
           <Link
-            href="/auth/login"
+            href="/auth/login?redirect_to=%2F"
             className="hidden rounded px-3 py-2 font-display text-[0.62rem] font-semibold tracking-[0.14em] text-[#d8c8a8] uppercase transition hover:text-[#f0c978] sm:inline-flex"
           >
             Login
           </Link>
 
-          <LpButton href="/auth/signup" variant="outline" className="hidden px-4 py-2 text-[0.62rem] sm:inline-flex">
+          <LpButton href="/auth/signup?redirect_to=%2F" variant="outline" className="hidden px-4 py-2 text-[0.62rem] sm:inline-flex">
             Join Beta
           </LpButton>
 
@@ -119,7 +119,7 @@ export function LpHeader() {
             ))}
             <li className="pt-2">
               <Link
-                href="/auth/login"
+                href="/auth/login?redirect_to=%2F"
                 className="block rounded border border-[#d6a84f]/40 px-3 py-2.5 text-center font-display text-[0.65rem] font-semibold tracking-[0.14em] text-[#f8f1df] uppercase transition hover:border-[#d6a84f] hover:text-[#f0c978]"
                 onClick={() => setMenuOpen(false)}
               >
@@ -127,7 +127,7 @@ export function LpHeader() {
               </Link>
             </li>
             <li>
-              <LpButton href="/auth/signup" variant="outline" className="w-full text-[0.65rem]">
+              <LpButton href="/auth/signup?redirect_to=%2F" variant="outline" className="w-full text-[0.65rem]">
                 Join Beta
               </LpButton>
             </li>

@@ -9,7 +9,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
  * - メールを prelaunch_registrations に保存
  * - そのメールで Supabase アカウントを自動作成（既存なら再利用）
  * - 最上級プラン(pro)を付与しオンボーディング完了扱いにする
- * - サーバー側でログインしセッション Cookie を発行 → そのまま /home へ入れる
+ * - サーバー側でログインしセッション Cookie を発行 → そのまま / へ入れる
  *
  * 本格運用ではこの自動ログイン/自動 pro 付与を廃止し、プラン選択・決済導線に差し替える。
  */
@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (signInError) {
-    // ログインに失敗しても登録自体は成功しているので success 扱い（/home では未ログイン→LP）
+    // ログインに失敗しても登録自体は成功しているので success 扱い（/ では未ログイン→/lp）
     return NextResponse.json({ ok: true, alreadyRegistered, loggedIn: false });
   }
 

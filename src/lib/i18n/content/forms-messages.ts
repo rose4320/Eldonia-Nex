@@ -24,6 +24,9 @@ export type FormsContent = {
   upload: {
     file: string;
     fileHint: string;
+    thumbnail: string;
+    thumbnailHint: string;
+    thumbnailPreview: string;
     typeAuto: (label: string) => string;
     type: string;
     typeHint: (label: string) => string;
@@ -34,6 +37,7 @@ export type FormsContent = {
     submit: string;
     submitting: string;
     errNoFile: string;
+    errNoThumbnail: string;
     errFormat: string;
     errSave: string;
   };
@@ -166,6 +170,9 @@ const FORMS_JA: FormsContent = {
   upload: {
     file: "ファイル",
     fileHint: "画像・動画・音声・PDF に対応",
+    thumbnail: "サムネイル画像",
+    thumbnailHint: "音声・動画・PDF は一覧表示用の画像が必要です（JPEG / PNG / GIF / WebP）",
+    thumbnailPreview: "サムネイルプレビュー",
     typeAuto: (label) => `種別: ${label}（ファイル形式から自動判定）`,
     type: "種別",
     typeHint: (label) =>
@@ -177,6 +184,7 @@ const FORMS_JA: FormsContent = {
     submit: "作品を投稿",
     submitting: "投稿中...",
     errNoFile: "ファイルを選択してください。",
+    errNoThumbnail: "サムネイル画像を選択してください。",
     errFormat: "対応していないファイル形式です。",
     errSave: "作品の登録に失敗しました。",
   },
@@ -309,6 +317,9 @@ const FORMS_EN: FormsContent = {
   upload: {
     file: "File",
     fileHint: "Supports image, video, audio, PDF",
+    thumbnail: "Thumbnail image",
+    thumbnailHint: "Audio, video, and PDF need a cover image for the gallery (JPEG / PNG / GIF / WebP)",
+    thumbnailPreview: "Thumbnail preview",
     typeAuto: (label) => `Type: ${label} (detected from file)`,
     type: "Type",
     typeHint: (label) =>
@@ -320,6 +331,7 @@ const FORMS_EN: FormsContent = {
     submit: "Publish artwork",
     submitting: "Publishing…",
     errNoFile: "Please select a file.",
+    errNoThumbnail: "Please select a thumbnail image.",
     errFormat: "Unsupported file format.",
     errSave: "Could not save artwork.",
   },
@@ -438,7 +450,15 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
     ticketReplyTitle: "추가 메시지",
     ticketReplySubmit: "답변 보내기",
     contact: { ...FORMS_EN.contact, submit: "문의 보내기" },
-    upload: { ...FORMS_EN.upload, file: "파일", submit: "작품 게시", submitting: "게시 중…" },
+    upload: {
+      ...FORMS_EN.upload,
+      file: "파일",
+      thumbnail: "썸네일 이미지",
+      thumbnailHint: "오디오·동영상·PDF는 갤러리 표시용 이미지가 필요합니다",
+      errNoThumbnail: "썸네일 이미지를 선택해 주세요.",
+      submit: "작품 게시",
+      submitting: "게시 중…",
+    },
     product: { ...FORMS_EN.product, submit: "상품 등록" },
     event: { ...FORMS_EN.event, submit: "이벤트 공개" },
     job: { ...FORMS_EN.job, heading: "구인 등록", submit: "구인 등록", remoteDefault: "원격" },
@@ -467,7 +487,15 @@ export const FORMS_CONTENT: Record<UiLocale, FormsContent> = {
     ticketReplyTitle: "追加消息",
     ticketReplySubmit: "发送回复",
     contact: { ...FORMS_EN.contact, submit: "发送咨询" },
-    upload: { ...FORMS_EN.upload, file: "文件", submit: "发布作品", submitting: "发布中…" },
+    upload: {
+      ...FORMS_EN.upload,
+      file: "文件",
+      thumbnail: "缩略图",
+      thumbnailHint: "音频·视频·PDF 需要封面图用于画廊展示",
+      errNoThumbnail: "请选择缩略图。",
+      submit: "发布作品",
+      submitting: "发布中…",
+    },
     product: { ...FORMS_EN.product, submit: "上架商品" },
     event: { ...FORMS_EN.event, submit: "发布活动" },
     job: { ...FORMS_EN.job, heading: "发布招聘", submit: "发布招聘", remoteDefault: "远程" },

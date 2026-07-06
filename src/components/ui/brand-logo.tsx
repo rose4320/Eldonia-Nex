@@ -17,7 +17,7 @@ const sizes = {
 export function BrandLogo({
   showSubtitle = false,
   size = "md",
-  href = "/home",
+  href = "/",
 }: BrandLogoProps) {
   const config = sizes[size];
 

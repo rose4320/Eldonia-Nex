@@ -138,7 +138,7 @@ export function LpCtaSection() {
               <LpButton
                 type="button"
                 className="px-8"
-                onClick={() => window.location.assign("/home")}
+                onClick={() => window.location.assign("/")}
               >
                 {LP_CTA.thankGoHome}
               </LpButton>

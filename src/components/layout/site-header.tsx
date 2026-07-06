@@ -156,10 +156,10 @@ export async function SiteHeader() {
                 </>
               ) : (
                 <>
-                  <Link href="/auth/login" className="eldonia-btn-ghost text-xs">
+                  <Link href="/auth/login?redirect_to=%2F" className="eldonia-btn-ghost text-xs">
                     {HEADER_LABELS.login}
                   </Link>
-                  <Link href="/auth/signup" className="eldonia-btn-primary text-xs">
+                  <Link href="/auth/signup?redirect_to=%2F" className="eldonia-btn-primary text-xs">
                     {HEADER_LABELS.signup}
                   </Link>
                 </>
