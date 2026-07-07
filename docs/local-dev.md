@@ -50,6 +50,23 @@ npm run dev
 
 ---
 
+## Facebook ログイン（ローカル）
+
+1. Supabase Dashboard で Facebook を有効化（`docs/facebook-oauth-setup.md`）
+2. `.env.local` に以下を追加:
+
+```env
+NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+FACEBOOK_OAUTH_CLIENT_ID=（Meta アプリ ID）
+FACEBOOK_OAUTH_CLIENT_SECRET=（Meta アプリシークレット）
+```
+
+3. `npm run dev` を再起動
+4. 確認: `npm run verify:facebook-oauth`
+
+---
+
 ## 本番デプロイ
 
 `main` への push で https://eldonia-nex.com に自動反映されます。  

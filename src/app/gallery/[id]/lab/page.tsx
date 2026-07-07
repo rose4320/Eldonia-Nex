@@ -32,11 +32,11 @@ export default async function CollabLabPage({ params }: CollabLabPageProps) {
   }
 
   return (
-    <div className="eldonia-page">
+    <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
       <SiteHeader />
       <GalleryToolbar />
 
-      <main className="eldonia-main eldonia-main-narrow">
+      <main className="mx-auto w-full max-w-[1240px] flex-1 px-4 py-8 sm:px-6 lg:px-8">
         <Link href={`/gallery/${artworkId}`} className="eldonia-link text-sm">
           {pages.gallery.labBack}
         </Link>

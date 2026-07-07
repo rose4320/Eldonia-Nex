@@ -4,6 +4,8 @@ export const HEADER_LABELS = {
   signup: "Sign up",
   logout: "Logout",
   cart: "Cart",
+  settings: "Settings",
+  notifications: "Notifications",
   menu: "Menu",
   menuClose: "Close",
   searchPlaceholder: "Search the Nexus…",

@@ -240,6 +240,7 @@ web_modules/
 .env.local
 .env.production.supabase
 .env.vercel.production
+.recovery-link.local.txt
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache

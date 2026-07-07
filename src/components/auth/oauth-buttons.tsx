@@ -85,7 +85,9 @@ export function OAuthButtons({
         <span className="h-px flex-1 bg-eldonia-border" />
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
+      <div
+        className={`grid gap-2 ${providers.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
+      >
         {providers.map((provider) => {
           const meta = PROVIDER_META[provider];
           const isPending = pending === provider;

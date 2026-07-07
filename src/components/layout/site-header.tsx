@@ -193,6 +193,7 @@ async function renderSiteHeader() {
       <MobileNav
         locale={locale}
         user={user ? { displayName: displayName ?? pages.userFallback } : null}
+        unreadCount={unreadCount}
       />
     </header>
   );

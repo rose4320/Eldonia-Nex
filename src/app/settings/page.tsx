@@ -132,7 +132,7 @@ export default async function SettingsPage() {
 
             <LpSectionRule variant="simple" />
 
-            <LpReveal>
+            <LpReveal as="section" id="notifications" className="scroll-mt-24 space-y-4">
               <SettingsNotificationPrefs userId={user.id} settings={settings} />
             </LpReveal>
 

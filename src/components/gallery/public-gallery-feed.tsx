@@ -39,6 +39,7 @@ export function PublicGalleryFeed({
     isLiked: false,
     collabStatus: null,
     isOwner: false,
+    labAvailable: false,
   };
 
   return (

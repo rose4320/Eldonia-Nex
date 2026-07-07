@@ -11,6 +11,7 @@ export type GalleryArtworkEngagement = {
   isLiked: boolean;
   collabStatus: CollabRequestStatus | null;
   isOwner: boolean;
+  labAvailable: boolean;
 };
 
 function countByKey(rows: { key: string }[]): Map<string, number> {
@@ -101,6 +102,27 @@ export async function getGalleryFeedEngagement(
     }
   }
 
+  const labArtworkIds = new Set<string>();
+  if (userId) {
+    const { data: memberships } = await supabase
+      .from("collab_lab_members")
+      .select("lab_id")
+      .eq("user_id", userId);
+
+    const labIds = (memberships ?? []).map((row) => row.lab_id);
+    if (labIds.length > 0) {
+      const { data: labs } = await supabase
+        .from("collab_labs")
+        .select("artwork_id")
+        .in("id", labIds)
+        .in("artwork_id", artworkIds);
+
+      for (const lab of labs ?? []) {
+        labArtworkIds.add(lab.artwork_id);
+      }
+    }
+  }
+
   for (const artwork of artworks) {
     const portfolio = portfolioMap.get(artwork.creator_id);
     const creatorExp = portfolio?.exp ?? 0;
@@ -113,6 +135,7 @@ export async function getGalleryFeedEngagement(
       isLiked: likedArtworkIds.has(artwork.id),
       collabStatus: collabByArtwork.get(artwork.id) ?? null,
       isOwner: userId === artwork.creator_id,
+      labAvailable: labArtworkIds.has(artwork.id),
     });
   }
 

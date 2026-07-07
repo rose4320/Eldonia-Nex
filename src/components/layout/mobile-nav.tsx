@@ -15,6 +15,7 @@ type MobileNavProps = {
   user: {
     displayName: string;
   } | null;
+  unreadCount?: number;
 };
 
 function MobileMenuIcon({ open }: { open: boolean }) {
@@ -33,7 +34,7 @@ function MobileMenuIcon({ open }: { open: boolean }) {
   );
 }
 
-export function MobileNav({ locale, user }: MobileNavProps) {
+export function MobileNav({ locale, user, unreadCount = 0 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const mounted = useIsClient();
 
@@ -95,6 +96,39 @@ export function MobileNav({ locale, user }: MobileNavProps) {
                   </button>
                 ))}
               </nav>
+
+              <div className="flex flex-col gap-1 border-t border-eldonia-border pt-3">
+                <button
+                  type="button"
+                  className="eldonia-mobile-menu-link text-left"
+                  onClick={() => navigateFromMenu("/shop/cart")}
+                >
+                  {HEADER_LABELS.cart}
+                </button>
+                {user ? (
+                  <>
+                    <button
+                      type="button"
+                      className="eldonia-mobile-menu-link text-left"
+                      onClick={() => navigateFromMenu("/settings")}
+                    >
+                      {HEADER_LABELS.settings}
+                    </button>
+                    <button
+                      type="button"
+                      className="eldonia-mobile-menu-link flex items-center justify-between text-left"
+                      onClick={() => navigateFromMenu("/settings#notifications")}
+                    >
+                      <span>{HEADER_LABELS.notifications}</span>
+                      {unreadCount > 0 ? (
+                        <span className="rounded-full bg-eldonia-gold px-2 py-0.5 text-[0.65rem] font-semibold text-eldonia-bg">
+                          {unreadCount > 99 ? "99+" : unreadCount}
+                        </span>
+                      ) : null}
+                    </button>
+                  </>
+                ) : null}
+              </div>
 
               <div className="flex flex-wrap items-center gap-2 border-t border-eldonia-border pt-3">
                 <HeaderLanguageSelect locale={locale} />

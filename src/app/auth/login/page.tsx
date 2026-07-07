@@ -9,7 +9,7 @@ import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LOCALE_COOKIE, parseUiLocale } from "@/lib/i18n/locale";
-import { isSupabaseConfigured } from "@/lib/supabase/env";
+import { isSupabaseConfigured, mapSupabaseAuthMessage } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 
 type LoginPageProps = {
@@ -60,7 +60,11 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             redirectTo={redirectTo}
             supabaseConfigured={supabaseConfigured}
             initialError={
-              params.error === "auth_callback_failed" ? t.auth.authCallbackFailed : null
+              params.error === "auth_callback_failed"
+                ? params.detail
+                  ? mapSupabaseAuthMessage(params.detail)
+                  : t.auth.authCallbackFailed
+                : null
             }
           />
         </div>

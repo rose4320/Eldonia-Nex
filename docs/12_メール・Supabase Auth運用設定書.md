@@ -231,10 +231,38 @@ NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true
 
 | 用途 | URL |
 |------|-----|
-| Supabase（Google 必須） | `https://evrklfqdyptuelulgcdy.supabase.co/auth/v1/callback` |
+| Supabase（Google 必須） | `https://<project-ref>.supabase.co/auth/v1/callback` |
 | アプリ（Supabase 設定済み） | `https://eldonia-nex.com/**` |
 
 コールバック処理: `src/app/auth/callback/route.ts`
+
+### 2.6 Facebook / X / Discord OAuth（準備中）
+
+**Facebook:** 手順の正本は `docs/facebook-oauth-setup.md`。  
+**現状:** UI コードはあるが、X / Discord は Developer Console 設定が未完了のため **ボタンはデフォルト非表示**。Facebook は Supabase + Meta 設定後に `NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true` で表示。
+
+有効化手順（Facebook）:
+
+1. Meta for Developers で OAuth アプリを作成（SDK クイックスタートは不要）
+2. リダイレクト URI: `https://sszlycovwefpyxjllbns.supabase.co/auth/v1/callback`
+3. アプリドメイン: `eldonia-nex.com` と `sszlycovwefpyxjllbns.supabase.co`
+4. Supabase Providers → Facebook を ON（App ID / Secret）
+5. `.env.production.supabase` または `.env.local`:
+
+```env
+FACEBOOK_OAUTH_CLIENT_ID=...
+FACEBOOK_OAUTH_CLIENT_SECRET=...
+```
+
+6. `npm run supabase:sync-social`（または Dashboard 手動）
+7. 確認: `npm run verify:facebook-oauth`
+8. Vercel:
+
+```env
+NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true
+```
+
+X / Discord も同様に Client ID / Secret を `.env.production.supabase` に追加後 `npm run supabase:sync-social`。
 
 ---
 

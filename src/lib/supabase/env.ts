@@ -66,10 +66,7 @@ export function supabaseSetupMessage(): string {
 
 export function mapAuthError(error: unknown): string {
   if (error instanceof TypeError && error.message.includes("fetch")) {
-    return (
-      "Supabase に接続できません。.env.local の URL / anon key が正しいか確認し、" +
-      "npm run dev を再起動してください。"
-    );
+    return "ログインに失敗しました。しばらくしてから再度お試しください。";
   }
 
   if (error instanceof Error) {
@@ -82,16 +79,10 @@ export function mapAuthError(error: unknown): string {
 export function mapSupabaseAuthMessage(message: string): string {
   const normalized = message.toLowerCase();
   if (normalized.includes("fetch failed")) {
-    return (
-      "Supabase に接続できません。ローカル開発では Docker Desktop と " +
-      "Supabase を起動してから再度お試しください。"
-    );
+    return "ログインに失敗しました。しばらくしてから再度お試しください。";
   }
   if (normalized.includes("invalid login credentials")) {
-    return (
-      "メールアドレスまたはパスワードが正しくありません。" +
-      "フロントエンドは Supabase アカウントでログインします（Django Admin とは別です）。"
-    );
+    return "メールアドレスまたはパスワードが正しくありません。";
   }
   if (normalized.includes("email not confirmed")) {
     return "メールアドレスの確認が完了していません。受信トレイをご確認ください。";
@@ -104,6 +95,15 @@ export function mapSupabaseAuthMessage(message: string): string {
   }
   if (normalized.includes("same password")) {
     return "新しいパスワードは現在のパスワードと異なる必要があります。";
+  }
+  if (
+    normalized.includes("provider is not enabled") ||
+    normalized.includes("unsupported provider")
+  ) {
+    return "このログイン方法は現在利用できません。しばらくしてから再度お試しください。";
+  }
+  if (normalized.includes("oauth") && normalized.includes("error")) {
+    return "ソーシャルログインに失敗しました。しばらくしてから再度お試しください。";
   }
   return message;
 }

@@ -20,7 +20,7 @@ function loadFile(path) {
 function loadEnv() {
   const merged = { ...process.env };
 
-  for (const file of [".env.production.supabase", ".env.local", ".env"]) {
+  for (const file of [".env", ".env.production.supabase", ".env.local"]) {
     if (!existsSync(file)) continue;
     Object.assign(merged, loadFile(file));
   }
@@ -40,11 +40,11 @@ function loadAccessToken(env) {
 }
 
 function loadProjectRef(env) {
-  if (env.SUPABASE_PROJECT_REF) return env.SUPABASE_PROJECT_REF;
-
   const url = env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const match = url.match(/https:\/\/([^.]+)\.supabase\.co/);
-  return match?.[1] ?? "";
+  if (match?.[1]) return match[1];
+  if (env.SUPABASE_PROJECT_REF) return env.SUPABASE_PROJECT_REF;
+  return "";
 }
 
 async function main() {

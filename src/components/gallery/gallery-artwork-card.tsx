@@ -48,6 +48,8 @@ export function GalleryArtworkCard({
   const collabPending = collabStatus === "pending";
   const collabStatusLabel = (status: string) =>
     copy.collabStatus[status] ?? status;
+  const showLabLink =
+    engagement.labAvailable || collabStatus === "accepted";
 
   function stopCardNav(event: React.MouseEvent | React.FormEvent) {
     event.preventDefault();
@@ -289,6 +291,16 @@ export function GalleryArtworkCard({
           <p className="text-xs text-eldonia-text-muted">
             {copy.collabLabel(collabStatusLabel(collabStatus))}
           </p>
+        )}
+
+        {showLabLink && (
+          <Link
+            href={`/gallery/${artwork.id}/lab`}
+            className="eldonia-btn-primary inline-flex px-3 py-1.5 text-xs"
+            onClick={stopCardNav}
+          >
+            {copy.openLab}
+          </Link>
         )}
 
         {error && <p className="eldonia-alert-error text-xs">{error}</p>}

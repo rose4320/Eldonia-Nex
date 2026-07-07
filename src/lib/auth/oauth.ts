@@ -20,10 +20,22 @@ const ENABLE_FLAGS: Record<OAuthProvider, string | undefined> = {
   discord: process.env.NEXT_PUBLIC_AUTH_DISCORD_ENABLED,
 };
 
-/** A provider is shown when Supabase is configured and its flag is not "false". */
+/** Google only is on by default; others require explicit NEXT_PUBLIC_AUTH_*_ENABLED=true. */
+const DEFAULT_ENABLED: Record<OAuthProvider, boolean> = {
+  google: true,
+  facebook: false,
+  twitter: false,
+  discord: false,
+};
+
+/** A provider is shown when Supabase is configured and its env flag allows it. */
 export function isProviderEnabled(provider: OAuthProvider): boolean {
-  if (ENABLE_FLAGS[provider] === "false") return false;
-  return hasBrowserSupabaseConfig();
+  if (!hasBrowserSupabaseConfig()) return false;
+
+  const flag = ENABLE_FLAGS[provider];
+  if (flag === "true") return true;
+  if (flag === "false") return false;
+  return DEFAULT_ENABLED[provider];
 }
 
 export function enabledOAuthProviders(): OAuthProvider[] {
