@@ -10,6 +10,23 @@ export type SettingsUiContent = {
   postArtwork: { label: string; description: string };
   postProduct: { label: string; description: string };
   postEvent: { label: string; description: string };
+  artworkManagement: {
+    heading: string;
+    lead: string;
+    empty: string;
+    postLink: string;
+    publicBadge: string;
+    privateBadge: string;
+    unpublish: string;
+    republish: string;
+    processing: string;
+    err: string;
+    downloadImage: string;
+    downloadVideo: string;
+    downloadAudio: string;
+    downloadPdf: string;
+    downloadThumbnail: string;
+  };
   basics: {
     publicProfile: string;
     avatar: string;
@@ -47,6 +64,10 @@ export type SettingsUiContent = {
     submit: string;
     currentPlanLabel: string;
     changePlanLink: string;
+    expandSection: string;
+    collapseSection: string;
+    disciplinesLabel: string;
+    disciplinesHint: string;
   };
   plan: {
     eyebrow: string;
@@ -127,6 +148,23 @@ const SETTINGS_UI_JA: SettingsUiContent = {
   postArtwork: { label: "作品を投稿", description: "GALLEY に画像・動画・音声・PDF を公開" },
   postProduct: { label: "商品を投稿", description: "SHOP にデジタル・物理商品を出品" },
   postEvent: { label: "イベントを投稿", description: "ライブ・WS・展示などのイベントを作成" },
+  artworkManagement: {
+    heading: "作品管理",
+    lead: "投稿した GALLERY 作品の公開・非公開の切り替えと、元ファイルのダウンロードができます。非公開にしてもデータは保持されます。",
+    empty: "まだ作品がありません。",
+    postLink: "作品を投稿する →",
+    publicBadge: "公開中",
+    privateBadge: "非公開",
+    unpublish: "公開を停止",
+    republish: "再公開",
+    processing: "更新中...",
+    err: "公開設定の更新に失敗しました。",
+    downloadImage: "画像をダウンロード",
+    downloadVideo: "動画をダウンロード",
+    downloadAudio: "音声をダウンロード",
+    downloadPdf: "PDF をダウンロード",
+    downloadThumbnail: "サムネイル",
+  },
   basics: {
     publicProfile: "公開プロフィール",
     avatar: "アバター画像",
@@ -166,6 +204,10 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     submit: "基本情報を保存",
     currentPlanLabel: "現在のプラン",
     changePlanLink: "プラン変更へ →",
+    expandSection: "表示する",
+    collapseSection: "閉じる",
+    disciplinesLabel: "活動領域",
+    disciplinesHint: "最大4つまで選べます（漫画家・写真家・作家など）",
   },
   plan: {
     eyebrow: "Plan",
@@ -247,6 +289,23 @@ const SETTINGS_UI_EN: SettingsUiContent = {
   postArtwork: { label: "Post artwork", description: "Publish image, video, audio, or PDF to GALLEY" },
   postProduct: { label: "List product", description: "Sell digital or physical items on SHOP" },
   postEvent: { label: "Create event", description: "Live shows, workshops, exhibitions, and more" },
+  artworkManagement: {
+    heading: "Artwork management",
+    lead: "Toggle Gallery visibility and download original files for your uploads. Unpublished works stay in your account.",
+    empty: "No artworks yet.",
+    postLink: "Post an artwork →",
+    publicBadge: "Public",
+    privateBadge: "Unpublished",
+    unpublish: "Unpublish",
+    republish: "Publish again",
+    processing: "Updating…",
+    err: "Could not update visibility.",
+    downloadImage: "Download image",
+    downloadVideo: "Download video",
+    downloadAudio: "Download audio",
+    downloadPdf: "Download PDF",
+    downloadThumbnail: "Thumbnail",
+  },
   basics: {
     publicProfile: "Public profile",
     avatar: "Avatar image",
@@ -286,6 +345,10 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     submit: "Save profile",
     currentPlanLabel: "Current plan",
     changePlanLink: "Change plan →",
+    expandSection: "Show",
+    collapseSection: "Hide",
+    disciplinesLabel: "Creative disciplines",
+    disciplinesHint: "Choose up to 4 (manga artist, photographer, writer, etc.)",
   },
   plan: {
     eyebrow: "Plan",

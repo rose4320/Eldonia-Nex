@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
-import { uploadArtworkMediaBundle } from "@/lib/gallery/client-upload-artwork";
+import { uploadArtworkFileToStorage, uploadArtworkMediaBundle } from "@/lib/gallery/client-upload-artwork";
 import {
   artworkNeedsThumbnail,
   categoryLabel,
   detectCategoryFromFile,
+  DOCUMENT_ARTWORK_CATEGORY_VALUES,
   IMAGE_ARTWORK_CATEGORY_VALUES,
+  isBgmAudioFile,
   isThumbnailImageFile,
 } from "@/lib/gallery/constants";
 import { artworkCategoryOptions } from "@/lib/i18n/taxonomy";
@@ -44,21 +46,33 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
   const { forms } = useContent();
   const upload = forms.upload;
   const imageCategories = artworkCategoryOptions(IMAGE_ARTWORK_CATEGORY_VALUES, locale);
+  const documentCategories = artworkCategoryOptions(DOCUMENT_ARTWORK_CATEGORY_VALUES, locale);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
+  const [storyExcerpt, setStoryExcerpt] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [detected, setDetected] = useState<ReturnType<typeof detectCategoryFromFile>>(null);
   const [imageCategory, setImageCategory] = useState<string | null>(null);
+  const [documentCategory, setDocumentCategory] = useState<string>("document");
+  const [extraPageFiles, setExtraPageFiles] = useState<File[]>([]);
+  const [bgmFile, setBgmFile] = useState<File | null>(null);
+  const [bgmPreview, setBgmPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const needsThumbnail = artworkNeedsThumbnail(file);
   const isImageWork = file != null && !needsThumbnail && (detected?.mediaType === "image" || mediaTypeIsImage(file));
   const mediaType = file ? effectiveMediaType(file, detected) : null;
+  const resolvedImageCategory = imageCategory ?? detected?.category ?? "illustration";
+  const showMangaPages = isImageWork && resolvedImageCategory === "manga";
+  const showPhotoSeries = isImageWork && resolvedImageCategory === "photo";
+  const showStoryExcerpt =
+    detected?.mediaType === "document" && documentCategory === "story";
+  const showBgm = mediaType != null && mediaType !== "audio";
   const galleryCoverUrl =
     thumbnailPreview ?? (mediaType === "image" ? mediaPreview : null);
 
@@ -88,6 +102,14 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
     setThumbnailFile(selected);
   }
 
+  function handleBgmChange(selected: File | null) {
+    setBgmPreview((prev) => {
+      revokeObjectUrl(prev);
+      return selected ? URL.createObjectURL(selected) : null;
+    });
+    setBgmFile(selected);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
@@ -104,15 +126,16 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
       return;
     }
 
-    const category =
-      resolvedMediaType === "image" && imageCategory
-        ? imageCategory
-        : (fileInfo?.category ??
-          (resolvedMediaType === "audio"
-            ? "music"
-            : resolvedMediaType === "document"
-              ? "document"
-              : resolvedMediaType));
+    let category: string;
+    if (resolvedMediaType === "image" && imageCategory) {
+      category = imageCategory;
+    } else if (resolvedMediaType === "document") {
+      category = documentCategory;
+    } else {
+      category =
+        fileInfo?.category ??
+        (resolvedMediaType === "audio" ? "music" : resolvedMediaType);
+    }
 
     if (resolvedMediaType !== "image") {
       if (!thumbnailFile) {
@@ -123,6 +146,11 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
         setError(upload.errFormat);
         return;
       }
+    }
+
+    if (bgmFile && !isBgmAudioFile(bgmFile)) {
+      setError(upload.errBgmFormat);
+      return;
     }
 
     setLoading(true);
@@ -152,6 +180,30 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
         resolvedMediaType === "image" ? null : thumbnailFile,
       );
 
+      const pageUrls: string[] = [];
+      for (const pageFile of extraPageFiles) {
+        const pageUpload = await uploadArtworkFileToStorage(
+          supabase,
+          user.id,
+          pageFile,
+          "image",
+          `-p${pageUrls.length + 2}`,
+        );
+        pageUrls.push(pageUpload.publicUrl);
+      }
+
+      let bgmUrl: string | null = null;
+      if (bgmFile) {
+        const bgmUpload = await uploadArtworkFileToStorage(
+          supabase,
+          user.id,
+          bgmFile,
+          "audio",
+          "-bgm",
+        );
+        bgmUrl = bgmUpload.publicUrl;
+      }
+
       const response = await fetch("/api/gallery/artworks", {
         method: "POST",
         credentials: "same-origin",
@@ -164,6 +216,9 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
           media_type: uploaded.mediaType,
           media_url: uploaded.mediaUrl,
           thumbnail_url: uploaded.thumbnailUrl,
+          page_urls: pageUrls,
+          story_excerpt: showStoryExcerpt ? storyExcerpt.trim() : null,
+          bgm_url: bgmUrl,
         }),
       });
 
@@ -304,6 +359,95 @@ export function UploadForm({ successRedirect }: UploadFormProps) {
                 <p className="artwork-upload__hint">
                   {upload.typeHint(categoryLabel(detected.category, locale))}
                 </p>
+              </div>
+            )}
+
+            {detected?.mediaType === "document" && (
+              <div className="artwork-upload__field">
+                <label htmlFor="documentCategory" className="artwork-upload__label">
+                  {upload.type}
+                </label>
+                <select
+                  id="documentCategory"
+                  value={documentCategory}
+                  onChange={(event) => setDocumentCategory(event.target.value)}
+                  className="artwork-upload__control"
+                >
+                  {documentCategories.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {(showMangaPages || showPhotoSeries) && (
+              <div className="artwork-upload__field">
+                <label htmlFor="extraPages" className="artwork-upload__label">
+                  {showMangaPages ? upload.mangaPages : upload.photoSeriesPages}
+                </label>
+                <input
+                  id="extraPages"
+                  type="file"
+                  multiple
+                  accept="image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp"
+                  onChange={(event) =>
+                    setExtraPageFiles(Array.from(event.target.files ?? []).slice(0, 48))
+                  }
+                  className="artwork-upload__file"
+                />
+                <p className="artwork-upload__hint">
+                  {showMangaPages ? upload.mangaPagesHint : upload.photoSeriesHint}
+                </p>
+                {extraPageFiles.length > 0 && (
+                  <p className="artwork-upload__filename">
+                    +{extraPageFiles.length}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {showStoryExcerpt && (
+              <div className="artwork-upload__field">
+                <label htmlFor="storyExcerpt" className="artwork-upload__label">
+                  {upload.storyExcerpt}
+                </label>
+                <textarea
+                  id="storyExcerpt"
+                  rows={3}
+                  maxLength={500}
+                  value={storyExcerpt}
+                  onChange={(event) => setStoryExcerpt(event.target.value)}
+                  className="eldonia-textarea"
+                />
+                <p className="artwork-upload__hint">{upload.storyExcerptHint}</p>
+              </div>
+            )}
+
+            {showBgm && (
+              <div className="artwork-upload__field">
+                <label htmlFor="bgm" className="artwork-upload__label">
+                  {upload.bgm}
+                </label>
+                <input
+                  id="bgm"
+                  type="file"
+                  accept="audio/mpeg,audio/mp3,audio/wav,audio/flac,audio/mp4,audio/x-m4a,.mp3,.wav,.flac,.m4a"
+                  onChange={(event) => handleBgmChange(event.target.files?.[0] ?? null)}
+                  className="artwork-upload__file"
+                />
+                <p className="artwork-upload__hint">{upload.bgmHint}</p>
+                {bgmFile && (
+                  <p className="artwork-upload__filename" title={bgmFile.name}>
+                    {bgmFile.name}
+                  </p>
+                )}
+                {bgmPreview && (
+                  <audio controls preload="metadata" src={bgmPreview} className="mt-2 w-full">
+                    {bgmFile?.name}
+                  </audio>
+                )}
               </div>
             )}
 

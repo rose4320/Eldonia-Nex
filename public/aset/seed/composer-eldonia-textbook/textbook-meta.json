@@ -1,0 +1,18 @@
+{
+  "ja": {
+    "title": "Eldonia-Nex 使い方テキストブック",
+    "excerpt": "GALLERY・Lab・SHOP への導線を章立てで学ぶ、読み上げナレーション付きの公式風デモ教本です。"
+  },
+  "en": {
+    "title": "Eldonia-Nex User Textbook",
+    "excerpt": "A chapter-by-chapter demo guide to GALLERY, Lab, and SHOP—with read-aloud narration."
+  },
+  "ko": {
+    "title": "Eldonia-Nex 사용법 텍스트북",
+    "excerpt": "GALLERY·Lab·SHOP 이용법을 장별로 익히는 내레이션 데모 교본입니다."
+  },
+  "zh-CN": {
+    "title": "Eldonia-Nex 使用教程",
+    "excerpt": "分章介绍 GALLERY、Lab、SHOP 的旁白朗读式官方风格演示教程。"
+  }
+}

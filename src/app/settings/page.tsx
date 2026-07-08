@@ -4,6 +4,8 @@ import { PageIntro } from "@/components/layout/page-intro";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ExpBar } from "@/components/settings/exp-bar";
+import { SettingsArtworkManagement } from "@/components/settings/settings-artwork-management";
+import { SettingsBasicsCollapsible } from "@/components/settings/settings-basics-collapsible";
 import { SettingsBasicsForm } from "@/components/settings/settings-basics-form";
 import { SettingsFinance } from "@/components/settings/settings-finance";
 import { SettingsNav } from "@/components/settings/settings-nav";
@@ -21,6 +23,7 @@ import { PAGE_ICONS } from "@/lib/layout/module-icons";
 import { getSettingsHubData, mergeUserSettings } from "@/lib/settings/get-settings-data";
 import { ensureProfile } from "@/lib/auth/ensure-profile";
 import { getReferralProgramData } from "@/lib/referrals/get-referral-program";
+import { getUserArtworks } from "@/lib/gallery/get-user-artworks";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function SettingsPage() {
@@ -38,6 +41,7 @@ export default async function SettingsPage() {
   const profile = await ensureProfile(user);
   const data = await getSettingsHubData(user.id, profile);
   const referral = await getReferralProgramData(user.id, user.email, data.profile.username);
+  const userArtworks = await getUserArtworks(user.id);
   const expPoints = data.portfolio?.exp_points ?? 0;
   const titleBadge = data.portfolio?.title_badge ?? null;
   const settings = mergeUserSettings(user.id, data.userSettings);
@@ -96,9 +100,8 @@ export default async function SettingsPage() {
 
             <LpSectionRule variant="simple" />
 
-            <LpReveal as="section" id="basics" className="scroll-mt-24 space-y-4">
-              <h2 className="eldonia-eyebrow">{t.pages.settings.sectionBasics}</h2>
-              <div className="eldonia-card">
+            <LpReveal>
+              <SettingsBasicsCollapsible>
                 <SettingsBasicsForm
                   userId={user.id}
                   email={user.email ?? null}
@@ -107,13 +110,19 @@ export default async function SettingsPage() {
                   currentPlan={data.plan.plan}
                   basicsExpAwarded={data.basicsExpAwarded}
                 />
-              </div>
+              </SettingsBasicsCollapsible>
             </LpReveal>
 
             <LpSectionRule variant="simple" />
 
             <LpReveal>
               <SettingsPostHub />
+            </LpReveal>
+
+            <LpSectionRule variant="simple" />
+
+            <LpReveal>
+              <SettingsArtworkManagement artworks={userArtworks} />
             </LpReveal>
 
             <LpReveal>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -431,8 +432,14 @@ export default async function HomePage() {
       <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
         {/* Personal dashboard band */}
         <section className="lp-home-hero">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/aset/lp/hero.png?v=0.6.0" alt="" className="lp-home-hero__bg" />
+          <Image
+            src="/aset/lp/hero.png?v=0.6.0"
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 1240px) 100vw, 1240px"
+            className="lp-home-hero__bg"
+          />
           <div className="lp-home-hero__scrim" aria-hidden />
           <span className="lp-home-corner lp-home-corner--tl" aria-hidden />
           <span className="lp-home-corner lp-home-corner--tr" aria-hidden />
@@ -690,11 +697,12 @@ export default async function HomePage() {
                 <p className="mt-4 text-sm leading-7 text-[#d8c8a8]">{copy.worldBody}</p>
               </div>
               <div className="relative min-h-[220px] overflow-hidden lg:min-h-[300px]">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/aset/lp/world.png?v=0.6.0"
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 620px"
+                  className="object-cover"
                 />
                 <div
                   className="pointer-events-none absolute inset-0 bg-linear-to-r from-[#020817] via-[#020817]/35 to-transparent"
@@ -723,11 +731,12 @@ export default async function HomePage() {
           <div className="grid items-center gap-6 lg:grid-cols-[minmax(0,300px)_1fr]">
             <div className="relative mx-auto aspect-square w-full max-w-[260px]">
               <div className="lp-globe-figure relative h-full w-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/aset/lp/globe.png?v=0.6.0"
                   alt=""
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="260px"
+                  className="object-cover"
                 />
               </div>
             </div>
@@ -762,10 +771,11 @@ export default async function HomePage() {
             {copy.modules.map((mod) => (
               <Link key={mod.key} href={mod.href} className="group">
                 <LpCard hover className="flex h-full items-start gap-4 p-5">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={`${mod.icon}?v=0.6.0`}
                     alt=""
+                    width={160}
+                    height={160}
                     className="lp-module-icon h-20 w-20 shrink-0 object-contain"
                   />
                   <span className="min-w-0">
@@ -795,8 +805,7 @@ export default async function HomePage() {
             <span className="lp-home-corner lp-home-corner--br" aria-hidden />
             <div className="grid items-center gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,220px)_1fr] lg:p-10">
               <div className="mx-auto lg:mx-0">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="/aset/lp/pin-badge.png?v=0.6.0"
                   alt=""
                   width={200}

@@ -15,17 +15,33 @@ alwaysApply: true
 - **Next Admin**: `src/app/admin/`（拡張中）
 - **Design**: `agents/UI_UX_Designer.agent.md`（LP は紫アクセント可）
 
-## 指揮系
+## 指揮系（必須 — Main Director 経由）
+
+**全依頼は Main Director が Intake → 振り分け → Verify → 日本語 Report する。**
 
 ```
 ユーザー要望
-  → Main Director Agent
-  → 担当部署 Agent
-  → Sub Agent
-  → Verify → 日本語報告
+  → Main Director（Intake 表 + Plan）
+  → 担当部署 Agent（agents/*.agent.md を Read）
+  → Sub Agent（Task: explore / generalPurpose / shell）
+  → Verify（eldonia-verify）
+  → Main Director Report
 ```
 
-Main Director Sub: `Main_Director`, `Request_Intake`, `Project_Producer`, `Explore` — 索引 `.cursor/AGENTS.md`
+- スキル: `.cursor/skills/eldonia-main-director/SKILL.md`（**最初に読む**）
+- 索引: `.cursor/AGENTS.md`
+- Main Director Sub: `Request_Intake`, `Project_Producer`, `Explore`
+
+### 最初の返信に必ず含める
+
+1. **Intake 表**（要望・分類・主担当・承認要否）
+2. **Plan**（読む agent.md・触るパス・Verify）
+3. 承認必須なら Implement 前に止める
+
+### 実装時
+
+- 担当 `agents/*_Manager.agent.md` または `*_Agent.agent.md` を Read してから着手
+- レポートで部署名を明示（例: Gallery Manager が API 追加）
 
 ## コアフロー（Gallery → Lab）
 

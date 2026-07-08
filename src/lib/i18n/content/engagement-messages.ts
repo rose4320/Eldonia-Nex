@@ -20,6 +20,15 @@ export type EngagementContent = {
   openLab: string;
   pendingCollabHeading: (n: number) => string;
   ownerCollabHint: string;
+  visibilityHeading: string;
+  visibilityPublicLead: string;
+  visibilityPrivateLead: string;
+  visibilityPublicBadge: string;
+  visibilityPrivateBadge: string;
+  visibilityUnpublish: string;
+  visibilityRepublish: string;
+  visibilityAdminNote: string;
+  visibilityErr: string;
   lab: {
     lead: string;
     memberFallback: string;
@@ -29,6 +38,14 @@ export type EngagementContent = {
     postPlaceholder: string;
     postSubmit: string;
     postSending: string;
+    downloadHeading: string;
+    downloadLead: string;
+    downloadImage: string;
+    downloadVideo: string;
+    downloadAudio: string;
+    downloadPdf: string;
+    downloadThumbnail: string;
+    downloadArtworkTitle: (title: string) => string;
   };
 };
 
@@ -57,6 +74,15 @@ const ENGAGEMENT_JA: EngagementContent = {
   openLab: "Lab を開く",
   pendingCollabHeading: (n) => `コラボ申請（${n}件）`,
   ownerCollabHint: "コラボ申請が届くとここで承認できます。承認後、共同作業用 Lab が作成されます。",
+  visibilityHeading: "公開設定",
+  visibilityPublicLead: "Gallery に公開中です。非公開にすると一覧から隠れ、URL を知る本人と管理者のみ閲覧できます。",
+  visibilityPrivateLead: "非公開です。Gallery 一覧には表示されません。データは保持されます。",
+  visibilityPublicBadge: "公開中",
+  visibilityPrivateBadge: "非公開",
+  visibilityUnpublish: "公開を停止する",
+  visibilityRepublish: "再公開する",
+  visibilityAdminNote: "管理者として操作しています。",
+  visibilityErr: "公開設定の更新に失敗しました。",
   lab: {
     lead: "承認されたメンバーで共同作業できる Lab です。メモや進捗を共有しましょう。",
     memberFallback: "メンバー",
@@ -66,6 +92,14 @@ const ENGAGEMENT_JA: EngagementContent = {
     postPlaceholder: "進捗・素材メモ・アイデアを共有...",
     postSubmit: "Lab に投稿",
     postSending: "送信中...",
+    downloadHeading: "作品ファイル（共同作業者向け）",
+    downloadLead: "Lab メンバーのみ、元ファイルをダウンロードできます。Gallery 上での一般ダウンロードは禁止です。",
+    downloadImage: "画像をダウンロード",
+    downloadVideo: "動画をダウンロード",
+    downloadAudio: "音声をダウンロード",
+    downloadPdf: "PDF をダウンロード",
+    downloadThumbnail: "サムネイルをダウンロード",
+    downloadArtworkTitle: (title) => `対象作品: ${title}`,
   },
 };
 
@@ -94,6 +128,15 @@ const ENGAGEMENT_EN: EngagementContent = {
   openLab: "Open Lab",
   pendingCollabHeading: (n) => `Collab requests (${n})`,
   ownerCollabHint: "Incoming collab requests appear here. Accepting creates a shared Lab.",
+  visibilityHeading: "Visibility",
+  visibilityPublicLead: "Published in Gallery. Unpublishing hides it from the feed; only you and admins can open the URL.",
+  visibilityPrivateLead: "Unpublished. Hidden from Gallery listings. Data is retained.",
+  visibilityPublicBadge: "Public",
+  visibilityPrivateBadge: "Unpublished",
+  visibilityUnpublish: "Unpublish",
+  visibilityRepublish: "Publish again",
+  visibilityAdminNote: "You are acting as an administrator.",
+  visibilityErr: "Could not update visibility.",
   lab: {
     lead: "Collaborate with approved members. Share notes and progress here.",
     memberFallback: "Member",
@@ -103,6 +146,14 @@ const ENGAGEMENT_EN: EngagementContent = {
     postPlaceholder: "Share progress, assets, or ideas…",
     postSubmit: "Post to Lab",
     postSending: "Sending…",
+    downloadHeading: "Artwork files (collaborators)",
+    downloadLead: "Lab members can download source files. Public Gallery downloads are not allowed.",
+    downloadImage: "Download image",
+    downloadVideo: "Download video",
+    downloadAudio: "Download audio",
+    downloadPdf: "Download PDF",
+    downloadThumbnail: "Download thumbnail",
+    downloadArtworkTitle: (title) => `Artwork: ${title}`,
   },
 };
 

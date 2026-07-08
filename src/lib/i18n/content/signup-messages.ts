@@ -73,6 +73,7 @@ export type SignupContent = {
   };
   messages: {
     basicSaved: string;
+    resumeSignedIn: string;
     confirmEmailContinue: string;
     paymentComplete: string;
     freePlanSelected: string;
@@ -149,6 +150,8 @@ const SIGNUP_JA: SignupContent = {
   },
   messages: {
     basicSaved: "基本情報を保存しました。次にプランを選択してください。",
+    resumeSignedIn:
+      "ログイン済みです。プランを選択して登録を完了すると、ホームに移動できます。",
     confirmEmailContinue:
       "確認メールを送信しました。メール内のリンクを開くと、プラン選択から登録を続けられます（別途ログインは不要です）。",
     paymentComplete: "決済が完了しました。最後に規約を項目ごとに確認してください。",
@@ -316,6 +319,8 @@ const SIGNUP_EN: SignupContent = {
   },
   messages: {
     basicSaved: "Profile saved. Choose a plan next.",
+    resumeSignedIn:
+      "You're signed in. Choose a plan to finish signup and continue to your home.",
     confirmEmailContinue:
       "We sent a confirmation email. Open the link inside to continue signup from plan selection—no separate login step.",
     paymentComplete: "Payment complete. Review each agreement to finish.",

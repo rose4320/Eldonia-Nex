@@ -1,5 +1,5 @@
 import type { UiLocale } from "@/lib/i18n/locale";
-import { artworkCategoryLabel, intlDateTag } from "@/lib/i18n/taxonomy";
+import { intlDateTag } from "@/lib/i18n/taxonomy";
 
 const IMAGE_TYPES = new Set([
   "image/jpeg",
@@ -157,20 +157,30 @@ function categoryFromMediaType(
   }
 }
 
-export const ARTWORK_CATEGORY_VALUES = [
-  "illustration",
-  "photo",
-  "video",
-  "music",
-  "document",
-  "other",
-] as const;
+const BGM_EXTENSIONS = new Set(["mp3", "wav", "flac", "m4a"]);
 
-export const IMAGE_ARTWORK_CATEGORY_VALUES = ["illustration", "photo"] as const;
-
-export function categoryLabel(value: string, locale: UiLocale = "ja"): string {
-  return artworkCategoryLabel(value, locale);
+/** Optional ambient BGM file (not the primary audio artwork). */
+export function isBgmAudioFile(file: File): boolean {
+  if (AUDIO_TYPES.has(file.type)) return true;
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  return BGM_EXTENSIONS.has(ext ?? "");
 }
+
+export {
+  ARTWORK_CATEGORY_VALUES,
+  IMAGE_ARTWORK_CATEGORY_VALUES,
+  categoryLabel,
+  disciplineLabel,
+  formatBadgeLabel,
+  galleryRealmFilterLabel,
+  sanitizeDisciplines,
+  isArtworkCategory,
+  isCreatorDiscipline,
+  resolveArtworkFormat,
+  CREATOR_DISCIPLINE_VALUES,
+  DOCUMENT_ARTWORK_CATEGORY_VALUES,
+  GALLERY_REALM_FILTER_VALUES,
+} from "@/lib/gallery/creator-taxonomy";
 
 export function formatDate(iso: string, locale: UiLocale = "ja"): string {
   return new Intl.DateTimeFormat(intlDateTag(locale), {

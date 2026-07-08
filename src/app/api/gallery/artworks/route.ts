@@ -5,6 +5,7 @@ import {
   resolveStorageContentType,
 } from "@/lib/gallery/constants";
 import { isOwnedArtworksStorageUrl } from "@/lib/gallery/client-upload-artwork";
+import { isArtworkCategory, resolveArtworkFormat } from "@/lib/gallery/creator-taxonomy";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 import type { ArtworkMediaType } from "@/types/database";
@@ -20,6 +21,10 @@ type JsonArtworkBody = {
   media_type?: ArtworkMediaType;
   media_url?: string;
   thumbnail_url?: string | null;
+  page_urls?: string[];
+  story_excerpt?: string;
+  series_id?: string | null;
+  bgm_url?: string | null;
 };
 
 async function uploadToArtworksBucket(
@@ -89,6 +94,10 @@ async function insertArtworkRecord(
     mediaType: ArtworkMediaType;
     mediaUrl: string;
     thumbnailUrl: string | null;
+    pageUrls?: string[];
+    storyExcerpt?: string | null;
+    seriesId?: string | null;
+    bgmUrl?: string | null;
   },
 ) {
   const tagList = input.tagsRaw
@@ -96,6 +105,13 @@ async function insertArtworkRecord(
     .map((tag) => tag.trim())
     .filter(Boolean)
     .slice(0, 10);
+
+  const pageUrls = (input.pageUrls ?? []).filter((url) =>
+    isOwnedArtworksStorageUrl(url, userId),
+  );
+  const pageCount = Math.max(1, 1 + pageUrls.length);
+  const format = resolveArtworkFormat(input.category, pageCount);
+  const storyExcerpt = input.storyExcerpt?.trim() || null;
 
   const { data: artwork, error: insertError } = await supabase
     .from("artworks")
@@ -107,6 +123,11 @@ async function insertArtworkRecord(
       media_url: input.mediaUrl,
       thumbnail_url: input.thumbnailUrl,
       category: input.category,
+      format,
+      page_count: pageCount,
+      series_id: input.seriesId ?? null,
+      story_excerpt: storyExcerpt,
+      bgm_url: input.bgmUrl ?? null,
       tags: tagList,
       is_public: true,
     })
@@ -115,6 +136,18 @@ async function insertArtworkRecord(
 
   if (insertError || !artwork) {
     return { error: insertError?.message ?? "作品の保存に失敗しました。" };
+  }
+
+  if (pageUrls.length > 0) {
+    const rows = pageUrls.map((mediaUrl, index) => ({
+      artwork_id: artwork.id,
+      page_index: index + 2,
+      media_url: mediaUrl,
+    }));
+    const { error: pagesError } = await supabase.from("artwork_pages").insert(rows);
+    if (pagesError) {
+      return { error: pagesError.message };
+    }
   }
 
   await awardUserExp(supabase, "artwork.upload", artwork.id);
@@ -170,10 +203,31 @@ async function handleJsonRegister(
   }
 
   const category =
-    mediaType === "image" && categoryInput
+    mediaType === "image" && categoryInput && isArtworkCategory(categoryInput)
       ? categoryInput
       : categoryInput ||
         (mediaType === "audio" ? "music" : mediaType === "document" ? "document" : mediaType);
+
+  const pageUrls = Array.isArray(body.page_urls)
+    ? body.page_urls.map((url) => String(url).trim()).filter(Boolean).slice(0, 48)
+    : [];
+
+  for (const pageUrl of pageUrls) {
+    if (!isOwnedArtworksStorageUrl(pageUrl, user.id)) {
+      return NextResponse.json({ error: "追加ページの保存先が不正です。" }, { status: 400 });
+    }
+  }
+
+  const bgmUrlRaw = body.bgm_url == null ? null : String(body.bgm_url).trim() || null;
+  if (mediaType === "audio" && bgmUrlRaw) {
+    return NextResponse.json(
+      { error: "音楽作品には BGM を追加できません。" },
+      { status: 400 },
+    );
+  }
+  if (bgmUrlRaw && !isOwnedArtworksStorageUrl(bgmUrlRaw, user.id)) {
+    return NextResponse.json({ error: "BGM の保存先が不正です。" }, { status: 400 });
+  }
 
   const result = await insertArtworkRecord(supabase, user.id, {
     title,
@@ -183,6 +237,10 @@ async function handleJsonRegister(
     mediaType,
     mediaUrl,
     thumbnailUrl: mediaType === "image" ? mediaUrl : thumbnailUrl,
+    pageUrls,
+    storyExcerpt: body.story_excerpt ?? null,
+    seriesId: body.series_id ?? null,
+    bgmUrl: bgmUrlRaw,
   });
 
   if ("error" in result) {
@@ -262,7 +320,9 @@ async function handleMultipartUpload(
   }
 
   const category =
-    mediaType === "image" && categoryInput ? categoryInput : fileInfo.category;
+    mediaType === "image" && categoryInput && isArtworkCategory(categoryInput)
+      ? categoryInput
+      : fileInfo.category;
 
   const mediaUpload = await uploadToArtworksBucket(supabase, user.id, file, mediaType, "");
   if ("error" in mediaUpload && mediaUpload.error) {

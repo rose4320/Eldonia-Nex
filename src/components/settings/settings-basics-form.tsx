@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useContent } from "@/components/providers/locale-provider";
+import { CreatorDisciplinePicker } from "@/components/settings/creator-discipline-picker";
+import { sanitizeDisciplines } from "@/lib/gallery/creator-taxonomy";
 import { isBasicsComplete } from "@/lib/settings/basics-completion";
 import type { UserPlanId } from "@/lib/plans/types";
 import { createClient } from "@/lib/supabase/client";
@@ -43,6 +45,9 @@ export function SettingsBasicsForm({
   const [username, setUsername] = useState(profile.username ?? "");
   const [bio, setBio] = useState(profile.bio ?? "");
   const [isCreator, setIsCreator] = useState(profile.is_creator);
+  const [disciplines, setDisciplines] = useState(
+    sanitizeDisciplines(profile.disciplines ?? []),
+  );
   const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -184,6 +189,7 @@ export function SettingsBasicsForm({
         avatar_url: nextAvatarUrl,
         bio: bio.trim() || null,
         is_creator: isCreator,
+        disciplines,
       })
       .eq("id", userId);
 
@@ -318,6 +324,14 @@ export function SettingsBasicsForm({
           <input type="checkbox" checked={isCreator} onChange={(e) => setIsCreator(e.target.checked)} className="accent-eldonia-gold" />
           {copy.creatorToggle}
         </label>
+        {isCreator && (
+          <CreatorDisciplinePicker
+            value={disciplines}
+            onChange={setDisciplines}
+            label={copy.disciplinesLabel}
+            hint={copy.disciplinesHint}
+          />
+        )}
       </fieldset>
 
       <fieldset className="space-y-4">

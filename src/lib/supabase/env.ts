@@ -105,5 +105,13 @@ export function mapSupabaseAuthMessage(message: string): string {
   if (normalized.includes("oauth") && normalized.includes("error")) {
     return "ソーシャルログインに失敗しました。しばらくしてから再度お試しください。";
   }
+  if (normalized.includes("unable to exchange external code")) {
+    return (
+      "Facebook ログインの設定に問題があります。Meta のアプリシークレットが Supabase と一致していない可能性があります。" +
+      "Meta for Developers → 設定 → ベーシック で最新のシークレットをコピーし、" +
+      "Supabase Dashboard → Authentication → Providers → Facebook に貼り付けて保存してください。" +
+      "開発モードの場合は、アプリの役割にご自身をテスターとして追加してください。"
+    );
+  }
   return message;
 }

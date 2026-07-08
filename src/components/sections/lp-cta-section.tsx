@@ -12,6 +12,7 @@ export function LpCtaSection() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loggedIn, setLoggedIn] = useState(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -33,6 +34,7 @@ export function LpCtaSection() {
       const payload = (await response.json()) as {
         ok?: boolean;
         alreadyRegistered?: boolean;
+        loggedIn?: boolean;
         error?: string;
       };
 
@@ -43,6 +45,7 @@ export function LpCtaSection() {
       }
 
       setEmail("");
+      setLoggedIn(Boolean(payload.loggedIn));
       setStatus(payload.alreadyRegistered ? "duplicate" : "success");
     } catch {
       setErrorMessage(LP_CTA.error);
@@ -138,7 +141,11 @@ export function LpCtaSection() {
               <LpButton
                 type="button"
                 className="px-8"
-                onClick={() => window.location.assign("/")}
+                onClick={() =>
+                  // 自動ログイン成功時はホーム（/ = ログイン済みホーム）へ。
+                  // セッションが張れなかった場合は / に行っても /lp に戻されるだけなのでログインへ誘導。
+                  window.location.assign(loggedIn ? "/" : "/auth/login")
+                }
               >
                 {LP_CTA.thankGoHome}
               </LpButton>

@@ -48,11 +48,20 @@ export type FormsContent = {
     description: string;
     tags: string;
     tagsHint: string;
+    mangaPages: string;
+    mangaPagesHint: string;
+    photoSeriesPages: string;
+    photoSeriesHint: string;
+    storyExcerpt: string;
+    storyExcerptHint: string;
+    bgm: string;
+    bgmHint: string;
     submit: string;
     submitting: string;
     errNoFile: string;
     errNoThumbnail: string;
     errFormat: string;
+    errBgmFormat: string;
     errPayloadTooLarge: string;
     errUploadMedia: string;
     errSave: string;
@@ -211,11 +220,21 @@ const FORMS_JA: FormsContent = {
     description: "説明",
     tags: "タグ",
     tagsHint: "カンマ区切り（最大10個）",
+    mangaPages: "追加ページ（漫画・複数枚）",
+    mangaPagesHint: "漫画は複数画像を選べます。1枚目がカバーになります。",
+    photoSeriesPages: "追加写真（シリーズ）",
+    photoSeriesHint: "写真カテゴリで複数枚を1作品にまとめられます。",
+    storyExcerpt: "あらすじ",
+    storyExcerptHint: "ストーリー作品の短い紹介（500文字まで）",
+    bgm: "BGM（任意）",
+    bgmHint:
+      "ゆったりした Instrumental など（MP3 / WAV / FLAC / M4A）。閲覧時に ♪ ボタンでループ再生できます。",
     submit: "作品を投稿",
     submitting: "投稿中...",
     errNoFile: "ファイルを選択してください。",
     errNoThumbnail: "サムネイル画像を選択してください。",
     errFormat: "対応していないファイル形式です。",
+    errBgmFormat: "BGM は MP3 / WAV / FLAC / M4A の音声ファイルにしてください。",
     errPayloadTooLarge: "ファイルが大きすぎます。音声・動画はブラウザから直接アップロードされます。",
     errUploadMedia: "ファイルのアップロードに失敗しました。",
     errSave: "作品の登録に失敗しました。",
@@ -374,11 +393,21 @@ const FORMS_EN: FormsContent = {
     description: "Description",
     tags: "Tags",
     tagsHint: "Comma-separated (max 10)",
+    mangaPages: "Extra pages (manga / multi-image)",
+    mangaPagesHint: "Select multiple images for manga. The first file is the cover.",
+    photoSeriesPages: "Extra photos (series)",
+    photoSeriesHint: "Combine multiple photos into one work when category is Photo.",
+    storyExcerpt: "Synopsis",
+    storyExcerptHint: "Short intro for story works (max 500 chars)",
+    bgm: "BGM (optional)",
+    bgmHint:
+      "Slow instrumental loops (MP3 / WAV / FLAC / M4A). Viewers turn them on with the ♪ button.",
     submit: "Publish artwork",
     submitting: "Publishing…",
     errNoFile: "Please select a file.",
     errNoThumbnail: "Please select a thumbnail image.",
     errFormat: "Unsupported file format.",
+    errBgmFormat: "BGM must be an MP3 / WAV / FLAC / M4A audio file.",
     errPayloadTooLarge: "The file is too large for a single server upload.",
     errUploadMedia: "Could not upload the file.",
     errSave: "Could not save artwork.",

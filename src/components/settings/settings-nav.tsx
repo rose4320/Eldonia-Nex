@@ -15,6 +15,8 @@ function sectionLabel(
       return settings.sectionBasics;
     case "posts":
       return settings.sectionPost;
+    case "artworks":
+      return settings.sectionArtworks;
     case "portfolio":
       return settings.sectionPortfolio;
     case "finance":

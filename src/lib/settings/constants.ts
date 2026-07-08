@@ -31,6 +31,7 @@ export const SETTINGS_SECTIONS = [
   { id: "recommendations", label: "おすすめ" },
   { id: "basics", label: "基本情報" },
   { id: "posts", label: "投稿" },
+  { id: "artworks", label: "作品管理" },
   { id: "portfolio", label: "ポートフォリオ" },
   { id: "finance", label: "収支" },
   { id: "notifications", label: "告知・通知" },

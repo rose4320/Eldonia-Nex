@@ -7,6 +7,7 @@ import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { formatRelativeTime } from "@/lib/community/constants";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
+import { LabArtworkDownloads } from "@/components/gallery/lab-artwork-downloads";
 import type { CollabLabData } from "@/lib/gallery/get-collab-lab";
 
 type CollabLabWorkspaceProps = {
@@ -83,6 +84,16 @@ export function CollabLabWorkspace({ labData, userId }: CollabLabWorkspaceProps)
           })}
         </ul>
       </section>
+
+      <LabArtworkDownloads
+        artworkId={labData.artwork.id}
+        title={labData.artwork.title}
+        mediaType={labData.artwork.media_type}
+        hasThumbnail={Boolean(
+          labData.artwork.thumbnail_url &&
+            labData.artwork.thumbnail_url !== labData.artwork.media_url,
+        )}
+      />
 
       <section className="eldonia-card">
         <h2 className="eldonia-label">{lab.notesHeading}</h2>

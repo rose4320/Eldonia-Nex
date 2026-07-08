@@ -118,11 +118,11 @@ export function NotificationBell({
         <>
           <button
             type="button"
-            className="fixed inset-0 z-40 cursor-default"
+            className="fixed inset-0 z-[100] cursor-default bg-transparent"
             aria-label={chrome.menuClose}
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 z-50 mt-2 w-[min(100vw-2rem,22rem)] rounded-lg border border-eldonia-border bg-eldonia-surface-elevated shadow-xl">
+          <div className="eldonia-notification-panel absolute right-0 z-[110] mt-2 w-[min(100vw-2rem,22rem)] rounded-lg border border-eldonia-border bg-eldonia-surface-elevated shadow-xl">
             <div className="border-b border-eldonia-border px-4 py-3">
               <p className="font-display text-sm font-semibold text-eldonia-gold-light">
                 {notificationsCopy.bellLabel}

@@ -8,7 +8,7 @@ import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { isSupabaseBrowserConfigured } from "@/lib/supabase/env";
 
 type SignupPageProps = {
-  searchParams: Promise<{ redirect_to?: string; ref?: string }>;
+  searchParams: Promise<{ redirect_to?: string; ref?: string; resume?: string }>;
 };
 
 export default async function SignupPage({ searchParams }: SignupPageProps) {
@@ -32,6 +32,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             redirectTo={redirectTo}
             supabaseConfigured={supabaseConfigured}
             referralCode={referralCode}
+            resume={params.resume === "1"}
           />
         </div>
       </div>

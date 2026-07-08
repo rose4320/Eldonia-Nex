@@ -41,16 +41,27 @@ export async function POST(request: NextRequest) {
   const referralCode = body.referralCode?.trim().slice(0, 64) || null;
   const userAgent = request.headers.get("user-agent")?.slice(0, 500) ?? null;
 
-  // 1) 事前登録メールを保存（重複でも続行）
-  let alreadyRegistered = false;
-  const { error: insertError } = await admin.from("prelaunch_registrations").insert({
-    email,
-    locale,
-    referral_code: referralCode,
-    source: "lp_cta",
-    user_agent: userAgent,
-  });
+  // 1) 事前登録メールの保存と 2) アカウント自動作成（試験段階のみ）は独立なので並列実行
+  const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
+  let userId: string | null = null;
 
+  const [{ error: insertError }, { data: created, error: createError }] =
+    await Promise.all([
+      admin.from("prelaunch_registrations").insert({
+        email,
+        locale,
+        referral_code: referralCode,
+        source: "lp_cta",
+        user_agent: userAgent,
+      }),
+      admin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+      }),
+    ]);
+
+  let alreadyRegistered = false;
   if (insertError) {
     if (insertError.code === "23505") {
       alreadyRegistered = true;
@@ -61,16 +72,6 @@ export async function POST(request: NextRequest) {
       );
     }
   }
-
-  // 2) アカウントを自動作成 or 取得（試験段階のみの動作）
-  const password = `${crypto.randomUUID()}${crypto.randomUUID()}`;
-  let userId: string | null = null;
-
-  const { data: created, error: createError } = await admin.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-  });
 
   if (created?.user) {
     userId = created.user.id;
@@ -97,16 +98,18 @@ export async function POST(request: NextRequest) {
   }
 
   // 3) 最上級プラン付与＋オンボーディング完了扱い（試験段階）
-  await admin.from("profiles").update({ subscription_plan: "pro" }).eq("id", userId);
-  await admin.from("user_onboarding").upsert(
-    {
-      user_id: userId,
-      selected_plan: "pro",
-      payment_status: "not_required",
-      completed_at: new Date().toISOString(),
-    },
-    { onConflict: "user_id" },
-  );
+  await Promise.all([
+    admin.from("profiles").update({ subscription_plan: "pro" }).eq("id", userId),
+    admin.from("user_onboarding").upsert(
+      {
+        user_id: userId,
+        selected_plan: "pro",
+        payment_status: "not_required",
+        completed_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    ),
+  ]);
 
   // 4) サーバー側でログインしてセッション Cookie を発行
   const response = NextResponse.json({ ok: true, alreadyRegistered, loggedIn: true });

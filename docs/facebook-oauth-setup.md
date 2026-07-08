@@ -98,6 +98,7 @@ npm run verify:facebook-oauth
 | `provider is not enabled` | Supabase → Facebook を ON + Secret 保存 |
 | URLを読み込めません（ドメイン） | Meta → アプリドメインに `sszlycovwefpyxjllbns.supabase.co` を追加 |
 | App not setup | Meta → テスターに自分を追加 |
+| `Unable to exchange external code` | **Meta の App Secret が無効または Supabase と不一致**（`npm run verify:facebook-oauth` で Graph API 検証） |
 | ログイン後に失敗 | Meta の Secret と Supabase の Secret が一致しているか確認 |
 | ボタンが出ない | `NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true` + dev 再起動 |
 

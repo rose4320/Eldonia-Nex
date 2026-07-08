@@ -65,6 +65,7 @@ export type ContentCatalog = {
     searchAria: string;
     empty: string;
     emptySearch: string;
+    realmFiltersAria: string;
   };
   shop: {
     heading: string;

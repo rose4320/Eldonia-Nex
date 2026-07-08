@@ -1,6 +1,6 @@
 {
   "name": "eldonia-nex",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -21,7 +21,8 @@
     "supabase:sync-smtp": "node scripts/sync-supabase-auth-smtp.mjs",
     "supabase:sync-google": "node scripts/sync-supabase-auth-google.mjs",
     "supabase:sync-social": "node scripts/sync-supabase-auth-social.mjs",
-    "verify:facebook-oauth": "node scripts/verify-facebook-oauth.mjs"
+    "verify:facebook-oauth": "node scripts/verify-facebook-oauth.mjs",
+    "fix:facebook-secret": "node scripts/set-facebook-secret.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",

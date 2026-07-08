@@ -113,8 +113,9 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       searchPlaceholder: "作品を検索...",
       searchAria: "作品検索",
       empty: "まだ公開作品がありません。",
-      emptySearch: "該当する作品がありません。",
-    },
+    emptySearch: "該当する作品がありません。",
+    realmFiltersAria: "作品領域で絞り込み",
+  },
     shop: SHOP_CONTENT.ja,
     events: {
       heading: "Chronicles of the Nexus",
@@ -264,8 +265,9 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       searchPlaceholder: "Search works...",
       searchAria: "Search works",
       empty: "No public works yet.",
-      emptySearch: "No works match your search.",
-    },
+    emptySearch: "No works match your search.",
+    realmFiltersAria: "Filter by work realm",
+  },
     shop: SHOP_CONTENT.en,
     events: {
       heading: "Chronicles of the Nexus",
@@ -416,6 +418,7 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       searchAria: "작품 검색",
       empty: "공개 작품이 아직 없습니다.",
       emptySearch: "해당 작품이 없습니다.",
+      realmFiltersAria: "작품 영역 필터",
     },
     shop: SHOP_CONTENT.ko,
     events: {
@@ -566,6 +569,7 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       searchAria: "搜索作品",
       empty: "尚无公开作品。",
       emptySearch: "没有匹配的作品。",
+      realmFiltersAria: "按作品领域筛选",
     },
     shop: SHOP_CONTENT["zh-CN"],
     events: {

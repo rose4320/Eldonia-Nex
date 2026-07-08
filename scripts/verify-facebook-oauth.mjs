@@ -143,6 +143,30 @@ if (env.NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED === "true") {
   );
 }
 
+const facebookSecret = env.FACEBOOK_OAUTH_CLIENT_SECRET ?? "";
+if (facebookAppId && facebookSecret) {
+  const tokenUrl = new URL("https://graph.facebook.com/v21.0/oauth/access_token");
+  tokenUrl.searchParams.set("client_id", facebookAppId);
+  tokenUrl.searchParams.set("client_secret", facebookSecret);
+  tokenUrl.searchParams.set("grant_type", "client_credentials");
+
+  const tokenRes = await fetch(tokenUrl);
+  if (tokenRes.ok) {
+    ok("Facebook App Secret matches Meta (Graph API)");
+  } else {
+    const body = await tokenRes.text();
+    fail(
+      "Facebook App Secret",
+      "Meta rejected secret — copy latest from Settings → Basic and update Supabase + .env.local",
+    );
+    if (body.includes("validating client secret")) {
+      console.log("INFO Graph API: Error validating client secret");
+    }
+  }
+} else {
+  warn("FACEBOOK_OAUTH_CLIENT_SECRET", "not set locally — cannot verify Meta secret");
+}
+
 console.log("");
 console.log("Meta checklist:");
 console.log("  1. Facebook Login → Valid OAuth Redirect URI");

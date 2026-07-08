@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArtworkMediaHero } from "@/components/gallery/artwork-media-hero";
+import { ArtworkPageViewer } from "@/components/gallery/artwork-page-viewer";
+import { StoryNarrativeReader } from "@/components/gallery/story-narrative-reader";
+import { CreatorDisciplineBadges } from "@/components/gallery/creator-discipline-badges";
 import { ArtworkCommentsPanel } from "@/components/gallery/artwork-comments-panel";
 import { ArtworkEngagementActions } from "@/components/gallery/artwork-engagement-actions";
 import { ArtworkLikeButtons } from "@/components/gallery/artwork-like-buttons";
@@ -8,7 +11,13 @@ import { GalleryToolbar } from "@/components/gallery/gallery-toolbar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
-import { categoryLabel, formatDate } from "@/lib/gallery/constants";
+import { categoryLabel, formatBadgeLabel, formatDate, artworkCoverUrl } from "@/lib/gallery/constants";
+import {
+  canShowStoryReader,
+  resolveStoryReaderContent,
+} from "@/lib/gallery/story-localized-content";
+import { getArtworkPages } from "@/lib/gallery/get-artwork-pages";
+import { getSeriesArtworks } from "@/lib/gallery/get-creator-profile";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import {
@@ -63,7 +72,7 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
     item.profiles?.display_name ?? item.profiles?.username ?? pages.creatorFallback;
   const isOwner = userId === item.creator_id;
 
-  const [comments, engagement] = await Promise.all([
+  const [comments, engagement, artworkPages, seriesItems] = await Promise.all([
     withTimeout(getArtworkComments(id), []),
     withTimeout(getArtworkEngagement(id, item.creator_id, userId), {
       fanCount: 0,
@@ -74,9 +83,40 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
       labAvailable: false,
       pendingCollabRequests: [],
     }),
+    getArtworkPages(id),
+    item.format === "series_album" ? getSeriesArtworks(id) : Promise.resolve([]),
   ]);
 
   const loginRedirect = `/gallery/${id}`;
+  const creatorHref = item.profiles?.username
+    ? `/gallery/creator/${item.profiles.username}`
+    : null;
+  const formatBadge = formatBadgeLabel(
+    item.format ?? "single",
+    item.category,
+    item.page_count ?? 1,
+    locale,
+  );
+  const showPageViewer =
+    item.format === "multi_page" ||
+    artworkPages.length > 0 ||
+    (item.page_count ?? 1) > 1;
+  const showStoryReader = canShowStoryReader(
+    item.id,
+    item.title,
+    item.category,
+    item.description,
+    locale,
+  );
+  const storyContent = showStoryReader
+    ? resolveStoryReaderContent(
+        item.id,
+        item.title,
+        item.story_excerpt,
+        item.description,
+        locale,
+      )
+    : null;
 
   return (
     <div className="eldonia-page">
@@ -92,27 +132,85 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
           <div className="min-w-0 space-y-4">
             <article className="eldonia-card overflow-hidden p-0">
               <div className="bg-eldonia-surface">
-                <ArtworkMediaHero artwork={item} openPdfLabel={pages.gallery.openPdf} />
+                {showStoryReader && storyContent ? (
+                  <StoryNarrativeReader
+                    key={`${item.id}-${locale}`}
+                    artworkId={item.id}
+                    title={storyContent.title}
+                    excerpt={storyContent.excerpt}
+                    body={storyContent.body}
+                    pdfUrl={item.media_url}
+                    openPdfLabel={pages.gallery.openPdf}
+                  />
+                ) : showPageViewer ? (
+                  <ArtworkPageViewer
+                    title={item.title}
+                    category={item.category}
+                    format={item.format ?? "single"}
+                    pageCount={item.page_count ?? 1}
+                    coverUrl={artworkCoverUrl(item)}
+                    pages={artworkPages}
+                    bgmUrl={item.bgm_url}
+                  />
+                ) : (
+                  <ArtworkMediaHero
+                    artwork={item}
+                    openPdfLabel={pages.gallery.openPdf}
+                    protectDownload
+                    downloadNotice={pages.gallery.downloadRestricted}
+                  />
+                )}
               </div>
 
               <div className="space-y-4 p-6 lg:p-8">
                 <div>
                   <p className="eldonia-eyebrow text-[0.65rem]">
                     {categoryLabel(item.category, locale)}
+                    {formatBadge && (
+                      <span className="ml-2 text-eldonia-text-muted">· {formatBadge}</span>
+                    )}
                   </p>
                   <ContentLine
-                    text={item.title}
+                    text={showStoryReader && storyContent ? storyContent.title : item.title}
                     locale={locale}
                     as="h1"
                     className="eldonia-heading eldonia-heading-lg mt-1"
                     hintClassName="eldonia-localized-hint text-sm"
                   />
-                  <p className="mt-2 text-sm text-eldonia-text-muted">
-                    {creatorName} · {formatDate(item.created_at, locale)}
-                  </p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-eldonia-text-muted">
+                    {creatorHref ? (
+                      <Link href={creatorHref} className="eldonia-link">
+                        {creatorName}
+                      </Link>
+                    ) : (
+                      <span>{creatorName}</span>
+                    )}
+                    <CreatorDisciplineBadges disciplines={item.profiles?.disciplines} />
+                    <span aria-hidden>·</span>
+                    <span>{formatDate(item.created_at, locale)}</span>
+                    {creatorHref && (
+                      <Link href={creatorHref} className="eldonia-link text-xs">
+                        {pages.gallery.viewCreator}
+                      </Link>
+                    )}
+                  </div>
                 </div>
 
-                {item.description && (
+                {item.story_excerpt && !showStoryReader && (
+                  <div className="rounded-md border border-eldonia-border bg-eldonia-surface/60 p-4">
+                    <p className="eldonia-label text-xs">{pages.gallery.storyExcerptHeading}</p>
+                    <p className="eldonia-body mt-2 whitespace-pre-wrap text-sm">{item.story_excerpt}</p>
+                  </div>
+                )}
+
+                {showStoryReader && storyContent?.excerpt && (
+                  <div className="rounded-md border border-eldonia-border bg-eldonia-surface/60 p-4 lg:hidden">
+                    <p className="eldonia-label text-xs">{pages.gallery.storyExcerptHeading}</p>
+                    <p className="eldonia-body mt-2 whitespace-pre-wrap text-sm">{storyContent.excerpt}</p>
+                  </div>
+                )}
+
+                {item.description && !showStoryReader && (
                   <ContentLine
                     text={item.description}
                     locale={locale}
@@ -157,6 +255,34 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                 </div>
               </div>
             </article>
+
+            {seriesItems.length > 0 && (
+              <section className="eldonia-card space-y-3 p-5">
+                <h2 className="eldonia-label">{pages.gallery.seriesHeading}</h2>
+                <ul className="grid gap-3 sm:grid-cols-2">
+                  {seriesItems.map((entry) => (
+                    <li key={entry.id}>
+                      <Link
+                        href={`/gallery/${entry.id}`}
+                        className="flex items-center gap-3 rounded-md border border-eldonia-border p-3 transition hover:border-eldonia-gold/40"
+                      >
+                        {artworkCoverUrl(entry) && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={artworkCoverUrl(entry)!}
+                            alt=""
+                            className="h-14 w-14 rounded object-cover"
+                          />
+                        )}
+                        <span className="line-clamp-2 text-sm text-eldonia-gold-light">
+                          {entry.title}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
 
             <div className="lg:hidden">
               <ArtworkCommentsPanel

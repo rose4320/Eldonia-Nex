@@ -6,6 +6,14 @@
 
 Main Director Agent を中心に、19 部署 + Sub Agent で運営する。
 
+## Cursor での運用（管理エージェント経由）
+
+1. ユーザー要望 → **Main Director** が Intake（`.cursor/skills/eldonia-main-director/SKILL.md`）
+2. 担当 `agents/*.agent.md` を読んでから実装
+3. `eldonia-verify` で検証 → 日本語 Report
+
+詳細: [`.cursor/AGENTS.md`](../.cursor/AGENTS.md)
+
 ## 全体構成
 
 ```text

@@ -55,5 +55,17 @@
 
 ## Cursor 連携
 
-- スキル: `.cursor/skills/eldonia-main-director/SKILL.md`
+- スキル: `.cursor/skills/eldonia-main-director/SKILL.md`（**全依頼で最初に参照**）
 - 永続ルール: `.cursor/rules/divided-development.mdc`
+- 索引: `.cursor/AGENTS.md`
+
+### Cursor 上の委譲
+
+| 作業 | 手段 |
+|------|------|
+| コード探索 | Task `explore` — プロンプトに担当部署・調査目的 |
+| 独立実装塊 | Task `generalPurpose` — 該当 `agents/*.agent.md` の役割をプロンプト先頭に貼る |
+| シェル/デプロイ | Task `shell` — DevOps 役割・ユーザー承認済みか確認 |
+| 単純・小規模 | Main Director が担当 agent.md を Read したうえで直接実装可 |
+
+**Report では部署名を明示する**（例: 「Gallery Manager: visibility API」「Frontend Manager: settings UI」）。

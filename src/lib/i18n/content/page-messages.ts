@@ -25,6 +25,43 @@ export type PageMessages = {
     commentSending: string;
     commentsEmpty: string;
     loginToCommentFull: string;
+    downloadRestricted: string;
+    realmFiltersAria: string;
+    mangaReaderHeading: string;
+    pageViewerHeading: string;
+    photoAlbumHeading: string;
+    photoSlideshowHeading: string;
+    photoThumbStripAria: string;
+    slideshowPlay: string;
+    slideshowPause: string;
+    slideshowFullscreen: string;
+    slideshowExitFullscreen: string;
+    bgmOn: string;
+    bgmOff: string;
+    bgmMute: string;
+    bgmUnmute: string;
+    pageIndicator: (current: number, total: number) => string;
+    prevPage: string;
+    nextPage: string;
+    storyExcerptHeading: string;
+    viewCreator: string;
+    seriesHeading: string;
+    creatorWorksHeading: string;
+    creatorSeriesHeading: string;
+    creatorEmpty: string;
+    storyReaderHeading: string;
+    storyProgressLabel: (percent: number) => string;
+    storyNarrationPlay: string;
+    storyNarrationPause: string;
+    storyNarrationResume: string;
+    storyNarrationStop: string;
+    storyNarrationUnsupported: string;
+    storyShowPdf: string;
+    storyHidePdf: string;
+    storyChapterList: string;
+    storyChapterListAria: string;
+    storyReadingMeta: (chapter: number, totalChapters: number, totalParagraphs: number) => string;
+    storySfxSoon: string;
   };
   events: {
     back: string;
@@ -182,6 +219,7 @@ export type PageMessages = {
     menuTitle: string;
     sectionBasics: string;
     sectionPost: string;
+    sectionArtworks: string;
     sectionFinance: string;
     sectionNotifications: string;
     sectionPortfolio: string;
@@ -244,6 +282,44 @@ const PAGE_JA: PageMessages = {
     commentSending: "送信中…",
     commentsEmpty: "まだコメントはありません。",
     loginToCommentFull: "ログインしてコメントする →",
+    downloadRestricted: "作品のダウンロードは禁止されています。共同作業が必要な場合は Lab をご利用ください。",
+    realmFiltersAria: "作品領域で絞り込み",
+    mangaReaderHeading: "漫画ビューア",
+    pageViewerHeading: "ページビューア",
+    photoAlbumHeading: "写真アルバム",
+    photoSlideshowHeading: "スライドショー",
+    photoThumbStripAria: "写真のサムネイル一覧",
+    slideshowPlay: "再生",
+    slideshowPause: "一時停止",
+    slideshowFullscreen: "全画面",
+    slideshowExitFullscreen: "全画面解除",
+    bgmOn: "BGM 再生中",
+    bgmOff: "BGM",
+    bgmMute: "BGM をオフ",
+    bgmUnmute: "BGM をオン",
+    pageIndicator: (current, total) => `${current} / ${total}`,
+    prevPage: "前へ",
+    nextPage: "次へ",
+    storyExcerptHeading: "あらすじ",
+    viewCreator: "作者プロフィール →",
+    seriesHeading: "シリーズ内の作品",
+    creatorWorksHeading: "作品",
+    creatorSeriesHeading: "写真・シリーズ",
+    creatorEmpty: "公開中の作品はまだありません。",
+    storyReaderHeading: "テキストブック",
+    storyProgressLabel: (percent) => `読了 ${percent}%`,
+    storyNarrationPlay: "ナレーション再生",
+    storyNarrationPause: "一時停止",
+    storyNarrationResume: "再開",
+    storyNarrationStop: "停止",
+    storyNarrationUnsupported: "このブラウザでは読み上げに対応していません。",
+    storyShowPdf: "PDF を表示",
+    storyHidePdf: "PDF を閉じる",
+    storyChapterList: "目次",
+    storyChapterListAria: "章の目次",
+    storyReadingMeta: (chapter, totalChapters, totalParagraphs) =>
+      `全 ${totalParagraphs} 段落 · 第 ${chapter} / ${totalChapters} 章付近`,
+    storySfxSoon: "効果音（再生は今後対応）",
   },
   events: {
     back: "← EVENTS に戻る",
@@ -402,6 +478,7 @@ const PAGE_JA: PageMessages = {
     menuTitle: "設定メニュー",
     sectionBasics: "基本情報",
     sectionPost: "投稿",
+    sectionArtworks: "作品管理",
     sectionFinance: "収支",
     sectionNotifications: "通知",
     sectionPortfolio: "ポートフォリオ",
@@ -464,6 +541,44 @@ const PAGE_EN: PageMessages = {
     commentSending: "Sending…",
     commentsEmpty: "No comments yet.",
     loginToCommentFull: "Log in to comment →",
+    downloadRestricted: "Downloading artworks is not allowed. Use Lab for collaborator file access.",
+    realmFiltersAria: "Filter by work realm",
+    mangaReaderHeading: "Manga viewer",
+    pageViewerHeading: "Page viewer",
+    photoAlbumHeading: "Photo album",
+    photoSlideshowHeading: "Slideshow",
+    photoThumbStripAria: "Photo thumbnails",
+    slideshowPlay: "Play",
+    slideshowPause: "Pause",
+    slideshowFullscreen: "Fullscreen",
+    slideshowExitFullscreen: "Exit fullscreen",
+    bgmOn: "BGM on",
+    bgmOff: "BGM",
+    bgmMute: "Turn BGM off",
+    bgmUnmute: "Turn BGM on",
+    pageIndicator: (current, total) => `${current} / ${total}`,
+    prevPage: "Previous",
+    nextPage: "Next",
+    storyExcerptHeading: "Synopsis",
+    viewCreator: "Creator profile →",
+    seriesHeading: "Works in this series",
+    creatorWorksHeading: "Works",
+    creatorSeriesHeading: "Photo series",
+    creatorEmpty: "No public works yet.",
+    storyReaderHeading: "Textbook",
+    storyProgressLabel: (percent) => `${percent}% read`,
+    storyNarrationPlay: "Play narration",
+    storyNarrationPause: "Pause",
+    storyNarrationResume: "Resume",
+    storyNarrationStop: "Stop",
+    storyNarrationUnsupported: "Read-aloud is not supported in this browser.",
+    storyShowPdf: "Show PDF",
+    storyHidePdf: "Hide PDF",
+    storyChapterList: "Chapters",
+    storyChapterListAria: "Chapter list",
+    storyReadingMeta: (chapter, totalChapters, totalParagraphs) =>
+      `${totalParagraphs} paragraphs · near chapter ${chapter} / ${totalChapters}`,
+    storySfxSoon: "Sound effect (playback coming soon)",
   },
   events: {
     back: "← Back to EVENTS",
@@ -622,6 +737,7 @@ const PAGE_EN: PageMessages = {
     menuTitle: "Settings menu",
     sectionBasics: "Basics",
     sectionPost: "Post",
+    sectionArtworks: "Artworks",
     sectionFinance: "Finance",
     sectionNotifications: "Notifications",
     sectionPortfolio: "Portfolio",
@@ -779,6 +895,7 @@ const PAGE_KO: PageMessages = {
     menuTitle: "설정 메뉴",
     sectionBasics: "기본 정보",
     sectionPost: "게시",
+    sectionArtworks: "작품 관리",
     sectionFinance: "수입",
     sectionNotifications: "알림",
     sectionPortfolio: "포트폴리오",
@@ -927,6 +1044,7 @@ const PAGE_ZH: PageMessages = {
     menuTitle: "设置菜单",
     sectionBasics: "基本信息",
     sectionPost: "发布",
+    sectionArtworks: "作品管理",
     sectionFinance: "收支",
     sectionNotifications: "通知",
     sectionPortfolio: "作品集",

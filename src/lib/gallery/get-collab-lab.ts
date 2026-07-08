@@ -1,8 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
-import type { CollabLab, CollabLabPostWithAuthor } from "@/types/database";
+import type { CollabLab, CollabLabPostWithAuthor, ArtworkMediaType } from "@/types/database";
+
+export type CollabLabArtwork = {
+  id: string;
+  title: string;
+  media_type: ArtworkMediaType;
+  media_url: string;
+  thumbnail_url: string | null;
+};
 
 export type CollabLabData = {
   lab: CollabLab;
+  artwork: CollabLabArtwork;
   members: Array<{
     user_id: string;
     role: string;
@@ -40,7 +49,7 @@ export async function getCollabLabForArtwork(
     return null;
   }
 
-  const [membersRes, postsRes] = await Promise.all([
+  const [membersRes, postsRes, artworkRes] = await Promise.all([
     supabase
       .from("collab_lab_members")
       .select(
@@ -61,10 +70,20 @@ export async function getCollabLabForArtwork(
       )
       .eq("lab_id", lab.id)
       .order("created_at", { ascending: true }),
+    supabase
+      .from("artworks")
+      .select("id, title, media_type, media_url, thumbnail_url")
+      .eq("id", artworkId)
+      .maybeSingle(),
   ]);
+
+  if (!artworkRes.data) {
+    return null;
+  }
 
   return {
     lab: lab as CollabLab,
+    artwork: artworkRes.data as CollabLabArtwork,
     members: (membersRes.data ?? []) as CollabLabData["members"],
     posts: (postsRes.data ?? []) as CollabLabPostWithAuthor[],
   };

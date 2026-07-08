@@ -8,6 +8,7 @@ export type Profile = {
   bio: string | null;
   locale: string;
   is_creator: boolean;
+  disciplines?: string[];
   is_ops_admin?: boolean;
   subscription_plan: "free" | "standard" | "pro";
   created_at: string;
@@ -128,6 +129,8 @@ export type CollabLabPostWithAuthor = CollabLabPost & {
   profiles: Pick<Profile, "display_name" | "username" | "avatar_url"> | null;
 };
 
+export type ArtworkFormat = "single" | "multi_page" | "story" | "series_album";
+
 export type Artwork = {
   id: string;
   creator_id: string;
@@ -137,6 +140,11 @@ export type Artwork = {
   media_url: string;
   thumbnail_url: string | null;
   category: string;
+  format: ArtworkFormat;
+  page_count: number;
+  series_id: string | null;
+  story_excerpt: string | null;
+  bgm_url: string | null;
   tags: string[];
   is_public: boolean;
   view_count: number;
@@ -144,8 +152,17 @@ export type Artwork = {
   updated_at: string;
 };
 
+export type ArtworkPage = {
+  id: string;
+  artwork_id: string;
+  page_index: number;
+  media_url: string;
+  caption: string | null;
+  created_at: string;
+};
+
 export type ArtworkWithCreator = Artwork & {
-  profiles: Pick<Profile, "display_name" | "username" | "avatar_url"> | null;
+  profiles: Pick<Profile, "display_name" | "username" | "avatar_url" | "disciplines"> | null;
 };
 
 export type ArtworkComment = {
@@ -510,6 +527,7 @@ export type Database = {
           bio?: string | null;
           locale?: string;
           is_creator?: boolean;
+          disciplines?: string[];
           is_ops_admin?: boolean;
           subscription_plan?: "free" | "standard" | "pro";
           created_at?: string;
@@ -522,6 +540,7 @@ export type Database = {
           bio?: string | null;
           locale?: string;
           is_creator?: boolean;
+          disciplines?: string[];
           is_ops_admin?: boolean;
           subscription_plan?: "free" | "standard" | "pro";
           updated_at?: string;
@@ -539,6 +558,11 @@ export type Database = {
           media_url: string;
           thumbnail_url?: string | null;
           category?: string;
+          format?: ArtworkFormat;
+          page_count?: number;
+          series_id?: string | null;
+          story_excerpt?: string | null;
+          bgm_url?: string | null;
           tags?: string[];
           is_public?: boolean;
           view_count?: number;
@@ -552,10 +576,32 @@ export type Database = {
           media_url?: string;
           thumbnail_url?: string | null;
           category?: string;
+          format?: ArtworkFormat;
+          page_count?: number;
+          series_id?: string | null;
+          story_excerpt?: string | null;
+          bgm_url?: string | null;
           tags?: string[];
           is_public?: boolean;
           view_count?: number;
           updated_at?: string;
+        };
+        Relationships: [];
+      };
+      artwork_pages: {
+        Row: ArtworkPage;
+        Insert: {
+          id?: string;
+          artwork_id: string;
+          page_index: number;
+          media_url: string;
+          caption?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          page_index?: number;
+          media_url?: string;
+          caption?: string | null;
         };
         Relationships: [];
       };

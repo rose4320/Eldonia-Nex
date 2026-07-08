@@ -21,11 +21,34 @@ function taxonomyLabel(
 
 export const ARTWORK_CATEGORY_LABELS: Record<string, TaxonomyEntry> = {
   illustration: L("イラスト", "Illustration", "일러스트", "插画"),
+  manga: L("漫画", "Manga", "만화", "漫画"),
   photo: L("写真", "Photo", "사진", "摄影"),
+  story: L("ストーリー", "Story", "스토리", "故事"),
   video: L("動画", "Video", "영상", "视频"),
   music: L("音楽", "Music", "음악", "音乐"),
   document: L("ドキュメント", "Document", "문서", "文档"),
   other: L("その他", "Other", "기타", "其他"),
+};
+
+export const CREATOR_DISCIPLINE_LABELS: Record<string, TaxonomyEntry> = {
+  illustrator: L("イラストレーター", "Illustrator", "일러스트레이터", "插画师"),
+  manga_artist: L("漫画家", "Manga artist", "만화가", "漫画家"),
+  photographer: L("写真家", "Photographer", "사진작가", "摄影师"),
+  writer: L("作家・シナリオ", "Writer / Script", "작가·시나리오", "作家·编剧"),
+  musician: L("音楽", "Musician", "음악", "音乐人"),
+  filmmaker: L("映像作家", "Filmmaker", "영상 작가", "影像创作者"),
+  designer: L("デザイナー", "Designer", "디자이너", "设计师"),
+  other: L("その他", "Other", "기타", "其他"),
+};
+
+export const GALLERY_REALM_LABELS: Record<string, TaxonomyEntry> = {
+  all: L("すべて", "All", "전체", "全部"),
+  illustration: L("イラスト", "Illustration", "일러스트", "插画"),
+  manga: L("漫画", "Manga", "만화", "漫画"),
+  photo: L("写真", "Photo", "사진", "摄影"),
+  story: L("ストーリー", "Story", "스토리", "故事"),
+  video: L("動画", "Video", "영상", "视频"),
+  music: L("音楽", "Music", "음악", "音乐"),
 };
 
 export const EVENT_REALM_LABELS: Record<string, TaxonomyEntry> = {
@@ -74,6 +97,14 @@ export const SUPPORT_TICKET_CATEGORY_LABELS: Record<string, TaxonomyEntry> = {
 
 export function artworkCategoryLabel(value: string, locale: UiLocale): string {
   return taxonomyLabel(ARTWORK_CATEGORY_LABELS, value, locale);
+}
+
+export function creatorDisciplineLabel(value: string, locale: UiLocale): string {
+  return taxonomyLabel(CREATOR_DISCIPLINE_LABELS, value, locale);
+}
+
+export function galleryRealmLabel(value: string, locale: UiLocale): string {
+  return taxonomyLabel(GALLERY_REALM_LABELS, value, locale);
 }
 
 export function eventRealmLabel(value: string, locale: UiLocale): string {

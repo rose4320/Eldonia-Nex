@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ContentLine } from "@/components/i18n/content-line";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
-import { artworkCoverUrl, categoryLabel, formatDate } from "@/lib/gallery/constants";
+import { CreatorDisciplineBadges } from "@/components/gallery/creator-discipline-badges";
+import { artworkCoverUrl, categoryLabel, formatBadgeLabel, formatDate } from "@/lib/gallery/constants";
 import type { GalleryArtworkEngagement } from "@/lib/gallery/get-gallery-feed-engagement";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
@@ -44,6 +45,15 @@ export function GalleryArtworkCard({
     artwork.profiles?.display_name ??
     artwork.profiles?.username ??
     t.pages.creatorFallback;
+  const formatBadge = formatBadgeLabel(
+    artwork.format ?? "single",
+    artwork.category,
+    artwork.page_count ?? 1,
+    locale,
+  );
+  const creatorHref = artwork.profiles?.username
+    ? `/gallery/creator/${artwork.profiles.username}`
+    : null;
 
   const collabPending = collabStatus === "pending";
   const collabStatusLabel = (status: string) =>
@@ -156,6 +166,9 @@ export function GalleryArtworkCard({
         <div>
           <p className="eldonia-eyebrow text-[0.65rem]">
             {categoryLabel(artwork.category, locale)}
+            {formatBadge && (
+              <span className="ml-2 text-eldonia-text-muted">· {formatBadge}</span>
+            )}
           </p>
           <Link href={detailHref} className="block">
             <ContentLine
@@ -166,7 +179,16 @@ export function GalleryArtworkCard({
               hintClassName="eldonia-localized-hint text-xs"
             />
           </Link>
-          <p className="mt-1 text-sm text-eldonia-text-muted">{creatorName}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            {creatorHref ? (
+              <Link href={creatorHref} className="text-sm text-eldonia-text-muted hover:text-eldonia-gold-light">
+                {creatorName}
+              </Link>
+            ) : (
+              <p className="text-sm text-eldonia-text-muted">{creatorName}</p>
+            )}
+            <CreatorDisciplineBadges disciplines={artwork.profiles?.disciplines} />
+          </div>
           <p className="text-xs text-eldonia-text-dim">
             {formatDate(artwork.created_at, locale)}
           </p>

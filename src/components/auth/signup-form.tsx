@@ -21,6 +21,7 @@ type SignupFormProps = {
   redirectTo: string;
   supabaseConfigured: boolean;
   referralCode: string | null;
+  resume?: boolean;
 };
 
 type SignupStep = "basic" | "plan" | "payment" | "consent" | "complete";
@@ -71,7 +72,12 @@ function readStoredSignup(): { draft: SignupDraft; selectedPlan: SignupPlanId } 
   }
 }
 
-export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: SignupFormProps) {
+export function SignupForm({
+  redirectTo,
+  supabaseConfigured,
+  referralCode,
+  resume = false,
+}: SignupFormProps) {
   const t = useContent();
   const signup = t.signup;
   const router = useRouter();
@@ -119,6 +125,37 @@ export function SignupForm({ redirectTo, supabaseConfigured, referralCode }: Sig
           })
       : Promise.resolve());
   }, [checkoutSuccess, searchParams, signup.messages.paymentComplete]);
+
+  // OAuth 認証後の再開（/auth/callback → /auth/signup?resume=1）:
+  // 認証済みならメール・パスワード入力を飛ばしてプラン選択から続行する。
+  useEffect(() => {
+    if (!resume || checkoutSuccess || !hasBrowserSupabaseConfig()) return;
+
+    let cancelled = false;
+    void createClient()
+      .auth.getUser()
+      .then(({ data }) => {
+        if (cancelled || !data.user) return;
+        setUserId(data.user.id);
+        setDraft((current) => ({
+          ...current,
+          email: current.email || (data.user.email ?? ""),
+          displayName:
+            current.displayName ||
+            ((data.user.user_metadata?.display_name as string | undefined) ??
+              (data.user.user_metadata?.full_name as string | undefined) ??
+              ""),
+        }));
+        setStep((current) =>
+          current === "basic" ? "plan" : current,
+        );
+        setMessage(signup.messages.resumeSignedIn);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [resume, checkoutSuccess, signup.messages.resumeSignedIn]);
 
   function updateDraft<K extends keyof SignupDraft>(key: K, value: SignupDraft[K]) {
     setDraft((current) => {
