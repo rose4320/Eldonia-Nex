@@ -1,4 +1,4 @@
--- Eldonia-Nex: GALLEY 作品エンゲージメント（コメント・ファン・コラボ申請）
+-- Eldonia-Nex: GALLERY 作品エンゲージメント（コメント・ファン・コラボ申請）
 -- 002_artworks.sql 実行後に適用
 
 -- ---------------------------------------------------------------------------
@@ -40,7 +40,7 @@ create trigger artwork_comments_set_updated_at
   for each row
   execute function public.set_updated_at();
 
-comment on table public.artwork_comments is 'GALLEY 作品コメント';
+comment on table public.artwork_comments is 'GALLERY 作品コメント';
 
 alter table public.artwork_comments enable row level security;
 
@@ -144,7 +144,7 @@ create trigger collab_requests_set_updated_at
   for each row
   execute function public.set_updated_at();
 
-comment on table public.collab_requests is 'GALLEY 作品へのコラボ申請';
+comment on table public.collab_requests is 'GALLERY 作品へのコラボ申請';
 
 alter table public.collab_requests enable row level security;
 

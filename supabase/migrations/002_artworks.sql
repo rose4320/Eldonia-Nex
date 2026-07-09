@@ -1,4 +1,4 @@
--- Eldonia-Nex: artworks テーブル + Storage バケット（GALLEY）
+-- Eldonia-Nex: artworks テーブル + Storage バケット（GALLERY）
 -- 001_profiles.sql 実行後に適用
 
 -- ---------------------------------------------------------------------------
@@ -50,7 +50,7 @@ create trigger artworks_set_updated_at
   for each row
   execute function public.set_updated_at();
 
-comment on table public.artworks is 'GALLEY 作品';
+comment on table public.artworks is 'GALLERY 作品';
 
 -- ---------------------------------------------------------------------------
 -- RLS

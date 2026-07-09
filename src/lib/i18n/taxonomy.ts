@@ -86,7 +86,7 @@ export const JOB_TYPE_LABELS: Record<string, TaxonomyEntry> = {
 export const SUPPORT_TICKET_CATEGORY_LABELS: Record<string, TaxonomyEntry> = {
   account: L("アカウント", "Account", "계정", "账户"),
   billing: L("請求・お支払い", "Billing", "청구·결제", "账单·支付"),
-  gallery: L("GALLEY（作品）", "GALLEY (Artwork)", "GALLEY（작품）", "GALLEY（作品）"),
+  gallery: L("GALLERY（作品）", "GALLERY (Artwork)", "GALLERY（작품）", "GALLERY（作品）"),
   shop: L("SHOP（ショップ）", "SHOP", "SHOP", "SHOP"),
   events: L("EVENTS（イベント）", "EVENTS", "EVENTS", "EVENTS"),
   community: L("COMMUNITY", "COMMUNITY", "COMMUNITY", "COMMUNITY"),
@@ -126,7 +126,7 @@ export function jobTypeLabel(value: string, locale: UiLocale): string {
 export const FAQ_CATEGORY_LABELS: Record<string, TaxonomyEntry> = {
   getting_started: L("はじめに", "Getting started", "시작하기", "入门"),
   account: L("アカウント", "Account", "계정", "账户"),
-  gallery: L("GALLEY", "GALLEY", "GALLEY", "GALLEY"),
+  gallery: L("GALLERY", "GALLERY", "GALLERY", "GALLERY"),
   billing: L("請求・お支払い", "Billing", "청구·결제", "账单"),
   technical: L("トラブルシューティング", "Troubleshooting", "문제 해결", "故障排除"),
   support: L("サポート", "Support", "지원", "支持"),

@@ -3,7 +3,7 @@ import { intlLocale } from "@/lib/i18n/content/messages";
 
 export const COMMUNITY_BOARDS = [
   { slug: "general", name: "General Hall", description: "総合・雑談" },
-  { slug: "gallery", name: "Gallery Circle", description: "GALLEY 作品" },
+  { slug: "gallery", name: "Gallery Circle", description: "GALLERY 作品" },
   { slug: "shop", name: "Merchant Row", description: "SHOP・取引" },
   { slug: "events", name: "Chronicle Plaza", description: "EVENTS" },
   { slug: "works", name: "Guild Board", description: "WORKS・協業" },

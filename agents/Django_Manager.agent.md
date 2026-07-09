@@ -40,7 +40,7 @@
 
 ### Backend_Manager が主担当
 
-- `supabase/migrations/` — ユーザー向けアプリ DB（GALLEY, SHOP, …）
+- `supabase/migrations/` — ユーザー向けアプリ DB（GALLERY, SHOP, …）
 - `src/types/database.ts` — Next.js 型
 - RLS / Storage / Supabase Auth
 - Stripe Webhook → `orders`（Supabase）等、**エンドユーザー向けトランザクション**

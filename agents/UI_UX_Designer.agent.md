@@ -67,7 +67,7 @@
 ┌─────────────────┬──────────────────────────────┬─────────────────────────┐
 │ 左              │ 中                           │ 右                      │
 ├─────────────────┼──────────────────────────────┼─────────────────────────┤
-│ ロゴ            │ GALLEY · LAB · EVENTS ·      │ 言語選択                │
+│ ロゴ            │ GALLERY · LAB · EVENTS ·      │ 言語選択                │
 │ ELDONIA NEX     │ SHOP · COMMUNITY · WORKS     │ 通知 🔔                 │
 │ サブタイトル    │ ─────────────────────────    │ ユーザーアバター        │
 │                 │ [ 検索窓            ] [検索] │ ログアウト / ログイン   │
@@ -80,7 +80,7 @@
 | 領域 | 内容 | ルール |
 |------|------|--------|
 | **左** | `BrandLogo` + タイトル + サブタイトル | ホーム `/` へリンク |
-| **中（上段）** | モジュールナビ | **H1 モジュール名は常に英大文字**（GALLEY, LAB, …） |
+| **中（上段）** | モジュールナビ | **H1 モジュール名は常に英大文字**（GALLERY, LAB, …） |
 | **中（下段）** | `HeaderSearch` | プレースホルダー等は選択言語で表示 |
 | **右（上段）** | `HeaderLanguageSelect` · `NotificationBell` · `UserAvatarLink` · 認証 | UI ラベルのみ多言語 |
 | **右（下段）** | `ExpBarCompact` | ログインユーザーのみ |
@@ -92,7 +92,7 @@
 - `getContent(locale)` — サーバーコンポーネント
 - `LocaleProvider` + `useContent()` — クライアントコンポーネント
 - `src/lib/i18n/ui-messages.ts` — chrome 文言の薄いラッパー
-- **モジュール名（GALLEY, LAB, EVENTS …）は翻訳しない**（H1 / ナビ）
+- **モジュール名（GALLERY, LAB, EVENTS …）は翻訳しない**（H1 / ナビ）
 - **分類ラベル**（ジャンル・領域・形式）: `src/lib/i18n/taxonomy.ts` — UI 言語で直接表示（例: en → Illustration）
 - **ユーザー生成テキスト**（タイトル・説明・タグ）: `ContentLine` / `TagWithHint` — 原文の下に `(翻訳)` を表示
 - `localizedHint()` + `phrases.ts` — 既知フレーズの翻訳辞書
@@ -154,7 +154,7 @@
 | `BrandLogo` | ロゴ + ワードマーク + サブタイトル |
 | `SiteHeader` / `SiteFooter` | 共通レイアウト |
 | `HeaderLanguageSelect` | 言語選択 |
-| `HeaderSearch` | グローバル検索（GALLEY へ） |
+| `HeaderSearch` | グローバル検索（GALLERY へ） |
 
 **スタイル定義**: `src/app/globals.css`
 
@@ -166,7 +166,7 @@
 
 - ヘッダー: 半透明黒 + 金ボーダー下線、**デスクトップ 3 カラム**
 - フッター: **中央ブランド + 3 カラム + 下中央コピーライト**
-- モジュール名（GALLEY, LAB 等）は **英大文字 + Cinzel** — 言語に依存しない
+- モジュール名（GALLERY, LAB 等）は **英大文字 + Cinzel** — 言語に依存しない
 - 日本語説明文は Noto Serif JP、行間 1.75 前後
 - ブレークポイント: ヘッダー 3 カラムは `lg`（1024px）以上
 

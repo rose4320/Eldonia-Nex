@@ -13,7 +13,7 @@ export const SAMPLE_BOARDS: CommunityBoard[] = [
     id: "00000000-0000-4000-8000-000000000202",
     slug: "gallery",
     name: "Gallery Circle",
-    description: "GALLEY 作品",
+    description: "GALLERY 作品",
     sort_order: 2,
     created_at: "2026-01-01T00:00:00.000Z",
   },

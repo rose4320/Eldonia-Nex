@@ -139,7 +139,7 @@ supabase/
 
 ## モジュール
 
-- **GALLEY** — 作品共有（一覧・詳細・投稿）
+- **GALLERY** — 作品共有（一覧・詳細・投稿）
 - **SHOP** — グッズ・デジタル商品（一覧・詳細・Nexus Prime）
 - **EVENTS** — イベント・チケット（一覧・詳細・Chronicle Highlight）
 - **COMMUNITY** — 掲示板・スレッド（一覧・板・詳細）

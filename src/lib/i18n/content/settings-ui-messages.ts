@@ -145,7 +145,7 @@ const SETTINGS_UI_JA: SettingsUiContent = {
   postHubHeading: "投稿",
   postHubLead: "すべての投稿はここから行います。作品・商品・イベントを Nexus に公開できます。",
   postHubGo: "投稿画面へ →",
-  postArtwork: { label: "作品を投稿", description: "GALLEY に画像・動画・音声・PDF を公開" },
+  postArtwork: { label: "作品を投稿", description: "GALLERY に画像・動画・音声・PDF を公開" },
   postProduct: { label: "商品を投稿", description: "SHOP にデジタル・物理商品を出品" },
   postEvent: { label: "イベントを投稿", description: "ライブ・WS・展示などのイベントを作成" },
   artworkManagement: {
@@ -267,7 +267,7 @@ const SETTINGS_UI_JA: SettingsUiContent = {
   avatarSettings: (name) => `${name} の設定画面`,
   recommendations: {
     basics: { title: "基本情報を登録する", description: "氏名・住所・振込先を設定すると出品・報酬受取がスムーズになります。" },
-    artwork: { title: "最初の作品を投稿する", description: "GALLEY に作品を公開してクリエイター活動を始めましょう。" },
+    artwork: { title: "最初の作品を投稿する", description: "GALLERY に作品を公開してクリエイター活動を始めましょう。" },
     portfolio: { title: "ポートフォリオを整える", description: "WORKS 応募時に自動添付されるプロフィールを設定します。" },
     product: { title: "商品を出品する", description: "SHOP にデジタル・物理商品を登録して販売を開始できます。" },
     event: { title: "イベントを開催する", description: "ライブ・ワークショップ・展示などのイベントを作成します。" },
@@ -286,7 +286,7 @@ const SETTINGS_UI_EN: SettingsUiContent = {
   postHubHeading: "Posts",
   postHubLead: "Publish artwork, products, and events to the Nexus from here.",
   postHubGo: "Open post page →",
-  postArtwork: { label: "Post artwork", description: "Publish image, video, audio, or PDF to GALLEY" },
+  postArtwork: { label: "Post artwork", description: "Publish image, video, audio, or PDF to GALLERY" },
   postProduct: { label: "List product", description: "Sell digital or physical items on SHOP" },
   postEvent: { label: "Create event", description: "Live shows, workshops, exhibitions, and more" },
   artworkManagement: {
@@ -408,7 +408,7 @@ const SETTINGS_UI_EN: SettingsUiContent = {
   avatarSettings: (name) => `${name} — settings`,
   recommendations: {
     basics: { title: "Complete your profile", description: "Add legal name, address, and payout info for smoother selling." },
-    artwork: { title: "Post your first artwork", description: "Publish to GALLEY and start creating." },
+    artwork: { title: "Post your first artwork", description: "Publish to GALLERY and start creating." },
     portfolio: { title: "Set up portfolio", description: "Auto-attached when you apply on WORKS." },
     product: { title: "List a product", description: "Register digital or physical items on SHOP." },
     event: { title: "Host an event", description: "Create live shows, workshops, or exhibitions." },

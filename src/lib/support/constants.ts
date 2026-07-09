@@ -26,7 +26,7 @@ export const TICKET_CATEGORIES: {
 }[] = [
   { value: "account", label: "アカウント" },
   { value: "billing", label: "請求・お支払い" },
-  { value: "gallery", label: "GALLEY（作品）" },
+  { value: "gallery", label: "GALLERY（作品）" },
   { value: "shop", label: "SHOP（ショップ）" },
   { value: "events", label: "EVENTS（イベント）" },
   { value: "community", label: "COMMUNITY" },
@@ -38,7 +38,7 @@ export const TICKET_CATEGORIES: {
 export const FAQ_CATEGORIES: { value: string; label: string }[] = [
   { value: "getting_started", label: "はじめに" },
   { value: "account", label: "アカウント" },
-  { value: "gallery", label: "GALLEY" },
+  { value: "gallery", label: "GALLERY" },
   { value: "billing", label: "請求・お支払い" },
   { value: "technical", label: "トラブルシューティング" },
   { value: "support", label: "サポート" },

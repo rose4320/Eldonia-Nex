@@ -1,4 +1,4 @@
--- Eldonia-Nex: GALLEY 作品いいね
+-- Eldonia-Nex: GALLERY 作品いいね
 -- 013_gallery_engagement.sql 実行後に適用
 
 create table if not exists public.artwork_likes (
@@ -11,7 +11,7 @@ create table if not exists public.artwork_likes (
 create index if not exists artwork_likes_artwork_id_idx
   on public.artwork_likes (artwork_id, created_at desc);
 
-comment on table public.artwork_likes is 'GALLEY 作品いいね';
+comment on table public.artwork_likes is 'GALLERY 作品いいね';
 
 alter table public.artwork_likes enable row level security;
 

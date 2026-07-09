@@ -10,28 +10,28 @@ import { SIGNUP_CONTENT } from "@/lib/i18n/content/signup-messages";
 
 const MODULES: Record<UiLocale, ContentCatalog["home"]["modules"]> = {
   ja: [
-    { name: "GALLEY", description: "作品共有（画像・動画・音声・テキスト）" },
+    { name: "GALLERY", description: "作品共有（画像・動画・音声・テキスト）" },
     { name: "SHOP", description: "グッズ・デジタル商品の販売" },
     { name: "EVENTS", description: "イベント開催・チケット販売" },
     { name: "COMMUNITY", description: "翻訳付きチャット・掲示板" },
     { name: "WORKS", description: "求人・業務マッチング" },
   ],
   en: [
-    { name: "GALLEY", description: "Share artwork — images, video, audio, and text" },
+    { name: "GALLERY", description: "Share artwork — images, video, audio, and text" },
     { name: "SHOP", description: "Sell goods and digital products" },
     { name: "EVENTS", description: "Host events and sell tickets" },
     { name: "COMMUNITY", description: "Translated chat and forums" },
     { name: "WORKS", description: "Jobs and creative matching" },
   ],
   ko: [
-    { name: "GALLEY", description: "작품 공유 (이미지·영상·음성·텍스트)" },
+    { name: "GALLERY", description: "작품 공유 (이미지·영상·음성·텍스트)" },
     { name: "SHOP", description: "굿즈·디지털 상품 판매" },
     { name: "EVENTS", description: "이벤트 개최·티켓 판매" },
     { name: "COMMUNITY", description: "번역 채팅·게시판" },
     { name: "WORKS", description: "구인·업무 매칭" },
   ],
   "zh-CN": [
-    { name: "GALLEY", description: "作品分享（图像·视频·音频·文本）" },
+    { name: "GALLERY", description: "作品分享（图像·视频·音频·文本）" },
     { name: "SHOP", description: "周边与数字商品销售" },
     { name: "EVENTS", description: "活动举办与票务" },
     { name: "COMMUNITY", description: "带翻译的聊天与论坛" },
@@ -100,7 +100,7 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     home: {
       eyebrow: "A Fantasy Nexus for Creators",
       heroTitle: "ファンを集め、作品を共有し、収益化する",
-      heroBody: "GALLEY · SHOP · EVENTS · COMMUNITY · WORKS\nをひとつのネクサスで。",
+      heroBody: "GALLERY · SHOP · EVENTS · COMMUNITY · WORKS\nをひとつのネクサスで。",
       ctaSettings: "設定・投稿",
       ctaPostArtwork: "作品を投稿",
       ctaSignup: "無料で始める",
@@ -252,7 +252,7 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     home: {
       eyebrow: "A Fantasy Nexus for Creators",
       heroTitle: "Gather fans, share work, and earn",
-      heroBody: "GALLEY · SHOP · EVENTS · COMMUNITY · WORKS\nin one nexus.",
+      heroBody: "GALLERY · SHOP · EVENTS · COMMUNITY · WORKS\nin one nexus.",
       ctaSettings: "Settings & posts",
       ctaPostArtwork: "Upload work",
       ctaSignup: "Start for free",
@@ -404,7 +404,7 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     home: {
       eyebrow: "A Fantasy Nexus for Creators",
       heroTitle: "팬을 모으고, 작품을 공유하고, 수익화하세요",
-      heroBody: "GALLEY · SHOP · EVENTS · COMMUNITY · WORKS\n하나의 넥서스에서.",
+      heroBody: "GALLERY · SHOP · EVENTS · COMMUNITY · WORKS\n하나의 넥서스에서.",
       ctaSettings: "설정·게시",
       ctaPostArtwork: "작품 게시",
       ctaSignup: "무료로 시작",
@@ -555,7 +555,7 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
     home: {
       eyebrow: "A Fantasy Nexus for Creators",
       heroTitle: "聚集粉丝、分享作品、实现收益",
-      heroBody: "GALLEY · SHOP · EVENTS · COMMUNITY · WORKS\n汇聚于同一 Nexus。",
+      heroBody: "GALLERY · SHOP · EVENTS · COMMUNITY · WORKS\n汇聚于同一 Nexus。",
       ctaSettings: "设置与发布",
       ctaPostArtwork: "发布作品",
       ctaSignup: "免费开始",

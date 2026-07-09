@@ -133,7 +133,7 @@ values
   ),
   (
     'Gallery Night — Creator Exhibition',
-    'GALLEY 出品作家による期間限定展示。入場無料・作品即売あり。',
+    'GALLERY 出品作家による期間限定展示。入場無料・作品即売あり。',
     'exhibition', 'offline',
     (now() - interval '2 days'), (now() + interval '5 days'),
     'Eldonia Gallery Space', '東京都目黒区',

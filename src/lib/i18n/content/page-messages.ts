@@ -469,7 +469,7 @@ const PAGE_JA: PageMessages = {
   settings: {
     back: "← 設定に戻る",
     postArtworkTitle: "作品を投稿",
-    postArtworkLead: "GALLEY に作品を公開します。",
+    postArtworkLead: "GALLERY に作品を公開します。",
     postProductTitle: "商品を出品",
     postProductLead: "SHOP に商品を登録します。",
     postEventTitle: "イベントを作成",
@@ -506,7 +506,7 @@ const PAGE_JA: PageMessages = {
     viewAll: "すべて見る",
   },
   lab: {
-    galleryLink: "GALLEY →",
+    galleryLink: "GALLERY →",
     viewArtwork: "作品を見る",
     allLabs: "Lab 一覧",
   },
@@ -529,7 +529,7 @@ const PAGE_EN: PageMessages = {
   descriptionPending: "Description coming soon.",
   loginToAction: (action) => `Log in to ${action}`,
   gallery: {
-    backToList: "← Back to GALLEY",
+    backToList: "← Back to GALLERY",
     openPdf: "Open PDF",
     loginToComment: "comment",
     labBack: "← Back to artwork",
@@ -728,7 +728,7 @@ const PAGE_EN: PageMessages = {
   settings: {
     back: "← Back to settings",
     postArtworkTitle: "Post artwork",
-    postArtworkLead: "Publish to GALLEY.",
+    postArtworkLead: "Publish to GALLERY.",
     postProductTitle: "List a product",
     postProductLead: "Add an item to SHOP.",
     postEventTitle: "Create event",
@@ -765,7 +765,7 @@ const PAGE_EN: PageMessages = {
     viewAll: "View all",
   },
   lab: {
-    galleryLink: "GALLEY →",
+    galleryLink: "GALLERY →",
     viewArtwork: "View artwork",
     allLabs: "All Labs",
   },
@@ -787,7 +787,7 @@ const PAGE_KO: PageMessages = {
   loginToAction: (action) => `${action}하려면 로그인`,
   gallery: {
     ...PAGE_EN.gallery,
-    backToList: "← GALLEY 목록",
+    backToList: "← GALLERY 목록",
     openPdf: "PDF 열기",
     loginToComment: "댓글",
     labBack: "← 작품으로",
@@ -886,7 +886,7 @@ const PAGE_KO: PageMessages = {
     ...PAGE_EN.settings,
     back: "← 설정으로",
     postArtworkTitle: "작품 게시",
-    postArtworkLead: "GALLEY에 공개합니다.",
+    postArtworkLead: "GALLERY에 공개합니다.",
     postProductTitle: "상품 등록",
     postProductLead: "SHOP에 등록합니다.",
     postEventTitle: "이벤트 생성",
@@ -937,7 +937,7 @@ const PAGE_ZH: PageMessages = {
   loginToAction: (action) => `登录以${action}`,
   gallery: {
     ...PAGE_EN.gallery,
-    backToList: "← 返回 GALLEY",
+    backToList: "← 返回 GALLERY",
     openPdf: "打开 PDF",
     loginToComment: "评论",
     labBack: "← 返回作品",
@@ -1035,7 +1035,7 @@ const PAGE_ZH: PageMessages = {
     ...PAGE_EN.settings,
     back: "← 返回设置",
     postArtworkTitle: "发布作品",
-    postArtworkLead: "公开到 GALLEY。",
+    postArtworkLead: "公开到 GALLERY。",
     postProductTitle: "上架商品",
     postProductLead: "登记到 SHOP。",
     postEventTitle: "创建活动",

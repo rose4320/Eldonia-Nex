@@ -33,11 +33,11 @@ export const PHRASE_TRANSLATIONS: Record<string, Partial<Record<UiLocale, string
       ko: "인디 게임 전시 및 피치 콘테스트. 심사 피드백 포함.",
       "zh-CN": "独立游戏展示与路演竞赛，含评委反馈。",
     },
-  "GALLEY 出品作家による期間限定展示。入場無料・作品即売あり。":
+  "GALLERY 出品作家による期間限定展示。入場無料・作品即売あり。":
     {
-      en: "Limited exhibition by GALLEY artists. Free entry; works for sale.",
-      ko: "GALLEY 작가 기간 한정 전시. 무료 입장·작품 현장 판매.",
-      "zh-CN": "GALLEY 作家限时展览，免费入场，现场可购作品。",
+      en: "Limited exhibition by GALLERY artists. Free entry; works for sale.",
+      ko: "GALLERY 작가 기간 한정 전시. 무료 입장·작품 현장 판매.",
+      "zh-CN": "GALLERY 作家限时展览，免费入场，现场可购作品。",
     },
   // Event titles (when UI differs from title language)
   "Nexus Creator Summit 2026":

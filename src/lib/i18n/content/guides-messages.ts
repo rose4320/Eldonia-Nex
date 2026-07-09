@@ -36,7 +36,7 @@ export const GUIDES_CONTENT: Record<UiLocale, GuidesContent> = {
         link: { href: "/settings#basics", label: "プロフィール編集へ" },
       },
       {
-        title: "3. 作品を GALLEY に投稿する",
+        title: "3. 作品を GALLERY に投稿する",
         steps: [
           "ギャラリー →「作品を投稿」をクリック",
           "画像・動画・音声・PDF をアップロード",
@@ -78,9 +78,9 @@ export const GUIDES_CONTENT: Record<UiLocale, GuidesContent> = {
         link: { href: "/settings#basics", label: "Edit profile" },
       },
       {
-        title: "3. Post to GALLEY",
+        title: "3. Post to GALLERY",
         steps: [
-          "Open GALLEY → Post artwork",
+          "Open GALLERY → Post artwork",
           "Upload image, video, audio, or PDF",
           "Add title, description, and tags (image type can be changed)",
         ],
@@ -120,9 +120,9 @@ export const GUIDES_CONTENT: Record<UiLocale, GuidesContent> = {
         link: { href: "/settings#basics", label: "프로필 편집" },
       },
       {
-        title: "3. GALLEY에 작품 게시",
+        title: "3. GALLERY에 작품 게시",
         steps: [
-          "GALLEY → 작품 게시",
+          "GALLERY → 작품 게시",
           "이미지·영상·음성·PDF 업로드",
           "제목·설명·태그 입력",
         ],
@@ -162,9 +162,9 @@ export const GUIDES_CONTENT: Record<UiLocale, GuidesContent> = {
         link: { href: "/settings#basics", label: "编辑资料" },
       },
       {
-        title: "3. 发布到 GALLEY",
+        title: "3. 发布到 GALLERY",
         steps: [
-          "GALLEY → 发布作品",
+          "GALLERY → 发布作品",
           "上传图像/视频/音频/PDF",
           "填写标题、说明与标签",
         ],
