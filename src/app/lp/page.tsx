@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { LpConceptSection } from "@/components/sections/lp-concept-section";
 import { LpCtaSection } from "@/components/sections/lp-cta-section";
 import { LpFooter } from "@/components/sections/lp-footer";
 import { LpHeader } from "@/components/sections/lp-header";
 import { LpHeroSection } from "@/components/sections/lp-hero-section";
 import { LpPlansSection } from "@/components/sections/lp-plans-section";
+import { LpQuestPortfolioSection } from "@/components/sections/lp-quest-portfolio-section";
 import { LpReferralSection } from "@/components/sections/lp-referral-section";
 import { LpRewardsSection } from "@/components/sections/lp-rewards-section";
 import { LpServicesSection } from "@/components/sections/lp-services-section";
@@ -35,6 +37,10 @@ export default function MarketingLandingPage() {
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
             <LpWorldSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />
+            <LpConceptSection />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />
+            <LpQuestPortfolioSection />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
             <LpServicesSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="ornate" />
             <LpTranslationSection />

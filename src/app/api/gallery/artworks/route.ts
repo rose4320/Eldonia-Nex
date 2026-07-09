@@ -7,6 +7,7 @@ import {
 import { isOwnedArtworksStorageUrl } from "@/lib/gallery/client-upload-artwork";
 import { isArtworkCategory, resolveArtworkFormat } from "@/lib/gallery/creator-taxonomy";
 import { awardUserExp } from "@/lib/exp/award-exp";
+import { syncDjangoCatalogForCreator } from "@/lib/django/sync-catalog";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 import type { ArtworkMediaType } from "@/types/database";
 
@@ -151,6 +152,7 @@ async function insertArtworkRecord(
   }
 
   await awardUserExp(supabase, "artwork.upload", artwork.id);
+  await syncDjangoCatalogForCreator(userId);
   return { id: artwork.id };
 }
 

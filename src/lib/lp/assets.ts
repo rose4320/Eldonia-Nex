@@ -1,5 +1,5 @@
 /** LP brand assets — source: repo root `aset/` → synced to `public/aset/` */
-const LP_ASSET_VERSION = "0.6.0";
+const LP_ASSET_VERSION = "0.9.1";
 
 function lpAsset(path: string): string {
   return `${path}?v=${LP_ASSET_VERSION}`;
@@ -8,7 +8,7 @@ function lpAsset(path: string): string {
 export const LP_ASSETS = {
   logo: lpAsset("/aset/logo.png"),
   hero: lpAsset("/aset/lp/hero.png"),
-  world: lpAsset("/aset/lp/world.png"),
+  world: lpAsset("/aset/lp/world-cut.png"),
   pinBadge: lpAsset("/aset/lp/pin-badge.png"),
   globe: lpAsset("/aset/lp/globe.png"),
   translation: lpAsset("/aset/lp/translation.png"),
@@ -29,10 +29,33 @@ export const LP_ASSETS = {
     event: lpAsset("/aset/icons/modules/icon-events.png"),
     work: lpAsset("/aset/icons/modules/icon-works.png"),
     lab: lpAsset("/aset/lab_icon_1024.png"),
+    quest: lpAsset("/aset/icons/modules/icon-quest.png"),
   },
   features: {
     gallery: lpAsset("/aset/icons/modules/icon-gallery.png"),
     global: lpAsset("/aset/lp/globe.png"),
     market: lpAsset("/aset/icons/modules/icon-shop.png"),
+  },
+  // Concept lifecycle (生まれる→育つ→実る→また種に)
+  concept: {
+    born: lpAsset("/aset/icons/modules/icon-gallery.png"),
+    grow: lpAsset("/aset/icons/modules/icon-community.png"),
+    fruit: lpAsset("/aset/lab_icon_1024.png"),
+    cycle: lpAsset("/aset/icons/modules/icon-quest.png"),
+  },
+  // Concept cycle infographic (world-tree, 7-step ecosystem)
+  conceptCycle: lpAsset("/aset/lp/concept-cycle.png"),
+  // Clean world-tree art (text-free) for the animated cycle
+  conceptTree: lpAsset("/aset/lp/concept-tree.png"),
+  // Service card background scenes
+  serviceBg: {
+    gallery: lpAsset("/aset/lp/services/gallery.png"),
+    community: lpAsset("/aset/lp/services/community.png"),
+    shop: lpAsset("/aset/lp/services/shop.png"),
+    event: lpAsset("/aset/lp/services/event.png"),
+    work: lpAsset("/aset/lp/services/work.png"),
+    lab: lpAsset("/aset/lp/services/lab.png"),
+    quest: lpAsset("/aset/lp/services/quest.png"),
+    portfolio: lpAsset("/aset/lp/services/portfolio.png"),
   },
 } as const;

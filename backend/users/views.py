@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 
 from marketplace.referral_service import ensure_referral_code, is_paid_member
+from marketplace.supabase_sync import SupabaseSyncError, sync_supabase_artworks
 from users.sync_service import sync_supabase_user
 
 
@@ -100,6 +101,12 @@ def sync_supabase_user_view(request):
     except ValueError as exc:
         return JsonResponse({"error": str(exc)}, status=400)
 
+    artwork_sync = None
+    try:
+        artwork_sync = sync_supabase_artworks(creator_id=supabase_user_id)
+    except SupabaseSyncError:
+        artwork_sync = None
+
     return JsonResponse(
         {
             "ok": True,
@@ -107,5 +114,6 @@ def sync_supabase_user_view(request):
             "django_user_id": user.pk,
             "username": user.username,
             "subscription_plan": user.subscription_plan,
+            "artwork_sync": artwork_sync,
         }
     )

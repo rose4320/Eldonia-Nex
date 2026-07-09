@@ -4475,3 +4475,464 @@ body {
   vertical-align: baseline;
   cursor: help;
 }
+
+/* ── LP Concept — animated world-tree cycle ── */
+
+.lp-concept-section {
+  position: relative;
+  z-index: 3;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 50% 0%, rgb(45 88 150 / 0.1), transparent 46%),
+    linear-gradient(180deg, #020817 0%, #050b16 52%, #020817 100%);
+}
+
+.lp-concept-tree {
+  width: min(88vw, 420px);
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.lp-concept-tree__sticky-head {
+  margin-bottom: 0.45rem;
+  text-align: center;
+}
+
+.lp-concept-tree__sticky-head .lp-section-title {
+  margin-bottom: 0.35rem;
+}
+
+.lp-concept-tree__sticky-head .lp-section-title__text {
+  font-size: 1.15rem;
+  letter-spacing: 0.1em;
+}
+
+.lp-concept-tree__sticky-title {
+  margin: 0 auto;
+  max-width: 24rem;
+}
+
+.lp-concept-tree__sticky-lead {
+  margin-bottom: 0.35rem;
+}
+
+.lp-concept-tree__pin-zone {
+  position: relative;
+}
+
+.lp-concept-tree__scroll-spacer {
+  width: 100%;
+  pointer-events: none;
+}
+
+.lp-concept-tree__sticky {
+  position: sticky;
+  top: clamp(3rem, 6vh, 4.25rem);
+  z-index: 2;
+  padding-bottom: 0.25rem;
+}
+
+.lp-concept-tree__scroll-hint {
+  margin: 0.45rem 0 0;
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  color: #9e927d;
+}
+
+.lp-concept-tree__frame {
+  position: relative;
+  width: 100%;
+}
+
+.lp-concept-tree__canvas {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  isolation: isolate;
+}
+
+.lp-concept-tree__stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgb(214 168 79 / 0.22);
+  background:
+    radial-gradient(circle at 50% 58%, rgb(214 168 79 / 0.08), transparent 58%),
+    linear-gradient(180deg, rgb(4 10 20 / 0.55), rgb(2 6 14 / 0.82));
+  box-shadow:
+    inset 0 0 48px rgb(214 168 79 / 0.06),
+    0 12px 40px rgb(0 0 0 / 0.35);
+}
+
+.lp-concept-tree__art {
+  pointer-events: none;
+  user-select: none;
+}
+
+.lp-concept-tree__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 54%,
+    rgb(214 168 79 / 0.14),
+    transparent 42%
+  );
+  opacity: 0.35;
+  animation: lp-concept-tree-breathe 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.lp-concept-tree__steps {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-concept-tree__step {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+}
+
+.lp-concept-tree__step.is-active {
+  z-index: 8;
+}
+
+.lp-concept-tree__hub {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 5.5rem;
+  height: 5.5rem;
+}
+
+.lp-concept-tree__hub-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgb(214 168 79 / 0.28);
+  background: radial-gradient(circle, rgb(214 168 79 / 0.12), rgb(2 8 23 / 0.55) 68%);
+  box-shadow: inset 0 0 18px rgb(214 168 79 / 0.12);
+  transition:
+    border-color 0.45s ease,
+    box-shadow 0.45s ease,
+    transform 0.45s ease;
+}
+
+.lp-concept-tree__logo {
+  position: relative;
+  z-index: 1;
+  width: 3.25rem !important;
+  height: 3.25rem !important;
+  border-radius: 50%;
+  object-fit: cover;
+  transition:
+    filter 0.45s ease,
+    transform 0.45s ease;
+}
+
+.lp-concept-tree__node {
+  position: absolute;
+  right: -0.15rem;
+  bottom: -0.1rem;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 50%;
+  border: 2px solid rgb(214 168 79 / 0.42);
+  background: rgb(2 8 23 / 0.92);
+  font-family: var(--font-display, serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #d6a84f;
+  box-shadow: 0 0 0 0 rgb(214 168 79 / 0);
+  transition:
+    border-color 0.45s ease,
+    color 0.45s ease,
+    box-shadow 0.45s ease,
+    transform 0.45s ease;
+}
+
+.lp-concept-tree__step:not(.is-hub) .lp-concept-tree__node {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.28rem;
+}
+
+.lp-concept-tree__step:not(.is-active) .lp-concept-tree__node {
+  opacity: 0.42;
+}
+
+.lp-concept-tree__step.is-active .lp-concept-tree__node {
+  opacity: 1;
+  border-color: #f0c978;
+  color: #fff3d4;
+  transform: scale(1.14);
+  box-shadow:
+    0 0 14px rgb(240 201 120 / 0.95),
+    0 0 28px rgb(214 168 79 / 0.45);
+}
+
+.lp-concept-tree__step.is-hub.is-active .lp-concept-tree__hub-ring {
+  border-color: rgb(240 201 120 / 0.95);
+  transform: scale(1.06);
+  box-shadow:
+    0 0 22px rgb(214 168 79 / 0.55),
+    inset 0 0 24px rgb(214 168 79 / 0.2);
+}
+
+.lp-concept-tree__step.is-hub.is-active .lp-concept-tree__logo {
+  filter: drop-shadow(0 0 10px rgb(240 201 120 / 0.85));
+  transform: scale(1.04);
+}
+
+.lp-concept-tree__callout--node {
+  display: none !important;
+}
+
+.lp-concept-tree__caption {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin-top: 0.45rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(214 168 79 / 0.32);
+  background: rgb(2 8 23 / 0.96);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+
+.lp-concept-tree__caption-no {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 50%;
+  border: 2px solid rgb(240 201 120 / 0.85);
+  background: rgb(2 8 23 / 0.95);
+  font-family: var(--font-display, serif);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #f0c978;
+  box-shadow: 0 0 12px rgb(214 168 79 / 0.45);
+}
+
+.lp-concept-tree__caption-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.lp-concept-tree__callout-title {
+  display: block;
+  font-family: var(--font-display, serif);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #f8f1df;
+  line-height: 1.35;
+}
+
+.lp-concept-tree__callout-body {
+  margin: 0.32rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.52;
+  color: #b8a88a;
+  overflow-wrap: anywhere;
+}
+
+@keyframes lp-concept-tree-breathe {
+  0%,
+  100% {
+    opacity: 0.28;
+  }
+
+  50% {
+    opacity: 0.48;
+  }
+}
+
+/* Desktop — scroll-driven sticky + balanced tree */
+@media (min-width: 1024px) {
+  .lp-concept-tree {
+    width: min(44vw, min(46dvh, 540px), 100%);
+    max-width: 100%;
+  }
+
+  .lp-concept-tree__sticky-head .lp-section-title__text {
+    font-size: 1.35rem;
+  }
+
+  .lp-concept-tree__sticky-title {
+    font-size: 1.35rem;
+    max-width: 28rem;
+  }
+
+  .lp-concept-tree__hub {
+    width: 4.75rem;
+    height: 4.75rem;
+  }
+
+  .lp-concept-tree__logo {
+    width: 2.85rem !important;
+    height: 2.85rem !important;
+  }
+
+  .lp-concept-tree__node {
+    width: 2.35rem;
+    height: 2.35rem;
+    font-size: 1rem;
+  }
+
+  .lp-concept-tree__step:not(.is-hub) .lp-concept-tree__node {
+    width: 2.55rem;
+    height: 2.55rem;
+    font-size: 1.08rem;
+  }
+
+  .lp-concept-tree__caption {
+    margin-top: 0.45rem;
+    padding: 0.7rem 0.85rem;
+    gap: 0.6rem;
+  }
+
+  .lp-concept-tree__caption-no {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.88rem;
+  }
+
+  .lp-concept-tree__callout-title {
+    font-size: 1.02rem;
+    line-height: 1.35;
+  }
+
+  .lp-concept-tree__callout-body {
+    margin-top: 0.32rem;
+    font-size: 0.9rem;
+    line-height: 1.48;
+  }
+
+  .lp-concept-tree__scroll-hint {
+    font-size: 0.72rem;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1023px) {
+  .lp-concept-tree__caption {
+    margin-top: 0.5rem;
+    padding: 0.65rem 0.75rem;
+    gap: 0.6rem;
+  }
+
+  .lp-concept-tree__caption-no {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.82rem;
+  }
+
+  .lp-concept-tree__callout-title {
+    font-size: 0.95rem;
+  }
+
+  .lp-concept-tree__callout-body {
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .lp-concept-tree__hub {
+    width: 4.75rem;
+    height: 4.75rem;
+  }
+
+  .lp-concept-tree__logo {
+    width: 2.85rem !important;
+    height: 2.85rem !important;
+  }
+
+  .lp-concept-tree__node {
+    width: 2.1rem;
+    height: 2.1rem;
+    font-size: 0.95rem;
+  }
+
+  .lp-concept-tree__step:not(.is-hub) .lp-concept-tree__node {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 1rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 639px) {
+  .lp-concept-tree__caption {
+    margin-top: 0.5rem;
+    padding: 0.55rem 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .lp-concept-tree__caption-no {
+    width: 1.5rem;
+    height: 1.5rem;
+    font-size: 0.72rem;
+  }
+
+  .lp-concept-tree__callout-title {
+    font-size: 0.78rem;
+  }
+
+  .lp-concept-tree__callout-body {
+    margin-top: 0.28rem;
+    font-size: 0.68rem;
+    line-height: 1.45;
+  }
+
+  .lp-concept-tree__hub {
+    width: 3.75rem;
+    height: 3.75rem;
+  }
+
+  .lp-concept-tree__logo {
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+  }
+
+  .lp-concept-tree__node {
+    width: 1.65rem;
+    height: 1.65rem;
+    font-size: 0.75rem;
+  }
+
+  .lp-concept-tree__step:not(.is-hub) .lp-concept-tree__node {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-concept-tree__glow {
+    animation: none;
+  }
+
+  .lp-concept-tree__callout,
+  .lp-concept-tree__node,
+  .lp-concept-tree__hub-ring,
+  .lp-concept-tree__logo {
+    transition: none;
+  }
+}

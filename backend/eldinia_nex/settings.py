@@ -11,8 +11,10 @@ from dotenv import load_dotenv
 
 # pyright: reportUnknownVariableType=false
 
-# Load environment variables from .env file
-load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
+# Load environment variables (.env then .env.local for Supabase keys etc.)
+_project_root = Path(__file__).resolve().parent.parent.parent
+load_dotenv(_project_root / ".env")
+load_dotenv(_project_root / ".env.local", override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

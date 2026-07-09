@@ -25,6 +25,14 @@ class Tag(models.Model):
 
 
 class Artwork(models.Model):
+    supabase_id = models.UUIDField(
+        null=True,
+        blank=True,
+        unique=True,
+        db_index=True,
+        editable=False,
+        help_text="Supabase public.artworks.id",
+    )
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="artworks"
     )
