@@ -11,7 +11,7 @@ djangorestframework-simplejwt==5.3.0
 django-cors-headers==4.4.0
 
 # Database & ORM
-psycopg2-binary==2.9.9                # Python 3.13対応済み
+psycopg2-binary==2.9.10               # Python 3.13 manylinux wheel あり（2.9.9 は無し）
 django-extensions==3.2.3
 
 # Cache & Session
