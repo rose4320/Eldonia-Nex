@@ -7,6 +7,8 @@ import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { isBasicsComplete } from "@/lib/settings/basics-completion";
 import type { Profile, UserNotification, UserOnboarding, UserSettings } from "@/types/database";
 import type { PlanPaymentStatus, UserPlanId } from "@/lib/plans/types";
+import { normalizePlanId } from "@/lib/plans/catalog";
+
 export type SettingsFinanceSummary = {
   totalSpent: number;
   paidOrderCount: number;
@@ -116,10 +118,9 @@ export async function getSettingsHubData(
   const userSettings = (settingsRes.data as UserSettings | null) ?? null;
   const onboarding = (onboardingRes.data as UserOnboarding | null) ?? null;
   const plan: UserPlanState = {
-    plan:
-      onboarding?.selected_plan ??
-      profile.subscription_plan ??
-      "free",
+    plan: normalizePlanId(
+      onboarding?.selected_plan ?? profile.subscription_plan ?? "free",
+    ),
     paymentStatus: onboarding?.payment_status ?? "not_required",
   };
   const notifications = notifRes.error ? [] : ((notifRes.data ?? []) as UserNotification[]);

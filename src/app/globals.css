@@ -3103,14 +3103,100 @@ body {
   );
 }
 
+.lp-footer__compass {
+  flex-shrink: 0;
+  filter: none;
+}
+
 .lp-gold-frame__inner {
   position: relative;
   overflow: hidden;
 }
 
 .lp-world-panel,
-.lp-translation-panel {
+.lp-translation-panel,
+.lp-fan-panel {
   position: relative;
+}
+
+.lp-fan-signal {
+  isolation: isolate;
+}
+
+.lp-fan-signal__ring {
+  position: absolute;
+  inset: 12%;
+  border-radius: 9999px;
+  border: 1px solid rgba(214, 168, 79, 0.35);
+  animation: lp-fan-signal-pulse 2.8s ease-out infinite;
+}
+
+.lp-fan-signal__ring--delay {
+  animation-delay: 1.1s;
+  border-color: rgba(124, 92, 255, 0.28);
+}
+
+@keyframes lp-fan-signal-pulse {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-fan-signal__ring {
+    animation: none;
+    opacity: 0.35;
+  }
+}
+
+.lp-fan-scene {
+  border: 1px solid rgba(214, 168, 79, 0.22);
+  border-radius: 0.35rem;
+  background: #050e1e;
+}
+
+.lp-fan-scene__veil {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* 左は絵を見せ、右は文字用に段階的に暗くする */
+  background:
+    linear-gradient(
+      90deg,
+      rgba(5, 14, 30, 0.08) 0%,
+      rgba(5, 14, 30, 0.2) 42%,
+      rgba(5, 12, 24, 0.72) 68%,
+      rgba(5, 10, 20, 0.9) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(5, 14, 30, 0.25) 0%,
+      transparent 35%,
+      rgba(5, 14, 30, 0.35) 100%
+    );
+}
+
+.lp-fan-copy {
+  padding: 0.15rem 0;
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+}
+
+@media (min-width: 1024px) {
+  .lp-fan-copy {
+    padding: 0.2rem 0;
+  }
 }
 
 .lp-world-corner,
@@ -4935,4 +5021,75 @@ body {
   .lp-concept-tree__logo {
     transition: none;
   }
+}
+
+/* ── Critical announcement modal ── */
+.eldonia-critical-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(201, 168, 76, 0.18), transparent 40%),
+    rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(4px);
+}
+
+.eldonia-critical-modal {
+  width: min(100%, 28rem);
+  padding: 1.75rem 1.5rem 1.5rem;
+  border-radius: 0.85rem;
+  border: 1px solid var(--eldonia-border-strong);
+  background:
+    radial-gradient(circle at top, rgba(201, 168, 76, 0.16), transparent 55%),
+    linear-gradient(160deg, rgba(18, 14, 6, 0.98), rgba(5, 5, 5, 0.98));
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55), 0 0 40px rgba(201, 168, 76, 0.12);
+  color: var(--eldonia-text);
+}
+
+.eldonia-critical-eyebrow {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-cinzel), Cinzel, serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #cca03f;
+}
+
+.eldonia-critical-modal h2 {
+  margin: 0 0 0.85rem;
+  line-height: 1.35;
+}
+
+.eldonia-critical-body {
+  margin: 0 0 1.35rem;
+  white-space: pre-wrap;
+  line-height: 1.7;
+  color: var(--eldonia-text-muted);
+  font-size: 0.95rem;
+}
+
+.eldonia-critical-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.eldonia-critical-actions .eldonia-btn-primary,
+.eldonia-critical-actions .eldonia-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.55rem;
+  font-family: var(--font-cinzel), Cinzel, serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  cursor: pointer;
 }

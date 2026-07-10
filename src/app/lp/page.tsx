@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LpConceptSection } from "@/components/sections/lp-concept-section";
 import { LpCtaSection } from "@/components/sections/lp-cta-section";
+import { LpFanNotificationSection } from "@/components/sections/lp-fan-notification-section";
 import { LpFooter } from "@/components/sections/lp-footer";
 import { LpHeader } from "@/components/sections/lp-header";
 import { LpHeroSection } from "@/components/sections/lp-hero-section";
@@ -14,6 +15,7 @@ import { LpWorldSection } from "@/components/sections/lp-world-section";
 import { LpPageFrame } from "@/components/ui/lp-page-frame";
 import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { LP_SEO } from "@/lib/lp/content";
+import { getLivePlanCatalog, toLpPlans } from "@/lib/plans/live-catalog";
 
 export const metadata: Metadata = {
   title: LP_SEO.title,
@@ -26,7 +28,10 @@ export const metadata: Metadata = {
 };
 
 /** マーケ LP — 認証不要（middleware で未ログイン / から誘導） */
-export default function MarketingLandingPage() {
+export default async function MarketingLandingPage() {
+  const liveCatalog = await getLivePlanCatalog();
+  const plans = toLpPlans(liveCatalog);
+
   return (
     <div className="lp-page min-h-screen text-[#f8f1df]">
       <LpPageFrame>
@@ -39,13 +44,15 @@ export default function MarketingLandingPage() {
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />
             <LpConceptSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />
+            <LpFanNotificationSection />
+            <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
             <LpQuestPortfolioSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
             <LpServicesSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="ornate" />
             <LpTranslationSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="simple" />
-            <LpPlansSection />
+            <LpPlansSection plans={plans} />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="ornate" />
             <LpReferralSection />
             <LpSectionRule className="mx-auto my-1 max-w-5xl" variant="compact" />

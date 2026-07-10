@@ -1,15 +1,39 @@
 import { LpButton } from "@/components/ui/lp-button";
 import { LpCard } from "@/components/ui/lp-card";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
-import { LP_PLANS } from "@/lib/lp/content";
+import { LP_PLANS, LP_PLANS_SECTION } from "@/lib/lp/content";
 
-export function LpPlansSection() {
+export type LpPlanCard = {
+  id: string;
+  name: string;
+  price: string;
+  period?: string;
+  featured?: boolean;
+  badge?: string;
+  features: readonly string[] | string[];
+  cta: string;
+  href: string;
+};
+
+type LpPlansSectionProps = {
+  plans?: LpPlanCard[];
+};
+
+export function LpPlansSection({ plans }: LpPlansSectionProps) {
+  const items = plans ?? [...LP_PLANS];
+
   return (
     <section id="plans" className="scroll-mt-24 px-3 py-6 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1240px]">
-        <LpSectionTitle className="mb-5">Plans</LpSectionTitle>
+        <LpSectionTitle className="mb-2">{LP_PLANS_SECTION.title}</LpSectionTitle>
+        <p className="mx-auto mb-2 max-w-[40rem] text-center text-xs leading-6 text-[#d8c8a8] sm:text-sm">
+          {LP_PLANS_SECTION.lead}
+        </p>
+        <p className="mb-5 text-center text-[0.68rem] text-[#9e927d]">
+          {LP_PLANS_SECTION.note}
+        </p>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          {LP_PLANS.map((plan) => (
+          {items.map((plan) => (
             <LpCard
               key={plan.id}
               glow={plan.featured ? "purple" : "none"}
@@ -59,5 +83,3 @@ export function LpPlansSection() {
     </section>
   );
 }
-
-

@@ -6,13 +6,54 @@
   <p class="ops-lead">決まっている設定値を確認し、各カテゴリから編集できます。重要な変更は管理人パスワードが必要です。</p>
 </header>
 
+<section class="ops-status-card ops-status-ok" aria-label="本番反映フロー">
+  <h3>本番への届き方</h3>
+  <p>
+    料金・告知など <strong>データ変更</strong>は、確認＋パスワード後に Supabase へ自動同期され、
+    本番 FE（eldonia-nex.com）が読み取ります。<strong>FE 再デプロイは不要</strong>です。<br>
+    手順の正本: <code>docs/16_Django設定_本番反映フロー.md</code>
+  </p>
+  <div class="ops-fe-links">
+    <a href="{{ frontend_url|default:'http://localhost:3000' }}/lp" target="_blank" rel="noopener">ローカル LP</a>
+    <a href="https://eldonia-nex.com/lp" target="_blank" rel="noopener">本番 LP</a>
+    <a href="{% url 'admin:ops_subscription_plans' %}">料金を編集</a>
+    <a href="{% url 'admin:index' %}">同期ステータス</a>
+  </div>
+</section>
+
+{% if plan_sync %}
+<section class="ops-status-grid" aria-label="プラン同期">
+  <article class="ops-status-card ops-status-{{ plan_sync.level|default:'warn' }}">
+    <h3>プラン同期</h3>
+    <p>
+      {{ plan_sync.label }} · Django {{ plan_sync.django_count }} / Supabase {{ plan_sync.supabase_count }}
+      {% if plan_sync.last_at %}<br>最終: {{ plan_sync.last_at }}{% endif %}
+    </p>
+    <form class="ops-sync-form" method="post" action="{% url 'admin:ops_plan_sync_push' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{% url 'admin:ops_settings_hub' %}">
+      <button type="submit" class="ops-btn ops-btn-primary ops-btn-sm">今すぐ同期</button>
+    </form>
+  </article>
+  <article class="ops-status-card">
+    <h3>フロント確認</h3>
+    <div class="ops-fe-links">
+      <a href="{{ frontend_url|default:'http://localhost:3000' }}/lp" target="_blank" rel="noopener">LP</a>
+      <a href="{{ frontend_url|default:'http://localhost:3000' }}/settings/plan" target="_blank" rel="noopener">プラン設定</a>
+      <a href="{{ frontend_url|default:'http://localhost:3000' }}/auth/signup" target="_blank" rel="noopener">登録</a>
+    </div>
+  </article>
+</section>
+{% endif %}
+
 <div class="ops-settings-grid">
   <a class="ops-settings-card ops-settings-card-primary" href="{% url 'admin:ops_subscription_plans' %}">
     <h2>💴 サブスク料金</h2>
     <ul class="ops-current-list">
       <li>Free = （{{ plan_prices.free|default:0 }}）円</li>
       <li>Standard = （{{ plan_prices.standard|default:800 }}）円</li>
-      <li>Pro = （{{ plan_prices.pro|default:1500 }}）円</li>
+      <li>Premium = （{{ plan_prices.premium|default:2980 }}）円</li>
+      <li>Business = （{{ plan_prices.business|default:10000 }}）円</li>
     </ul>
     <span class="ops-menu-cta">編集する →</span>
   </a>

@@ -1,11 +1,42 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/base.html" %}
 {% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block extrastyle %}
   {{ block.super }}
   <link rel="stylesheet" href="{% static 'admin/css/eldonia-ops.css' %}">
+  <meta name="color-scheme" content="dark">
+{% endblock %}
+
+{% block dark-mode-vars %}
+  {{ block.super }}
+  <script>
+    try {
+      document.documentElement.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark");
+    } catch (e) {}
+  </script>
 {% endblock %}
 
 {% block branding %}
-  <div id="site-name"><a href="{% url 'admin:index' %}">Eldonia-Nex 運用パネル</a></div>
+  <div id="site-name" class="ops-brand-mark">
+    <a href="{% url 'admin:index' %}">
+      <img src="{% static 'admin/img/logo.png' %}" alt="ELDONIA NEX" width="40" height="40">
+      <span class="ops-brand-copy">
+        <strong>ELDONIA NEX</strong>
+        <small>A Fantasy Nexus for Creators</small>
+      </span>
+    </a>
+  </div>
+  {% if user.is_authenticated and user.is_staff %}
+  <nav class="ops-topnav" aria-label="運用ショートカット">
+    <a href="{% url 'admin:index' %}#ops-live">LIVE</a>
+    <a href="{% url 'admin:ops_settings_hub' %}">SETTINGS</a>
+    <a href="{% url 'admin:ops_subscription_plans' %}">PLANS</a>
+    <a href="{% url 'admin:ops_announcement_broadcast' %}">ANNOUNCE</a>
+    <a href="{{ frontend_url|default:'http://localhost:3000' }}/lp" target="_blank" rel="noopener">LP</a>
+    <a href="{{ frontend_url|default:'http://localhost:3000' }}/gallery" target="_blank" rel="noopener">GALLERY</a>
+  </nav>
+  {% endif %}
 {% endblock %}

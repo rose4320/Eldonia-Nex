@@ -113,7 +113,10 @@ def sync_supabase_user(
     if phone is not None:
         user.phone_number = phone.strip()
     if subscription_plan:
-        user.subscription_plan = subscription_plan.strip().lower() or "free"
+        plan = subscription_plan.strip().lower() or "free"
+        if plan == "pro":
+            plan = "premium"
+        user.subscription_plan = plan
     user.is_email_verified = bool(is_email_verified)
     if referral_code_used and not user.referral_code_used:
         user.referral_code_used = referral_code_used.strip()

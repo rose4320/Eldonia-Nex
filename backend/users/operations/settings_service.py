@@ -202,7 +202,9 @@ def build_plan_details_preview(current: dict, new: dict) -> list[dict]:
 @transaction.atomic
 def apply_plan_details(values: dict[str, dict]) -> list[str]:
     from users.models import Plan
+    from users.plan_catalog import LP_PLAN_CATALOG, plan_defaults
 
+    catalog_by_slug = {slot["slug"]: slot for slot in LP_PLAN_CATALOG}
     updated: list[str] = []
     for slot in get_plan_detail_slots():
         slug = slot["slug"]
@@ -212,16 +214,21 @@ def apply_plan_details(values: dict[str, dict]) -> list[str]:
         if trial_days < 0:
             raise ValueError(f"{slot['label']} の試用日数は 0 以上にしてください。")
 
-        plan, _ = Plan.objects.update_or_create(
-            slug=slug,
-            defaults={
+        catalog = catalog_by_slug.get(slug)
+        if catalog:
+            defaults = plan_defaults(catalog)
+            defaults["trial_days"] = trial_days
+            defaults["is_active"] = is_active
+        else:
+            defaults = {
                 "name": slot["label"],
                 "trial_days": trial_days,
                 "is_active": is_active,
                 "currency": "JPY",
                 "billing_cycle": "monthly",
-            },
-        )
+            }
+
+        Plan.objects.update_or_create(slug=slug, defaults=defaults)
         for legacy in slot.get("legacy_slugs", []):
             Plan.objects.filter(slug=legacy).update(
                 trial_days=trial_days,
@@ -230,6 +237,13 @@ def apply_plan_details(values: dict[str, dict]) -> list[str]:
 
         status = "公開" if is_active else "停止"
         updated.append(f"{slot['label']} 試用（{trial_days}）日 · {status}")
+
+    from users.operations.plan_push import push_plans_after_admin_change
+
+    sync_msg = push_plans_after_admin_change(reason="apply_plan_details")
+    if sync_msg:
+        updated.append(sync_msg)
+
     return updated
 
 

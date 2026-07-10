@@ -7,6 +7,7 @@ import json
 
 from marketplace.referral_service import ensure_referral_code, is_paid_member
 from marketplace.supabase_sync import SupabaseSyncError, sync_supabase_artworks
+from users.plan_sync import PlanSyncError, push_django_plans_to_supabase, sync_plans_bidirectional
 from users.sync_service import sync_supabase_user
 
 
@@ -117,3 +118,27 @@ def sync_supabase_user_view(request):
             "artwork_sync": artwork_sync,
         }
     )
+
+
+@csrf_exempt
+@require_POST
+def sync_plans_view(request):
+    """Django ↔ Supabase プラン定義の双方向同期（旧定義は archive）。"""
+    if not _authorize_internal(request):
+        return JsonResponse({"error": "unauthorized"}, status=401)
+
+    try:
+        body = json.loads(request.body.decode("utf-8") or "{}")
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        body = {}
+
+    mode = (body.get("mode") or "bidirectional").strip().lower()
+    try:
+        if mode == "push":
+            result = push_django_plans_to_supabase()
+        else:
+            result = sync_plans_bidirectional(prefer="newest")
+    except PlanSyncError as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=503)
+
+    return JsonResponse(result)

@@ -12,14 +12,16 @@
 {% endblock %}
 
 {% block content %}
-{% with d=ops_dashboard u=d.users s=d.sales f=d.fees r=d.referrals q=d.quest %}
-<div class="ops-dashboard" id="ops-dashboard" data-stats-url="{{ ops_stats_url|default:'/admin/operations/dashboard-stats/' }}">
+{% with d=ops_dashboard u=d.users s=d.sales f=d.fees r=d.referrals q=d.quest ps=plan_sync h=ops_health lu=live_users %}
+<div class="ops-dashboard" id="ops-dashboard"
+     data-stats-url="{{ ops_stats_url|default:'/admin/operations/dashboard-stats/' }}"
+     data-live-url="{{ ops_live_users_url|default:'/admin/operations/live-users/' }}">
 
   <header class="ops-dash-header">
     <div>
       <p class="ops-dash-eyebrow">Nexus Operations Console</p>
-      <h1>運用ダッシュボード</h1>
-      <p class="ops-dash-lead">リアルタイム指標・手数料・Quest・紹介還元をここで確認・操作できます。</p>
+      <h1 class="ops-heading-gradient">運用ダッシュボード</h1>
+      <p class="ops-dash-lead">プラン同期・ライブユーザー・手数料・Quest をここから確認・操作できます。</p>
     </div>
     <div class="ops-dash-meta">
       <span class="ops-live-dot" aria-hidden="true"></span>
@@ -28,39 +30,139 @@
     </div>
   </header>
 
-  {# ── KPI カード ── #}
+  <section class="ops-section ops-live-section" id="ops-live" aria-label="ライブユーザー">
+    <div class="ops-live-head">
+      <h2 class="ops-section-title">ライブユーザー状況</h2>
+      <p class="ops-muted-inline">直近 <strong id="ops-live-window">{{ lu.window_seconds|default:180 }}</strong> 秒以内にフロントで活動したユーザー（約45秒ごとに更新）</p>
+    </div>
+    <div class="ops-live-summary">
+      <div class="ops-live-count">
+        <span class="ops-live-dot" aria-hidden="true"></span>
+        <strong id="ops-live-count">{{ lu.online_count|default:0 }}</strong>
+        <span>人オンライン</span>
+      </div>
+      <div class="ops-live-areas" id="ops-live-areas">
+        {% for row in lu.by_area %}
+          <span class="ops-live-area-chip">{{ row.label }} {{ row.count }}</span>
+        {% empty %}
+          <span class="ops-muted-inline">エリア集計なし</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% if lu.error %}
+      <p class="ops-lead-warn" id="ops-live-error">{{ lu.error }}</p>
+    {% else %}
+      <p class="ops-muted-inline" id="ops-live-error" hidden></p>
+    {% endif %}
+    <div class="ops-live-table-wrap">
+      <table class="ops-mini-table ops-live-table">
+        <thead>
+          <tr>
+            <th>ユーザー</th>
+            <th>エリア</th>
+            <th>パス</th>
+            <th>プラン</th>
+            <th>最終確認</th>
+          </tr>
+        </thead>
+        <tbody id="ops-live-tbody">
+          {% for row in lu.users %}
+            <tr>
+              <td>
+                <strong>{{ row.display_name }}</strong>
+                {% if row.username %}<span class="ops-muted">@{{ row.username }}</span>{% endif %}
+              </td>
+              <td><span class="ops-badge">{{ row.area_label }}</span></td>
+              <td><code class="ops-path">{{ row.path }}</code></td>
+              <td>{{ row.plan }}</td>
+              <td>{{ row.ago_label }}</td>
+            </tr>
+          {% empty %}
+            <tr class="ops-live-empty">
+              <td colspan="5">いまオンラインのユーザーはいません。FE にログインしてページを開くとここに表示されます。</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="ops-section" aria-label="システム状態">
+    <h2 class="ops-section-title">同期・ヘルス</h2>
+    <div class="ops-status-grid">
+      <article class="ops-status-card ops-status-{{ ps.level|default:'warn' }}">
+        <h3>プラン同期（Django → Supabase → FE）</h3>
+        <p>
+          状態: <strong>{{ ps.label|default:"未確認" }}</strong><br>
+          Django {{ ps.django_count|default:0 }} / Supabase {{ ps.supabase_count|default:0 }}
+          {% if ps.last_at %}<br>最終同期: {{ ps.last_at }}{% endif %}
+          {% if ps.last_summary %}<br>{{ ps.last_summary }}{% endif %}
+          {% if ps.missing_in_supabase %}<br>未反映: {{ ps.missing_in_supabase|join:", " }}{% endif %}
+          {% if ps.price_mismatches %}<br>価格差あり{% endif %}
+          {% if ps.supabase_error %}<br>{{ ps.supabase_error }}{% endif %}
+        </p>
+        <form class="ops-sync-form" method="post" action="{% url 'admin:ops_plan_sync_push' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{% url 'admin:index' %}">
+          <button type="submit" class="ops-btn ops-btn-primary ops-btn-sm">Supabase へ今すぐ同期</button>
+          <a class="ops-btn ops-btn-ghost ops-btn-sm" href="{% url 'admin:ops_subscription_plans' %}">料金を編集</a>
+        </form>
+      </article>
+      <article class="ops-status-card {% if h.frontend_ok %}ops-status-ok{% else %}ops-status-warn{% endif %}">
+        <h3>フロントエンド</h3>
+        <p>
+          {% if h.frontend_ok %}応答あり{% else %}未確認 / オフラインの可能性{% endif %}<br>
+          {{ frontend_url|default:h.frontend_url }}
+        </p>
+        <div class="ops-fe-links">
+          <a href="{{ frontend_url|default:'http://localhost:3000' }}/lp" target="_blank" rel="noopener">LP</a>
+          <a href="{{ frontend_url|default:'http://localhost:3000' }}/gallery" target="_blank" rel="noopener">Gallery</a>
+          <a href="{{ frontend_url|default:'http://localhost:3000' }}/shop" target="_blank" rel="noopener">Shop</a>
+          <a href="{{ frontend_url|default:'http://localhost:3000' }}/settings/plan" target="_blank" rel="noopener">プラン設定</a>
+          <a href="{{ frontend_url|default:'http://localhost:3000' }}/auth/signup" target="_blank" rel="noopener">登録</a>
+        </div>
+      </article>
+      <article class="ops-status-card {% if h.django_health_ok %}ops-status-ok{% else %}ops-status-warn{% endif %}">
+        <h3>Django API</h3>
+        <p>
+          Health: {% if h.django_health_ok %}OK{% else %}要確認{% endif %}<br>
+          <a href="/api/v1/health/" target="_blank" rel="noopener">/api/v1/health/</a>
+        </p>
+      </article>
+    </div>
+  </section>
+
   <section class="ops-kpi-grid" aria-label="主要指標">
     <article class="ops-kpi-card ops-kpi-blue">
-      <p class="ops-kpi-label">👥 ユーザー総数</p>
+      <p class="ops-kpi-label">ユーザー総数</p>
       <p class="ops-kpi-value" data-metric="users.total">{{ u.total|default:0 }}</p>
       <p class="ops-kpi-sub">有効 <strong data-metric="users.active">{{ u.active }}</strong> · 今日 +<strong data-metric="users.new_today">{{ u.new_today }}</strong></p>
     </article>
     <article class="ops-kpi-card ops-kpi-green">
-      <p class="ops-kpi-label">⚡ 24h アクティブ</p>
+      <p class="ops-kpi-label">24h アクティブ</p>
       <p class="ops-kpi-value" data-metric="users.online_24h">{{ u.online_24h|default:0 }}</p>
       <p class="ops-kpi-sub">7日間新規 <strong data-metric="users.new_7d">{{ u.new_7d }}</strong> 人</p>
     </article>
     <article class="ops-kpi-card ops-kpi-amber">
-      <p class="ops-kpi-label">💴 今月売上（GMV）</p>
+      <p class="ops-kpi-label">今月売上（GMV）</p>
       <p class="ops-kpi-value"><span data-metric="sales.gmv_month">¥{{ s.gmv_month }}</span></p>
       <p class="ops-kpi-sub">今日 ¥<strong data-metric="sales.gmv_today">{{ s.gmv_today }}</strong> · 注文 <strong data-metric="sales.orders_today">{{ s.orders_today }}</strong></p>
     </article>
     <article class="ops-kpi-card ops-kpi-purple">
-      <p class="ops-kpi-label">📈 売上指数</p>
+      <p class="ops-kpi-label">売上指数</p>
       <p class="ops-kpi-value"><span data-metric="sales.sales_index">{{ s.sales_index }}</span></p>
       <p class="ops-kpi-sub">前月比（100＝同水準）· 完了 <strong data-metric="sales.orders_completed">{{ s.orders_completed }}</strong> 件</p>
     </article>
   </section>
 
-  {# ── クイック操作 ── #}
   <section class="ops-section">
-    <h2 class="ops-section-title">⚡ クイック操作</h2>
+    <h2 class="ops-section-title">クイック操作</h2>
     <div class="ops-quick-grid">
       <a class="ops-quick-card ops-quick-primary" href="{% url 'admin:ops_settings_hub' %}">
         <span>⚙️</span><strong>設定一覧</strong><small>料金・手数料・EXP付与</small>
       </a>
       <a class="ops-quick-card" href="{% url 'admin:ops_subscription_plans' %}">
-        <span>💴</span><strong>サブスク料金</strong><small>Free / Standard / Pro</small>
+        <span>💴</span><strong>サブスク料金</strong><small>Free / Standard / Premium / Business</small>
       </a>
       <a class="ops-quick-card" href="{% url 'admin:ops_fee_settings' %}">
         <span>💰</span><strong>手数料・還元</strong><small>紹介料 {{ r.rebate_rate }}</small>
@@ -70,6 +172,9 @@
       </a>
       <a class="ops-quick-card" href="{% url 'admin:ops_plan_details' %}">
         <span>📋</span><strong>プラン詳細</strong><small>試用期間・公開</small>
+      </a>
+      <a class="ops-quick-card" href="{% url 'admin:ops_announcement_broadcast' %}">
+        <span>📢</span><strong>ユーザー告知</strong><small>FE 通知ベルへ配信</small>
       </a>
       <a class="ops-quick-card" href="{% url 'admin:users_user_changelist' %}">
         <span>👥</span><strong>ユーザー管理</strong><small>プラン割当</small>
@@ -86,20 +191,15 @@
       <a class="ops-quick-card" href="{% url 'admin:gamification_achievement_changelist' %}">
         <span>🏆</span><strong>実績・バッジ</strong><small>Achievement</small>
       </a>
-      <a class="ops-quick-card" href="{% url 'admin:streaming_livestream_changelist' %}">
-        <span>📺</span><strong>ライブ配信</strong><small>投げ銭</small>
-      </a>
       <a class="ops-quick-card" href="{% url 'admin:marketplace_artwork_changelist' %}">
         <span>🖼️</span><strong>作品管理</strong><small>GALLERY</small>
       </a>
     </div>
   </section>
 
-  {# ── 詳細パネル 3列 ── #}
   <div class="ops-panel-grid">
-
     <section class="ops-panel ops-panel-fees">
-      <h2 class="ops-section-title">💰 手数料・還元率</h2>
+      <h2 class="ops-section-title">手数料・還元率</h2>
       <table class="ops-mini-table">
         <thead><tr><th>項目</th><th>率</th><th>今月（概算/実績）</th></tr></thead>
         <tbody>
@@ -129,7 +229,7 @@
     </section>
 
     <section class="ops-panel ops-panel-referral">
-      <h2 class="ops-section-title">🎁 ユーザー還元（紹介料）</h2>
+      <h2 class="ops-section-title">ユーザー還元（紹介料）</h2>
       <ul class="ops-stat-list">
         <li><span>還元率</span><strong>{{ r.rebate_rate }}</strong></li>
         <li><span>累計支払</span><strong data-metric="referrals.total_paid">¥{{ r.total_paid }}</strong></li>
@@ -143,7 +243,7 @@
     </section>
 
     <section class="ops-panel ops-panel-quest">
-      <h2 class="ops-section-title">⚔️ EXP付与 / 実績</h2>
+      <h2 class="ops-section-title">EXP付与 / 実績</h2>
       <ul class="ops-stat-list">
         <li><span>有効 EXP付与</span><strong data-metric="quest.active_actions">{{ q.active_actions }}</strong></li>
         <li><span>有効 実績</span><strong data-metric="quest.active_achievements">{{ q.active_achievements }}</strong></li>
@@ -163,10 +263,9 @@
     </section>
   </div>
 
-  {# ── プラン分布 ── #}
   {% if u.by_plan %}
   <section class="ops-section ops-plan-breakdown">
-    <h2 class="ops-section-title">📊 サブスクプラン分布</h2>
+    <h2 class="ops-section-title">サブスクプラン分布</h2>
     <div class="ops-plan-bars">
       {% for row in u.by_plan %}
         <div class="ops-plan-bar-row">

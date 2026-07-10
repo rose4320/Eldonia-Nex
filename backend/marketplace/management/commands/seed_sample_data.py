@@ -166,74 +166,27 @@ class Command(BaseCommand):
             UserExpLog,
         )
 
-        # Plans (billing) - users app: create plans matching docs (free, standard, pro, business)
+        # Plans (billing) — LP Plans v0.9.2 と同期
         from users.models import Plan
+        from users.plan_catalog import LP_PLAN_CATALOG, plan_defaults
 
-        # Use update_or_create so existing plans are updated to current pricing/specs
-        free_plan, _ = Plan.objects.update_or_create(
-            slug="free",
-            defaults={
-                "name": "Free",
-                "price": Decimal("0.00"),
-                "billing_cycle": "monthly",
-                "trial_days": 0,
-                "is_active": True,
-            },
-        )
-        standard_plan, _ = Plan.objects.update_or_create(
-            slug="standard",
-            defaults={
-                "name": "Standard",
-                "price": Decimal("800.00"),
-                "billing_cycle": "monthly",
-                "trial_days": 14,
-                "is_active": True,
-            },
-        )
-        # Add premium plan as requested (¥1,500.00)
-        premium_plan, _ = Plan.objects.update_or_create(
-            slug="premium",
-            defaults={
-                "name": "Premium",
-                "price": Decimal("1500.00"),
-                "billing_cycle": "monthly",
-                "trial_days": 14,
-                "is_active": True,
-            },
-        )
-        # If a legacy 'pro' plan exists, map users to 'premium' and remove the duplicate
-        if Plan.objects.filter(slug="pro").exists():
-            pro_obj = Plan.objects.get(slug="pro")
-            # Ensure premium exists (create from pro if needed)
-            premium_obj, created = Plan.objects.get_or_create(
-                slug="premium",
-                defaults={
-                    "name": pro_obj.name if pro_obj.name else "Premium",
-                    "price": pro_obj.price,
-                    "billing_cycle": pro_obj.billing_cycle,
-                    "trial_days": pro_obj.trial_days,
-                    "is_active": pro_obj.is_active,
-                },
+        for slot in LP_PLAN_CATALOG:
+            Plan.objects.update_or_create(
+                slug=slot["slug"],
+                defaults=plan_defaults(slot),
             )
-            # Map users who had 'pro' to 'premium'
-            User.objects.filter(subscription_plan="pro").update(
-                subscription_plan="premium"
-            )
-            # If premium was created above, delete the old pro; otherwise remove pro to avoid duplicates
-            if created:
-                pro_obj.delete()
-            else:
-                pro_obj.delete()
-        business_plan, _ = Plan.objects.update_or_create(
-            slug="business",
-            defaults={
-                "name": "Business",
-                "price": Decimal("10000.00"),
-                "billing_cycle": "monthly",
-                "trial_days": 0,
-                "is_active": True,
-            },
+
+        # legacy 'pro' → 'premium' に統合（Plan 行の有無に関係なく）
+        User.objects.filter(subscription_plan="pro").update(
+            subscription_plan="premium"
         )
+        Plan.objects.filter(slug="pro").delete()
+
+        free_plan = Plan.objects.get(slug="free")
+        standard_plan = Plan.objects.get(slug="standard")
+        premium_plan = Plan.objects.get(slug="premium")
+        business_plan = Plan.objects.get(slug="business")
+        _ = (free_plan, standard_plan, premium_plan, business_plan)
 
         # Assign a sample plan id string to one user for verification (store plan id per docs)
         users[0].subscription_plan = "standard"

@@ -1,5 +1,5 @@
 /** LP brand assets — source: repo root `aset/` → synced to `public/aset/` */
-const LP_ASSET_VERSION = "0.9.1";
+const LP_ASSET_VERSION = "0.9.3";
 
 function lpAsset(path: string): string {
   return `${path}?v=${LP_ASSET_VERSION}`;
@@ -7,13 +7,19 @@ function lpAsset(path: string): string {
 
 export const LP_ASSETS = {
   logo: lpAsset("/aset/logo.png"),
+  /** Full-bleed hero (1672×941). World-tree sheet art is lower-res — keep as reference. */
   hero: lpAsset("/aset/lp/hero.png"),
+  heroWorldTree: lpAsset("/aset/lp/hero-worldtree.png"),
   world: lpAsset("/aset/lp/world-cut.png"),
   pinBadge: lpAsset("/aset/lp/pin-badge.png"),
   globe: lpAsset("/aset/lp/globe.png"),
   translation: lpAsset("/aset/lp/translation.png"),
   ctaBg: lpAsset("/aset/lp/cta-bg.png"),
   owl: lpAsset("/aset/lp/owl.png"),
+  branchConnectors: lpAsset("/aset/lp/branch-connectors.png"),
+  compassOrnament: lpAsset("/aset/lp/compass-ornament.png"),
+  /** Fan notification section — letters traveling through the night */
+  fanMail: lpAsset("/aset/lp/mail.png"),
   borders: {
     sheet: lpAsset("/aset/lp/border-sheet.png"),
     frameOrnate: lpAsset("/aset/lp/borders/frame-ornate.png"),
@@ -33,8 +39,8 @@ export const LP_ASSETS = {
   },
   features: {
     gallery: lpAsset("/aset/icons/modules/icon-gallery.png"),
-    global: lpAsset("/aset/lp/globe.png"),
-    market: lpAsset("/aset/icons/modules/icon-shop.png"),
+    community: lpAsset("/aset/icons/modules/icon-community.png"),
+    shop: lpAsset("/aset/icons/modules/icon-shop.png"),
   },
   // Concept lifecycle (生まれる→育つ→実る→また種に)
   concept: {
@@ -58,4 +64,12 @@ export const LP_ASSETS = {
     quest: lpAsset("/aset/lp/services/quest.png"),
     portfolio: lpAsset("/aset/lp/services/portfolio.png"),
   },
+} as const;
+
+/** Intrinsic ratios for next/image (avoid aspect-ratio console warnings). */
+export const LP_IMAGE_SIZE = {
+  moduleIcon: { width: 48, height: 32 }, // 1536×1024 → 3:2
+  labIcon: { width: 48, height: 48 }, // 882×882
+  globe: { width: 48, height: 48 }, // 1254×1254
+  owl: { width: 512, height: 341 }, // 1024×682 ≈ 3:2
 } as const;

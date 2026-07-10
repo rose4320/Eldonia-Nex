@@ -13,7 +13,7 @@ export function LpHeroSection() {
           alt=""
           fill
           priority
-          sizes="100vw"
+          sizes="(max-width: 1240px) 100vw, 100vw"
           className="object-cover object-[center_40%] lg:object-[62%_38%]"
         />
         <div className="lp-hero__shade-left" aria-hidden />

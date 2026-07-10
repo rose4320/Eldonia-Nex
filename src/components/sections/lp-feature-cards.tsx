@@ -1,24 +1,24 @@
 import Image from "next/image";
 import { LpCard } from "@/components/ui/lp-card";
-import { LP_ASSETS } from "@/lib/lp/assets";
+import { LP_ASSETS, LP_IMAGE_SIZE } from "@/lib/lp/assets";
 import { LP_FEATURE_CARDS } from "@/lib/lp/content";
 
 export function LpFeatureCards() {
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       {LP_FEATURE_CARDS.map((card) => (
-        <LpCard key={card.key} hover className="lp-feature-card p-4">
-          <div className="flex items-start gap-3">
+        <LpCard key={card.key} hover className="lp-feature-card h-full px-4 py-5">
+          <div className="flex items-center gap-3">
             <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded border border-[#d6a84f]/60 bg-[rgba(5,14,30,0.92)]">
               <Image
                 src={LP_ASSETS.features[card.key as keyof typeof LP_ASSETS.features]}
                 alt=""
-                width={32}
-                height={32}
-                className="object-contain opacity-100"
+                width={LP_IMAGE_SIZE.moduleIcon.width}
+                height={LP_IMAGE_SIZE.moduleIcon.height}
+                className="h-auto w-auto max-h-8 max-w-10 object-contain opacity-100"
               />
             </span>
-            <div>
+            <div className="min-w-0 flex-1">
               <p className="font-display text-sm font-semibold tracking-wider text-[#fff4d5]">
                 {card.title}
               </p>

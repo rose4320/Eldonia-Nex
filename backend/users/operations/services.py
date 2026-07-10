@@ -3,33 +3,21 @@ from decimal import Decimal
 from django.db import transaction
 
 from users.models import Plan
+from users.plan_catalog import LP_PLAN_CATALOG, plan_defaults
 
 # pylint: disable=no-member
 
-# 括弧内の金額だけ編集 → slug 単位で Plan を更新
+# LP Plans（v0.9.2）と同期 — 括弧内の金額だけ編集 → slug 単位で Plan を更新
 PLAN_PRICE_SLOTS = [
     {
-        "slug": "free",
-        "label": "Free",
-        "display_name": "Free",
-        "sort_order": 1,
-        "default_yen": 0,
-    },
-    {
-        "slug": "standard",
-        "label": "Standard",
-        "display_name": "Standard",
-        "sort_order": 2,
-        "default_yen": 800,
-    },
-    {
-        "slug": "pro",
-        "label": "Pro",
-        "display_name": "Pro",
-        "sort_order": 3,
-        "default_yen": 1500,
-        "legacy_slugs": ["premium"],
-    },
+        "slug": slot["slug"],
+        "label": slot["label"],
+        "display_name": slot["display_name"],
+        "sort_order": slot["sort_order"],
+        "default_yen": slot["default_yen"],
+        **({"legacy_slugs": slot["legacy_slugs"]} if slot.get("legacy_slugs") else {}),
+    }
+    for slot in LP_PLAN_CATALOG
 ]
 
 SESSION_KEY = "pending_subscription_plan_prices"
@@ -97,6 +85,13 @@ def build_preview(current: dict[str, int], new: dict[str, int]) -> list[dict]:
     return rows
 
 
+def _catalog_slot(slug: str) -> dict | None:
+    for slot in LP_PLAN_CATALOG:
+        if slot["slug"] == slug:
+            return slot
+    return None
+
+
 @transaction.atomic
 def apply_plan_prices(prices: dict[str, int]) -> list[str]:
     updated_labels: list[str] = []
@@ -106,17 +101,21 @@ def apply_plan_prices(prices: dict[str, int]) -> list[str]:
         if yen < 0:
             raise ValueError(f"{slot['label']} の金額は 0 以上にしてください。")
 
-        Plan.objects.update_or_create(
-            slug=slug,
-            defaults={
+        catalog = _catalog_slot(slug)
+        defaults = (
+            plan_defaults(catalog, yen=yen)
+            if catalog
+            else {
                 "name": slot["display_name"],
                 "price": Decimal(yen),
                 "currency": "JPY",
                 "billing_cycle": "monthly",
                 "is_active": True,
                 "sort_order": slot["sort_order"],
-            },
+            }
         )
+
+        Plan.objects.update_or_create(slug=slug, defaults=defaults)
 
         for legacy in slot.get("legacy_slugs", []):
             Plan.objects.filter(slug=legacy).update(
@@ -126,5 +125,13 @@ def apply_plan_prices(prices: dict[str, int]) -> list[str]:
             )
 
         updated_labels.append(f"{slot['label']} = （{yen}）円")
+
+    from users.operations.plan_push import push_plans_after_admin_change
+
+    sync_msg = push_plans_after_admin_change(reason="apply_plan_prices")
+    if sync_msg:
+        updated_labels.append(sync_msg)
+    else:
+        updated_labels.append("Supabase 同期は保留（後で sync_plans_supabase --push）")
 
     return updated_labels

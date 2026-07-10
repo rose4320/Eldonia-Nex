@@ -1,13 +1,33 @@
 """運用設定 — 定義済みスロット（表示ラベル・デフォルト値）"""
 
+from users.plan_catalog import LP_PLAN_CATALOG
+
 FEE_SETTING_SLOTS = [
     {
         "key": "marketplace_fee_percent",
         "rate_key": "marketplace",
         "env": "MARKETPLACE_FEE_PERCENT",
         "default": "10",
-        "label": "マーケットプレイス手数料",
-        "help": "作品・商品の売上に対する手数料",
+        "label": "マーケットプレイス手数料（既定）",
+        "help": "プラン未設定時の既定手数料。Standard=5% / Premium・Business=3% を優先",
+        "unit": "%",
+    },
+    {
+        "key": "shop_fee_standard_percent",
+        "rate_key": "shop_fee_standard",
+        "env": "SHOP_FEE_STANDARD_PERCENT",
+        "default": "5",
+        "label": "ショップ手数料（Standard）",
+        "help": "Standard プランのショップ販売手数料",
+        "unit": "%",
+    },
+    {
+        "key": "shop_fee_premium_percent",
+        "rate_key": "shop_fee_premium",
+        "env": "SHOP_FEE_PREMIUM_PERCENT",
+        "default": "3",
+        "label": "ショップ手数料（Premium / Business）",
+        "help": "Premium・Business プランのショップ販売手数料",
         "unit": "%",
     },
     {
@@ -49,9 +69,12 @@ FEE_SETTING_SLOTS = [
 ]
 
 PLAN_DETAIL_SLOTS = [
-    {"slug": "free", "label": "Free"},
-    {"slug": "standard", "label": "Standard"},
-    {"slug": "pro", "label": "Pro", "legacy_slugs": ["premium"]},
+    {
+        "slug": slot["slug"],
+        "label": slot["label"],
+        **({"legacy_slugs": slot["legacy_slugs"]} if slot.get("legacy_slugs") else {}),
+    }
+    for slot in LP_PLAN_CATALOG
 ]
 
 SESSION_KEY_FEES = "pending_fee_settings"

@@ -6,6 +6,7 @@
   <h1>{{ title }}</h1>
   <p class="ops-lead">
     フロントエンドの 🔔 通知ベルと設定画面に表示される告知を送信します。
+    「最重要」を選ぶと、ログイン中ユーザーの画面にモーダルで表示されます。
     送信前に配信先件数を確認し、管理人パスワードが必要です。
   </p>
 </header>
@@ -30,8 +31,8 @@
   </div>
   <div class="ops-insight-card">
     <span>表示場所</span>
-    <strong>通知ベル</strong>
-    <small>ユーザー設定画面にも表示されます</small>
+    <strong>ベル / モーダル</strong>
+    <small>最重要は Frontend モーダル</small>
   </div>
   <div class="ops-insight-card ops-insight-warn">
     <span>送信前確認</span>
@@ -66,6 +67,15 @@
       {{ form.href }}
       <p class="ops-muted-inline">例: /help/guides · /shop · 空欄可</p>
     </div>
+    <div class="ops-checkbox">
+      <label for="{{ form.is_critical.id_for_label }}">
+        {{ form.is_critical }}
+        <span>
+          <strong>{{ form.is_critical.label }}</strong>
+          <small class="ops-muted-inline">{{ form.is_critical.help_text }}</small>
+        </span>
+      </label>
+    </div>
   </div>
   <div class="ops-actions">
     <button type="submit" class="ops-btn ops-btn-primary">確認画面へ →</button>
@@ -76,8 +86,9 @@
 <aside class="ops-help">
   <h2>💡 ヒント</h2>
   <ul>
+    <li>通常告知 → 通知ベル / 設定の通知一覧</li>
+    <li>最重要告知 → 画面中央モーダル（閉じるまで再表示）＋ 通知ベル</li>
     <li>Supabase の全プロフィール、または is_creator=true のユーザーに一括配信できます</li>
-    <li>個別配信は Supabase Auth のメールアドレスで検索します</li>
     <li>.env の SUPABASE_SERVICE_ROLE_KEY が必要です</li>
   </ul>
 </aside>

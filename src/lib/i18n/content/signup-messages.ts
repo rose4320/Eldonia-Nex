@@ -1,6 +1,7 @@
 import type { UiLocale } from "@/lib/i18n/locale";
+import { PLAN_CATALOG, type CatalogPlanId } from "@/lib/plans/catalog";
 
-export type SignupPlanId = "free" | "standard" | "pro";
+export type SignupPlanId = CatalogPlanId;
 
 export type SignupPlan = {
   id: SignupPlanId;
@@ -8,6 +9,7 @@ export type SignupPlan = {
   price: string;
   lead: string;
   features: string[];
+  checkout?: "free" | "stripe" | "contact";
 };
 
 export type SignupConsent = {
@@ -163,29 +165,14 @@ const SIGNUP_JA: SignupContent = {
     flowComplete: "登録フローが完了しました。Eldonia-Nex へようこそ。",
     usernameTaken: "このユーザー名は既に使われています。別のユーザー名を入力してください。",
   },
-  plans: [
-    {
-      id: "free",
-      name: "Free",
-      price: "¥0 / 月",
-      lead: "閲覧と基本投稿を試せる入門プラン",
-      features: ["作品投稿 3件/月", "基本プロフィール", "コミュニティ参加"],
-    },
-    {
-      id: "standard",
-      name: "Standard",
-      price: "¥800 / 月",
-      lead: "継続投稿と創作活動を始める標準プラン",
-      features: ["作品投稿 20件/月", "50MB までのファイル", "Live 配信の基本機能"],
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      price: "¥1,500 / 月",
-      lead: "収益化と分析を重視するクリエイター向け",
-      features: ["作品投稿 無制限", "500MB までのファイル", "優先サポート"],
-    },
-  ],
+  plans: PLAN_CATALOG.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    price: plan.priceLabelJa,
+    lead: plan.leadJa,
+    features: plan.featuresJa,
+    checkout: plan.checkout,
+  })),
   consents: [
     {
       type: "terms_of_service",
@@ -332,29 +319,14 @@ const SIGNUP_EN: SignupContent = {
     flowComplete: "Welcome to Eldonia-Nex!",
     usernameTaken: "This username is already taken. Please choose another username.",
   },
-  plans: [
-    {
-      id: "free",
-      name: "Free",
-      price: "¥0 / mo",
-      lead: "Try browsing and basic posting",
-      features: ["3 artworks / month", "Basic profile", "Community access"],
-    },
-    {
-      id: "standard",
-      name: "Standard",
-      price: "¥800 / mo",
-      lead: "Standard plan for regular creators",
-      features: ["20 artworks / month", "Files up to 50MB", "Basic live streaming"],
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      price: "¥1,500 / mo",
-      lead: "For creators focused on monetization & analytics",
-      features: ["Unlimited artworks", "Files up to 500MB", "Priority support"],
-    },
-  ],
+  plans: PLAN_CATALOG.map((plan) => ({
+    id: plan.id,
+    name: plan.name,
+    price: plan.priceLabelEn,
+    lead: plan.leadEn,
+    features: plan.featuresEn,
+    checkout: plan.checkout,
+  })),
   consents: SIGNUP_JA.consents.map((c) => ({
     ...c,
     title: c.type === "terms_of_service" ? "Terms of Service" : c.title,

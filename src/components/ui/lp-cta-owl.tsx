@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import { LP_ASSETS } from "@/lib/lp/assets";
+import { LP_ASSETS, LP_IMAGE_SIZE } from "@/lib/lp/assets";
 
 /** CTA decoration — gold owl asset with CSS glow and spark particles */
 export function LpCtaOwl() {
@@ -13,8 +13,8 @@ export function LpCtaOwl() {
         <Image
           src={LP_ASSETS.owl}
           alt=""
-          width={560}
-          height={420}
+          width={LP_IMAGE_SIZE.owl.width}
+          height={LP_IMAGE_SIZE.owl.height}
           className="lp-cta-owl__image"
           sizes="(max-width: 1024px) 260px, 280px"
           priority={false}

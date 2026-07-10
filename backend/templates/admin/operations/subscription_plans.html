@@ -6,7 +6,7 @@
   <h1>{{ title }}</h1>
   <p class="ops-lead">
     プラン名の横の <strong>（　）</strong> の数字だけを変えてください。
-    保存すると Free / Standard / Pro の料金がまとめて更新されます。
+    保存すると Free / Standard / Premium / Business の料金がまとめて更新されます。
   </p>
 </header>
 
@@ -14,7 +14,7 @@
   <div class="ops-command-main">
     <span class="ops-command-kicker">Subscription Pricing</span>
     <h2>月額料金だけを安全に変更</h2>
-    <p>Free / Standard / Pro の括弧内の金額を更新します。次の確認画面で差分と管理人パスワードを確認してから反映されます。</p>
+    <p>Free / Standard / Premium / Business の括弧内の金額を更新します。次の確認画面で差分と管理人パスワードを確認してから反映されます。確定後は Supabase へ自動同期され、本番 LP が読み取ります（FE 再デプロイ不要）。手順: <code>docs/16_Django設定_本番反映フロー.md</code></p>
   </div>
   <div class="ops-command-actions">
     <a class="ops-action-chip" href="{% url 'admin:ops_settings_hub' %}">設定一覧へ</a>
@@ -65,16 +65,16 @@
       <p>よく使う料金パターンをワンクリックで入力できます。入力後も個別に微調整できます。</p>
     </div>
     <div class="ops-tool-grid">
-      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"800","pro":"1500"}'>
-        標準 0 / 800 / 1500
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"800","premium":"2980","business":"10000"}'>
+        LP標準 0 / 800 / 2980 / 10000
       </button>
-      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"980","pro":"1980"}'>
-        成長 0 / 980 / 1980
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"980","premium":"3480","business":"12000"}'>
+        成長 0 / 980 / 3480 / 12000
       </button>
-      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"1200","pro":"2500"}'>
-        高単価 0 / 1200 / 2500
+      <button type="button" class="ops-tool-button" data-ops-fill='{"free":"0","standard":"1200","premium":"3980","business":"15000"}'>
+        高単価 0 / 1200 / 3980 / 15000
       </button>
-      <button type="button" class="ops-tool-button ops-tool-danger" data-ops-fill='{"free":"0","standard":"0","pro":"0"}'>
+      <button type="button" class="ops-tool-button ops-tool-danger" data-ops-fill='{"free":"0","standard":"0","premium":"0","business":"0"}'>
         全プラン 0円
       </button>
       <button type="reset" class="ops-tool-button ops-tool-muted">入力前に戻す</button>

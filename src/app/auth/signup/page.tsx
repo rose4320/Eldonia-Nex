@@ -5,6 +5,7 @@ import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { getLivePlanCatalog, toSignupPlans } from "@/lib/plans/live-catalog";
 import { isSupabaseBrowserConfigured } from "@/lib/supabase/env";
 
 type SignupPageProps = {
@@ -18,6 +19,8 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
   const redirectTo = sanitizeRedirectTo(params.redirect_to);
   const referralCode = params.ref?.trim().toUpperCase() || null;
   const supabaseConfigured = isSupabaseBrowserConfigured();
+  const liveCatalog = await getLivePlanCatalog();
+  const plans = toSignupPlans(liveCatalog, locale === "en" ? "en" : "ja");
 
   return (
     <div className="eldonia-page flex min-h-full flex-1 items-center justify-center px-4 py-16">
@@ -33,6 +36,7 @@ export default async function SignupPage({ searchParams }: SignupPageProps) {
             supabaseConfigured={supabaseConfigured}
             referralCode={referralCode}
             resume={params.resume === "1"}
+            plans={plans}
           />
         </div>
       </div>

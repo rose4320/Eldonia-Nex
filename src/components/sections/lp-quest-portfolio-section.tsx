@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LpCard } from "@/components/ui/lp-card";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
-import { LP_ASSETS } from "@/lib/lp/assets";
+import { LP_ASSETS, LP_IMAGE_SIZE } from "@/lib/lp/assets";
 import { LP_QUEST_PORTFOLIO } from "@/lib/lp/content";
 
 function GrowthCard({
@@ -11,6 +11,7 @@ function GrowthCard({
   item: typeof LP_QUEST_PORTFOLIO.quest | typeof LP_QUEST_PORTFOLIO.portfolio;
 }) {
   const icon = LP_ASSETS.modules[item.key as keyof typeof LP_ASSETS.modules];
+  const iconSize = LP_IMAGE_SIZE.moduleIcon;
   const scene =
     item.key === "quest"
       ? LP_ASSETS.serviceBg.quest
@@ -33,13 +34,13 @@ function GrowthCard({
       </div>
 
       <div className="relative -mt-9 flex flex-1 flex-col px-5 pb-5">
-        <div className="relative mx-auto h-16 w-16 shrink-0">
+        <div className="mx-auto flex h-16 w-16 shrink-0 items-center justify-center">
           <Image
             src={icon}
             alt=""
-            fill
-            sizes="64px"
-            className="object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
+            width={iconSize.width}
+            height={iconSize.height}
+            className="h-auto w-auto max-h-14 max-w-14 object-contain drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
           />
         </div>
 
@@ -50,7 +51,7 @@ function GrowthCard({
           {item.tagline}
         </p>
         <span className="mx-auto my-3 h-px w-10 bg-[rgba(214,168,79,0.45)]" aria-hidden />
-        <p className="text-center text-[0.72rem] leading-5 text-[#a99d86] sm:text-xs">
+        <p className="whitespace-pre-line text-center text-[0.72rem] leading-5 text-[#a99d86] sm:text-xs">
           {item.body}
         </p>
 
@@ -86,6 +87,9 @@ export function LpQuestPortfolioSection() {
         <LpSectionTitle className="mb-2">{LP_QUEST_PORTFOLIO.eyebrow}</LpSectionTitle>
         <p className="mx-auto mb-2 max-w-[40rem] whitespace-pre-line text-center font-display text-lg font-bold leading-tight tracking-wide text-[#f8f1df] sm:text-xl">
           {LP_QUEST_PORTFOLIO.title}
+        </p>
+        <p className="mx-auto mb-3 max-w-[36rem] text-center text-[0.7rem] tracking-wide text-[#d6a84f] sm:text-xs">
+          成長の流れを、シンプルに示します。
         </p>
         <p className="mx-auto mb-3 max-w-[42rem] text-center text-xs leading-6 text-[#d8c8a8] sm:text-sm">
           {LP_QUEST_PORTFOLIO.lead}

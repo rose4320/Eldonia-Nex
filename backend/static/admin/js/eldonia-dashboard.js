@@ -5,9 +5,15 @@
   if (!root) return;
 
   var statsUrl = root.getAttribute("data-stats-url");
+  var liveUrl = root.getAttribute("data-live-url");
   var refreshBtn = document.getElementById("ops-refresh-btn");
   var updatedAt = document.getElementById("ops-updated-at");
+  var liveCount = document.getElementById("ops-live-count");
+  var liveAreas = document.getElementById("ops-live-areas");
+  var liveTbody = document.getElementById("ops-live-tbody");
+  var liveError = document.getElementById("ops-live-error");
   var timer = null;
+  var liveTimer = null;
 
   function setMetric(path, value) {
     var nodes = root.querySelectorAll('[data-metric="' + path + '"]');
@@ -58,7 +64,61 @@
     }
   }
 
-  function refresh() {
+  function escapeHtml(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function applyLive(data) {
+    if (liveCount) liveCount.textContent = String(data.online_count || 0);
+    if (liveError) {
+      if (data.error) {
+        liveError.hidden = false;
+        liveError.textContent = data.error;
+      } else {
+        liveError.hidden = true;
+        liveError.textContent = "";
+      }
+    }
+    if (liveAreas) {
+      if (data.by_area && data.by_area.length) {
+        liveAreas.innerHTML = data.by_area
+          .map(function (row) {
+            return '<span class="ops-live-area-chip">' + escapeHtml(row.label) + " " + escapeHtml(row.count) + "</span>";
+          })
+          .join("");
+      } else {
+        liveAreas.innerHTML = '<span class="ops-muted-inline">エリア集計なし</span>';
+      }
+    }
+    if (liveTbody) {
+      if (!data.users || !data.users.length) {
+        liveTbody.innerHTML =
+          '<tr class="ops-live-empty"><td colspan="5">いまオンラインのユーザーはいません。FE にログインしてページを開くとここに表示されます。</td></tr>';
+        return;
+      }
+      liveTbody.innerHTML = data.users
+        .map(function (row) {
+          var name = escapeHtml(row.display_name || "");
+          var user = row.username ? '<span class="ops-muted">@' + escapeHtml(row.username) + "</span>" : "";
+          return (
+            "<tr>" +
+            "<td><strong>" + name + "</strong> " + user + "</td>" +
+            '<td><span class="ops-badge">' + escapeHtml(row.area_label || row.area) + "</span></td>" +
+            '<td><code class="ops-path">' + escapeHtml(row.path) + "</code></td>" +
+            "<td>" + escapeHtml(row.plan || "") + "</td>" +
+            "<td>" + escapeHtml(row.ago_label || "") + "</td>" +
+            "</tr>"
+          );
+        })
+        .join("");
+    }
+  }
+
+  function refreshStats() {
     if (!statsUrl) return;
     fetch(statsUrl, { credentials: "same-origin", headers: { Accept: "application/json" } })
       .then(function (res) { return res.json(); })
@@ -66,9 +126,23 @@
       .catch(function () { /* ignore */ });
   }
 
-  if (refreshBtn) {
-    refreshBtn.addEventListener("click", refresh);
+  function refreshLive() {
+    if (!liveUrl) return;
+    fetch(liveUrl, { credentials: "same-origin", headers: { Accept: "application/json" } })
+      .then(function (res) { return res.json(); })
+      .then(applyLive)
+      .catch(function () { /* ignore */ });
   }
 
-  timer = window.setInterval(refresh, 60000);
+  function refreshAll() {
+    refreshStats();
+    refreshLive();
+  }
+
+  if (refreshBtn) {
+    refreshBtn.addEventListener("click", refreshAll);
+  }
+
+  timer = window.setInterval(refreshStats, 60000);
+  liveTimer = window.setInterval(refreshLive, 15000);
 })();

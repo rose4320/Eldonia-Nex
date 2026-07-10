@@ -10,7 +10,7 @@ export type Profile = {
   is_creator: boolean;
   disciplines?: string[];
   is_ops_admin?: boolean;
-  subscription_plan: "free" | "standard" | "pro";
+  subscription_plan: "free" | "standard" | "premium" | "business";
   created_at: string;
   updated_at: string;
 };
@@ -59,23 +59,37 @@ export type UserNotification = {
   href: string | null;
   collab_request_id: string | null;
   is_read: boolean;
+  priority?: "normal" | "critical";
+  dismissed_at?: string | null;
   created_at: string;
 };
 
 export type UserPlanChange = {
   id: string;
   user_id: string;
-  from_plan: "free" | "standard" | "pro";
-  to_plan: "free" | "standard" | "pro";
+  from_plan: "free" | "standard" | "premium" | "business";
+  to_plan: "free" | "standard" | "premium" | "business";
   payment_status: "not_required" | "pending" | "completed" | "failed";
   stripe_session_id: string | null;
-  changed_via: "signup" | "settings" | "admin" | "stripe_webhook";
+  changed_via: "signup" | "settings" | "admin" | "stripe_webhook" | "sync";
   created_at: string;
+};
+
+export type UserPresence = {
+  user_id: string;
+  path: string;
+  area: string;
+  title: string;
+  is_authenticated: boolean;
+  last_seen_at: string;
+  user_agent: string | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type UserOnboarding = {
   user_id: string;
-  selected_plan: "free" | "standard" | "pro";
+  selected_plan: "free" | "standard" | "premium" | "business";
   payment_status: "not_required" | "pending" | "completed" | "failed";
   stripe_session_id: string | null;
   completed_at: string | null;
@@ -529,7 +543,7 @@ export type Database = {
           is_creator?: boolean;
           disciplines?: string[];
           is_ops_admin?: boolean;
-          subscription_plan?: "free" | "standard" | "pro";
+          subscription_plan?: "free" | "standard" | "premium" | "business";
           created_at?: string;
           updated_at?: string;
         };
@@ -542,7 +556,31 @@ export type Database = {
           is_creator?: boolean;
           disciplines?: string[];
           is_ops_admin?: boolean;
-          subscription_plan?: "free" | "standard" | "pro";
+          subscription_plan?: "free" | "standard" | "premium" | "business";
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      user_presence: {
+        Row: UserPresence;
+        Insert: {
+          user_id: string;
+          path?: string;
+          area?: string;
+          title?: string;
+          is_authenticated?: boolean;
+          last_seen_at?: string;
+          user_agent?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          path?: string;
+          area?: string;
+          title?: string;
+          is_authenticated?: boolean;
+          last_seen_at?: string;
+          user_agent?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -1085,11 +1123,112 @@ export type Database = {
         };
         Relationships: [];
       };
+      subscription_plans: {
+        Row: {
+          slug: "free" | "standard" | "premium" | "business";
+          name: string;
+          price_yen: number;
+          currency: string;
+          billing_cycle: string;
+          shop_fee_percent: number | null;
+          features: Record<string, unknown>;
+          trial_days: number;
+          is_active: boolean;
+          sort_order: number;
+          version: number;
+          source: "django" | "supabase" | "seed" | "migration";
+          synced_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          slug: "free" | "standard" | "premium" | "business";
+          name: string;
+          price_yen?: number;
+          currency?: string;
+          billing_cycle?: string;
+          shop_fee_percent?: number | null;
+          features?: Record<string, unknown>;
+          trial_days?: number;
+          is_active?: boolean;
+          sort_order?: number;
+          version?: number;
+          source?: "django" | "supabase" | "seed" | "migration";
+          synced_at?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          price_yen?: number;
+          shop_fee_percent?: number | null;
+          features?: Record<string, unknown>;
+          trial_days?: number;
+          is_active?: boolean;
+          sort_order?: number;
+          version?: number;
+          source?: "django" | "supabase" | "seed" | "migration";
+          synced_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      subscription_plan_archives: {
+        Row: {
+          id: string;
+          slug: string;
+          version: number;
+          snapshot: Record<string, unknown>;
+          archived_reason: string;
+          archived_by: string;
+          archived_at: string;
+        };
+        Insert: {
+          id?: string;
+          slug: string;
+          version: number;
+          snapshot: Record<string, unknown>;
+          archived_reason?: string;
+          archived_by?: string;
+          archived_at?: string;
+        };
+        Update: {
+          snapshot?: Record<string, unknown>;
+          archived_reason?: string;
+        };
+        Relationships: [];
+      };
+      user_plan_assignment_archives: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan_slug: string;
+          payment_status: string | null;
+          snapshot: Record<string, unknown>;
+          archived_reason: string;
+          archived_by: string;
+          archived_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          plan_slug: string;
+          payment_status?: string | null;
+          snapshot: Record<string, unknown>;
+          archived_reason?: string;
+          archived_by?: string;
+          archived_at?: string;
+        };
+        Update: {
+          snapshot?: Record<string, unknown>;
+        };
+        Relationships: [];
+      };
       user_onboarding: {
         Row: UserOnboarding;
         Insert: {
           user_id: string;
-          selected_plan?: "free" | "standard" | "pro";
+          selected_plan?: "free" | "standard" | "premium" | "business";
           payment_status?: "not_required" | "pending" | "completed" | "failed";
           stripe_session_id?: string | null;
           completed_at?: string | null;
@@ -1097,7 +1236,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          selected_plan?: "free" | "standard" | "pro";
+          selected_plan?: "free" | "standard" | "premium" | "business";
           payment_status?: "not_required" | "pending" | "completed" | "failed";
           stripe_session_id?: string | null;
           completed_at?: string | null;
@@ -1110,11 +1249,11 @@ export type Database = {
         Insert: {
           id?: string;
           user_id: string;
-          from_plan: "free" | "standard" | "pro";
-          to_plan: "free" | "standard" | "pro";
+          from_plan: "free" | "standard" | "premium" | "business";
+          to_plan: "free" | "standard" | "premium" | "business";
           payment_status?: "not_required" | "pending" | "completed" | "failed";
           stripe_session_id?: string | null;
-          changed_via?: "signup" | "settings" | "admin" | "stripe_webhook";
+          changed_via?: "signup" | "settings" | "admin" | "stripe_webhook" | "sync";
           created_at?: string;
         };
         Update: {
@@ -1181,6 +1320,8 @@ export type Database = {
           href?: string | null;
           collab_request_id?: string | null;
           is_read?: boolean;
+          priority?: "normal" | "critical";
+          dismissed_at?: string | null;
           created_at?: string;
         };
         Update: {
@@ -1201,6 +1342,8 @@ export type Database = {
           href?: string | null;
           collab_request_id?: string | null;
           is_read?: boolean;
+          priority?: "normal" | "critical";
+          dismissed_at?: string | null;
         };
         Relationships: [];
       };

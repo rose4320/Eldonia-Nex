@@ -91,6 +91,9 @@ export function LpConceptSection() {
               <p className="lp-concept-tree__sticky-title whitespace-pre-line text-center font-display text-lg font-bold leading-tight tracking-wide text-[#f8f1df] sm:text-xl">
                 {LP_CONCEPT.title}
               </p>
+              <p className="mx-auto mt-2 max-w-[36rem] text-center text-[0.7rem] tracking-wide text-[#d6a84f] sm:text-xs">
+                {LP_CONCEPT.analogy}
+              </p>
               <p className="lp-concept-tree__sticky-lead mx-auto mt-2 max-w-[42rem] text-center text-xs leading-6 text-[#d8c8a8] sm:text-sm">
                 {LP_CONCEPT.lead}
               </p>

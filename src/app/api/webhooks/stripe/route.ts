@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { normalizePlanId } from "@/lib/plans/catalog";
 import { getStripe } from "@/lib/stripe/server";
 
 export async function POST(request: Request) {
@@ -40,13 +41,11 @@ export async function POST(request: Request) {
         .eq("stripe_session_id", session.id);
 
       if (session.metadata?.kind === "subscription_onboarding") {
+        const planId = normalizePlanId(session.metadata.plan_id);
         await admin
           .from("user_onboarding")
           .update({
-            selected_plan:
-              session.metadata.plan_id === "standard" || session.metadata.plan_id === "pro"
-                ? session.metadata.plan_id
-                : "free",
+            selected_plan: planId === "business" ? "premium" : planId,
             payment_status: "completed",
             stripe_session_id: session.id,
           })
@@ -55,14 +54,24 @@ export async function POST(request: Request) {
 
       if (session.metadata?.kind === "subscription_settings") {
         const userId = session.metadata.user_id;
-        const planId = session.metadata.plan_id;
-        const fromPlan = session.metadata.from_plan;
+        const planId = normalizePlanId(session.metadata.plan_id);
+        const fromPlan = normalizePlanId(session.metadata.from_plan);
 
-        if (
-          userId &&
-          (planId === "standard" || planId === "pro") &&
-          (fromPlan === "free" || fromPlan === "standard" || fromPlan === "pro")
-        ) {
+        if (userId && (planId === "standard" || planId === "premium")) {
+          await admin.from("user_plan_assignment_archives").insert({
+            user_id: userId,
+            plan_slug: fromPlan,
+            payment_status: "pending",
+            snapshot: {
+              from_plan: fromPlan,
+              to_plan: planId,
+              stripe_session_id: session.id,
+              changed_via: "stripe_webhook",
+            },
+            archived_reason: "plan_changed",
+            archived_by: "stripe_webhook",
+          });
+
           await admin.from("user_onboarding").upsert(
             {
               user_id: userId,

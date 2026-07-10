@@ -119,6 +119,7 @@ def send_announcement(
     href: str | None,
     target: str,
     email: str | None = None,
+    priority: str = "normal",
 ) -> int:
     """user_notifications に announcement を一括 INSERT。配信件数を返す。"""
     url, key = _supabase_config()
@@ -128,6 +129,8 @@ def send_announcement(
     if not user_ids:
         raise SupabaseAnnouncementError("配信対象ユーザーが 0 件です。")
 
+    priority_value = "critical" if priority == "critical" else "normal"
+
     rows: list[dict[str, Any]] = []
     for user_id in user_ids:
         row: dict[str, Any] = {
@@ -135,6 +138,7 @@ def send_announcement(
             "kind": "announcement",
             "title": title[:120],
             "body": body[:2000] if body else None,
+            "priority": priority_value,
         }
         if href:
             row["href"] = href[:500]
@@ -167,6 +171,7 @@ def preview_announcement(
     href: str | None,
     target: str,
     email: str | None = None,
+    priority: str = "normal",
 ) -> list[dict[str, str]]:
     user_ids = _filter_announcement_recipients(
         fetch_supabase_profile_ids(target=target, email=email)
@@ -176,8 +181,12 @@ def preview_announcement(
         "creators": "クリエイター",
         "email": f"個別 ({email})",
     }.get(target, target)
+    priority_label = (
+        "最重要（Frontend モーダル）" if priority == "critical" else "通常（通知ベル）"
+    )
     return [
         {"label": "配信先", "value": f"{target_label} — {len(user_ids)} 件"},
+        {"label": "重要度", "value": priority_label},
         {"label": "タイトル", "value": title},
         {"label": "本文", "value": body or "（なし）"},
         {"label": "リンク", "value": href or "（なし）"},
