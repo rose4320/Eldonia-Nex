@@ -18,8 +18,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install deps from repo-root requirements (copied via railway/docker context)
-COPY requirements.txt /tmp/requirements.txt
+# Install production runtime deps only (no docs/dev/test tooling)
+COPY requirements-cloud.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt
 
