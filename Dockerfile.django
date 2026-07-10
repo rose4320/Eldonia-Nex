@@ -1,0 +1,33 @@
+# Dockerfile that builds from monorepo root (for Railway Root Directory = repo root)
+# Prefer setting Railway Root Directory to `backend` and using backend/Dockerfile instead.
+# This file is a fallback when Root Directory = repository root.
+
+FROM python:3.13.3-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app/backend
+ENV PORT=8000
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev libmagic1 libffi-dev libssl-dev pkg-config curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /app/requirements.txt
+
+COPY backend /app/backend
+WORKDIR /app/backend
+
+RUN chmod +x /app/backend/scripts/start-cloud.sh && \
+    mkdir -p /app/backend/logs /app/backend/staticfiles /app/backend/media
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+  CMD curl -fsS "http://127.0.0.1:${PORT:-8000}/api/v1/health/" || exit 1
+
+CMD ["/app/backend/scripts/start-cloud.sh"]
