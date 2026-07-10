@@ -1,6 +1,5 @@
 # Eldonia-Nex Django Ops — build from repository root (Railway default).
-# Settings: Root Directory = (empty), Dockerfile Path = Dockerfile.django
-# Prefer root `Dockerfile` (same content). Kept for compatibility.
+# Settings: Root Directory = (empty), Dockerfile Path = Dockerfile
 
 FROM python:3.13.3-slim
 
