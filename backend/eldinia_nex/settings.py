@@ -7,6 +7,7 @@ Creative Platform for Artists and Creators
 import os
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # pyright: reportUnknownVariableType=false
@@ -29,7 +30,18 @@ SECRET_KEY = os.getenv(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+    if h.strip()
+]
+
+# HTTPS reverse-proxy hosts (Railway / Render / custom domain)
+CSRF_TRUSTED_ORIGINS = [
+    o.strip()
+    for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if o.strip()
+]
 
 # Next.js ↔ Django internal API auth (empty = dev-only open access)
 INTERNAL_API_TOKEN = os.getenv("INTERNAL_API_TOKEN", "")
@@ -62,6 +74,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -98,8 +111,31 @@ WSGI_APPLICATION = "eldinia_nex.wsgi.application"
 # 環境変数で簡単に切り替え可能: 'sqlite' | 'postgresql' | 'aurora'
 
 DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
+DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+# Cloud (Railway/Render): USE_DATABASE_URL=true または DEBUG=False のときだけ DATABASE_URL を使う。
+# ローカル DEBUG では .env の DATABASE_URL があっても SQLite / DATABASE_TYPE を優先する。
+_use_database_url = bool(DATABASE_URL) and (
+    os.getenv("USE_DATABASE_URL", "").lower() == "true" or not DEBUG
+)
 
-if DATABASE_TYPE == "sqlite":
+if _use_database_url:
+    try:
+        import dj_database_url
+    except ImportError as exc:  # pragma: no cover
+        raise ImproperlyConfigured(
+            "DATABASE_URL が設定されていますが dj-database-url が未インストールです。"
+            " pip install dj-database-url を実行するか、ローカルでは USE_DATABASE_URL を外してください。"
+        ) from exc
+
+    _ssl_default = "false" if DEBUG else "true"
+    DATABASES = {  # type: ignore
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=os.getenv("DATABASE_SSL_REQUIRE", _ssl_default).lower() == "true",
+        )
+    }
+elif DATABASE_TYPE == "sqlite":
     # Current: SQLite (開発中)
     DATABASES = {  # type: ignore
         "default": {
@@ -189,6 +225,15 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        # Manifest は collectstatic 必須。クラウドでは CompressedStaticFilesStorage で十分。
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
 
 # Media files
 MEDIA_URL = "/media/"
@@ -288,7 +333,29 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "noreply@eldinia-nex.com")
 
-# Logging
+# Logging (console always; file only when local logs/ exists)
+_log_handlers = ["console"]
+_logging_handlers = {
+    "console": {
+        "level": "DEBUG" if DEBUG else "INFO",
+        "class": "logging.StreamHandler",
+        "formatter": "verbose",
+    },
+}
+_logs_dir = BASE_DIR / "logs"
+if _logs_dir.exists() or DEBUG:
+    try:
+        _logs_dir.mkdir(parents=True, exist_ok=True)
+        _logging_handlers["file"] = {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": str(_logs_dir / "django.log"),
+            "formatter": "verbose",
+        }
+        _log_handlers.append("file")
+    except OSError:
+        pass
+
 LOGGING = {  # type: ignore
     "version": 1,
     "disable_existing_loggers": False,
@@ -298,26 +365,14 @@ LOGGING = {  # type: ignore
             "style": "{",
         },
     },
-    "handlers": {
-        "file": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": BASE_DIR / "logs" / "django.log",
-            "formatter": "verbose",
-        },
-        "console": {
-            "level": "DEBUG" if DEBUG else "INFO",
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
+    "handlers": _logging_handlers,
     "root": {
-        "handlers": ["console", "file"],
+        "handlers": _log_handlers,
         "level": "INFO",
     },
     "loggers": {
         "django": {
-            "handlers": ["console", "file"],
+            "handlers": _log_handlers,
             "level": "INFO",
             "propagate": False,
         },
@@ -327,9 +382,12 @@ LOGGING = {  # type: ignore
 # CORS Configuration for Next.js Integration
 CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:3001",
+    o.strip()
+    for o in os.getenv(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000,http://localhost:3001,https://eldonia-nex.com",
+    ).split(",")
+    if o.strip()
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -349,11 +407,14 @@ CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
 # Security settings
 if not DEBUG:
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "true").lower() == "true"
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SECURE_BROWSER_XSS_FILTER = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
     X_FRAME_OPTIONS = "DENY"

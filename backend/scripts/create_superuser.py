@@ -74,22 +74,27 @@ def main() -> None:
     user.set_password(password)
     user.save()
 
-    upsert_env(
-        ENV_PATH,
-        {
-            "DJANGO_ADMIN_USERNAME": username,
-            "DJANGO_ADMIN_EMAIL": email,
-            "DJANGO_ADMIN_PASSWORD": password,
-            "DJANGO_ADMIN_URL": "http://localhost:8000/admin/",
-        },
-    )
+    if os.getenv("SKIP_ENV_WRITE", "").lower() != "true":
+        try:
+            upsert_env(
+                ENV_PATH,
+                {
+                    "DJANGO_ADMIN_USERNAME": username,
+                    "DJANGO_ADMIN_EMAIL": email,
+                    "DJANGO_ADMIN_PASSWORD": password,
+                    "DJANGO_ADMIN_URL": "http://localhost:8000/admin/",
+                },
+            )
+            print(f"Credentials saved to: {ENV_PATH}")
+        except OSError as exc:
+            print(f"Skipped .env write ({exc})")
 
     action = "created" if created else "updated"
     print(f"Superuser {action}: {username} <{email}>")
-    print(f"Admin URL: http://localhost:8000/admin/")
-    print(f"Credentials saved to: {ENV_PATH}")
+    print(f"Admin URL: /admin/")
     print(f"DJANGO_ADMIN_USERNAME={username}")
-    print(f"DJANGO_ADMIN_PASSWORD={password}")
+    if os.getenv("PRINT_ADMIN_PASSWORD", "true").lower() == "true":
+        print(f"DJANGO_ADMIN_PASSWORD={password}")
 
 
 if __name__ == "__main__":

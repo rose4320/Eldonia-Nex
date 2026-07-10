@@ -1,0 +1,14 @@
+# Railway / Render — Django Ops Console
+# Root Directory を `backend` に設定すること。
+# requirements は親ディレクトリからコピーするため Dockerfile を使う。
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "/app/scripts/start-cloud.sh"
+healthcheckPath = "/api/v1/health/"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
