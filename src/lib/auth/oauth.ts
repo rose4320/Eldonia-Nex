@@ -28,6 +28,14 @@ const DEFAULT_ENABLED: Record<OAuthProvider, boolean> = {
   discord: false,
 };
 
+/** Supabase Auth provider id (X uses `x`, not legacy `twitter`). */
+const SUPABASE_PROVIDER: Record<OAuthProvider, Provider> = {
+  google: "google",
+  facebook: "facebook",
+  twitter: "x",
+  discord: "discord",
+};
+
 /** A provider is shown when Supabase is configured and its env flag allows it. */
 export function isProviderEnabled(provider: OAuthProvider): boolean {
   if (!hasBrowserSupabaseConfig()) return false;
@@ -79,7 +87,7 @@ export async function signInWithProvider(
   const destination = resolveOAuthDestination(options);
 
   const { error } = await supabase.auth.signInWithOAuth({
-    provider: provider as Provider,
+    provider: SUPABASE_PROVIDER[provider],
     options: {
       redirectTo: buildAuthCallbackUrl(destination, options.origin),
     },

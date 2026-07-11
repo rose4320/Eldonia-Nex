@@ -28,6 +28,7 @@ export const ARTWORK_CATEGORY_VALUES = [
   "video",
   "music",
   "document",
+  "3d",
   "other",
 ] as const;
 
@@ -56,6 +57,7 @@ export const GALLERY_REALM_FILTER_VALUES = [
   "story",
   "video",
   "music",
+  "3d",
 ] as const;
 
 export type GalleryRealmFilter = (typeof GALLERY_REALM_FILTER_VALUES)[number];

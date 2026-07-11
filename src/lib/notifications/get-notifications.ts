@@ -36,3 +36,27 @@ export async function getUnreadNotificationCount(userId: string): Promise<number
 
   return count ?? 0;
 }
+
+/** Latest undismissed critical announcement for modal display. */
+export async function getCriticalAnnouncement(
+  userId: string,
+): Promise<UserNotification | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("user_notifications")
+    .select("*")
+    .eq("user_id", userId)
+    .eq("kind", "announcement")
+    .eq("priority", "critical")
+    .is("dismissed_at", null)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data as UserNotification;
+}

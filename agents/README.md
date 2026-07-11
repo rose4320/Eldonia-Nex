@@ -6,82 +6,97 @@
 
 Main Director Agent を中心に、19 部署 + Sub Agent で運営する。
 
+## フォルダ構成
+
+```text
+agents/
+├── eldonia_nex_agent_departments.md   # 本書
+├── director/      # 統括
+├── development/   # FE / BE / DB / Auth / DevOps / QA
+├── design/        # UI/UX
+├── product/       # Gallery, Lab, Works, Shop …
+├── business/      # 収益, 翻訳, モデレーション …
+└── strategy/      # Product Strategy
+```
+
+## フォルダ別索引
+
+| フォルダ | README |
+|---------|--------|
+| `director/` | [director/README.md](./director/README.md) |
+| `development/` | [development/README.md](./development/README.md) |
+| `design/` | [design/README.md](./design/README.md) |
+| `product/` | [product/README.md](./product/README.md) |
+| `business/` | [business/README.md](./business/README.md) |
+| `strategy/` | [strategy/README.md](./strategy/README.md) |
+
 ## Cursor での運用（管理エージェント経由）
 
 1. ユーザー要望 → **Main Director** が Intake（`.cursor/skills/eldonia-main-director/SKILL.md`）
-2. 担当 `agents/*.agent.md` を読んでから実装
+2. 担当 `agents/<category>/*.agent.md` を読んでから実装
 3. `eldonia-verify` で検証 → 日本語 Report
 
 詳細: [`.cursor/AGENTS.md`](../.cursor/AGENTS.md)
 
-## 全体構成
-
-```text
-Main Director Agent  ← agents/Main_Director.agent.md
-├─ Product Strategy
-├─ Development（Frontend / Backend / Database / Auth / DevOps / QA …）
-├─ Design
-├─ Gallery ──→ Lab（コラボ制作の核）
-├─ Community / Shop / Event / Works
-├─ Quest / Fan Notification / Portfolio・Passport
-├─ Revenue・Payment / Translation / Moderation・Safety
-└─ Support / Marketing / Admin・Audit
-```
-
-**コアフロー**: Gallery 作品 → コラボ → Lab → Shop/Event/Portfolio/Works 展開
-
-## Main Director
+## Main Director（`director/`）
 
 | Sub Agent | ファイル |
 |-----------|---------|
-| **Main Director** | `Main_Director.agent.md` |
-| Request Intake | `Request_Intake.agent.md` |
-| Project Producer | `Project_Producer.agent.md` |
-| Explore | `Explore.agent.md` |
+| **Main Director** | `director/Main_Director.agent.md` |
+| Request Intake | `director/Request_Intake.agent.md` |
+| Project Producer | `director/Project_Producer.agent.md` |
+| Explore | `director/Explore.agent.md` |
 
-## Development Sub Agents
+## Development（`development/`）
 
 | Sub Agent | ファイル | パス例 |
 |-----------|---------|--------|
-| Frontend Manager | `Frontend_Manager.agent.md` | `src/app/`, `src/components/` |
-| Backend Manager | `Backend_Manager.agent.md` | `src/app/api/`, `src/lib/` |
-| **Database Agent** | `Database_Agent.agent.md` | `supabase/migrations/` |
-| **Auth Agent** | `Auth_Agent.agent.md` | `src/app/auth/`, middleware |
-| **DevOps Agent** | `DevOps_Agent.agent.md` | CI, Vercel, build |
-| **QA Test Agent** | `QA_Test_Agent.agent.md` | lint/build/回帰 |
-| Django Manager | `Django_Manager.agent.md` | `backend/` |
-| Accounting | `Accounting.agent.md` | 財務 |
+| Frontend Manager | `development/Frontend_Manager.agent.md` | `src/app/`, `src/components/` |
+| Backend Manager | `development/Backend_Manager.agent.md` | `src/app/api/`, `src/lib/` |
+| Database Agent | `development/Database_Agent.agent.md` | `supabase/migrations/` |
+| Auth Agent | `development/Auth_Agent.agent.md` | `src/app/auth/`, middleware |
+| DevOps Agent | `development/DevOps_Agent.agent.md` | CI, Vercel, build |
+| QA Test Agent | `development/QA_Test_Agent.agent.md` | lint/build/回帰 |
+| Django Manager | `development/Django_Manager.agent.md` | `backend/` |
+| Accounting | `development/Accounting.agent.md` | 財務 |
 
-## 部署 Agent 一覧
+## Design（`design/`）
+
+| Agent | ファイル |
+|-------|---------|
+| UI/UX Designer | `design/UI_UX_Designer.agent.md` |
+
+## Product（`product/`）
 
 | 部署 | ファイル | パス例 |
 |------|---------|--------|
-| Product Strategy | `Product_Strategy.agent.md` | `docs/` |
-| Design | `UI_UX_Designer.agent.md` | デザインシステム |
-| Gallery | `Gallery_Manager.agent.md` | `src/app/gallery/` |
-| Community | `Community_Manager.agent.md` | `src/app/community/` |
-| Shop | `Shop_Manager.agent.md` | `src/app/shop/` |
-| Event | `Events_Manager.agent.md` | `src/app/events/` |
-| Works | `Works_Manager.agent.md` | `src/app/works/` |
-| Lab | `Lab_Manager.agent.md` | `src/app/lab/` |
-| Quest | `Quest_Manager.agent.md` | `/api/quests` |
-| Fan Notification | `Fan_Notification_Manager.agent.md` | 通知 |
-| Portfolio / Passport | `Portfolio_Passport_Manager.agent.md` | `works/portfolio/` |
-| Revenue / Payment | `Revenue_Payment_Manager.agent.md` | Stripe |
-| Translation | `Translation_Manager.agent.md` | i18n |
-| Moderation / Safety | `Moderation_Safety_Manager.agent.md` | 通報 |
-| Support | `Support_Desk_Manager.agent.md` | `src/app/help/` |
-| Marketing | `Marketing_Manager.agent.md` | LP |
-| Admin / Audit | `Admin_Audit_Manager.agent.md` | `/admin` |
+| Gallery | `product/Gallery_Manager.agent.md` | `src/app/gallery/` |
+| Lab | `product/Lab_Manager.agent.md` | `src/app/lab/` |
+| Works | `product/Works_Manager.agent.md` | `src/app/works/` |
+| Shop | `product/Shop_Manager.agent.md` | `src/app/shop/` |
+| Event | `product/Events_Manager.agent.md` | `src/app/events/` |
+| Community | `product/Community_Manager.agent.md` | `src/app/community/` |
+| Quest | `product/Quest_Manager.agent.md` | `/api/quests` |
+| Fan Notification | `product/Fan_Notification_Manager.agent.md` | 通知 |
+| Portfolio / Passport | `product/Portfolio_Passport_Manager.agent.md` | `works/portfolio/` |
 
-## Cursor Skills（開発時に自動参照）
+## Business（`business/`）
 
-| Skill | 用途 |
-|-------|------|
-| `eldonia-main-director` | 要望振り分け・承認要否 |
-| `eldonia-development` | Next.js + Supabase 実装 |
-| `eldonia-gallery-lab` | Gallery→Lab コアフロー |
-| `eldonia-verify` | lint/build/デプロイ確認 |
+| 部署 | ファイル |
+|------|---------|
+| Revenue / Payment | `business/Revenue_Payment_Manager.agent.md` |
+| Translation | `business/Translation_Manager.agent.md` |
+| Moderation / Safety | `business/Moderation_Safety_Manager.agent.md` |
+| Support | `business/Support_Desk_Manager.agent.md` |
+| Marketing | `business/Marketing_Manager.agent.md` |
+| Admin / Audit | `business/Admin_Audit_Manager.agent.md` |
+
+## Strategy（`strategy/`）
+
+| Agent | ファイル |
+|-------|---------|
+| Product Strategy | `strategy/Product_Strategy.agent.md` |
+| Other | `strategy/Other.agent.md` |
 
 ## MVP 優先（§24）
 

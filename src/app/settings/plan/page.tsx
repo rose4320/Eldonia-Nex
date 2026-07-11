@@ -10,6 +10,7 @@ import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { PAGE_ICONS } from "@/lib/layout/module-icons";
 import { ensureProfile } from "@/lib/auth/ensure-profile";
 import { getSettingsHubData } from "@/lib/settings/get-settings-data";
+import { getLivePlanCatalog, toSignupPlans } from "@/lib/plans/live-catalog";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function SettingsPlanPage({
@@ -31,6 +32,8 @@ export default async function SettingsPlanPage({
 
   const profile = await ensureProfile(user);
   const data = await getSettingsHubData(user.id, profile);
+  const liveCatalog = await getLivePlanCatalog();
+  const plans = toSignupPlans(liveCatalog, locale === "en" ? "en" : "ja");
   const checkoutMessage =
     params.checkout === "success"
       ? t.settingsUi.plan.checkoutSuccess
@@ -61,6 +64,7 @@ export default async function SettingsPlanPage({
               <SettingsPlanChange
                 currentPlan={data.plan.plan}
                 paymentStatus={data.plan.paymentStatus}
+                plans={plans}
               />
             </div>
 

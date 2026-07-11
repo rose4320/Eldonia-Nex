@@ -3,6 +3,7 @@ import type { ArtworkWithCreator } from "@/types/database";
 import { artworkCoverUrl } from "@/lib/gallery/constants";
 import { GalleryMediaGuard } from "@/components/gallery/gallery-media-guard";
 import { ArtworkAmbientBgm } from "@/components/gallery/artwork-ambient-bgm";
+import { ArtworkModelViewer } from "@/components/gallery/artwork-model-viewer";
 
 type ArtworkMediaHeroProps = {
   artwork: ArtworkWithCreator;
@@ -90,6 +91,21 @@ export function ArtworkMediaHero({
             {artwork.title}
           </audio>
         </div>
+      </div>,
+    );
+  }
+
+  if (artwork.media_type === "model") {
+    return wrap(
+      <div className="relative">
+        <ArtworkModelViewer
+          src={artwork.media_url}
+          poster={cover}
+          title={artwork.title}
+        />
+        {bgmUrl && (
+          <ArtworkAmbientBgm url={bgmUrl} className="absolute right-3 top-3 z-10" />
+        )}
       </div>,
     );
   }

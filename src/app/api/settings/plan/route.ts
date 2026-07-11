@@ -1,16 +1,28 @@
 import { NextResponse } from "next/server";
 import { applyPlanChange, getCurrentUserPlan } from "@/lib/plans/apply-plan-change";
 import { SKIP_PLAN_PAYMENTS } from "@/lib/plans/constants";
-import { isPaidPlan, isUserPlanId, type UserPlanId } from "@/lib/plans/types";
+import { getPlanCatalogEntry } from "@/lib/plans/catalog";
+import {
+  isSelfServePaidPlan,
+  isUserPlanId,
+  parseUserPlanId,
+  type UserPlanId,
+} from "@/lib/plans/types";
 import { createClient } from "@/lib/supabase/server";
+import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
 import { getStripe, isStripeConfigured, siteUrl } from "@/lib/stripe/server";
 
 const PRICE_ENV_BY_PLAN = {
   standard: ["STRIPE_PRICE_STANDARD_MONTHLY", "STRIPE_STANDARD_PRICE_ID"],
-  pro: ["STRIPE_PRICE_PRO_MONTHLY", "STRIPE_PRO_PRICE_ID"],
+  premium: [
+    "STRIPE_PRICE_PREMIUM_MONTHLY",
+    "STRIPE_PREMIUM_PRICE_ID",
+    "STRIPE_PRICE_PRO_MONTHLY",
+    "STRIPE_PRO_PRICE_ID",
+  ],
 } as const;
 
-function resolvePriceId(planId: "standard" | "pro"): string | null {
+function resolvePriceId(planId: "standard" | "premium"): string | null {
   for (const key of PRICE_ENV_BY_PLAN[planId]) {
     const value = process.env[key];
     if (value) return value;
@@ -37,6 +49,13 @@ async function applyImmediatePlanChange(
     return NextResponse.json({ error: result.error }, { status: 400 });
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    await syncDjangoUserFromSupabase(user, { subscriptionPlan: toPlan });
+  }
+
   return NextResponse.json({ ok: true, plan: toPlan });
 }
 
@@ -56,10 +75,26 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const body = (await request.json()) as { planId?: string };
-  const planId = body.planId ?? "";
+  const rawPlanId = body.planId ?? "";
 
-  if (!isUserPlanId(planId)) {
+  if (!isUserPlanId(rawPlanId) && rawPlanId !== "pro") {
     return NextResponse.json({ error: "プラン選択が不正です。" }, { status: 400 });
+  }
+
+  const planId = parseUserPlanId(rawPlanId);
+  if (!planId) {
+    return NextResponse.json({ error: "プラン選択が不正です。" }, { status: 400 });
+  }
+
+  const catalog = getPlanCatalogEntry(planId);
+  if (catalog.checkout === "contact") {
+    return NextResponse.json(
+      {
+        error: "Business プランはお問い合わせが必要です。",
+        contactHref: "/help/contact",
+      },
+      { status: 400 },
+    );
   }
 
   const supabase = await createClient();
@@ -87,6 +122,10 @@ export async function POST(request: Request) {
     );
   }
 
+  if (!isSelfServePaidPlan(planId)) {
+    return NextResponse.json({ error: "このプランはオンライン決済に対応していません。" }, { status: 400 });
+  }
+
   if (!isStripeConfigured()) {
     return NextResponse.json(
       { error: "Stripe が未設定です。有料プランへの変更は現在利用できません。" },
@@ -99,7 +138,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "選択プランの Stripe Price ID が未設定です。管理者に STRIPE_PRICE_STANDARD_MONTHLY / STRIPE_PRICE_PRO_MONTHLY を設定してください。",
+          "選択プランの Stripe Price ID が未設定です。管理者に STRIPE_PRICE_STANDARD_MONTHLY / STRIPE_PRICE_PREMIUM_MONTHLY を設定してください。",
       },
       { status: 503 },
     );
@@ -152,5 +191,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "決済セッションの作成に失敗しました。" }, { status: 502 });
   }
 
-  return NextResponse.json({ url: session.url, plan: planId, requiresPayment: isPaidPlan(planId) });
+  return NextResponse.json({
+    url: session.url,
+    plan: planId,
+    requiresPayment: isSelfServePaidPlan(planId),
+  });
 }

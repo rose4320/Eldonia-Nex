@@ -396,3 +396,11 @@ env.md
 .vercel/*
 !.vercel/project.json
 .env*
+
+# Deploy keys / access tokens (never commit)
+id_deploy_ed25519
+id_deploy_ed25519.pub
+pat.txt
+*.pem
+id_*_ed25519
+id_*_rsa

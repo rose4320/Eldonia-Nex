@@ -13,7 +13,8 @@ def _plan_choices() -> list[tuple[str, str]]:
         choices = [
             ("free", "Free = （0）円 / 月"),
             ("standard", "Standard = （800）円 / 月"),
-            ("pro", "Pro = （1500）円 / 月"),
+            ("premium", "Premium = （2980）円 / 月"),
+            ("business", "Business = （10000）円 / 月"),
         ]
     return choices
 
@@ -84,6 +85,15 @@ class PlanAdmin(admin.ModelAdmin):  # type: ignore
     list_display = ("name", "slug", "price", "currency", "billing_cycle", "is_active")
     list_filter = ("billing_cycle", "is_active")
     search_fields = ("name", "slug")
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        from django.contrib import messages
+        from users.operations.plan_push import push_plans_after_admin_change
+
+        sync_msg = push_plans_after_admin_change(reason="plan_admin_save")
+        if sync_msg:
+            messages.info(request, sync_msg)
 
     def changelist_view(self, request, extra_context=None):
         from django.contrib import messages

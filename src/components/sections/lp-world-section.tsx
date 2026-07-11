@@ -14,7 +14,7 @@ export function LpWorldSection() {
         <LpGoldFrame className="lp-world-frame">
           <div className="grid min-h-[210px] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:min-h-[250px]">
             <div className="flex flex-col justify-center p-5 sm:p-6 lg:p-7">
-              <h2 className="font-display text-xl font-semibold tracking-wide text-[#f8f1df] sm:text-2xl">
+              <h2 className="whitespace-pre-line font-display text-xl font-semibold tracking-wide text-[#f8f1df] sm:text-2xl">
                 {LP_WORLD.title}
               </h2>
               <p className="mt-3 text-xs leading-6 text-[#d8c8a8] sm:text-sm">{LP_WORLD.body}</p>

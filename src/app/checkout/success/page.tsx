@@ -6,13 +6,14 @@ import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type SuccessPageProps = {
-  searchParams: Promise<{ session_id?: string }>;
+  searchParams: Promise<{ session_id?: string; free?: string }>;
 };
 
 export default async function CheckoutSuccessPage({ searchParams }: SuccessPageProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
-  const { session_id } = await searchParams;
+  const { session_id, free } = await searchParams;
+  const isFree = free === "1";
 
   return (
     <div className="eldonia-page">
@@ -21,9 +22,11 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
       <main className="eldonia-main flex flex-1 items-center justify-center">
         <section className="eldonia-card max-w-lg text-center">
           <p className="eldonia-eyebrow">{t.pages.checkout.eyebrow}</p>
-          <h1 className="eldonia-heading eldonia-heading-lg mt-3">{t.pages.checkout.title}</h1>
+          <h1 className="eldonia-heading eldonia-heading-lg mt-3">
+            {isFree ? t.pages.checkout.titleFree : t.pages.checkout.title}
+          </h1>
           <p className="eldonia-body mt-4 text-sm">
-            {t.pages.checkout.body}
+            {isFree ? t.pages.checkout.bodyFree : t.pages.checkout.body}
           </p>
           {session_id && (
             <p className="eldonia-hint mt-2 break-all">Session: {session_id}</p>

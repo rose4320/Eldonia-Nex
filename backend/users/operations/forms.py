@@ -363,6 +363,13 @@ class AnnouncementBroadcastForm(forms.Form):
             attrs={"class": "ops-text-input", "placeholder": "/help/guides"}
         ),
     )
+    is_critical = forms.BooleanField(
+        label="最重要告知（Frontend モーダル表示）",
+        required=False,
+        initial=False,
+        help_text="ON にすると、対象ユーザーの画面にモーダルで表示されます（閉じるまで再表示）。",
+        widget=forms.CheckboxInput(attrs={"class": "ops-checkbox-input"}),
+    )
 
     def clean(self):
         cleaned = super().clean()

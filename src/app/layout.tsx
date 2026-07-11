@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Cinzel, Noto_Serif_JP } from "next/font/google";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { NavigationRecovery } from "@/components/providers/navigation-recovery";
+import { PresenceHeartbeat } from "@/components/providers/presence-heartbeat";
 import { VercelMonitoring } from "@/components/providers/vercel-monitoring";
+import { CriticalAnnouncementHost } from "@/components/notifications/critical-announcement-host";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { htmlLang } from "@/lib/i18n/content/messages";
 import "./globals.css";
@@ -54,6 +56,8 @@ export default async function RootLayout({
       <body className="flex min-h-full flex-col">
         <LocaleProvider locale={locale}>
           <NavigationRecovery />
+          <PresenceHeartbeat />
+          <CriticalAnnouncementHost />
           <VercelMonitoring />
           {children}
         </LocaleProvider>

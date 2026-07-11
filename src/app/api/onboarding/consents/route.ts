@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { syncDjangoUserFromSupabase } from "@/lib/django/sync-user";
+import { parseUserPlanId } from "@/lib/plans/types";
 import { createClient } from "@/lib/supabase/server";
 
 const REQUIRED_CONSENT_TYPES = [
@@ -10,17 +11,11 @@ const REQUIRED_CONSENT_TYPES = [
   "commerce_terms",
 ] as const;
 
-type PlanId = "free" | "standard" | "pro";
-
 type ConsentPayload = {
   type?: string;
   title?: string;
   version?: string;
 };
-
-function isPlanId(value: unknown): value is PlanId {
-  return value === "free" || value === "standard" || value === "pro";
-}
 
 export async function POST(request: Request) {
   const body = (await request.json()) as {
@@ -29,7 +24,9 @@ export async function POST(request: Request) {
     consents?: ConsentPayload[];
   };
 
-  if (!isPlanId(body.planId)) {
+  const planId =
+    typeof body.planId === "string" ? parseUserPlanId(body.planId) : null;
+  if (!planId) {
     return NextResponse.json({ error: "プラン選択が不正です。" }, { status: 400 });
   }
 
@@ -78,9 +75,9 @@ export async function POST(request: Request) {
   const { error: onboardingError } = await supabase.from("user_onboarding").upsert(
     {
       user_id: user.id,
-      selected_plan: body.planId,
+      selected_plan: planId,
       payment_status:
-        body.planId === "free"
+        planId === "free"
           ? "not_required"
           : body.paymentStatus === "completed"
             ? "completed"
@@ -94,7 +91,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: onboardingError.message }, { status: 400 });
   }
 
-  await syncDjangoUserFromSupabase(user, { subscriptionPlan: body.planId });
+  await syncDjangoUserFromSupabase(user, { subscriptionPlan: planId });
 
   return NextResponse.json({ ok: true });
 }

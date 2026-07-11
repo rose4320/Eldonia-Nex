@@ -17,7 +17,7 @@ const showcaseDefaults = {
   bgm_url: null,
 };
 
-/** 公式ショーケース作品（DB 未登録時も GALLEY / ホームに表示） */
+/** 公式ショーケース作品（DB 未登録時も GALLERY / ホームに表示） */
 export const SHOWCASE_ARTWORKS: ArtworkWithCreator[] = [
   {
     id: "00000000-0000-4000-8000-000000000601",

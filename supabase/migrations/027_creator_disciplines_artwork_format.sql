@@ -71,7 +71,7 @@ create table if not exists public.artwork_pages (
 create index if not exists artwork_pages_artwork_id_idx
   on public.artwork_pages (artwork_id, page_index);
 
-comment on table public.artwork_pages is 'GALLEY 複数ページ作品（漫画・写真シリーズ等）';
+comment on table public.artwork_pages is 'GALLERY 複数ページ作品（漫画・写真シリーズ等）';
 
 alter table public.artwork_pages enable row level security;
 

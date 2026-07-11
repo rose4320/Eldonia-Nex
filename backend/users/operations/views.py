@@ -48,6 +48,12 @@ from .settings_service import (
     get_quest_actions,
 )
 from users.models import OpsSetting, Plan
+from users.operations.presence import get_live_user_presence
+from users.operations.sync_status import (
+    frontend_base_url,
+    get_plan_sync_status,
+    run_manual_plan_push,
+)
 
 
 def _serialize_dashboard(metrics: dict) -> dict:
@@ -118,6 +124,30 @@ def dashboard_stats_view(request: HttpRequest) -> JsonResponse:
 
 @staff_member_required
 @require_http_methods(["GET"])
+def live_users_view(request: HttpRequest) -> JsonResponse:
+    return JsonResponse(get_live_user_presence())
+
+
+@staff_member_required
+@require_http_methods(["GET"])
+def plan_sync_status_view(request: HttpRequest) -> JsonResponse:
+    return JsonResponse(get_plan_sync_status())
+
+
+@staff_member_required
+@require_http_methods(["POST"])
+def plan_sync_push_view(request: HttpRequest) -> HttpResponse:
+    outcome = run_manual_plan_push(reason="manual_admin")
+    if outcome.get("ok"):
+        messages.success(request, outcome["message"])
+    else:
+        messages.error(request, f"同期失敗: {outcome.get('message')}")
+    next_url = request.POST.get("next") or reverse("admin:index")
+    return redirect(next_url)
+
+
+@staff_member_required
+@require_http_methods(["GET"])
 def settings_hub_view(request: HttpRequest) -> HttpResponse:
     return render(
         request,
@@ -129,6 +159,8 @@ def settings_hub_view(request: HttpRequest) -> HttpResponse:
             "fee_values": get_current_fee_values(),
             "plan_details": get_plan_details(),
             "quest_actions": get_quest_actions(),
+            "plan_sync": get_plan_sync_status(),
+            "frontend_url": frontend_base_url(),
         },
     )
 
@@ -202,7 +234,16 @@ def subscription_plan_add_view(request: HttpRequest) -> HttpResponse:
             is_active=form.cleaned_data.get("is_active", False),
             sort_order=(Plan.objects.count() + 1) * 10,
         )
-        messages.success(request, f"プラン「{form.cleaned_data['name']}」を追加しました。")
+        from users.operations.plan_push import push_plans_after_admin_change
+
+        sync_msg = push_plans_after_admin_change(reason="plan_add")
+        if sync_msg:
+            messages.success(
+                request,
+                f"プラン「{form.cleaned_data['name']}」を追加しました。{sync_msg}",
+            )
+        else:
+            messages.success(request, f"プラン「{form.cleaned_data['name']}」を追加しました。")
     else:
         messages.error(request, "プランを追加できませんでした。入力内容を確認してください。")
         request.session["ops_plan_add_errors"] = form.errors
@@ -450,6 +491,9 @@ def announcement_broadcast_view(request: HttpRequest) -> HttpResponse:
                 "title": form.cleaned_data["title"],
                 "body": form.cleaned_data.get("body") or "",
                 "href": form.cleaned_data.get("href") or "",
+                "priority": (
+                    "critical" if form.cleaned_data.get("is_critical") else "normal"
+                ),
             }
             request.session[SESSION_KEY_ANNOUNCEMENT] = payload
             return redirect("admin:ops_announcement_confirm")
@@ -483,6 +527,7 @@ def announcement_broadcast_confirm_view(request: HttpRequest) -> HttpResponse:
             href=pending["href"] or None,
             target=pending["target"],
             email=pending["target_email"] or None,
+            priority=pending.get("priority") or "normal",
         )
     except SupabaseAnnouncementError as exc:
         messages.error(request, str(exc))
@@ -501,12 +546,17 @@ def announcement_broadcast_confirm_view(request: HttpRequest) -> HttpResponse:
                         href=pending["href"] or None,
                         target=pending["target"],
                         email=pending["target_email"] or None,
+                        priority=pending.get("priority") or "normal",
                     )
                 except SupabaseAnnouncementError as exc:
                     messages.error(request, str(exc))
                     return redirect("admin:ops_announcement_broadcast")
                 del request.session[SESSION_KEY_ANNOUNCEMENT]
-                messages.success(request, f"告知を {count} 件のユーザーに送信しました。")
+                priority = pending.get("priority") or "normal"
+                extra = "（最重要モーダル）" if priority == "critical" else ""
+                messages.success(
+                    request, f"告知を {count} 件のユーザーに送信しました{extra}。"
+                )
                 return redirect("admin:ops_announcement_broadcast")
     else:
         form = AdminPasswordConfirmForm()

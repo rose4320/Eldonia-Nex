@@ -139,7 +139,7 @@ export const SAMPLE_EVENTS: NexusEventWithOrganizer[] = [
     id: "00000000-0000-4000-8000-000000000106",
     organizer_id: null,
     title: "Gallery Night — Creator Exhibition",
-    description: "GALLEY 出品作家による期間限定展示。入場無料・作品即売あり。",
+    description: "GALLERY 出品作家による期間限定展示。入場無料・作品即売あり。",
     category: "exhibition",
     format: "offline",
     status: "published",

@@ -26,9 +26,12 @@ export function LpTranslationSection() {
             </div>
 
             <div className="text-center lg:text-left">
-              <h2 className="font-display text-xl font-semibold tracking-wide text-[#f8f1df] sm:text-2xl">
+              <h2 className="whitespace-pre-line font-display text-xl font-semibold tracking-wide text-[#f8f1df] sm:text-2xl">
                 {LP_TRANSLATION.title}
               </h2>
+              <p className="mt-3 text-xs leading-6 text-[#d8c8a8] sm:text-sm">
+                {LP_TRANSLATION.lead}
+              </p>
               <ul className="mt-4 grid gap-2">
                 {LP_TRANSLATION.items.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-xs leading-5 text-[#d8c8a8] sm:text-sm">

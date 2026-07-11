@@ -1,4 +1,4 @@
--- Eldonia-Nex: 公式 GALLEY ショーケース作品（エンゲージメント用 DB 登録）
+-- Eldonia-Nex: 公式 GALLERY ショーケース作品（エンゲージメント用 DB 登録）
 -- 023_faq_platform_overview_revenue.sql 実行後に適用
 
 do $$

@@ -1,5 +1,5 @@
 import type { UiLocale } from "@/lib/i18n/locale";
-import { formatYenPrice, shopRealmLabel } from "@/lib/i18n/taxonomy";
+import { formatFreePrice, formatYenPrice, shopRealmLabel } from "@/lib/i18n/taxonomy";
 
 export { shopRealmLabel as realmLabel };
 
@@ -21,6 +21,11 @@ export const CATEGORY_ICONS: Record<string, string> = {
 };
 
 export function formatPrice(yen: number, locale: UiLocale = "ja"): string {
+  return formatProductPrice(yen, locale);
+}
+
+export function formatProductPrice(yen: number, locale: UiLocale = "ja"): string {
+  if (yen === 0) return formatFreePrice(locale);
   return formatYenPrice(yen, locale);
 }
 

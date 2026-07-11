@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { getCart } from "@/lib/cart/cookie-cart";
+import { cartItemCount } from "@/lib/cart/types";
 
 type ShopToolbarProps = {
   query?: string;
@@ -11,7 +12,7 @@ export async function ShopToolbar({ query }: ShopToolbarProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
   const cart = await getCart();
-  const count = cart.reduce((sum, line) => sum + line.quantity, 0);
+  const count = cartItemCount(cart);
 
   return (
     <div className="eldonia-shop-toolbar">

@@ -16,7 +16,7 @@ export function OrderCard({ order }: OrderCardProps) {
         <div>
           <p className="eldonia-eyebrow">Order</p>
           <p className="font-display text-lg text-[var(--eldonia-gold-light)]">
-            ¥{order.total_amount.toLocaleString("ja-JP")}
+            {order.total_amount === 0 ? "無料" : `¥${order.total_amount.toLocaleString("ja-JP")}`}
           </p>
         </div>
         <span className="eldonia-badge-nexus-prime">{orderStatusLabel(order.status)}</span>
@@ -25,7 +25,8 @@ export function OrderCard({ order }: OrderCardProps) {
       <ul className="space-y-1 text-sm">
         {items.map((item) => (
           <li key={`${item.kind}-${item.id}`} className="text-[var(--eldonia-text-muted)]">
-            {item.kind.toUpperCase()} · {item.quantity} × ¥{item.unitPrice.toLocaleString("ja-JP")}
+            {item.kind.toUpperCase()} · {item.quantity} ×{" "}
+            {item.unitPrice === 0 ? "無料" : `¥${item.unitPrice.toLocaleString("ja-JP")}`}
           </li>
         ))}
       </ul>

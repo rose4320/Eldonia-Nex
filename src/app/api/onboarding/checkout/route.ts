@@ -1,15 +1,19 @@
 import { NextResponse } from "next/server";
+import { isSelfServePaidPlan, parseUserPlanId } from "@/lib/plans/types";
 import { getStripe, isStripeConfigured, siteUrl } from "@/lib/stripe/server";
 import { createClient } from "@/lib/supabase/server";
 
-type PlanId = "standard" | "pro";
-
-const PRICE_ENV_BY_PLAN: Record<PlanId, string[]> = {
+const PRICE_ENV_BY_PLAN = {
   standard: ["STRIPE_PRICE_STANDARD_MONTHLY", "STRIPE_STANDARD_PRICE_ID"],
-  pro: ["STRIPE_PRICE_PRO_MONTHLY", "STRIPE_PRO_PRICE_ID"],
-};
+  premium: [
+    "STRIPE_PRICE_PREMIUM_MONTHLY",
+    "STRIPE_PREMIUM_PRICE_ID",
+    "STRIPE_PRICE_PRO_MONTHLY",
+    "STRIPE_PRO_PRICE_ID",
+  ],
+} as const;
 
-function resolvePriceId(planId: PlanId): string | null {
+function resolvePriceId(planId: "standard" | "premium"): string | null {
   for (const key of PRICE_ENV_BY_PLAN[planId]) {
     const value = process.env[key];
     if (value) return value;
@@ -23,7 +27,8 @@ export async function POST(request: Request) {
     redirectTo?: string;
   };
 
-  if (body.planId !== "standard" && body.planId !== "pro") {
+  const planId = typeof body.planId === "string" ? parseUserPlanId(body.planId) : null;
+  if (!planId || !isSelfServePaidPlan(planId)) {
     return NextResponse.json(
       { error: "有料プランを選択してください。" },
       { status: 400 },
@@ -37,12 +42,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const priceId = resolvePriceId(body.planId);
+  const priceId = resolvePriceId(planId);
   if (!priceId) {
     return NextResponse.json(
       {
         error:
-          "選択プランの Stripe Price ID が未設定です。STRIPE_PRICE_STANDARD_MONTHLY または STRIPE_PRICE_PRO_MONTHLY を設定してください。",
+          "選択プランの Stripe Price ID が未設定です。STRIPE_PRICE_STANDARD_MONTHLY または STRIPE_PRICE_PREMIUM_MONTHLY を設定してください。",
       },
       { status: 503 },
     );
@@ -71,7 +76,7 @@ export async function POST(request: Request) {
   await supabase.from("user_onboarding").upsert(
     {
       user_id: user.id,
-      selected_plan: body.planId,
+      selected_plan: planId,
       payment_status: "pending",
     },
     { onConflict: "user_id" },
@@ -81,17 +86,17 @@ export async function POST(request: Request) {
     mode: "subscription",
     customer_email: user.email ?? undefined,
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${base}/auth/signup?checkout=success&plan=${body.planId}&redirect_to=${encodeURIComponent(redirectTo)}&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${base}/auth/signup?checkout=cancelled&plan=${body.planId}&redirect_to=${encodeURIComponent(redirectTo)}`,
+    success_url: `${base}/auth/signup?checkout=success&plan=${planId}&redirect_to=${encodeURIComponent(redirectTo)}&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${base}/auth/signup?checkout=cancelled&plan=${planId}&redirect_to=${encodeURIComponent(redirectTo)}`,
     metadata: {
       kind: "subscription_onboarding",
       user_id: user.id,
-      plan_id: body.planId,
+      plan_id: planId,
     },
     subscription_data: {
       metadata: {
         user_id: user.id,
-        plan_id: body.planId,
+        plan_id: planId,
       },
     },
   });

@@ -7,28 +7,46 @@ import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
 import { shopRealmOptions } from "@/lib/i18n/taxonomy";
 
-type ProductCreateFormProps = {
-  userId: string;
+type ProductCreateInitialValues = {
+  title?: string;
+  description?: string;
+  category?: string;
+  productType?: "physical" | "digital";
+  imageUrl?: string;
 };
 
-export function ProductCreateForm({ userId }: ProductCreateFormProps) {
+type ProductCreateFormProps = {
+  userId: string;
+  disabled?: boolean;
+  initialValues?: ProductCreateInitialValues;
+};
+
+export function ProductCreateForm({
+  userId,
+  disabled = false,
+  initialValues,
+}: ProductCreateFormProps) {
   const router = useRouter();
   const locale = useLocale();
   const { forms } = useContent();
   const product = forms.product;
   const realmOptions = shopRealmOptions(locale).filter((r) => r.value !== "all");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("goods");
-  const [productType, setProductType] = useState<"physical" | "digital">("physical");
+  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [description, setDescription] = useState(initialValues?.description ?? "");
+  const [category, setCategory] = useState(initialValues?.category ?? "goods");
+  const [productType, setProductType] = useState<"physical" | "digital">(
+    initialValues?.productType ?? "physical",
+  );
   const [price, setPrice] = useState("");
+  const [isFree, setIsFree] = useState(false);
   const [stock, setStock] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (disabled) return;
     setError(null);
     setLoading(true);
 
@@ -68,19 +86,19 @@ export function ProductCreateForm({ userId }: ProductCreateFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex max-w-xl flex-col gap-4" aria-disabled={disabled}>
       <div className="flex flex-col gap-1">
         <label htmlFor="title" className="eldonia-label">{product.title}</label>
-        <input id="title" required maxLength={120} value={title} onChange={(e) => setTitle(e.target.value)} className="eldonia-input" />
+        <input id="title" required maxLength={120} disabled={disabled} value={title} onChange={(e) => setTitle(e.target.value)} className="eldonia-input" />
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="description" className="eldonia-label">{product.description}</label>
-        <textarea id="description" rows={4} maxLength={4000} value={description} onChange={(e) => setDescription(e.target.value)} className="eldonia-textarea" />
+        <textarea id="description" required rows={4} maxLength={4000} disabled={disabled} value={description} onChange={(e) => setDescription(e.target.value)} className="eldonia-textarea" />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
           <label htmlFor="category" className="eldonia-label">{product.category}</label>
-          <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="eldonia-input">
+          <select id="category" disabled={disabled} value={category} onChange={(e) => setCategory(e.target.value)} className="eldonia-input">
             {realmOptions.map((r) => (
               <option key={r.value} value={r.value}>{r.label}</option>
             ))}
@@ -88,7 +106,7 @@ export function ProductCreateForm({ userId }: ProductCreateFormProps) {
         </div>
         <div className="flex flex-col gap-1">
           <label htmlFor="product_type" className="eldonia-label">{product.type}</label>
-          <select id="product_type" value={productType} onChange={(e) => setProductType(e.target.value as "physical" | "digital")} className="eldonia-input">
+          <select id="product_type" disabled={disabled} value={productType} onChange={(e) => setProductType(e.target.value as "physical" | "digital")} className="eldonia-input">
             <option value="physical">{product.typePhysical}</option>
             <option value="digital">{product.typeDigital}</option>
           </select>
@@ -97,21 +115,53 @@ export function ProductCreateForm({ userId }: ProductCreateFormProps) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1">
           <label htmlFor="price" className="eldonia-label">{product.price}</label>
-          <input id="price" type="number" min={0} required value={price} onChange={(e) => setPrice(e.target.value)} className="eldonia-input" />
+          <input
+            id="price"
+            type="number"
+            min={0}
+            required
+            disabled={disabled || isFree}
+            value={isFree ? "0" : price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="eldonia-input"
+          />
         </div>
         {productType === "physical" && (
           <div className="flex flex-col gap-1">
             <label htmlFor="stock" className="eldonia-label">{product.stock}</label>
-            <input id="stock" type="number" min={0} value={stock} onChange={(e) => setStock(e.target.value)} className="eldonia-input" />
+            <input id="stock" type="number" min={0} disabled={disabled} value={stock} onChange={(e) => setStock(e.target.value)} className="eldonia-input" />
           </div>
         )}
       </div>
+      <label className="flex items-start gap-2 text-sm">
+        <input
+          type="checkbox"
+          className="mt-1"
+          checked={isFree}
+          disabled={disabled}
+          onChange={(event) => {
+            const checked = event.target.checked;
+            setIsFree(checked);
+            if (checked) {
+              setPrice("0");
+            } else if (price === "0") {
+              setPrice("");
+            }
+          }}
+        />
+        <span>
+          <span className="font-medium text-eldonia-gold-light">{product.freeDistribution}</span>
+          <span className="eldonia-body mt-1 block text-xs text-eldonia-text-muted">
+            {product.freeDistributionHint}
+          </span>
+        </span>
+      </label>
       <div className="flex flex-col gap-1">
         <label htmlFor="image_url" className="eldonia-label">{product.imageUrl}</label>
-        <input id="image_url" type="url" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="eldonia-input" placeholder="https://..." />
+        <input id="image_url" type="url" disabled={disabled} value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="eldonia-input" placeholder="https://..." />
       </div>
       {error && <p className="eldonia-alert-error">{error}</p>}
-      <button type="submit" disabled={loading} className="eldonia-btn-primary w-fit">
+      <button type="submit" disabled={disabled || loading} className="eldonia-btn-primary w-fit">
         {loading ? product.submitting : product.submit}
       </button>
     </form>

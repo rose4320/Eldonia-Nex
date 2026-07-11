@@ -27,8 +27,9 @@ class TagAdmin(admin.ModelAdmin):  # type: ignore
 
 @admin.register(Artwork)
 class ArtworkAdmin(admin.ModelAdmin):  # type: ignore
-    list_display = ("id", "title", "creator", "status", "price")
-    search_fields = ("title", "description")
+    list_display = ("id", "supabase_id", "title", "creator", "status", "price")
+    search_fields = ("title", "description", "supabase_id")
+    readonly_fields = ("supabase_id",)
 
 
 @admin.register(Product)

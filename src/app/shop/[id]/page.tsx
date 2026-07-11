@@ -10,6 +10,8 @@ import { CATEGORY_ICONS, realmLabel } from "@/lib/shop/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getShopProduct } from "@/lib/shop/get-products";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { canDownloadShopProduct } from "@/lib/shop/product-download-access";
+import { productHasDownloadFile } from "@/lib/shop/product-download";
 import { createClient } from "@/lib/supabase/server";
 
 type ShopDetailPageProps = {
@@ -37,6 +39,10 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
     "Eldonia Seller";
   const icon = CATEGORY_ICONS[product.category] ?? "◆";
   const description = product.description ?? t.shop.descriptionPending;
+  const canDownload =
+    product.product_type === "digital" &&
+    productHasDownloadFile(product) &&
+    (await canDownloadShopProduct(user?.id, product));
 
   return (
     <div className="eldonia-page">
@@ -139,7 +145,7 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
             </section>
           </div>
 
-          <ProductBuyBox product={product} isLoggedIn={!!user} />
+          <ProductBuyBox product={product} isLoggedIn={!!user} canDownload={canDownload} />
         </div>
       </main>
 

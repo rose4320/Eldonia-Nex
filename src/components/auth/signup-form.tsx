@@ -10,7 +10,7 @@ import { createClient, hasBrowserSupabaseConfig } from "@/lib/supabase/client";
 import { resolvePostLoginPath, sanitizeRedirectTo } from "@/lib/auth/redirect";
 import { buildAuthCallbackUrl } from "@/lib/auth/site-url";
 import { localeFromCountry } from "@/lib/i18n/country-locale";
-import type { SignupPlanId } from "@/lib/i18n/content/signup-messages";
+import type { SignupPlan, SignupPlanId } from "@/lib/i18n/content/signup-messages";
 import {
   mapAuthError,
   mapSupabaseAuthMessage,
@@ -22,6 +22,8 @@ type SignupFormProps = {
   supabaseConfigured: boolean;
   referralCode: string | null;
   resume?: boolean;
+  /** Live plans from Supabase (Django-synced). Falls back to static catalog. */
+  plans?: SignupPlan[];
 };
 
 type SignupStep = "basic" | "plan" | "payment" | "consent" | "complete";
@@ -60,11 +62,21 @@ function readStoredSignup(): { draft: SignupDraft; selectedPlan: SignupPlanId } 
     if (!raw) return { draft: initialDraft, selectedPlan: "free" };
     const parsed = JSON.parse(raw) as {
       draft?: Partial<SignupDraft>;
-      selectedPlan?: SignupPlanId;
+      selectedPlan?: string;
     };
+    const rawPlan = parsed.selectedPlan;
+    const plan: SignupPlanId =
+      rawPlan === "pro"
+        ? "premium"
+        : rawPlan === "free" ||
+            rawPlan === "standard" ||
+            rawPlan === "premium" ||
+            rawPlan === "business"
+          ? rawPlan
+          : "free";
     return {
       draft: { ...initialDraft, ...parsed.draft },
-      selectedPlan: parsed.selectedPlan ?? "free",
+      selectedPlan: plan,
     };
   } catch {
     window.localStorage.removeItem(STORAGE_KEY);
@@ -77,9 +89,11 @@ export function SignupForm({
   supabaseConfigured,
   referralCode,
   resume = false,
+  plans,
 }: SignupFormProps) {
   const t = useContent();
   const signup = t.signup;
+  const planOptions = plans ?? signup.plans;
   const router = useRouter();
   const searchParams = useSearchParams();
   const [step, setStep] = useState<SignupStep>("basic");
@@ -97,8 +111,8 @@ export function SignupForm({
   const [loading, setLoading] = useState(false);
 
   const selectedPlanInfo = useMemo(
-    () => signup.plans.find((plan) => plan.id === selectedPlan) ?? signup.plans[0],
-    [signup.plans, selectedPlan],
+    () => planOptions.find((plan) => plan.id === selectedPlan) ?? planOptions[0],
+    [planOptions, selectedPlan],
   );
   const activeConsent = signup.consents[activeConsentIndex];
   const consentItems = signup.consents;
@@ -110,8 +124,14 @@ export function SignupForm({
 
     const planParam = searchParams.get("plan");
     /* eslint-disable react-hooks/set-state-in-effect -- hydrate signup step from Stripe return URL once */
-    if (planParam === "free" || planParam === "standard" || planParam === "pro") {
-      setSelectedPlan(planParam);
+    if (
+      planParam === "free" ||
+      planParam === "standard" ||
+      planParam === "premium" ||
+      planParam === "business" ||
+      planParam === "pro"
+    ) {
+      setSelectedPlan(planParam === "pro" ? "premium" : planParam);
     }
     setPaymentCompleted(true);
     setStep("consent");
@@ -585,12 +605,18 @@ export function SignupForm({
             <h2 className="eldonia-heading eldonia-heading-sm mt-2">{signup.plan.title}</h2>
             <p className="eldonia-body mt-2 text-sm">{signup.plan.lead}</p>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            {signup.plans.map((plan) => (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {planOptions.map((plan) => (
               <button
                 key={plan.id}
                 type="button"
-                onClick={() => persistPlan(plan.id)}
+                onClick={() => {
+                  if (plan.checkout === "contact") {
+                    window.location.assign("/help/contact");
+                    return;
+                  }
+                  persistPlan(plan.id);
+                }}
                 className={`eldonia-card text-left transition ${
                   selectedPlan === plan.id ? "ring-2 ring-eldonia-gold/60" : ""
                 }`}
@@ -603,6 +629,9 @@ export function SignupForm({
                     <li key={feature}>- {feature}</li>
                   ))}
                 </ul>
+                {plan.checkout === "contact" ? (
+                  <p className="mt-3 text-xs text-eldonia-gold">お問い合わせ →</p>
+                ) : null}
               </button>
             ))}
           </div>

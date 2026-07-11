@@ -99,11 +99,11 @@ export async function POST(request: NextRequest) {
 
   // 3) 最上級プラン付与＋オンボーディング完了扱い（試験段階）
   await Promise.all([
-    admin.from("profiles").update({ subscription_plan: "pro" }).eq("id", userId),
+    admin.from("profiles").update({ subscription_plan: "premium" }).eq("id", userId),
     admin.from("user_onboarding").upsert(
       {
         user_id: userId,
-        selected_plan: "pro",
+        selected_plan: "premium",
         payment_status: "not_required",
         completed_at: new Date().toISOString(),
       },

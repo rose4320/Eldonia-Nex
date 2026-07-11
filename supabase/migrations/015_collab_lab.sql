@@ -40,7 +40,7 @@ create table if not exists public.collab_labs (
 create index if not exists collab_labs_artwork_id_idx
   on public.collab_labs (artwork_id);
 
-comment on table public.collab_labs is 'GALLEY コラボ Lab（作品名ベースの共同作業）';
+comment on table public.collab_labs is 'GALLERY コラボ Lab（作品名ベースの共同作業）';
 
 -- ---------------------------------------------------------------------------
 -- collab_lab_members

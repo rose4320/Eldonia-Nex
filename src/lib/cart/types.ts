@@ -46,3 +46,7 @@ export function removeLine(
 ): CartLine[] {
   return cart.filter((l) => !(l.kind === kind && l.id === id));
 }
+
+export function cartItemCount(lines: CartLine[]): number {
+  return lines.reduce((sum, line) => sum + line.quantity, 0);
+}

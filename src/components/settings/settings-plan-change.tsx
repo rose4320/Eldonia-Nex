@@ -9,22 +9,32 @@ import type { PlanPaymentStatus, UserPlanId } from "@/lib/plans/types";
 type SettingsPlanChangeProps = {
   currentPlan: UserPlanId;
   paymentStatus: PlanPaymentStatus;
+  plans?: Array<{
+    id: UserPlanId;
+    name: string;
+    price: string;
+    lead: string;
+    features: string[];
+    checkout?: "free" | "stripe" | "contact";
+  }>;
 };
 
 export function SettingsPlanChange({
   currentPlan,
   paymentStatus,
+  plans,
 }: SettingsPlanChangeProps) {
   const router = useRouter();
   const { signup, settingsUi } = useContent();
   const copy = settingsUi.plan;
+  const planOptions = plans ?? signup.plans;
   const [selectedPlan, setSelectedPlan] = useState<UserPlanId>(currentPlan);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const currentPlanInfo = useMemo(
-    () => signup.plans.find((plan) => plan.id === currentPlan) ?? signup.plans[0],
-    [signup.plans, currentPlan],
+    () => planOptions.find((plan) => plan.id === currentPlan) ?? planOptions[0],
+    [planOptions, currentPlan],
   );
 
   async function handleApplyPlan() {
@@ -85,12 +95,18 @@ export function SettingsPlanChange({
         </p>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3">
-        {signup.plans.map((plan) => (
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        {planOptions.map((plan) => (
           <button
             key={plan.id}
             type="button"
-            onClick={() => setSelectedPlan(plan.id)}
+            onClick={() => {
+              if (plan.checkout === "contact") {
+                window.location.assign("/help/contact");
+                return;
+              }
+              setSelectedPlan(plan.id);
+            }}
             className={`eldonia-card text-left transition ${
               selectedPlan === plan.id ? "ring-2 ring-eldonia-gold/60" : ""
             }`}
@@ -103,6 +119,9 @@ export function SettingsPlanChange({
                 <li key={feature}>- {feature}</li>
               ))}
             </ul>
+            {plan.checkout === "contact" ? (
+              <p className="mt-3 text-xs text-eldonia-gold">お問い合わせ →</p>
+            ) : null}
           </button>
         ))}
       </div>

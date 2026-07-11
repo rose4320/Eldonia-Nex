@@ -6,7 +6,7 @@ window.ELDONIA_JA = {
   },
   header: {
     nav: [
-      { label: "GALLEY", href: "#modules" },
+      { label: "GALLERY", href: "#modules" },
       { label: "LAB", href: "#modules" },
       { label: "EVENTS", href: "#modules" },
       { label: "SHOP", href: "#modules" },
@@ -137,7 +137,7 @@ window.ELDONIA_JA = {
     ],
     sitemapTitle: "サイトマップ",
     sitemap: [
-      { label: "GALLEY", href: "#modules" },
+      { label: "GALLERY", href: "#modules" },
       { label: "LAB", href: "#modules" },
       { label: "EVENTS", href: "#modules" },
       { label: "SHOP", href: "#modules" },

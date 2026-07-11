@@ -3,31 +3,26 @@
 import Link from "next/link";
 import { useContent } from "@/components/providers/locale-provider";
 import { SETTINGS_SECTIONS } from "@/lib/settings/constants";
+import { settingsSectionLabel } from "@/lib/settings/section-label";
 
-function sectionLabel(
-  id: (typeof SETTINGS_SECTIONS)[number]["id"],
-  settings: ReturnType<typeof useContent>["pages"]["settings"],
-  settingsUi: ReturnType<typeof useContent>["settingsUi"],
-  fallback: string,
-): string {
-  switch (id) {
-    case "basics":
-      return settings.sectionBasics;
-    case "posts":
-      return settings.sectionPost;
-    case "artworks":
-      return settings.sectionArtworks;
-    case "portfolio":
-      return settings.sectionPortfolio;
-    case "finance":
-      return settings.sectionFinance;
-    case "notifications":
-      return settings.sectionNotifications;
-    case "recommendations":
-      return settingsUi.sectionRecommendations;
-    default:
-      return fallback;
-  }
+export function SettingsMobileNav() {
+  const { pages, settingsUi } = useContent();
+
+  return (
+    <nav className="eldonia-settings-mobile-nav lg:hidden" aria-label={pages.settings.menuTitle}>
+      <div className="eldonia-settings-mobile-nav__scroll">
+        {SETTINGS_SECTIONS.map((section) => (
+          <Link
+            key={section.id}
+            href={`#${section.id}`}
+            className={`eldonia-settings-mobile-nav__chip${section.id === "referral" ? " eldonia-settings-mobile-nav__chip--accent" : ""}`}
+          >
+            {settingsSectionLabel(section.id, pages.settings, settingsUi, section.label)}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
 }
 
 export function SettingsNav() {
@@ -40,7 +35,7 @@ export function SettingsNav() {
         {SETTINGS_SECTIONS.map((section) => (
           <li key={section.id}>
             <Link href={`#${section.id}`} className="eldonia-settings-nav-link">
-              {sectionLabel(section.id, pages.settings, settingsUi, section.label)}
+              {settingsSectionLabel(section.id, pages.settings, settingsUi, section.label)}
             </Link>
           </li>
         ))}

@@ -69,7 +69,7 @@ create policy "community_replies_insert" on public.community_replies
 
 insert into public.community_boards (slug, name, description, sort_order) values
   ('general', 'General Hall', '総合・雑談', 1),
-  ('gallery', 'Gallery Circle', 'GALLEY 作品について', 2),
+  ('gallery', 'Gallery Circle', 'GALLERY 作品について', 2),
   ('shop', 'Merchant Row', 'SHOP・取引', 3),
   ('events', 'Chronicle Plaza', 'EVENTS・参加報告', 4),
   ('works', 'Guild Board', 'WORKS・協業募集', 5),
