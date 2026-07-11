@@ -1,6 +1,6 @@
 {
   "name": "eldonia-nex",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -25,6 +25,7 @@
     "verify:facebook-oauth": "node scripts/verify-facebook-oauth.mjs",
     "verify:x-oauth": "node scripts/verify-x-oauth.mjs",
     "verify:discord-oauth": "node scripts/verify-discord-oauth.mjs",
+    "verify:oauth-callback": "node scripts/verify-oauth-callback.mjs",
     "seed:gallery-3d": "node scripts/seed-gallery-3d-showcase.mjs",
     "verify:gallery-upload": "node scripts/verify-gallery-upload.mjs",
     "fix:facebook-secret": "node scripts/set-facebook-secret.mjs"

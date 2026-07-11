@@ -261,6 +261,7 @@ export type ShopProduct = {
   is_bestseller: boolean;
   is_active: boolean;
   tags: string[];
+  source_artwork_id: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -721,6 +722,7 @@ export type Database = {
           is_bestseller?: boolean;
           is_active?: boolean;
           tags?: string[];
+          source_artwork_id?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -742,6 +744,7 @@ export type Database = {
           is_bestseller?: boolean;
           is_active?: boolean;
           tags?: string[];
+          source_artwork_id?: string | null;
           updated_at?: string;
         };
         Relationships: [];

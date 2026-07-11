@@ -57,6 +57,18 @@ export type SettingsUiContent = {
     downloadModel: string;
     downloadThumbnail: string;
     sellOnShop: string;
+    viewOnShop: string;
+    sellPanelLead: string;
+    sellFreeLabel: string;
+    sellPriceLabel: string;
+    sellSubmit: string;
+    sellCancel: string;
+    sellEditDetails: string;
+    sellFailed: string;
+    sellPriceInvalid: string;
+    urlLabel: string;
+    copyUrl: string;
+    urlCopied: string;
   };
   basics: {
     publicProfile: string;
@@ -230,7 +242,7 @@ const SETTINGS_UI_JA: SettingsUiContent = {
   },
   artworkManagement: {
     heading: "作品管理",
-    lead: "投稿した GALLERY 作品の公開・非公開の切り替えと、元ファイルのダウンロードができます。「SHOP で販売」から有料・無料（¥0）どちらも Shop に登録できます。",
+    lead: "投稿した GALLERY 作品の公開・非公開の切り替えと、元ファイルのダウンロードができます。「SHOP で販売」から作品のジャケット・配布ファイルを自動で引き継いで Shop に登録できます。",
     empty: "まだ作品がありません。",
     postLink: "作品を投稿する →",
     publicBadge: "公開中",
@@ -246,6 +258,18 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     downloadModel: "3Dモデルをダウンロード",
     downloadThumbnail: "サムネイル",
     sellOnShop: "SHOP で販売",
+    viewOnShop: "Shop で公開中",
+    sellPanelLead: "サムネイルと配布ファイルは作品から自動設定されます。",
+    sellFreeLabel: "無料（¥0）で配布",
+    sellPriceLabel: "価格（円）",
+    sellSubmit: "Shop に登録",
+    sellCancel: "キャンセル",
+    sellEditDetails: "価格・説明を詳しく編集 →",
+    sellFailed: "Shop への登録に失敗しました。",
+    sellPriceInvalid: "価格を正しく入力してください。",
+    urlLabel: "作品アドレス",
+    copyUrl: "コピー",
+    urlCopied: "コピーしました",
   },
   basics: {
     publicProfile: "公開プロフィール",
@@ -422,7 +446,7 @@ const SETTINGS_UI_EN: SettingsUiContent = {
   },
   artworkManagement: {
     heading: "Artwork management",
-    lead: "Toggle Gallery visibility and download original files. Use “Sell on SHOP” to list paid or free (¥0) products.",
+    lead: "Toggle Gallery visibility and download original files. “Sell on SHOP” lists the artwork with cover and distribution files prefilled.",
     empty: "No artworks yet.",
     postLink: "Post an artwork →",
     publicBadge: "Public",
@@ -438,6 +462,18 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     downloadModel: "Download 3D model",
     downloadThumbnail: "Thumbnail",
     sellOnShop: "Sell on SHOP",
+    viewOnShop: "Listed on Shop",
+    sellPanelLead: "Cover and distribution files are copied from the artwork.",
+    sellFreeLabel: "Free (¥0)",
+    sellPriceLabel: "Price (JPY)",
+    sellSubmit: "List on Shop",
+    sellCancel: "Cancel",
+    sellEditDetails: "Edit price & details →",
+    sellFailed: "Could not list on Shop.",
+    sellPriceInvalid: "Enter a valid price.",
+    urlLabel: "Artwork URL",
+    copyUrl: "Copy",
+    urlCopied: "Copied",
   },
   basics: {
     publicProfile: "Public profile",

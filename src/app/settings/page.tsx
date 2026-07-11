@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PageIntro } from "@/components/layout/page-intro";
@@ -14,19 +15,25 @@ import { SettingsNotifications } from "@/components/settings/settings-notificati
 import { SettingsPortfolioSummary } from "@/components/settings/settings-portfolio-summary";
 import { SettingsPostHub } from "@/components/settings/settings-post-hub";
 import { SettingsRecommendations } from "@/components/settings/settings-recommendations";
-import { SettingsReferralCard } from "@/components/settings/settings-referral-card";
+import { SettingsReferralSection } from "@/components/settings/settings-referral-section";
 import { SettingsShopManagement } from "@/components/settings/settings-shop-management";
-import { LpReveal } from "@/components/ui/lp-reveal";
 import { LpSectionRule } from "@/components/ui/lp-section-rule";
+import { getPublicSiteUrl } from "@/lib/auth/site-url";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { PAGE_ICONS } from "@/lib/layout/module-icons";
+import { getCreatorAssets } from "@/lib/settings/get-creator-assets";
 import { getSettingsHubData, mergeUserSettings } from "@/lib/settings/get-settings-data";
 import { ensureProfile } from "@/lib/auth/ensure-profile";
-import { getReferralProgramData } from "@/lib/referrals/get-referral-program";
-import { getUserArtworks } from "@/lib/gallery/get-user-artworks";
-import { getUserShopProducts } from "@/lib/shop/get-user-products";
 import { createClient } from "@/lib/supabase/server";
+
+function ReferralSectionFallback() {
+  return (
+    <section id="referral" className="scroll-mt-24">
+      <div className="eldonia-card h-40 animate-pulse bg-[#0f1624]/60" />
+    </section>
+  );
+}
 
 export default async function SettingsPage() {
   const locale = await getUiLocale();
@@ -41,13 +48,21 @@ export default async function SettingsPage() {
   }
 
   const profile = await ensureProfile(user);
-  const data = await getSettingsHubData(user.id, profile);
-  const referral = await getReferralProgramData(user.id, user.email, data.profile.username);
-  const userArtworks = await getUserArtworks(user.id);
-  const userProducts = await getUserShopProducts(user.id);
+  const creatorAssetsPromise = getCreatorAssets(user.id);
+  const [creatorAssets, data] = await Promise.all([
+    creatorAssetsPromise,
+    creatorAssetsPromise.then((assets) =>
+      getSettingsHubData(user.id, profile, {
+        artworkCount: assets.artworks.length,
+        productCount: assets.products.length,
+      }),
+    ),
+  ]);
+
   const expPoints = data.portfolio?.exp_points ?? 0;
   const titleBadge = data.portfolio?.title_badge ?? null;
   const settings = mergeUserSettings(user.id, data.userSettings);
+  const siteUrl = getPublicSiteUrl();
 
   const displayName =
     data.profile.display_name ?? data.profile.username ?? t.pages.userFallback;
@@ -59,10 +74,15 @@ export default async function SettingsPage() {
       <SiteHeader />
 
       <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-8 px-4 py-10 sm:px-6 lg:px-8">
-        {/* Hero band */}
         <section className="lp-home-hero">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/aset/lp/hero.png?v=0.6.0" alt="" className="lp-home-hero__bg" />
+          <img
+            src="/aset/lp/hero.png?v=0.6.0"
+            alt=""
+            className="lp-home-hero__bg"
+            loading="lazy"
+            decoding="async"
+          />
           <div className="lp-home-hero__scrim" aria-hidden />
           <span className="lp-home-corner lp-home-corner--tl" aria-hidden />
           <span className="lp-home-corner lp-home-corner--tr" aria-hidden />
@@ -79,7 +99,13 @@ export default async function SettingsPage() {
                 <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[#d6a84f]/50 bg-[#060b14]">
                   {avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                    <img
+                      src={avatarUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
                   ) : (
                     <span className="font-display text-2xl text-[#f0c978]">{initial}</span>
                   )}
@@ -99,72 +125,61 @@ export default async function SettingsPage() {
           <div className="min-w-0 flex-1 space-y-8">
             <SettingsMobileNav />
 
-            <LpReveal>
-              <SettingsRecommendations items={data.recommendations} />
-            </LpReveal>
+            <SettingsRecommendations items={data.recommendations} />
 
             <LpSectionRule variant="simple" />
 
-            <LpReveal>
-              <SettingsBasicsCollapsible>
-                <SettingsBasicsForm
-                  userId={user.id}
-                  email={user.email ?? null}
-                  profile={data.profile}
-                  settings={settings}
-                  currentPlan={data.plan.plan}
-                  basicsExpAwarded={data.basicsExpAwarded}
-                />
-              </SettingsBasicsCollapsible>
-            </LpReveal>
-
-            <LpSectionRule variant="simple" />
-
-            <LpReveal>
-              <SettingsPostHub />
-            </LpReveal>
-
-            <LpSectionRule variant="simple" />
-
-            <LpReveal>
-              <SettingsShopManagement
-                products={userProducts}
-                isCreator={data.profile.is_creator ?? false}
+            <SettingsBasicsCollapsible>
+              <SettingsBasicsForm
+                userId={user.id}
+                email={user.email ?? null}
+                profile={data.profile}
+                settings={settings}
+                currentPlan={data.plan.plan}
+                basicsExpAwarded={data.basicsExpAwarded}
               />
-            </LpReveal>
+            </SettingsBasicsCollapsible>
 
             <LpSectionRule variant="simple" />
 
-            <LpReveal>
-              <SettingsArtworkManagement
-                artworks={userArtworks}
-                isCreator={data.profile.is_creator ?? false}
+            <SettingsPostHub />
+
+            <LpSectionRule variant="simple" />
+
+            <SettingsShopManagement
+              products={creatorAssets.products}
+              isCreator={data.profile.is_creator ?? false}
+            />
+
+            <LpSectionRule variant="simple" />
+
+            <SettingsArtworkManagement
+              artworks={creatorAssets.artworks}
+              isCreator={data.profile.is_creator ?? false}
+              siteUrl={siteUrl}
+            />
+
+            <Suspense fallback={<ReferralSectionFallback />}>
+              <SettingsReferralSection
+                userId={user.id}
+                email={user.email}
+                username={data.profile.username}
               />
-            </LpReveal>
-
-            <LpReveal>
-              <SettingsReferralCard referral={referral} />
-            </LpReveal>
+            </Suspense>
 
             <LpSectionRule variant="simple" />
 
-            <LpReveal>
-              <SettingsPortfolioSummary portfolio={data.portfolio} />
-            </LpReveal>
+            <SettingsPortfolioSummary portfolio={data.portfolio} />
 
-            <LpReveal>
-              <SettingsFinance finance={data.finance} />
-            </LpReveal>
+            <SettingsFinance finance={data.finance} />
 
             <LpSectionRule variant="simple" />
 
-            <LpReveal as="section" id="notifications" className="scroll-mt-24 space-y-4">
+            <section id="notifications" className="scroll-mt-24 space-y-4">
               <SettingsNotificationPrefs userId={user.id} settings={settings} />
-            </LpReveal>
+            </section>
 
-            <LpReveal>
-              <SettingsNotifications notifications={data.notifications} userId={user.id} />
-            </LpReveal>
+            <SettingsNotifications notifications={data.notifications} userId={user.id} />
           </div>
         </div>
 

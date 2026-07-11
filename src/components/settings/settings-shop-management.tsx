@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { formatProductPrice } from "@/lib/shop/constants";
@@ -110,7 +109,6 @@ function DigitalProductFilesEditor({
 }
 
 export function SettingsShopManagement({ products, isCreator }: SettingsShopManagementProps) {
-  const router = useRouter();
   const locale = useLocale();
   const { settingsUi } = useContent();
   const copy = settingsUi.shopManagement;
@@ -159,7 +157,6 @@ export function SettingsShopManagement({ products, isCreator }: SettingsShopMana
             : item,
         ),
       );
-      router.refresh();
     } catch {
       setError(copy.deleteFailed);
     }
@@ -179,7 +176,6 @@ export function SettingsShopManagement({ products, isCreator }: SettingsShopMana
           : item,
       ),
     );
-    router.refresh();
   }
 
   return (

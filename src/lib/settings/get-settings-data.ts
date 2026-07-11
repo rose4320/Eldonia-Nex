@@ -63,6 +63,7 @@ const EMPTY_SETTINGS: UserSettings = {
 export async function getSettingsHubData(
   userId: string,
   profile: Profile,
+  options?: { artworkCount?: number; productCount?: number },
 ): Promise<SettingsHubData> {
   const supabase = await createClient();
   const locale = await getUiLocale();
@@ -71,8 +72,8 @@ export async function getSettingsHubData(
     settingsRes,
     portfolio,
     orders,
-    artworkRes,
-    productRes,
+    artworkCountRes,
+    productCountRes,
     eventRes,
     ticketRes,
     notifRes,
@@ -82,14 +83,18 @@ export async function getSettingsHubData(
     supabase.from("user_settings").select("*").eq("user_id", userId).maybeSingle(),
     getPortfolioForUser(userId, { useSampleFallback: false }),
     getOrdersForUser(userId),
-    supabase
-      .from("artworks")
-      .select("*", { count: "exact", head: true })
-      .eq("creator_id", userId),
-    supabase
-      .from("shop_products")
-      .select("*", { count: "exact", head: true })
-      .eq("seller_id", userId),
+    options?.artworkCount !== undefined
+      ? Promise.resolve({ count: options.artworkCount, error: null })
+      : supabase
+          .from("artworks")
+          .select("*", { count: "exact", head: true })
+          .eq("creator_id", userId),
+    options?.productCount !== undefined
+      ? Promise.resolve({ count: options.productCount, error: null })
+      : supabase
+          .from("shop_products")
+          .select("*", { count: "exact", head: true })
+          .eq("seller_id", userId),
     supabase
       .from("events")
       .select("*", { count: "exact", head: true })
@@ -128,7 +133,14 @@ export async function getSettingsHubData(
 
   const paidOrders = orders.filter((o) => o.status === "paid");
   const totalSpent = paidOrders.reduce((sum, o) => sum + (o.total_amount ?? 0), 0);
-  const productCount = productRes.count ?? 0;
+  const artworkCount =
+    options?.artworkCount ??
+    ("count" in artworkCountRes ? artworkCountRes.count : null) ??
+    0;
+  const productCount =
+    options?.productCount ??
+    ("count" in productCountRes ? productCountRes.count : null) ??
+    0;
   const eventCount = eventRes.count ?? 0;
 
   const finance: SettingsFinanceSummary = {
@@ -141,7 +153,7 @@ export async function getSettingsHubData(
 
   const recommendations = buildRecommendations(
     {
-      artworkCount: artworkRes.count ?? 0,
+      artworkCount,
       productCount,
       eventCount,
       hasPortfolio: Boolean(portfolio?.headline?.trim() || portfolio?.summary?.trim()),
@@ -161,7 +173,7 @@ export async function getSettingsHubData(
     finance,
     notifications,
     unreadCount,
-    artworkCount: artworkRes.count ?? 0,
+    artworkCount,
     openTicketCount: ticketRes.count ?? 0,
     basicsExpAwarded: Boolean(basicsExpRes.data),
   };

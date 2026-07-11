@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { ArtworkSellOnShopButton } from "@/components/settings/artwork-sell-on-shop-button";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
+import { getPublicSiteUrl } from "@/lib/auth/site-url";
 import { categoryLabel, formatDate } from "@/lib/gallery/constants";
 import type { UserArtworkSummary } from "@/lib/gallery/get-user-artworks";
 import type { ArtworkMediaType } from "@/types/database";
@@ -12,11 +13,8 @@ import type { SettingsUiContent } from "@/lib/i18n/content/settings-ui-messages"
 type SettingsArtworkManagementProps = {
   artworks: UserArtworkSummary[];
   isCreator: boolean;
+  siteUrl: string;
 };
-
-function sellProductHref(artworkId: string) {
-  return `/settings/post/product?from_artwork=${encodeURIComponent(artworkId)}`;
-}
 
 function mediaDownloadLabel(
   mediaType: ArtworkMediaType,
@@ -29,8 +27,64 @@ function mediaDownloadLabel(
   return copy.downloadImage;
 }
 
-export function SettingsArtworkManagement({ artworks, isCreator }: SettingsArtworkManagementProps) {
-  const router = useRouter();
+function artworkPublicUrl(artworkId: string, siteOrigin: string) {
+  return `${getPublicSiteUrl(siteOrigin)}/gallery/${artworkId}`;
+}
+
+function ArtworkPublicUrl({
+  artworkId,
+  copy,
+  siteOrigin,
+}: {
+  artworkId: string;
+  copy: SettingsUiContent["artworkManagement"];
+  siteOrigin: string;
+}) {
+  const [copied, setCopied] = useState(false);
+  const url = artworkPublicUrl(artworkId, siteOrigin);
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  }
+
+  return (
+    <div className="mt-1.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+      <span className="text-[10px] uppercase tracking-wide text-eldonia-text-muted">
+        {copy.urlLabel}
+      </span>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="min-w-0 truncate font-mono text-xs text-eldonia-gold-light/80 hover:underline"
+        title={url}
+      >
+        {url}
+      </a>
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="eldonia-link shrink-0 text-xs"
+      >
+        {copied ? copy.urlCopied : copy.copyUrl}
+      </button>
+    </div>
+  );
+}
+
+function artworkListThumb(artwork: UserArtworkSummary): string | null {
+  if (artwork.thumbnail_url) return artwork.thumbnail_url;
+  if (artwork.media_type === "image") return artwork.media_url;
+  return null;
+}
+
+export function SettingsArtworkManagement({
+  artworks,
+  isCreator,
+  siteUrl,
+}: SettingsArtworkManagementProps) {
   const locale = useLocale();
   const { settingsUi } = useContent();
   const copy = settingsUi.artworkManagement;
@@ -66,7 +120,6 @@ export function SettingsArtworkManagement({ artworks, isCreator }: SettingsArtwo
             : item,
         ),
       );
-      router.refresh();
     } catch {
       setError(copy.err);
     }
@@ -96,41 +149,68 @@ export function SettingsArtworkManagement({ artworks, isCreator }: SettingsArtwo
 
       <ul className="space-y-3">
         {items.map((artwork) => {
-          const thumb = artwork.thumbnail_url ?? artwork.media_url;
+          const thumb = artworkListThumb(artwork);
           const isPending = pendingId === artwork.id;
 
           return (
-            <li key={artwork.id} className="eldonia-card flex flex-col gap-4 sm:flex-row sm:items-center">
-              <Link
-                href={`/gallery/${artwork.id}`}
-                className="flex min-w-0 flex-1 items-center gap-4 transition hover:opacity-90"
-              >
-                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-md border border-eldonia-border bg-eldonia-surface">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={thumb}
-                    alt=""
-                    className="h-full w-full object-cover"
+            <li key={artwork.id} className="eldonia-card flex flex-col gap-4 sm:flex-row sm:items-start">
+              <div className="flex min-w-0 flex-1 items-start gap-4">
+                <Link
+                  href={`/gallery/${artwork.id}`}
+                  className="shrink-0 transition hover:opacity-90"
+                >
+                  <div className="h-16 w-16 overflow-hidden rounded-md border border-eldonia-border bg-eldonia-surface">
+                    {thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={thumb}
+                        alt=""
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] text-eldonia-text-muted">
+                        {categoryLabel(artwork.category, locale)}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+                <div className="min-w-0 flex-1">
+                  <Link
+                    href={`/gallery/${artwork.id}`}
+                    className="block transition hover:opacity-90"
+                  >
+                    <p className="truncate font-display text-sm text-eldonia-gold-light">
+                      {artwork.title}
+                    </p>
+                    <p className="mt-1 text-xs text-eldonia-text-muted">
+                      {categoryLabel(artwork.category, locale)} · {formatDate(artwork.created_at, locale)}
+                    </p>
+                  </Link>
+                  <ArtworkPublicUrl
+                    artworkId={artwork.id}
+                    copy={copy}
+                    siteOrigin={siteUrl}
                   />
                 </div>
-                <div className="min-w-0">
-                  <p className="truncate font-display text-sm text-eldonia-gold-light">
-                    {artwork.title}
-                  </p>
-                  <p className="mt-1 text-xs text-eldonia-text-muted">
-                    {categoryLabel(artwork.category, locale)} · {formatDate(artwork.created_at, locale)}
-                  </p>
-                </div>
-              </Link>
+              </div>
 
-              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end sm:pt-1">
                 {isCreator && (
-                  <Link
-                    href={sellProductHref(artwork.id)}
-                    className="eldonia-btn-primary text-sm"
-                  >
-                    {copy.sellOnShop}
-                  </Link>
+                  <ArtworkSellOnShopButton
+                    artworkId={artwork.id}
+                    shopProductId={artwork.shop_product_id}
+                    onListed={(productId) => {
+                      setItems((current) =>
+                        current.map((item) =>
+                          item.id === artwork.id
+                            ? { ...item, shop_product_id: productId }
+                            : item,
+                        ),
+                      );
+                    }}
+                  />
                 )}
                 <a
                   href={`/api/gallery/artworks/${artwork.id}/download?file=media`}

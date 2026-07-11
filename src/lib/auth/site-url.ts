@@ -12,7 +12,9 @@ export function buildAuthCallbackUrl(
   fallbackOrigin?: string,
   locale?: string,
 ): string {
-  const base = getPublicSiteUrl(fallbackOrigin);
+  const base = fallbackOrigin
+    ? fallbackOrigin.replace(/\/$/, "")
+    : getPublicSiteUrl();
   const params = new URLSearchParams({ redirect_to: redirectTo });
   if (locale) {
     params.set("locale", locale);

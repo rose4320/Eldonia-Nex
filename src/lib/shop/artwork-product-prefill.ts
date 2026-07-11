@@ -1,9 +1,6 @@
+import { buildArtworkShopListing } from "@/lib/shop/artwork-to-product";
 import { createClient } from "@/lib/supabase/server";
-import type { ArtworkMediaType, ShopProductType } from "@/types/database";
-
-const SHOP_REALM_VALUES = new Set(["apparel", "digital", "goods", "tools", "books"]);
-
-const DIGITAL_MEDIA_TYPES = new Set<ArtworkMediaType>(["image", "document", "audio", "video", "model"]);
+import type { ShopProductType } from "@/types/database";
 
 export type ArtworkProductPrefill = {
   artworkId: string;
@@ -14,14 +11,6 @@ export type ArtworkProductPrefill = {
   category: string;
   productType: ShopProductType;
 };
-
-function defaultProductType(mediaType: ArtworkMediaType): ShopProductType {
-  return DIGITAL_MEDIA_TYPES.has(mediaType) ? "digital" : "physical";
-}
-
-function mapShopCategory(artworkCategory: string): string {
-  return SHOP_REALM_VALUES.has(artworkCategory) ? artworkCategory : "goods";
-}
 
 export async function getArtworkProductPrefill(
   userId: string,
@@ -39,15 +28,15 @@ export async function getArtworkProductPrefill(
     return null;
   }
 
-  const isImageProduct = data.media_type === "image";
+  const listing = buildArtworkShopListing(data);
 
   return {
     artworkId: data.id,
-    title: data.title,
-    description: data.description ?? "",
-    imageUrl: data.thumbnail_url ?? (isImageProduct ? data.media_url : null),
-    downloadUrl: isImageProduct ? null : data.media_url,
-    category: mapShopCategory(data.category),
-    productType: defaultProductType(data.media_type),
+    title: listing.title,
+    description: listing.description ?? "",
+    imageUrl: listing.image_url,
+    downloadUrl: listing.download_url,
+    category: listing.category,
+    productType: listing.product_type,
   };
 }
