@@ -135,7 +135,8 @@ async function main() {
         response.status,
         await response.text(),
       );
-      process.exit(1);
+      console.warn(`Skip ${provider.name} — fix token/Dashboard or retry later.\n`);
+      continue;
     }
 
     synced += 1;

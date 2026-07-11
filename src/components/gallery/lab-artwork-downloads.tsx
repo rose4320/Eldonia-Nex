@@ -22,11 +22,13 @@ export function LabArtworkDownloads({
   const mediaLabel =
     mediaType === "document"
       ? copy.downloadPdf
-      : mediaType === "audio"
-        ? copy.downloadAudio
-        : mediaType === "video"
-          ? copy.downloadVideo
-          : copy.downloadImage;
+      : mediaType === "model"
+        ? copy.downloadModel
+        : mediaType === "audio"
+          ? copy.downloadAudio
+          : mediaType === "video"
+            ? copy.downloadVideo
+            : copy.downloadImage;
 
   return (
     <section className="eldonia-card space-y-3">

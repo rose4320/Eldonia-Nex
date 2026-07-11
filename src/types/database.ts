@@ -1,4 +1,4 @@
-export type ArtworkMediaType = "image" | "video" | "audio" | "document";
+export type ArtworkMediaType = "image" | "video" | "audio" | "document" | "model";
 
 export type Profile = {
   id: string;

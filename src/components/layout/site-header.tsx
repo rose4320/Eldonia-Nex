@@ -15,6 +15,9 @@ import {
   getUnreadNotificationCount,
 } from "@/lib/notifications/get-notifications";
 import { getPortfolioForUser } from "@/lib/works/get-works";
+import { CartNavLink } from "@/components/cart/cart-nav-link";
+import { getCart } from "@/lib/cart/cookie-cart";
+import { cartItemCount } from "@/lib/cart/types";
 import { createClient } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
 
@@ -79,6 +82,8 @@ async function renderSiteHeader() {
   let unreadCount = 0;
   let expPoints = 0;
   let titleBadge: string | null = null;
+  const cartLines = await withTimeout(getCart(), [], HEADER_DATA_TIMEOUT_MS);
+  const cartCount = cartItemCount(cartLines);
 
   if (user) {
     const [profileRes, notificationList, count, portfolio] = await Promise.all([
@@ -138,18 +143,7 @@ async function renderSiteHeader() {
           <div className="eldonia-header-col eldonia-header-col-right">
             <div className="eldonia-header-actions">
               <HeaderLanguageSelect locale={locale} />
-              <Link
-                href="/shop/cart"
-                aria-label={HEADER_LABELS.cart}
-                title={HEADER_LABELS.cart}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-eldonia-text-muted transition hover:text-eldonia-gold-light"
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-                  <circle cx="9" cy="20" r="1.4" />
-                  <circle cx="18" cy="20" r="1.4" />
-                  <path d="M2.5 3h2.2l2.1 11.2a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.25L21.5 7H6.2" />
-                </svg>
-              </Link>
+              <CartNavLink count={cartCount} ariaLabel={HEADER_LABELS.cart} />
               {user ? (
                 <>
                   <NotificationBell
@@ -194,6 +188,7 @@ async function renderSiteHeader() {
         locale={locale}
         user={user ? { displayName: displayName ?? pages.userFallback } : null}
         unreadCount={unreadCount}
+        cartCount={cartCount}
       />
     </header>
   );

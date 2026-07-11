@@ -53,7 +53,7 @@ export function buildRecommendations(
       id: "product",
       title: copy.product.title,
       description: copy.product.description,
-      href: "/settings/post/product",
+      href: "/settings#shop",
       priority: 4,
     });
   }

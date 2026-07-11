@@ -1,22 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Order } from "@/types/database";
+import { parseOrderItemsPayload, type OrderLineItem } from "@/lib/cart/order-items";
 
-export type OrderItem = {
-  kind: "shop" | "event";
-  id: string;
-  quantity: number;
-  unitPrice: number;
-};
+export type OrderItem = OrderLineItem;
 
 export function parseOrderItems(items: unknown): OrderItem[] {
-  if (!Array.isArray(items)) return [];
-  return items.filter(
-    (item): item is OrderItem =>
-      typeof item === "object" &&
-      item !== null &&
-      "kind" in item &&
-      "id" in item,
-  ) as OrderItem[];
+  return parseOrderItemsPayload(items).lines;
 }
 
 export function orderStatusLabel(status: string): string {

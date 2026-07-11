@@ -34,6 +34,7 @@ export type FormsContent = {
     previewAudio: string;
     previewVideo: string;
     previewDocument: string;
+    previewModel: string;
     stepWork: string;
     stepThumbnail: string;
     stepDetails: string;
@@ -46,6 +47,8 @@ export type FormsContent = {
     typeHint: (label: string) => string;
     title: string;
     description: string;
+    descriptionHint: string;
+    descriptionPlaceholder: string;
     tags: string;
     tagsHint: string;
     mangaPages: string;
@@ -59,12 +62,54 @@ export type FormsContent = {
     submit: string;
     submitting: string;
     errNoFile: string;
+    errNoTitle: string;
     errNoThumbnail: string;
+    errNoDescription: string;
     errFormat: string;
     errBgmFormat: string;
     errPayloadTooLarge: string;
     errUploadMedia: string;
     errSave: string;
+    pickerTitle: string;
+    pickerLead: string;
+    changeMedia: string;
+    stepNext: string;
+    stepBack: string;
+    stepLabelPick: string;
+    stepLabelFile: string;
+    stepLabelThumbnail: string;
+    stepLabelDetails: string;
+    selectedMediaLabel: string;
+    errMediaMismatch: string;
+    pickerOptions: {
+      image: { label: string; description: string };
+      video: { label: string; description: string };
+      audio: { label: string; description: string };
+      document: { label: string; description: string };
+      model: { label: string; description: string };
+    };
+    guideTitle: string;
+    guideIntro: string;
+    guideTableType: string;
+    guideTableFormats: string;
+    guideTableThumbnail: string;
+    guideTableMaxSize: string;
+    guideMaxSizeLabel: (mb: number) => string;
+    checklistTitle: string;
+    checklistFile: string;
+    checklistThumbnail: string;
+    checklistThumbnailSkip: string;
+    checklistTitleField: string;
+    checklistDescription: string;
+    checklistReady: string;
+    checklistPending: string;
+    mediaGuides: {
+      image: MediaGuideCopy;
+      video: MediaGuideCopy;
+      audio: MediaGuideCopy;
+      document: MediaGuideCopy;
+      model: MediaGuideCopy;
+    };
   };
   product: {
     title: string;
@@ -76,6 +121,8 @@ export type FormsContent = {
     price: string;
     stock: string;
     imageUrl: string;
+    freeDistribution: string;
+    freeDistributionHint: string;
     submit: string;
     submitting: string;
     errPrice: string;
@@ -169,6 +216,14 @@ export type FormsContent = {
   };
 };
 
+export type MediaGuideCopy = {
+  title: string;
+  formats: string;
+  thumbnailNote: string;
+  steps: string[];
+  tip: string;
+};
+
 const FORMS_JA: FormsContent = {
   creatorRequired:
     "クリエイター登録が必要です。設定の基本情報で「クリエイターとして活動する」を有効にしてください。",
@@ -194,9 +249,10 @@ const FORMS_JA: FormsContent = {
   },
   upload: {
     file: "ファイル",
-    fileHint: "画像・動画・音声・PDF に対応",
+    fileHint: "画像・動画・音声・PDF・3D（GLB/GLTF）に対応",
     thumbnail: "サムネイル画像",
-    thumbnailHint: "音声・動画・PDF は一覧表示用の画像が必要です（JPEG / PNG / GIF / WebP）",
+    thumbnailHint:
+      "音声・動画・PDF・3Dモデルは一覧表示用の画像が必要です（JPEG / PNG / GIF / WebP）",
     thumbnailPreview: "サムネイルプレビュー",
     previewTitle: "プレビュー",
     previewGallery: "ギャラリーでの見え方",
@@ -205,12 +261,14 @@ const FORMS_JA: FormsContent = {
     previewAudio: "音声プレビュー",
     previewVideo: "動画プレビュー",
     previewDocument: "PDF ドキュメント",
+    previewModel: "3D モデル（回転・ズームできます）",
     stepWork: "① 作品ファイル",
     stepThumbnail: "② サムネイル画像",
     stepDetails: "③ 作品情報",
-    thumbnailWaiting: "先に ① の作品ファイルを選んでください。音声・動画・PDF の場合はここでカバー画像を追加します。",
+    thumbnailWaiting:
+      "先に ① の作品ファイルを選んでください。音声・動画・PDF・3D モデルはここでカバー画像を追加します。",
     thumbnailNotNeeded: "画像作品は ① のファイルがギャラリー表示に使われます。サムネイルの追加は不要です。",
-    previewEmpty: "① で作品ファイルを選ぶと、ここに再生プレビューとギャラリー表示が現れます。",
+    previewEmpty: "ファイルを選ぶとプレビューが表示されます。",
     required: "必須",
     typeAuto: (label) => `種別: ${label}（ファイル形式から自動判定）`,
     type: "種別",
@@ -218,6 +276,8 @@ const FORMS_JA: FormsContent = {
       `ファイル形式から「${label}」と判定。イラストと写真は変更できます。`,
     title: "タイトル",
     description: "説明",
+    descriptionHint: "作品の内容・制作背景・使用ツールなどを書いてください（必須）。",
+    descriptionPlaceholder: "例: Blender で制作したファンタジー調のランタン。PBR テクスチャ付き。",
     tags: "タグ",
     tagsHint: "カンマ区切り（最大10個）",
     mangaPages: "追加ページ（漫画・複数枚）",
@@ -232,12 +292,104 @@ const FORMS_JA: FormsContent = {
     submit: "作品を投稿",
     submitting: "投稿中...",
     errNoFile: "ファイルを選択してください。",
+    errNoTitle: "タイトルを入力してください。",
     errNoThumbnail: "サムネイル画像を選択してください。",
+    errNoDescription: "説明を入力してください。",
     errFormat: "対応していないファイル形式です。",
     errBgmFormat: "BGM は MP3 / WAV / FLAC / M4A の音声ファイルにしてください。",
     errPayloadTooLarge: "ファイルが大きすぎます。音声・動画はブラウザから直接アップロードされます。",
     errUploadMedia: "ファイルのアップロードに失敗しました。",
     errSave: "作品の登録に失敗しました。",
+    pickerTitle: "何を投稿しますか？",
+    pickerLead: "種類を選ぶと、そのメディアに必要な手順だけ案内します。",
+    changeMedia: "種類を変更",
+    stepNext: "次へ",
+    stepBack: "戻る",
+    stepLabelPick: "種類",
+    stepLabelFile: "ファイル",
+    stepLabelThumbnail: "サムネイル",
+    stepLabelDetails: "作品情報",
+    selectedMediaLabel: "投稿する種類",
+    errMediaMismatch: "選んだ種類とファイル形式が一致しません。",
+    pickerOptions: {
+      image: { label: "画像", description: "イラスト・漫画・写真" },
+      video: { label: "動画", description: "MP4 / MOV / WebM" },
+      audio: { label: "音声", description: "音楽・ボイスなど" },
+      document: { label: "PDF", description: "小説・資料・漫画 PDF" },
+      model: { label: "3D", description: "Blender 等（GLB 形式）" },
+    },
+    guideTitle: "投稿ガイド",
+    guideIntro: "選んだメディアの手順に沿って進めてください。",
+    guideTableType: "対応メディア一覧",
+    guideTableFormats: "形式",
+    guideTableThumbnail: "サムネイル",
+    guideTableMaxSize: "上限",
+    guideMaxSizeLabel: (mb) => `${mb} MB`,
+    checklistTitle: "投稿チェックリスト",
+    checklistFile: "① 作品ファイルを選択",
+    checklistThumbnail: "② サムネイル画像を選択",
+    checklistThumbnailSkip: "② サムネイル（画像作品は不要）",
+    checklistTitleField: "③ タイトルを入力",
+    checklistDescription: "③ 説明を入力",
+    checklistReady: "必須項目が揃いました。投稿できます。",
+    checklistPending: "未入力の必須項目があります。",
+    mediaGuides: {
+      image: {
+        title: "画像（イラスト・漫画・写真）",
+        formats: "JPEG / PNG / GIF / WebP",
+        thumbnailNote: "不要（① の画像がカバーになります）",
+        steps: [
+          "① 画像ファイルを選ぶ",
+          "種別（イラスト・漫画・写真など）を確認",
+          "③ タイトルと説明を入力して投稿",
+        ],
+        tip: "漫画・写真シリーズは ③ で追加ページを選べます。",
+      },
+      video: {
+        title: "動画",
+        formats: "MP4 / MOV / WebM",
+        thumbnailNote: "必須（一覧・カード表示用）",
+        steps: [
+          "① 動画ファイルを選ぶ",
+          "② 代表フレームなどのカバー画像を追加",
+          "③ タイトルと説明を入力して投稿",
+        ],
+        tip: "任意で BGM を添付できます（作品本体とは別ファイル）。",
+      },
+      audio: {
+        title: "音声・音楽",
+        formats: "MP3 / WAV / FLAC / M4A",
+        thumbnailNote: "必須（ジャケット画像など）",
+        steps: [
+          "① 音声ファイルを選ぶ",
+          "② ジャケット・波形イメージなどの画像を追加",
+          "③ タイトルと説明を入力して投稿",
+        ],
+        tip: "イラスト作品に BGM を付ける場合は、画像を ① に選び ③ の BGM 欄を使います。",
+      },
+      document: {
+        title: "PDF（小説・資料）",
+        formats: "PDF",
+        thumbnailNote: "必須（表紙画像）",
+        steps: [
+          "① PDF を選ぶ",
+          "② 表紙画像を追加",
+          "③ タイトル・説明（ストーリーならあらすじも）を入力",
+        ],
+        tip: "カテゴリ「ストーリー」を選ぶとあらすじ欄が表示されます。",
+      },
+      model: {
+        title: "3D モデル（Blender など）",
+        formats: "GLB / GLTF（.blend は不可）",
+        thumbnailNote: "必須（レンダー画像）",
+        steps: [
+          "Blender 等で GLB 形式にエクスポート",
+          "① GLB / GLTF を選ぶ",
+          "② レンダー画像をサムネに追加 → ③ タイトルと説明",
+        ],
+        tip: "Blender: File → Export → glTF 2.0 (.glb)。100 MB までアップロード可能。",
+      },
+    },
   },
   product: {
     title: "商品名",
@@ -249,6 +401,8 @@ const FORMS_JA: FormsContent = {
     price: "価格（円）",
     stock: "在庫数",
     imageUrl: "画像 URL（任意）",
+    freeDistribution: "無料配布（¥0）",
+    freeDistributionHint: "チェックすると SHOP に無料商品として掲載されます。Gallery 公開と併用できます。",
     submit: "商品を出品",
     submitting: "登録中...",
     errPrice: "価格を正しく入力してください。",
@@ -367,9 +521,10 @@ const FORMS_EN: FormsContent = {
   },
   upload: {
     file: "File",
-    fileHint: "Supports image, video, audio, PDF",
+    fileHint: "Supports image, video, audio, PDF, and 3D (GLB/GLTF)",
     thumbnail: "Thumbnail image",
-    thumbnailHint: "Audio, video, and PDF need a cover image for the gallery (JPEG / PNG / GIF / WebP)",
+    thumbnailHint:
+      "Audio, video, PDF, and 3D models need a cover image for the gallery (JPEG / PNG / GIF / WebP)",
     thumbnailPreview: "Thumbnail preview",
     previewTitle: "Preview",
     previewGallery: "Gallery appearance",
@@ -378,12 +533,14 @@ const FORMS_EN: FormsContent = {
     previewAudio: "Audio preview",
     previewVideo: "Video preview",
     previewDocument: "PDF document",
+    previewModel: "3D model (rotate and zoom)",
     stepWork: "① Artwork file",
     stepThumbnail: "② Thumbnail image",
     stepDetails: "③ Details",
-    thumbnailWaiting: "Select an artwork file in step ① first. Audio, video, and PDF need a cover image here.",
+    thumbnailWaiting:
+      "Select an artwork file in step ① first. Audio, video, PDF, and 3D models need a cover image here.",
     thumbnailNotNeeded: "For images, step ① is used in the gallery. No separate thumbnail needed.",
-    previewEmpty: "Select a file in step ① to see playback and gallery preview here.",
+    previewEmpty: "Select a file to see a preview here.",
     required: "Required",
     typeAuto: (label) => `Type: ${label} (detected from file)`,
     type: "Type",
@@ -391,6 +548,8 @@ const FORMS_EN: FormsContent = {
       `Detected as “${label}”. Illustration and photo can be changed for images.`,
     title: "Title",
     description: "Description",
+    descriptionHint: "Describe the work, process, or tools used (required).",
+    descriptionPlaceholder: "e.g. Fantasy lantern modeled in Blender with PBR textures.",
     tags: "Tags",
     tagsHint: "Comma-separated (max 10)",
     mangaPages: "Extra pages (manga / multi-image)",
@@ -405,12 +564,104 @@ const FORMS_EN: FormsContent = {
     submit: "Publish artwork",
     submitting: "Publishing…",
     errNoFile: "Please select a file.",
+    errNoTitle: "Please enter a title.",
     errNoThumbnail: "Please select a thumbnail image.",
+    errNoDescription: "Please enter a description.",
     errFormat: "Unsupported file format.",
     errBgmFormat: "BGM must be an MP3 / WAV / FLAC / M4A audio file.",
     errPayloadTooLarge: "The file is too large for a single server upload.",
     errUploadMedia: "Could not upload the file.",
     errSave: "Could not save artwork.",
+    pickerTitle: "What are you posting?",
+    pickerLead: "Pick a type — we'll only show the steps you need.",
+    changeMedia: "Change type",
+    stepNext: "Next",
+    stepBack: "Back",
+    stepLabelPick: "Type",
+    stepLabelFile: "File",
+    stepLabelThumbnail: "Thumbnail",
+    stepLabelDetails: "Details",
+    selectedMediaLabel: "Posting as",
+    errMediaMismatch: "This file doesn't match the type you selected.",
+    pickerOptions: {
+      image: { label: "Image", description: "Illustration, manga, photo" },
+      video: { label: "Video", description: "MP4 / MOV / WebM" },
+      audio: { label: "Audio", description: "Music, voice, etc." },
+      document: { label: "PDF", description: "Stories, docs, manga PDF" },
+      model: { label: "3D", description: "Blender, etc. (GLB format)" },
+    },
+    guideTitle: "Upload guide",
+    guideIntro: "Follow the steps for your selected media type.",
+    guideTableType: "Supported media",
+    guideTableFormats: "Formats",
+    guideTableThumbnail: "Thumbnail",
+    guideTableMaxSize: "Max size",
+    guideMaxSizeLabel: (mb) => `${mb} MB`,
+    checklistTitle: "Checklist",
+    checklistFile: "① Select artwork file",
+    checklistThumbnail: "② Select thumbnail image",
+    checklistThumbnailSkip: "② Thumbnail (not needed for images)",
+    checklistTitleField: "③ Enter title",
+    checklistDescription: "③ Enter description",
+    checklistReady: "All required fields are filled. You can publish.",
+    checklistPending: "Some required fields are still missing.",
+    mediaGuides: {
+      image: {
+        title: "Image (illustration, manga, photo)",
+        formats: "JPEG / PNG / GIF / WebP",
+        thumbnailNote: "Not needed (step ① is the cover)",
+        steps: [
+          "Select an image in step ①",
+          "Confirm type (illustration, manga, photo, etc.)",
+          "Enter title and description in step ③, then publish",
+        ],
+        tip: "Manga and photo series can add extra pages in step ③.",
+      },
+      video: {
+        title: "Video",
+        formats: "MP4 / MOV / WebM",
+        thumbnailNote: "Required (gallery card cover)",
+        steps: [
+          "Select a video in step ①",
+          "Add a cover image in step ②",
+          "Enter title and description in step ③, then publish",
+        ],
+        tip: "Optional BGM can be attached separately in step ③.",
+      },
+      audio: {
+        title: "Audio / music",
+        formats: "MP3 / WAV / FLAC / M4A",
+        thumbnailNote: "Required (jacket art, etc.)",
+        steps: [
+          "Select an audio file in step ①",
+          "Add cover art in step ②",
+          "Enter title and description in step ③, then publish",
+        ],
+        tip: "To add BGM to an illustration, upload an image in ① and use the BGM field in ③.",
+      },
+      document: {
+        title: "PDF (stories, documents)",
+        formats: "PDF",
+        thumbnailNote: "Required (cover image)",
+        steps: [
+          "Select a PDF in step ①",
+          "Add a cover image in step ②",
+          "Enter title, description (and synopsis for stories), then publish",
+        ],
+        tip: "Choose the Story category to show the synopsis field.",
+      },
+      model: {
+        title: "3D model (Blender, etc.)",
+        formats: "GLB / GLTF (.blend not supported)",
+        thumbnailNote: "Required (rendered preview)",
+        steps: [
+          "Export as GLB from Blender or similar",
+          "Select GLB / GLTF in step ①",
+          "Add a render in step ② → title and description in ③",
+        ],
+        tip: "Blender: File → Export → glTF 2.0 (.glb). Up to 100 MB.",
+      },
+    },
   },
   product: {
     title: "Product name",
@@ -422,6 +673,8 @@ const FORMS_EN: FormsContent = {
     price: "Price (JPY)",
     stock: "Stock",
     imageUrl: "Image URL (optional)",
+    freeDistribution: "Free distribution (¥0)",
+    freeDistributionHint: "List on SHOP at no charge. You can still publish the artwork on Gallery.",
     submit: "List product",
     submitting: "Saving…",
     errPrice: "Enter a valid price.",

@@ -27,6 +27,7 @@ export const ARTWORK_CATEGORY_LABELS: Record<string, TaxonomyEntry> = {
   video: L("動画", "Video", "영상", "视频"),
   music: L("音楽", "Music", "음악", "音乐"),
   document: L("ドキュメント", "Document", "문서", "文档"),
+  "3d": L("3D", "3D", "3D", "3D"),
   other: L("その他", "Other", "기타", "其他"),
 };
 
@@ -49,6 +50,7 @@ export const GALLERY_REALM_LABELS: Record<string, TaxonomyEntry> = {
   story: L("ストーリー", "Story", "스토리", "故事"),
   video: L("動画", "Video", "영상", "视频"),
   music: L("音楽", "Music", "음악", "音乐"),
+  "3d": L("3D", "3D", "3D", "3D"),
 };
 
 export const EVENT_REALM_LABELS: Record<string, TaxonomyEntry> = {

@@ -8,13 +8,14 @@ import { SettingsArtworkManagement } from "@/components/settings/settings-artwor
 import { SettingsBasicsCollapsible } from "@/components/settings/settings-basics-collapsible";
 import { SettingsBasicsForm } from "@/components/settings/settings-basics-form";
 import { SettingsFinance } from "@/components/settings/settings-finance";
-import { SettingsNav } from "@/components/settings/settings-nav";
+import { SettingsMobileNav, SettingsNav } from "@/components/settings/settings-nav";
 import { SettingsNotificationPrefs } from "@/components/settings/settings-notification-prefs";
 import { SettingsNotifications } from "@/components/settings/settings-notifications";
 import { SettingsPortfolioSummary } from "@/components/settings/settings-portfolio-summary";
 import { SettingsPostHub } from "@/components/settings/settings-post-hub";
 import { SettingsRecommendations } from "@/components/settings/settings-recommendations";
 import { SettingsReferralCard } from "@/components/settings/settings-referral-card";
+import { SettingsShopManagement } from "@/components/settings/settings-shop-management";
 import { LpReveal } from "@/components/ui/lp-reveal";
 import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getContent } from "@/lib/i18n/content/messages";
@@ -24,6 +25,7 @@ import { getSettingsHubData, mergeUserSettings } from "@/lib/settings/get-settin
 import { ensureProfile } from "@/lib/auth/ensure-profile";
 import { getReferralProgramData } from "@/lib/referrals/get-referral-program";
 import { getUserArtworks } from "@/lib/gallery/get-user-artworks";
+import { getUserShopProducts } from "@/lib/shop/get-user-products";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function SettingsPage() {
@@ -42,6 +44,7 @@ export default async function SettingsPage() {
   const data = await getSettingsHubData(user.id, profile);
   const referral = await getReferralProgramData(user.id, user.email, data.profile.username);
   const userArtworks = await getUserArtworks(user.id);
+  const userProducts = await getUserShopProducts(user.id);
   const expPoints = data.portfolio?.exp_points ?? 0;
   const titleBadge = data.portfolio?.title_badge ?? null;
   const settings = mergeUserSettings(user.id, data.userSettings);
@@ -94,6 +97,8 @@ export default async function SettingsPage() {
           <SettingsNav />
 
           <div className="min-w-0 flex-1 space-y-8">
+            <SettingsMobileNav />
+
             <LpReveal>
               <SettingsRecommendations items={data.recommendations} />
             </LpReveal>
@@ -122,7 +127,19 @@ export default async function SettingsPage() {
             <LpSectionRule variant="simple" />
 
             <LpReveal>
-              <SettingsArtworkManagement artworks={userArtworks} />
+              <SettingsShopManagement
+                products={userProducts}
+                isCreator={data.profile.is_creator ?? false}
+              />
+            </LpReveal>
+
+            <LpSectionRule variant="simple" />
+
+            <LpReveal>
+              <SettingsArtworkManagement
+                artworks={userArtworks}
+                isCreator={data.profile.is_creator ?? false}
+              />
             </LpReveal>
 
             <LpReveal>

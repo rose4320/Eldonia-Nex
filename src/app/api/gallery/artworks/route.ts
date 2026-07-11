@@ -4,6 +4,11 @@ import {
   isThumbnailImageFile,
   resolveStorageContentType,
 } from "@/lib/gallery/constants";
+import {
+  GALLERY_THUMB_MAX_BYTES,
+  maxUploadBytesForMediaType,
+  maxUploadMegabytesLabel,
+} from "@/lib/gallery/media-limits";
 import { isOwnedArtworksStorageUrl } from "@/lib/gallery/client-upload-artwork";
 import { isArtworkCategory, resolveArtworkFormat } from "@/lib/gallery/creator-taxonomy";
 import { awardUserExp } from "@/lib/exp/award-exp";
@@ -11,8 +16,7 @@ import { syncDjangoCatalogForCreator } from "@/lib/django/sync-catalog";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 import type { ArtworkMediaType } from "@/types/database";
 
-const MAX_BYTES = 50 * 1024 * 1024;
-const MAX_THUMB_BYTES = 5 * 1024 * 1024;
+const MAX_THUMB_BYTES = GALLERY_THUMB_MAX_BYTES;
 
 type JsonArtworkBody = {
   title?: string;
@@ -176,6 +180,10 @@ async function handleJsonRegister(
     return NextResponse.json({ error: "タイトルを入力してください。" }, { status: 400 });
   }
 
+  if (!description) {
+    return NextResponse.json({ error: "説明を入力してください。" }, { status: 400 });
+  }
+
   if (!mediaType || !mediaUrl) {
     return NextResponse.json({ error: "作品ファイルの情報が不足しています。" }, { status: 400 });
   }
@@ -187,7 +195,7 @@ async function handleJsonRegister(
   if (mediaType !== "image") {
     if (!thumbnailUrl) {
       return NextResponse.json(
-        { error: "音声・動画・PDF にはサムネイル画像が必要です。" },
+        { error: "音声・動画・PDF・3Dモデルにはサムネイル画像が必要です。" },
         { status: 400 },
       );
     }
@@ -208,7 +216,13 @@ async function handleJsonRegister(
     mediaType === "image" && categoryInput && isArtworkCategory(categoryInput)
       ? categoryInput
       : categoryInput ||
-        (mediaType === "audio" ? "music" : mediaType === "document" ? "document" : mediaType);
+        (mediaType === "audio"
+          ? "music"
+          : mediaType === "document"
+            ? "document"
+            : mediaType === "model"
+              ? "3d"
+              : mediaType);
 
   const pageUrls = Array.isArray(body.page_urls)
     ? body.page_urls.map((url) => String(url).trim()).filter(Boolean).slice(0, 48)
@@ -277,8 +291,8 @@ async function handleMultipartUpload(
     return NextResponse.json({ error: "タイトルを入力してください。" }, { status: 400 });
   }
 
-  if (file.size > MAX_BYTES) {
-    return NextResponse.json({ error: "ファイルサイズが大きすぎます（50MB以内）。" }, { status: 400 });
+  if (!description) {
+    return NextResponse.json({ error: "説明を入力してください。" }, { status: 400 });
   }
 
   const fileInfo = detectCategoryFromFile(file);
@@ -290,12 +304,24 @@ async function handleMultipartUpload(
   }
 
   const { mediaType } = fileInfo;
+  const maxBytes = maxUploadBytesForMediaType(mediaType);
+
+  if (file.size > maxBytes) {
+    return NextResponse.json(
+      { error: `ファイルサイズが大きすぎます（${maxUploadMegabytesLabel(mediaType)}MB以内）。` },
+      { status: 400 },
+    );
+  }
+
   const needsThumbnail = mediaType !== "image";
 
   if (needsThumbnail) {
     if (!(thumbnail instanceof File) || thumbnail.size === 0) {
       return NextResponse.json(
-        { error: "音声・動画・PDF にはサムネイル画像が必要です。" },
+        {
+          error:
+            "音声・動画・PDF・3Dモデルにはサムネイル画像が必要です。",
+        },
         { status: 400 },
       );
     }

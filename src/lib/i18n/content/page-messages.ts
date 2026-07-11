@@ -213,6 +213,7 @@ export type PageMessages = {
     postArtworkLead: string;
     postProductTitle: string;
     postProductLead: string;
+    postProductFromArtwork: (title: string) => string;
     postEventTitle: string;
     postEventLead: string;
     creatorOnly: string;
@@ -229,7 +230,9 @@ export type PageMessages = {
   checkout: {
     eyebrow: string;
     title: string;
+    titleFree: string;
     body: string;
+    bodyFree: string;
     backShop: string;
     dashboard: string;
   };
@@ -469,9 +472,10 @@ const PAGE_JA: PageMessages = {
   settings: {
     back: "← 設定に戻る",
     postArtworkTitle: "作品を投稿",
-    postArtworkLead: "GALLERY に作品を公開します。",
-    postProductTitle: "商品を出品",
-    postProductLead: "SHOP に商品を登録します。",
+    postArtworkLead: "種類を選んでから、案内に沿って投稿してください。",
+    postProductTitle: "商品登録",
+    postProductLead: "ユーザー設定から SHOP に商品を登録します。無料配布は「無料配布（¥0）」にチェックしてください。",
+    postProductFromArtwork: (title) => `作品「${title}」の情報を引き継いで商品登録します。価格などを入力して公開してください。`,
     postEventTitle: "イベントを作成",
     postEventLead: "EVENTS に Chronicle を公開します。",
     creatorOnly: "クリエイター向け機能です。",
@@ -488,7 +492,9 @@ const PAGE_JA: PageMessages = {
   checkout: {
     eyebrow: "Checkout",
     title: "決済完了",
+    titleFree: "入手完了",
     body: "ご購入ありがとうございます。確認メールをお送りします。",
+    bodyFree: "無料商品の入手が完了しました。デジタル配布は順次対応予定です。",
     backShop: "SHOP に戻る",
     dashboard: "ダッシュボード",
   },
@@ -728,9 +734,10 @@ const PAGE_EN: PageMessages = {
   settings: {
     back: "← Back to settings",
     postArtworkTitle: "Post artwork",
-    postArtworkLead: "Publish to GALLERY.",
-    postProductTitle: "List a product",
-    postProductLead: "Add an item to SHOP.",
+    postArtworkLead: "Choose a media type, then follow the guided steps.",
+    postProductTitle: "Register product",
+    postProductLead: "Add a product to SHOP from Settings. Check “Free distribution (¥0)” for free listings.",
+    postProductFromArtwork: (title) => `Prefilled from artwork “${title}”. Enter price and publish when ready.`,
     postEventTitle: "Create event",
     postEventLead: "Publish a Chronicle to EVENTS.",
     creatorOnly: "Creator feature.",
@@ -747,7 +754,9 @@ const PAGE_EN: PageMessages = {
   checkout: {
     eyebrow: "Checkout",
     title: "Payment complete",
+    titleFree: "Claim complete",
     body: "Thank you for your purchase. A confirmation email is on the way.",
+    bodyFree: "Your free item is ready. Digital delivery will roll out soon.",
     backShop: "Back to SHOP",
     dashboard: "Dashboard",
   },

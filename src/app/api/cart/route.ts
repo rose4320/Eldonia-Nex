@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { addToCart, clearCart, getCart, removeFromCart } from "@/lib/cart/cookie-cart";
+import { cartItemCount } from "@/lib/cart/types";
 import type { CartItemKind } from "@/lib/cart/types";
 
 export async function GET() {
   const cart = await getCart();
-  return NextResponse.json({ cart, count: cart.reduce((n, l) => n + l.quantity, 0) });
+  return NextResponse.json({ cart, count: cartItemCount(cart) });
 }
 
 export async function POST(request: Request) {
@@ -20,7 +21,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ok: true,
       cart,
-      count: cart.reduce((n, l) => n + l.quantity, 0),
+      count: cartItemCount(cart),
     });
   }
 

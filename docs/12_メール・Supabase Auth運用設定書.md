@@ -236,33 +236,50 @@ NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true
 
 コールバック処理: `src/app/auth/callback/route.ts`
 
-### 2.6 Facebook / X / Discord OAuth（準備中）
+### 2.6 Facebook / X / Discord OAuth
 
-**Facebook:** 手順の正本は `docs/facebook-oauth-setup.md`。  
-**現状:** UI コードはあるが、X / Discord は Developer Console 設定が未完了のため **ボタンはデフォルト非表示**。Facebook は Supabase + Meta 設定後に `NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true` で表示。
+| プロバイダ | 手順書 | 検証 | Vercel フラグ |
+|-----------|--------|------|---------------|
+| Facebook | `docs/facebook-oauth-setup.md` | `npm run verify:facebook-oauth` | `NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true` |
+| X (Twitter) | `docs/x-oauth-setup.md` | `npm run verify:x-oauth` | `NEXT_PUBLIC_AUTH_TWITTER_ENABLED=true` |
+| Discord | `docs/discord-oauth-setup.md` | `npm run verify:discord-oauth` | `NEXT_PUBLIC_AUTH_DISCORD_ENABLED=true` |
 
-有効化手順（Facebook）:
+**共通:** リダイレクト URI は `https://sszlycovwefpyxjllbns.supabase.co/auth/v1/callback`。  
+アプリ側は `src/lib/auth/oauth.ts`（X は Supabase provider `x` にマップ）。
 
-1. Meta for Developers で OAuth アプリを作成（SDK クイックスタートは不要）
-2. リダイレクト URI: `https://sszlycovwefpyxjllbns.supabase.co/auth/v1/callback`
-3. アプリドメイン: `eldonia-nex.com` と `sszlycovwefpyxjllbns.supabase.co`
-4. Supabase Providers → Facebook を ON（App ID / Secret）
-5. `.env.production.supabase` または `.env.local`:
+**デフォルト:** Google のみボタン表示。各 `NEXT_PUBLIC_AUTH_*_ENABLED=true` で UI に出る。
+
+有効化手順（共通）:
+
+1. 各 Developer Console で OAuth アプリ作成（上記手順書）
+2. `.env.production.supabase` または `.env.local` に Client ID / Secret を記入
+3. `npm run supabase:sync-social`（または Supabase Dashboard 手動）
+4. 対応する `npm run verify:*-oauth`
+5. Vercel に `NEXT_PUBLIC_AUTH_*_ENABLED=true`（本番ボタン表示）
+
+Facebook 例:
 
 ```env
 FACEBOOK_OAUTH_CLIENT_ID=...
 FACEBOOK_OAUTH_CLIENT_SECRET=...
-```
-
-6. `npm run supabase:sync-social`（または Dashboard 手動）
-7. 確認: `npm run verify:facebook-oauth`
-8. Vercel:
-
-```env
 NEXT_PUBLIC_AUTH_FACEBOOK_ENABLED=true
 ```
 
-X / Discord も同様に Client ID / Secret を `.env.production.supabase` に追加後 `npm run supabase:sync-social`。
+X 例:
+
+```env
+X_OAUTH_CLIENT_ID=...
+X_OAUTH_CLIENT_SECRET=...
+NEXT_PUBLIC_AUTH_TWITTER_ENABLED=true
+```
+
+Discord 例:
+
+```env
+DISCORD_OAUTH_CLIENT_ID=...
+DISCORD_OAUTH_CLIENT_SECRET=...
+NEXT_PUBLIC_AUTH_DISCORD_ENABLED=true
+```
 
 ---
 

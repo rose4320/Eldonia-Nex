@@ -19,6 +19,7 @@ const AUDIO_TYPES = new Set([
   "audio/x-m4a",
 ]);
 const DOCUMENT_TYPES = new Set(["application/pdf"]);
+const MODEL_TYPES = new Set(["model/gltf-binary", "model/gltf+json"]);
 
 const PHOTO_EXTENSIONS = new Set(["jpg", "jpeg", "heic", "heif"]);
 
@@ -38,6 +39,8 @@ const EXTENSION_MEDIA: Record<string, import("@/types/database").ArtworkMediaTyp
   flac: "audio",
   m4a: "audio",
   pdf: "document",
+  glb: "model",
+  gltf: "model",
 };
 
 export function detectMediaType(mimeType: string): import("@/types/database").ArtworkMediaType | null {
@@ -45,6 +48,7 @@ export function detectMediaType(mimeType: string): import("@/types/database").Ar
   if (VIDEO_TYPES.has(mimeType)) return "video";
   if (AUDIO_TYPES.has(mimeType)) return "audio";
   if (DOCUMENT_TYPES.has(mimeType)) return "document";
+  if (MODEL_TYPES.has(mimeType)) return "model";
   return null;
 }
 
@@ -87,6 +91,10 @@ export function resolveStorageContentType(
       return "audio/flac";
     case "pdf":
       return "application/pdf";
+    case "glb":
+      return "model/gltf-binary";
+    case "gltf":
+      return "model/gltf+json";
     default:
       break;
   }
@@ -100,6 +108,8 @@ export function resolveStorageContentType(
       return "audio/mpeg";
     case "document":
       return "application/pdf";
+    case "model":
+      return "model/gltf-binary";
     default:
       return "application/octet-stream";
   }
@@ -118,7 +128,7 @@ export function artworkNeedsThumbnail(file: File | null): boolean {
   if (info) return info.mediaType !== "image";
   const ext = file.name.split(".").pop()?.toLowerCase();
   if (!ext) return false;
-  return ["mp3", "wav", "flac", "m4a", "mp4", "mov", "webm", "pdf"].includes(ext);
+  return ["mp3", "wav", "flac", "m4a", "mp4", "mov", "webm", "pdf", "glb", "gltf"].includes(ext);
 }
 
 export function detectCategoryFromFile(file: File): {
@@ -147,6 +157,8 @@ function categoryFromMediaType(
       return "music";
     case "document":
       return "document";
+    case "model":
+      return "3d";
     case "image": {
       const ext = filename.split(".").pop()?.toLowerCase();
       if (ext && PHOTO_EXTENSIONS.has(ext)) return "photo";
@@ -164,6 +176,34 @@ export function isBgmAudioFile(file: File): boolean {
   if (AUDIO_TYPES.has(file.type)) return true;
   const ext = file.name.split(".").pop()?.toLowerCase();
   return BGM_EXTENSIONS.has(ext ?? "");
+}
+
+export const MEDIA_FILE_ACCEPT: Record<
+  import("@/types/database").ArtworkMediaType,
+  string
+> = {
+  image: "image/jpeg,image/png,image/gif,image/webp,.jpg,.jpeg,.png,.gif,.webp",
+  video: "video/mp4,video/quicktime,video/webm,.mp4,.mov,.webm",
+  audio:
+    "audio/mpeg,audio/mp3,audio/wav,audio/flac,audio/mp4,audio/x-m4a,.mp3,.wav,.flac,.m4a",
+  document: "application/pdf,.pdf",
+  model: ".glb,.gltf,model/gltf-binary,model/gltf+json",
+};
+
+export function resolveFileMediaType(
+  file: File,
+): import("@/types/database").ArtworkMediaType | null {
+  return (
+    (file.type ? detectMediaType(file.type) : null) ??
+    detectMediaTypeFromExtension(file.name)
+  );
+}
+
+export function fileMatchesMediaType(
+  file: File,
+  expected: import("@/types/database").ArtworkMediaType,
+): boolean {
+  return resolveFileMediaType(file) === expected;
 }
 
 export {

@@ -1,6 +1,6 @@
 {
   "name": "eldonia-nex",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -23,9 +23,14 @@
     "supabase:sync-google": "node scripts/sync-supabase-auth-google.mjs",
     "supabase:sync-social": "node scripts/sync-supabase-auth-social.mjs",
     "verify:facebook-oauth": "node scripts/verify-facebook-oauth.mjs",
+    "verify:x-oauth": "node scripts/verify-x-oauth.mjs",
+    "verify:discord-oauth": "node scripts/verify-discord-oauth.mjs",
+    "seed:gallery-3d": "node scripts/seed-gallery-3d-showcase.mjs",
+    "verify:gallery-upload": "node scripts/verify-gallery-upload.mjs",
     "fix:facebook-secret": "node scripts/set-facebook-secret.mjs"
   },
   "dependencies": {
+    "@google/model-viewer": "^4.3.1",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.1",
     "@vercel/analytics": "^2.0.1",

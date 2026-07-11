@@ -35,11 +35,11 @@ function generateReferralCode(userId: string, email?: string | null, attempt = 0
 async function qrSvgFor(url: string): Promise<string> {
   return QRCode.toString(url, {
     type: "svg",
-    margin: 1,
-    width: 192,
+    margin: 2,
+    width: 320,
     color: {
       dark: "#0b0b0b",
-      light: "#f6e6a8",
+      light: "#ffffff",
     },
   });
 }

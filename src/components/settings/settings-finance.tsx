@@ -38,7 +38,7 @@ export function SettingsFinance({ finance }: SettingsFinanceProps) {
           <p className="mt-2 font-display text-2xl font-bold text-eldonia-gold-light">
             {finance.productCount}
           </p>
-          <Link href="/settings/post/product" className="eldonia-link mt-2 inline-block text-xs">
+          <Link href="/settings#shop" className="eldonia-link mt-2 inline-block text-xs">
             {financeCopy.postProduct}
           </Link>
         </article>

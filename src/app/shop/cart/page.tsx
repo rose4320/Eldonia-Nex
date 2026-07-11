@@ -3,10 +3,11 @@ import { ContentLine } from "@/components/i18n/content-line";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
-import { CheckoutButton } from "@/components/cart/checkout-button";
+import { CartCheckoutPanel } from "@/components/cart/cart-checkout-panel";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { removeFromCart } from "@/lib/cart/cookie-cart";
 import { formatCartPrice, resolveCart } from "@/lib/cart/resolve-cart";
+import { shippingFromUserSettings } from "@/lib/cart/shipping";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
@@ -28,7 +29,17 @@ export default async function CartPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { items, total } = await resolveCart();
+  const summary = await resolveCart();
+
+  let initialShipping = null;
+  if (user) {
+    const { data: settings } = await supabase
+      .from("user_settings")
+      .select("legal_name, country, address_line1, address_line2, phone")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    initialShipping = shippingFromUserSettings(settings);
+  }
 
   return (
     <div className="eldonia-page">
@@ -39,7 +50,7 @@ export default async function CartPage() {
         <p className="eldonia-eyebrow">CART</p>
         <h1 className="eldonia-heading eldonia-heading-lg mt-2">{t.shop.cartHeading}</h1>
 
-        {items.length === 0 ? (
+        {summary.items.length === 0 ? (
           <div className="eldonia-card-dashed mt-8 px-8 py-16 text-center">
             <p className="eldonia-body">{t.shop.cartEmpty}</p>
             <Link href="/shop" className="eldonia-link mt-4 inline-block text-sm">
@@ -48,7 +59,7 @@ export default async function CartPage() {
           </div>
         ) : (
           <div className="mt-8 space-y-4">
-            {items.map((item) => (
+            {summary.items.map((item) => (
               <div
                 key={`${item.line.kind}-${item.line.id}`}
                 className="eldonia-card flex flex-wrap items-center justify-between gap-4"
@@ -63,11 +74,11 @@ export default async function CartPage() {
                     hintClassName="eldonia-localized-hint text-xs"
                   />
                   <p className="text-sm text-[var(--eldonia-text-dim)]">
-                    {formatCartPrice(item.unitPrice)} × {item.line.quantity}
+                    {formatCartPrice(item.unitPrice, locale)} × {item.line.quantity}
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <p className="font-display text-lg">{formatCartPrice(item.lineTotal)}</p>
+                  <p className="font-display text-lg">{formatCartPrice(item.lineTotal, locale)}</p>
                   <form action={removeItem}>
                     <input type="hidden" name="kind" value={item.line.kind} />
                     <input type="hidden" name="id" value={item.line.id} />
@@ -81,20 +92,39 @@ export default async function CartPage() {
 
             <div className="eldonia-buy-box">
               <EldoniaDivider />
+              <div className="mt-4 space-y-2 text-sm">
+                <p className="flex justify-between">
+                  <span>{t.shop.cartSubtotal}</span>
+                  <span>{formatCartPrice(summary.merchandiseTotal, locale)}</span>
+                </p>
+                {summary.shippingFee > 0 && (
+                  <p className="flex justify-between">
+                    <span>{t.shop.shippingFeeLabel}</span>
+                    <span>{formatCartPrice(summary.shippingFee, locale)}</span>
+                  </p>
+                )}
+              </div>
               <p className="mt-4 flex justify-between font-display text-xl">
                 <span>{t.shop.cartTotal}</span>
-                <span className="text-[var(--eldonia-gold-light)]">{formatCartPrice(total)}</span>
+                <span className="text-[var(--eldonia-gold-light)]">
+                  {formatCartPrice(summary.orderTotal, locale)}
+                </span>
               </p>
               {user ? (
-                <div className="mt-4">
-                  <CheckoutButton />
-                </div>
+                <CartCheckoutPanel
+                  canFreeCheckout={summary.canFreeCheckout}
+                  requiresShippingAddress={summary.requiresShippingAddress}
+                  requiresShippingPayment={summary.requiresShippingPayment}
+                  hasPaidMerchandise={summary.hasPaidMerchandise}
+                  shippingFee={summary.shippingFee}
+                  initialShipping={initialShipping}
+                />
               ) : (
                 <Link
                   href="/auth/login?redirect_to=/shop/cart"
                   className="eldonia-btn-primary mt-4 block text-center"
                 >
-                  {t.shop.cartLoginCheckout}
+                  {summary.canFreeCheckout ? t.shop.loginToGetFree : t.shop.cartLoginCheckout}
                 </Link>
               )}
             </div>

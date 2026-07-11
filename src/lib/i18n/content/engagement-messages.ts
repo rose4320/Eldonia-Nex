@@ -44,6 +44,7 @@ export type EngagementContent = {
     downloadVideo: string;
     downloadAudio: string;
     downloadPdf: string;
+    downloadModel: string;
     downloadThumbnail: string;
     downloadArtworkTitle: (title: string) => string;
   };
@@ -98,6 +99,7 @@ const ENGAGEMENT_JA: EngagementContent = {
     downloadVideo: "動画をダウンロード",
     downloadAudio: "音声をダウンロード",
     downloadPdf: "PDF をダウンロード",
+    downloadModel: "3Dモデルをダウンロード",
     downloadThumbnail: "サムネイルをダウンロード",
     downloadArtworkTitle: (title) => `対象作品: ${title}`,
   },
@@ -152,6 +154,7 @@ const ENGAGEMENT_EN: EngagementContent = {
     downloadVideo: "Download video",
     downloadAudio: "Download audio",
     downloadPdf: "Download PDF",
+    downloadModel: "Download 3D model",
     downloadThumbnail: "Download thumbnail",
     downloadArtworkTitle: (title) => `Artwork: ${title}`,
   },

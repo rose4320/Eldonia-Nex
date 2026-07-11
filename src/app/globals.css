@@ -1576,6 +1576,183 @@ body {
   color: var(--eldonia-gold-light);
 }
 
+.eldonia-settings-mobile-nav {
+  position: sticky;
+  top: 4rem;
+  z-index: 20;
+  margin: -0.25rem -0.25rem 0;
+  padding: 0.25rem 0 0.75rem;
+  background: linear-gradient(180deg, rgba(6, 11, 20, 0.98) 70%, rgba(6, 11, 20, 0));
+}
+
+.eldonia-settings-mobile-nav__scroll {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding-bottom: 0.25rem;
+  scrollbar-width: none;
+}
+
+.eldonia-settings-mobile-nav__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.eldonia-settings-mobile-nav__chip {
+  flex-shrink: 0;
+  border: 1px solid var(--eldonia-border);
+  border-radius: 9999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.8125rem;
+  color: var(--eldonia-text-muted);
+  background: rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+}
+
+.eldonia-settings-mobile-nav__chip--accent {
+  border-color: rgba(214, 168, 79, 0.55);
+  color: var(--eldonia-gold-light);
+  background: rgba(214, 168, 79, 0.12);
+}
+
+.eldonia-referral-settings__mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.eldonia-referral-settings__mobile-lead {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-referral-settings__qr-tap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 18rem;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.eldonia-referral-settings__qr-display,
+.eldonia-referral-settings__qr-frame {
+  border-radius: 1rem;
+  border: 2px solid rgba(214, 168, 79, 0.55);
+  background: #fff;
+  padding: 0.85rem;
+  box-shadow:
+    0 0 0 4px rgba(214, 168, 79, 0.12),
+    0 12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.eldonia-referral-settings__qr-display svg,
+.eldonia-referral-settings__qr-frame svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.eldonia-referral-settings__qr-tap-hint {
+  font-size: 0.75rem;
+  color: var(--eldonia-text-muted);
+}
+
+.eldonia-referral-settings__code-pill {
+  display: inline-block;
+  border-radius: 9999px;
+  border: 1px solid var(--eldonia-border);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.35rem 0.9rem;
+  font-size: 0.875rem;
+  letter-spacing: 0.16em;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-referral-qr-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.eldonia-referral-qr-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.82);
+}
+
+.eldonia-referral-qr-sheet__panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(100%, 22rem);
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(214, 168, 79, 0.45);
+  background: linear-gradient(165deg, rgba(18, 16, 10, 0.98), rgba(6, 11, 20, 0.98));
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+
+.eldonia-referral-qr-sheet__title {
+  font-family: var(--font-cinzel), serif;
+  font-size: 1.125rem;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-referral-qr-sheet__hint {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--eldonia-text-muted);
+}
+
+.eldonia-referral-qr-sheet__qr {
+  width: min(100%, 16rem);
+  border-radius: 1rem;
+  border: 2px solid rgba(214, 168, 79, 0.55);
+  background: #fff;
+  padding: 0.85rem;
+}
+
+.eldonia-referral-qr-sheet__qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.eldonia-referral-qr-sheet__code {
+  font-size: 0.875rem;
+  letter-spacing: 0.16em;
+  color: var(--eldonia-gold-light);
+}
+
+.eldonia-model-viewer {
+  display: block;
+  width: 100%;
+  height: min(70vh, 42rem);
+  border-radius: 0.75rem;
+  border: 1px solid var(--eldonia-border);
+  background: #0a0a0a;
+}
+
+.artwork-upload__model-preview {
+  height: min(50vh, 24rem);
+}
+
 /* ── Home v2 (prototype) ── */
 .home-v2-main {
   margin-left: auto;
@@ -3896,6 +4073,333 @@ body {
 /* ── Artwork upload (settings/post/artwork) — high contrast, no glow ── */
 .artwork-upload-page {
   max-width: 72rem;
+}
+
+.artwork-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.artwork-upload-picker__head {
+  margin-bottom: 1rem;
+}
+
+.artwork-upload-picker__title {
+  font-family: var(--font-noto-serif-jp), serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #f2e6cc;
+}
+
+.artwork-upload-picker__lead {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #c4b89a;
+}
+
+.artwork-upload-picker__grid {
+  display: grid;
+  gap: 0.625rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 540px) {
+  .artwork-upload-picker__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .artwork-upload-picker__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.artwork-upload-picker__option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  width: 100%;
+  border: 1px solid #5c4f38;
+  border-radius: 0.5rem;
+  background: #1a1814;
+  padding: 0.875rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.artwork-upload-picker__option:hover {
+  border-color: #c9a84c;
+  background: #1f1b14;
+}
+
+.artwork-upload-picker__icon {
+  font-size: 1.375rem;
+  line-height: 1;
+}
+
+.artwork-upload-picker__label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #f0e6d0;
+}
+
+.artwork-upload-picker__desc {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #a89878;
+}
+
+.artwork-upload-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.artwork-upload-wizard__type {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.artwork-upload-wizard__type-label {
+  color: #9a8c72;
+}
+
+.artwork-upload-wizard__type-value {
+  font-weight: 600;
+  color: #f0e6d0;
+}
+
+.artwork-upload-wizard__change {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.8125rem;
+  color: #c9a84c;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.artwork-upload-wizard__steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.artwork-upload-wizard__step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1px solid #4a4030;
+  border-radius: 999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  color: #9a8c72;
+  background: #141210;
+}
+
+.artwork-upload-wizard__step.is-active {
+  border-color: #c9a84c;
+  color: #f0d898;
+  background: #1f1b14;
+}
+
+.artwork-upload-wizard__step.is-done {
+  color: #b8aa90;
+}
+
+.artwork-upload-wizard__step-num {
+  font-weight: 700;
+}
+
+.artwork-upload__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+  justify-content: space-between;
+}
+
+.artwork-upload__nav-back,
+.artwork-upload__nav-next,
+.artwork-upload__submit {
+  min-width: 7rem;
+}
+
+.artwork-upload__hint--tip {
+  color: #b8a880;
+}
+
+.artwork-upload-guide {
+  border: 1px solid #6b5528;
+  border-radius: 0.5rem;
+  background: #171512;
+  padding: 1rem 1.125rem;
+}
+
+.artwork-upload-guide__head {
+  margin-bottom: 1rem;
+}
+
+.artwork-upload-guide__title {
+  font-family: var(--font-noto-serif-jp), serif;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #f2e6cc;
+}
+
+.artwork-upload-guide__intro {
+  margin-top: 0.375rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #c4b89a;
+}
+
+.artwork-upload-guide__overview-label {
+  margin-bottom: 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #a89878;
+}
+
+.artwork-upload-guide__cards {
+  display: grid;
+  gap: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .artwork-upload-guide__cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .artwork-upload-guide__cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.artwork-upload-guide__card {
+  border: 1px solid #4a4030;
+  border-radius: 0.375rem;
+  background: #1a1814;
+  padding: 0.75rem 0.875rem;
+}
+
+.artwork-upload-guide__card.is-active {
+  border-color: #c9a84c;
+  background: #1f1b14;
+}
+
+.artwork-upload-guide__card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #f0e6d0;
+}
+
+.artwork-upload-guide__meta {
+  display: grid;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.artwork-upload-guide__meta dt {
+  color: #9a8c72;
+  font-weight: 600;
+}
+
+.artwork-upload-guide__meta dd {
+  margin: 0.125rem 0 0;
+  color: #ddd0b8;
+}
+
+.artwork-upload-guide__steps {
+  margin: 0.625rem 0 0;
+  padding-left: 1.125rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #c9bc9f;
+}
+
+.artwork-upload-guide__tip {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #b8a880;
+}
+
+.artwork-upload-guide__checklist {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #4a4030;
+}
+
+.artwork-upload-guide__checklist-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e8dcc4;
+}
+
+.artwork-upload-guide__checklist-list {
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.375rem;
+}
+
+.artwork-upload-guide__check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #b8aa90;
+}
+
+.artwork-upload-guide__check-item.is-done {
+  color: #d4c898;
+}
+
+.artwork-upload-guide__check-mark {
+  flex-shrink: 0;
+  width: 1rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.artwork-upload-guide__ready,
+.artwork-upload-guide__pending {
+  margin-top: 0.625rem;
+  font-size: 0.8125rem;
+}
+
+.artwork-upload-guide__ready {
+  color: #8fd4a0;
+}
+
+.artwork-upload-guide__pending {
+  color: #c4a060;
+}
+
+.artwork-upload__label-required {
+  margin-left: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #f0d898;
 }
 
 .artwork-upload-shell {

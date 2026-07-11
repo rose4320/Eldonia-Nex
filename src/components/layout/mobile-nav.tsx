@@ -16,6 +16,7 @@ type MobileNavProps = {
     displayName: string;
   } | null;
   unreadCount?: number;
+  cartCount?: number;
 };
 
 function MobileMenuIcon({ open }: { open: boolean }) {
@@ -34,7 +35,7 @@ function MobileMenuIcon({ open }: { open: boolean }) {
   );
 }
 
-export function MobileNav({ locale, user, unreadCount = 0 }: MobileNavProps) {
+export function MobileNav({ locale, user, unreadCount = 0, cartCount = 0 }: MobileNavProps) {
   const [open, setOpen] = useState(false);
   const mounted = useIsClient();
 
@@ -100,10 +101,15 @@ export function MobileNav({ locale, user, unreadCount = 0 }: MobileNavProps) {
               <div className="flex flex-col gap-1 border-t border-eldonia-border pt-3">
                 <button
                   type="button"
-                  className="eldonia-mobile-menu-link text-left"
+                  className="eldonia-mobile-menu-link flex items-center justify-between text-left"
                   onClick={() => navigateFromMenu("/shop/cart")}
                 >
-                  {HEADER_LABELS.cart}
+                  <span>{HEADER_LABELS.cart}</span>
+                  {cartCount > 0 ? (
+                    <span className="rounded-full bg-eldonia-gold px-2 py-0.5 text-[0.65rem] font-semibold text-eldonia-bg">
+                      {cartCount > 99 ? "99+" : cartCount}
+                    </span>
+                  ) : null}
                 </button>
                 {user ? (
                   <>

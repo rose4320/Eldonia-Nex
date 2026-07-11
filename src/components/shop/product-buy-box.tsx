@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { AddToCartButton } from "@/components/cart/add-to-cart-button";
+import { ProductDownloadLink } from "@/components/shop/product-download-link";
 import {
   discountPercent,
   formatPrice,
@@ -14,9 +15,10 @@ import { StarRating } from "./star-rating";
 type ProductBuyBoxProps = {
   product: ShopProductWithSeller;
   isLoggedIn: boolean;
+  canDownload?: boolean;
 };
 
-export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
+export function ProductBuyBox({ product, isLoggedIn, canDownload = false }: ProductBuyBoxProps) {
   const locale = useLocale();
   const t = useContent().shop;
   const discount = discountPercent(product.price, product.compare_at_price);
@@ -24,6 +26,7 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
     product.product_type === "digital" ||
     product.stock_quantity === null ||
     product.stock_quantity > 0;
+  const isFree = product.price === 0;
 
   return (
     <div className="eldonia-buy-box sticky top-6 space-y-4">
@@ -72,15 +75,23 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
       </div>
 
       <div className="flex flex-col gap-2">
+        {canDownload && (
+          <ProductDownloadLink
+            productId={product.id}
+            label={t.downloadProduct}
+            className="eldonia-btn-primary w-full text-center"
+          />
+        )}
         {isLoggedIn ? (
           <>
             <AddToCartButton kind="shop" id={product.id} disabled={!inStock} />
             <AddToCartButton
               kind="shop"
               id={product.id}
-              label={t.buyNow}
+              label={isFree ? t.getFree : t.buyNow}
               disabled={!inStock}
               buyNow
+              freeDigitalClaim={isFree && product.product_type === "digital"}
               className="eldonia-btn-secondary w-full"
             />
           </>
@@ -89,12 +100,12 @@ export function ProductBuyBox({ product, isLoggedIn }: ProductBuyBoxProps) {
             href={`/auth/login?redirect_to=/shop/${product.id}`}
             className="eldonia-btn-primary w-full text-center"
           >
-            {t.loginToBuy}
+            {isFree ? t.loginToGetFree : t.loginToBuy}
           </Link>
         )}
       </div>
 
-      <p className="eldonia-hint text-center">{t.secureCheckout}</p>
+      <p className="eldonia-hint text-center">{isFree ? t.freeCheckoutHint : t.secureCheckout}</p>
     </div>
   );
 }

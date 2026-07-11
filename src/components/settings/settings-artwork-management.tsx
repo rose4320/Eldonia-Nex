@@ -11,19 +11,25 @@ import type { SettingsUiContent } from "@/lib/i18n/content/settings-ui-messages"
 
 type SettingsArtworkManagementProps = {
   artworks: UserArtworkSummary[];
+  isCreator: boolean;
 };
+
+function sellProductHref(artworkId: string) {
+  return `/settings/post/product?from_artwork=${encodeURIComponent(artworkId)}`;
+}
 
 function mediaDownloadLabel(
   mediaType: ArtworkMediaType,
   copy: SettingsUiContent["artworkManagement"],
 ) {
   if (mediaType === "document") return copy.downloadPdf;
+  if (mediaType === "model") return copy.downloadModel;
   if (mediaType === "audio") return copy.downloadAudio;
   if (mediaType === "video") return copy.downloadVideo;
   return copy.downloadImage;
 }
 
-export function SettingsArtworkManagement({ artworks }: SettingsArtworkManagementProps) {
+export function SettingsArtworkManagement({ artworks, isCreator }: SettingsArtworkManagementProps) {
   const router = useRouter();
   const locale = useLocale();
   const { settingsUi } = useContent();
@@ -118,6 +124,14 @@ export function SettingsArtworkManagement({ artworks }: SettingsArtworkManagemen
               </Link>
 
               <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
+                {isCreator && (
+                  <Link
+                    href={sellProductHref(artwork.id)}
+                    className="eldonia-btn-primary text-sm"
+                  >
+                    {copy.sellOnShop}
+                  </Link>
+                )}
                 <a
                   href={`/api/gallery/artworks/${artwork.id}/download?file=media`}
                   className="eldonia-btn-secondary text-sm"

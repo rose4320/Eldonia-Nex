@@ -2,6 +2,8 @@ import type { UiLocale } from "@/lib/i18n/locale";
 
 export type SettingsUiContent = {
   sectionRecommendations: string;
+  sectionReferral: string;
+  sectionShop: string;
   recommendationsHeading: string;
   recommendationsGo: string;
   postHubHeading: string;
@@ -10,6 +12,28 @@ export type SettingsUiContent = {
   postArtwork: { label: string; description: string };
   postProduct: { label: string; description: string };
   postEvent: { label: string; description: string };
+  shopManagement: {
+    heading: string;
+    lead: string;
+    registerProduct: string;
+    registerLink: string;
+    browseShop: string;
+    empty: string;
+    creatorRequired: string;
+    typePhysical: string;
+    typeDigital: string;
+    stock: (n: number) => string;
+    activeBadge: string;
+    inactiveBadge: string;
+    viewProduct: string;
+    downloadProduct: string;
+    downloadUnavailable: string;
+    deleteProduct: string;
+    deleteConfirm: (title: string) => string;
+    republishProduct: string;
+    processing: string;
+    deleteFailed: string;
+  };
   artworkManagement: {
     heading: string;
     lead: string;
@@ -25,7 +49,9 @@ export type SettingsUiContent = {
     downloadVideo: string;
     downloadAudio: string;
     downloadPdf: string;
+    downloadModel: string;
     downloadThumbnail: string;
+    sellOnShop: string;
   };
   basics: {
     publicProfile: string;
@@ -136,21 +162,65 @@ export type SettingsUiContent = {
     ticketsDesc: string;
     explore: { title: string; description: string };
   };
+  referral: {
+    heading: string;
+    title: string;
+    body: string;
+    codeLabel: string;
+    urlLabel: string;
+    copyUrl: string;
+    copyCode: string;
+    copied: string;
+    qrLabel: string;
+    mobileScanLead: string;
+    tapToEnlarge: string;
+    shareLink: string;
+    shareTitle: string;
+    shareText: string;
+    showQrFullscreen: string;
+    fullscreenTitle: string;
+    fullscreenHint: string;
+    closeQr: string;
+  };
 };
 
 const SETTINGS_UI_JA: SettingsUiContent = {
   sectionRecommendations: "おすすめ",
+  sectionReferral: "紹介コード",
+  sectionShop: "ショップ",
   recommendationsHeading: "次にやること",
   recommendationsGo: "進む →",
   postHubHeading: "投稿",
   postHubLead: "すべての投稿はここから行います。作品・商品・イベントを Nexus に公開できます。",
   postHubGo: "投稿画面へ →",
-  postArtwork: { label: "作品を投稿", description: "GALLERY に画像・動画・音声・PDF を公開" },
-  postProduct: { label: "商品を投稿", description: "SHOP にデジタル・物理商品を出品" },
+  postArtwork: { label: "作品を投稿", description: "GALLERY に画像・動画・音声・PDF・3D（GLB）を公開" },
+  postProduct: { label: "商品を登録", description: "SHOP にデジタル・物理商品を出品（設定から登録）" },
   postEvent: { label: "イベントを投稿", description: "ライブ・WS・展示などのイベントを作成" },
+  shopManagement: {
+    heading: "商品管理",
+    lead: "SHOP への出品・登録商品の確認はここから行います。無料配布も ¥0 で登録できます。",
+    registerProduct: "商品を登録",
+    registerLink: "最初の商品を登録する →",
+    browseShop: "SHOP を見る →",
+    empty: "まだ登録した商品がありません。",
+    creatorRequired: "商品登録には、基本情報で「クリエイターとして活動する」を有効にしてください。",
+    typePhysical: "物販",
+    typeDigital: "デジタル",
+    stock: (n) => `在庫 ${n}`,
+    activeBadge: "公開中",
+    inactiveBadge: "非公開",
+    viewProduct: "商品ページを見る →",
+    downloadProduct: "ダウンロード",
+    downloadUnavailable: "配布ファイル未設定",
+    deleteProduct: "削除",
+    deleteConfirm: (title) => `「${title}」を SHOP から削除（非公開）しますか？データは保持されます。`,
+    republishProduct: "再公開",
+    processing: "更新中...",
+    deleteFailed: "商品の更新に失敗しました。",
+  },
   artworkManagement: {
     heading: "作品管理",
-    lead: "投稿した GALLERY 作品の公開・非公開の切り替えと、元ファイルのダウンロードができます。非公開にしてもデータは保持されます。",
+    lead: "投稿した GALLERY 作品の公開・非公開の切り替えと、元ファイルのダウンロードができます。「SHOP で販売」から有料・無料（¥0）どちらも Shop に登録できます。",
     empty: "まだ作品がありません。",
     postLink: "作品を投稿する →",
     publicBadge: "公開中",
@@ -163,7 +233,9 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     downloadVideo: "動画をダウンロード",
     downloadAudio: "音声をダウンロード",
     downloadPdf: "PDF をダウンロード",
+    downloadModel: "3Dモデルをダウンロード",
     downloadThumbnail: "サムネイル",
+    sellOnShop: "SHOP で販売",
   },
   basics: {
     publicProfile: "公開プロフィール",
@@ -235,7 +307,7 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     estimatedIncome: "収入見込み",
     estimatedHint: "出品・開催に基づく概算",
     listedProducts: "出品商品",
-    postProduct: "商品を投稿 →",
+    postProduct: "商品を登録 →",
     hostedEvents: "開催イベント",
     postEvent: "イベントを投稿 →",
     viewOrders: "注文履歴の詳細を見る →",
@@ -269,7 +341,7 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     basics: { title: "基本情報を登録する", description: "氏名・住所・振込先を設定すると出品・報酬受取がスムーズになります。" },
     artwork: { title: "最初の作品を投稿する", description: "GALLERY に作品を公開してクリエイター活動を始めましょう。" },
     portfolio: { title: "ポートフォリオを整える", description: "WORKS 応募時に自動添付されるプロフィールを設定します。" },
-    product: { title: "商品を出品する", description: "SHOP にデジタル・物理商品を登録して販売を開始できます。" },
+    product: { title: "商品を登録する", description: "設定のショップから SHOP にデジタル・物理商品を登録できます。" },
     event: { title: "イベントを開催する", description: "ライブ・ワークショップ・展示などのイベントを作成します。" },
     unread: (n) => `未読の通知が ${n} 件`,
     unreadDesc: "運営からの告知やアクティビティ通知を確認してください。",
@@ -277,21 +349,65 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     ticketsDesc: "ヘルプデスクからの返信を確認しましょう。",
     explore: { title: "コミュニティを探索する", description: "すべての設定が完了しています。掲示板やイベントをチェックしましょう。" },
   },
+  referral: {
+    heading: "紹介プログラム",
+    title: "紹介コード / QR",
+    body: "サブスクプランが Free 以外の会員には、サインイン確定後に紹介コードが付与されます。紹介成立から3か月目以降、日本の紹介は10%、日本以外は15%を還元します。",
+    codeLabel: "紹介コード",
+    urlLabel: "紹介URL",
+    copyUrl: "紹介URLをコピー",
+    copyCode: "紹介コードをコピー",
+    copied: "コピーしました",
+    qrLabel: "紹介URLのQRコード",
+    mobileScanLead: "友達にQRコードを見せて、サインアップ画面へ誘導できます",
+    tapToEnlarge: "タップして大きく表示",
+    shareLink: "招待リンクを共有",
+    shareTitle: "Eldonia Nex に参加",
+    shareText: "Eldonia Nex へ招待します。QRまたはリンクからサインアップできます。",
+    showQrFullscreen: "QRコードを全画面表示",
+    fullscreenTitle: "友達に読み取ってもらう",
+    fullscreenHint: "スマホのカメラで読み取るとサインアップ画面が開きます",
+    closeQr: "閉じる",
+  },
 };
 
 const SETTINGS_UI_EN: SettingsUiContent = {
   sectionRecommendations: "Recommended",
+  sectionReferral: "Referral",
+  sectionShop: "Shop",
   recommendationsHeading: "Next steps",
   recommendationsGo: "Go →",
   postHubHeading: "Posts",
   postHubLead: "Publish artwork, products, and events to the Nexus from here.",
   postHubGo: "Open post page →",
-  postArtwork: { label: "Post artwork", description: "Publish image, video, audio, or PDF to GALLERY" },
-  postProduct: { label: "List product", description: "Sell digital or physical items on SHOP" },
+  postArtwork: { label: "Post artwork", description: "Publish image, video, audio, PDF, or 3D (GLB) to GALLERY" },
+  postProduct: { label: "Register product", description: "List digital or physical items on SHOP (via Settings)" },
   postEvent: { label: "Create event", description: "Live shows, workshops, exhibitions, and more" },
+  shopManagement: {
+    heading: "Product management",
+    lead: "Register and review SHOP listings here. Free distribution is supported at ¥0.",
+    registerProduct: "Register product",
+    registerLink: "Register your first product →",
+    browseShop: "Browse SHOP →",
+    empty: "No products registered yet.",
+    creatorRequired: "Enable “Act as a creator” in Basics to register products.",
+    typePhysical: "Physical",
+    typeDigital: "Digital",
+    stock: (n) => `Stock ${n}`,
+    activeBadge: "Live",
+    inactiveBadge: "Hidden",
+    viewProduct: "View product page →",
+    downloadProduct: "Download",
+    downloadUnavailable: "No file configured",
+    deleteProduct: "Remove",
+    deleteConfirm: (title) => `Remove “${title}” from SHOP (unlist)? The listing data will be kept.`,
+    republishProduct: "Publish again",
+    processing: "Updating…",
+    deleteFailed: "Could not update the product.",
+  },
   artworkManagement: {
     heading: "Artwork management",
-    lead: "Toggle Gallery visibility and download original files for your uploads. Unpublished works stay in your account.",
+    lead: "Toggle Gallery visibility and download original files. Use “Sell on SHOP” to list paid or free (¥0) products.",
     empty: "No artworks yet.",
     postLink: "Post an artwork →",
     publicBadge: "Public",
@@ -304,7 +420,9 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     downloadVideo: "Download video",
     downloadAudio: "Download audio",
     downloadPdf: "Download PDF",
+    downloadModel: "Download 3D model",
     downloadThumbnail: "Thumbnail",
+    sellOnShop: "Sell on SHOP",
   },
   basics: {
     publicProfile: "Public profile",
@@ -376,7 +494,7 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     estimatedIncome: "Estimated earnings",
     estimatedHint: "Rough estimate from listings & events",
     listedProducts: "Listed products",
-    postProduct: "List product →",
+    postProduct: "Register product →",
     hostedEvents: "Hosted events",
     postEvent: "Create event →",
     viewOrders: "View order history →",
@@ -410,13 +528,33 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     basics: { title: "Complete your profile", description: "Add legal name, address, and payout info for smoother selling." },
     artwork: { title: "Post your first artwork", description: "Publish to GALLERY and start creating." },
     portfolio: { title: "Set up portfolio", description: "Auto-attached when you apply on WORKS." },
-    product: { title: "List a product", description: "Register digital or physical items on SHOP." },
+    product: { title: "Register a product", description: "Add digital or physical items to SHOP from Settings." },
     event: { title: "Host an event", description: "Create live shows, workshops, or exhibitions." },
     unread: (n) => `${n} unread notification${n === 1 ? "" : "s"}`,
     unreadDesc: "Check announcements and activity updates.",
     tickets: (n) => `${n} open support ticket${n === 1 ? "" : "s"}`,
     ticketsDesc: "Review replies from the help desk.",
     explore: { title: "Explore the community", description: "You're all set. Browse boards and events." },
+  },
+  referral: {
+    heading: "Referral program",
+    title: "Referral code / QR",
+    body: "Paid members (non-Free plans) receive a referral code after sign-in. From the third month after a successful referral, Japan referrals earn 10% and international referrals earn 15%.",
+    codeLabel: "Referral code",
+    urlLabel: "Referral URL",
+    copyUrl: "Copy referral URL",
+    copyCode: "Copy referral code",
+    copied: "Copied",
+    qrLabel: "QR code for referral URL",
+    mobileScanLead: "Show this QR to friends to open the sign-up page",
+    tapToEnlarge: "Tap to enlarge",
+    shareLink: "Share invite link",
+    shareTitle: "Join Eldonia Nex",
+    shareText: "You're invited to Eldonia Nex. Scan the QR or use the link to sign up.",
+    showQrFullscreen: "Show QR fullscreen",
+    fullscreenTitle: "Have your friend scan this",
+    fullscreenHint: "Their camera opens the sign-up page with your referral code",
+    closeQr: "Close",
   },
 };
 
@@ -426,6 +564,8 @@ export const SETTINGS_UI_CONTENT: Record<UiLocale, SettingsUiContent> = {
   ko: {
     ...SETTINGS_UI_EN,
     sectionRecommendations: "추천",
+    sectionReferral: "추천 코드",
+    sectionShop: "샵",
     recommendationsHeading: "다음 단계",
     postHubHeading: "게시",
     basics: {
@@ -449,6 +589,8 @@ export const SETTINGS_UI_CONTENT: Record<UiLocale, SettingsUiContent> = {
   "zh-CN": {
     ...SETTINGS_UI_EN,
     sectionRecommendations: "推荐",
+    sectionReferral: "推荐码",
+    sectionShop: "商店",
     recommendationsHeading: "下一步",
     postHubHeading: "发布",
     basics: {
