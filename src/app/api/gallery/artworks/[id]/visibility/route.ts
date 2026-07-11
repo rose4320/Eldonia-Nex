@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { revalidatePath } from "next/cache";
 import { resolveArtworkVisibilityActor } from "@/lib/gallery/artwork-access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
@@ -83,6 +84,10 @@ export async function PATCH(
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
   }
+
+  revalidatePath("/gallery");
+  revalidatePath("/");
+  revalidatePath(`/gallery/${id}`);
 
   return NextResponse.json(
     { ok: true, is_public: body.is_public, actor },

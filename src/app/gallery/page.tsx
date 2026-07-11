@@ -15,6 +15,8 @@ type GalleryPageProps = {
   searchParams: Promise<{ q?: string; realm?: string }>;
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);

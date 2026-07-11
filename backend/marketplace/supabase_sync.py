@@ -251,3 +251,43 @@ def sync_supabase_profiles() -> dict[str, int]:
         if _ensure_user_from_profile(profile):
             created += 1
     return {"profiles": len(profiles), "created": created, "updated": updated}
+
+
+def set_supabase_artwork_visibility(supabase_id: uuid.UUID, is_public: bool) -> None:
+    """Supabase public.artworks.is_public を更新する（GALLERY 反映用）。"""
+    url, key = _supabase_config()
+    response = requests.patch(
+        f"{url}/rest/v1/artworks",
+        headers={**_headers(key), "Prefer": "return=representation"},
+        params={"id": f"eq.{supabase_id}"},
+        json={"is_public": is_public},
+        timeout=30,
+    )
+    if not response.ok:
+        raise SupabaseSyncError(
+            f"Supabase artwork visibility update failed: "
+            f"{response.status_code} {response.text[:300]}"
+        )
+
+    rows = response.json()
+    if not isinstance(rows, list) or len(rows) == 0:
+        raise SupabaseSyncError(
+            f"Supabase に作品 {supabase_id} がありません。"
+            "Django Admin の「Supabase カタログ同期」を実行してから再度お試しください。"
+        )
+
+
+def set_supabase_artworks_visibility(
+    supabase_ids: list[uuid.UUID],
+    is_public: bool,
+) -> tuple[int, list[str]]:
+    """複数作品の公開状態を Supabase に反映する。成功件数とエラー文言を返す。"""
+    synced = 0
+    errors: list[str] = []
+    for supabase_id in supabase_ids:
+        try:
+            set_supabase_artwork_visibility(supabase_id, is_public)
+            synced += 1
+        except SupabaseSyncError as exc:
+            errors.append(f"{supabase_id}: {exc}")
+    return synced, errors

@@ -34,6 +34,8 @@ type ArtworkDetailPageProps = {
 
 const GALLERY_DETAIL_TIMEOUT_MS = 1200;
 
+export const dynamic = "force-dynamic";
+
 async function withTimeout<T>(promise: PromiseLike<T>, fallback: T): Promise<T> {
   try {
     return await Promise.race([
