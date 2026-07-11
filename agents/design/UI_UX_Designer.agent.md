@@ -158,7 +158,7 @@
 
 **スタイル定義**: `src/app/globals.css`
 
-**SHOP モジュール**: レイアウト・用語は `agents/Shop_Manager.agent.md` を参照（Amazon 型 × Eldonia）
+**SHOP モジュール**: レイアウト・用語は `agents/product/Shop_Manager.agent.md` を参照（Amazon 型 × Eldonia）
 
 ---
 

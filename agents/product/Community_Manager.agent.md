@@ -9,9 +9,9 @@
 **推奨実行モデル**: OpenAI Codex / Codex系モデル
 
 **関連エージェント**:
-- `UI_UX_Designer.agent.md` — 共通トークン
-- `Frontend_Manager.agent.md` — `src/app/community/`, `src/components/community/`
-- `Backend_Manager.agent.md` — `supabase/migrations/006_community.sql`
+- `agents/design/UI_UX_Designer.agent.md` — 共通トークン
+- `agents/development/Frontend_Manager.agent.md` — `src/app/community/`, `src/components/community/`
+- `agents/development/Backend_Manager.agent.md` — `supabase/migrations/006_community.sql`
 
 ---
 

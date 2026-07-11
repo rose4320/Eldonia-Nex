@@ -8,9 +8,9 @@
 **推奨実行モデル**: OpenAI Codex
 
 **協議パートナー**:
-- `Django_Manager.agent.md` — 料金・財務・広告など **運用設定（Django Admin）**。同じドメインを触る場合は必ず事前協議
-- `Frontend_Manager.agent.md` — API 契約・型の FE 側利用
-- `Accounting.agent.md` — 財務レポート（集計データの出所確認）
+- `agents/development/Django_Manager.agent.md` — 料金・財務・広告など **運用設定（Django Admin）**。同じドメインを触る場合は必ず事前協議
+- `agents/development/Frontend_Manager.agent.md` — API 契約・型の FE 側利用
+- `agents/development/Accounting.agent.md` — 財務レポート（集計データの出所確認）
 
 ---
 

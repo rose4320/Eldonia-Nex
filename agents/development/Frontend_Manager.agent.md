@@ -14,7 +14,7 @@
 **現行スタック**:
 - ルート `src/` — Next.js 16 App Router + TypeScript + Tailwind 4
 - Supabase SSR — `@/lib/supabase/client`, `server`, `middleware`
-- デザイン規約 — `agents/UI_UX_Designer.agent.md`（`.eldonia-*` クラス）
+- デザイン規約 — `agents/design/UI_UX_Designer.agent.md`（`.eldonia-*` クラス）
 
 **担当パス**:
 - `src/app/`, `src/components/`, `src/lib/`

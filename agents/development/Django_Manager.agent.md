@@ -8,9 +8,9 @@
 **推奨実行モデル**: OpenAI Codex / Codex系モデル
 
 **必ず協議する相手**:
-- `Backend_Manager.agent.md` — Supabase スキーマ・RLS・`src/types/database.ts` との整合
-- `Frontend_Manager.agent.md` — 設定値が FE にどう露出するか（API / env / キャッシュ）
-- `Accounting.agent.md` — 財務レポート・予算（分析・帳票は Accounting、**マスタ編集は Django Manager**）
+- `agents/development/Backend_Manager.agent.md` — Supabase スキーマ・RLS・`src/types/database.ts` との整合
+- `agents/development/Frontend_Manager.agent.md` — 設定値が FE にどう露出するか（API / env / キャッシュ）
+- `agents/development/Accounting.agent.md` — 財務レポート・予算（分析・帳票は Accounting、**マスタ編集は Django Manager**）
 
 ---
 

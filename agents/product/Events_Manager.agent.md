@@ -13,9 +13,9 @@
 **推奨実行モデル**: OpenAI Codex / Codex系モデル
 
 **関連エージェント**:
-- `UI_UX_Designer.agent.md` — 共通トークン
-- `Frontend_Manager.agent.md` — `src/app/events/`, `src/components/events/`
-- `Backend_Manager.agent.md` — `supabase/migrations/005_events.sql`
+- `agents/design/UI_UX_Designer.agent.md` — 共通トークン
+- `agents/development/Frontend_Manager.agent.md` — `src/app/events/`, `src/components/events/`
+- `agents/development/Backend_Manager.agent.md` — `supabase/migrations/005_events.sql`
 
 ---
 

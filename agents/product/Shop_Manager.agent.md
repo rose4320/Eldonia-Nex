@@ -22,9 +22,9 @@
 **推奨実行モデル**: OpenAI Codex / Codex系モデル
 
 **関連エージェント**:
-- `UI_UX_Designer.agent.md` — 共通トークン・タイポグラフィ
-- `Frontend_Manager.agent.md` — `src/app/shop/`, `src/components/shop/`
-- `Backend_Manager.agent.md` — `supabase/migrations/004_shop.sql`
+- `agents/design/UI_UX_Designer.agent.md` — 共通トークン・タイポグラフィ
+- `agents/development/Frontend_Manager.agent.md` — `src/app/shop/`, `src/components/shop/`
+- `agents/development/Backend_Manager.agent.md` — `supabase/migrations/004_shop.sql`
 
 ---
 

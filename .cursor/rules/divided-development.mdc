@@ -13,7 +13,7 @@ alwaysApply: true
 - **Backend/DB**: `supabase/migrations/` + RLS
 - **Django**: `backend/` + `/admin/`（Revenue/Payment・Admin/Audit 協議）
 - **Next Admin**: `src/app/admin/`（拡張中）
-- **Design**: `agents/UI_UX_Designer.agent.md`（LP は紫アクセント可）
+- **Design**: `agents/design/UI_UX_Designer.agent.md`（LP は紫アクセント可）
 
 ## 指揮系（必須 — Main Director 経由）
 
@@ -22,7 +22,7 @@ alwaysApply: true
 ```
 ユーザー要望
   → Main Director（Intake 表 + Plan）
-  → 担当部署 Agent（agents/*.agent.md を Read）
+  → 担当部署 Agent（`agents/<category>/*.agent.md` を Read）
   → Sub Agent（Task: explore / generalPurpose / shell）
   → Verify（eldonia-verify）
   → Main Director Report
@@ -40,7 +40,7 @@ alwaysApply: true
 
 ### 実装時
 
-- 担当 `agents/*_Manager.agent.md` または `*_Agent.agent.md` を Read してから着手
+- 担当 `agents/<category>/*_Manager.agent.md` または `*_Agent.agent.md` を Read してから着手
 - レポートで部署名を明示（例: Gallery Manager が API 追加）
 
 ## コアフロー（Gallery → Lab）

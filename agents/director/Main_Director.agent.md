@@ -9,9 +9,9 @@
 
 | Sub Agent | ファイル | 役割 |
 |-----------|---------|------|
-| Request Intake | `Request_Intake.agent.md` | 要望の構造化・優先度 |
-| Project Producer | `Project_Producer.agent.md` | タスク分解・進捗 |
-| Explore | `Explore.agent.md` | 読み取り専用探索 |
+| Request Intake | `director/Request_Intake.agent.md` | 要望の構造化・優先度 |
+| Project Producer | `director/Project_Producer.agent.md` | タスク分解・進捗 |
+| Explore | `director/Explore.agent.md` | 読み取り専用探索 |
 
 ## 指揮フロー
 
@@ -29,19 +29,19 @@
 
 | キーワード例 | 担当 Agent |
 |-------------|-----------|
-| 画面/UI/コンポーネント/Next.js | `Frontend_Manager` + `UI_UX_Designer` |
-| API/RLS/マイグレーション/Supabase | `Backend_Manager` + `Database_Agent` |
-| ログイン/OAuth/権限/セッション | `Auth_Agent` |
-| Stripe/決済/手数料 | `Revenue_Payment_Manager` + `Backend_Manager` |
-| 作品/投稿/コラボ/ギャラリー | `Gallery_Manager` |
-| 共同制作/Lab ルーム | `Lab_Manager` |
-| Quest/求人/ポートフォリオ | `Works_Manager` |
-| 商品/カート/Shop | `Shop_Manager` |
-| 通知/ファン登録 | `Fan_Notification_Manager` |
-| i18n/翻訳 | `Translation_Manager` |
-| 本番デプロイ/CI/Vercel | `DevOps_Agent` |
-| テスト/再現/バグ | `QA_Test_Agent` |
-| Django Admin/監査 | `Django_Manager` + `Admin_Audit_Manager` |
+| 画面/UI/コンポーネント/Next.js | `development/Frontend_Manager` + `design/UI_UX_Designer` |
+| API/RLS/マイグレーション/Supabase | `development/Backend_Manager` + `development/Database_Agent` |
+| ログイン/OAuth/権限/セッション | `development/Auth_Agent` |
+| Stripe/決済/手数料 | `business/Revenue_Payment_Manager` + `development/Backend_Manager` |
+| 作品/投稿/コラボ/ギャラリー | `product/Gallery_Manager` |
+| 共同制作/Lab ルーム | `product/Lab_Manager` |
+| Quest/求人/ポートフォリオ | `product/Works_Manager` |
+| 商品/カート/Shop | `product/Shop_Manager` |
+| 通知/ファン登録 | `product/Fan_Notification_Manager` |
+| i18n/翻訳 | `business/Translation_Manager` |
+| 本番デプロイ/CI/Vercel | `development/DevOps_Agent` |
+| テスト/再現/バグ | `development/QA_Test_Agent` |
+| Django Admin/監査 | `development/Django_Manager` + `business/Admin_Audit_Manager` |
 
 ## MVP 優先（§24）
 
@@ -64,7 +64,7 @@
 | 作業 | 手段 |
 |------|------|
 | コード探索 | Task `explore` — プロンプトに担当部署・調査目的 |
-| 独立実装塊 | Task `generalPurpose` — 該当 `agents/*.agent.md` の役割をプロンプト先頭に貼る |
+| 独立実装塊 | Task `generalPurpose` — 該当 `agents/<category>/*.agent.md` の役割をプロンプト先頭に貼る |
 | シェル/デプロイ | Task `shell` — DevOps 役割・ユーザー承認済みか確認 |
 | 単純・小規模 | Main Director が担当 agent.md を Read したうえで直接実装可 |
 

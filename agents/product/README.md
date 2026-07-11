@@ -1,0 +1,19 @@
+# Product — コアプロダクト
+
+Gallery → Lab コアフローを含むプロダクト部署。
+
+| ファイル | 役割 | 主パス |
+|---------|------|--------|
+| [Gallery_Manager.agent.md](./Gallery_Manager.agent.md) | 作品・投稿 | `src/app/gallery/` |
+| [Lab_Manager.agent.md](./Lab_Manager.agent.md) | 共同制作 | `src/app/lab/` |
+| [Works_Manager.agent.md](./Works_Manager.agent.md) | Works・求人 | `src/app/works/` |
+| [Shop_Manager.agent.md](./Shop_Manager.agent.md) | ショップ | `src/app/shop/` |
+| [Events_Manager.agent.md](./Events_Manager.agent.md) | イベント | `src/app/events/` |
+| [Community_Manager.agent.md](./Community_Manager.agent.md) | コミュニティ | `src/app/community/` |
+| [Quest_Manager.agent.md](./Quest_Manager.agent.md) | Quest | `/api/quests` |
+| [Fan_Notification_Manager.agent.md](./Fan_Notification_Manager.agent.md) | 通知 | 通知基盤 |
+| [Portfolio_Passport_Manager.agent.md](./Portfolio_Passport_Manager.agent.md) | ポートフォリオ | `works/portfolio/` |
+
+**MVP 高**: Gallery, Lab, Works, Shop, Fan Notification
+
+正本: [../eldonia_nex_agent_departments.md](../eldonia_nex_agent_departments.md) §7–§15
