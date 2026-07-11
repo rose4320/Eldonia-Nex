@@ -119,6 +119,10 @@ export type ContentCatalog = {
     claimFree: string;
     freeClaimLoading: string;
     freeClaimFailed: string;
+    alreadyOwned: string;
+    ownedHint: string;
+    sellerPreviewHint: string;
+    freeAlreadyClaimed: string;
     shippingHeading: string;
     shippingLead: string;
     shippingName: string;

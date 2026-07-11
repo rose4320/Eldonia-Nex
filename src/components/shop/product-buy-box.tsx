@@ -16,9 +16,17 @@ type ProductBuyBoxProps = {
   product: ShopProductWithSeller;
   isLoggedIn: boolean;
   canDownload?: boolean;
+  hasClaimed?: boolean;
+  isSeller?: boolean;
 };
 
-export function ProductBuyBox({ product, isLoggedIn, canDownload = false }: ProductBuyBoxProps) {
+export function ProductBuyBox({
+  product,
+  isLoggedIn,
+  canDownload = false,
+  hasClaimed = false,
+  isSeller = false,
+}: ProductBuyBoxProps) {
   const locale = useLocale();
   const t = useContent().shop;
   const discount = discountPercent(product.price, product.compare_at_price);
@@ -27,6 +35,7 @@ export function ProductBuyBox({ product, isLoggedIn, canDownload = false }: Prod
     product.stock_quantity === null ||
     product.stock_quantity > 0;
   const isFree = product.price === 0;
+  const showPurchaseActions = isLoggedIn && !hasClaimed && !isSeller;
 
   return (
     <div className="eldonia-buy-box sticky top-6 space-y-4">
@@ -43,6 +52,12 @@ export function ProductBuyBox({ product, isLoggedIn, canDownload = false }: Prod
       <p className="font-display text-3xl text-[var(--eldonia-gold-light)]">
         {formatPrice(product.price, locale)}
       </p>
+
+      {hasClaimed && (
+        <p className="rounded-md border border-[var(--eldonia-border)] bg-[var(--eldonia-surface)] px-3 py-2 text-center text-sm text-[var(--eldonia-gold-muted)]">
+          {t.alreadyOwned}
+        </p>
+      )}
 
       <StarRating
         rating={product.rating}
@@ -82,7 +97,7 @@ export function ProductBuyBox({ product, isLoggedIn, canDownload = false }: Prod
             className="eldonia-btn-primary w-full text-center"
           />
         )}
-        {isLoggedIn ? (
+        {showPurchaseActions ? (
           <>
             <AddToCartButton kind="shop" id={product.id} disabled={!inStock} />
             <AddToCartButton
@@ -95,17 +110,25 @@ export function ProductBuyBox({ product, isLoggedIn, canDownload = false }: Prod
               className="eldonia-btn-secondary w-full"
             />
           </>
-        ) : (
+        ) : !isLoggedIn ? (
           <Link
             href={`/auth/login?redirect_to=/shop/${product.id}`}
             className="eldonia-btn-primary w-full text-center"
           >
             {isFree ? t.loginToGetFree : t.loginToBuy}
           </Link>
-        )}
+        ) : null}
       </div>
 
-      <p className="eldonia-hint text-center">{isFree ? t.freeCheckoutHint : t.secureCheckout}</p>
+      <p className="eldonia-hint text-center">
+        {hasClaimed
+          ? t.ownedHint
+          : isSeller
+            ? t.sellerPreviewHint
+            : isFree
+              ? t.freeCheckoutHint
+              : t.secureCheckout}
+      </p>
     </div>
   );
 }

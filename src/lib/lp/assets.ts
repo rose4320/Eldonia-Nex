@@ -1,5 +1,5 @@
 /** LP brand assets — source: repo root `aset/` → synced to `public/aset/` */
-const LP_ASSET_VERSION = "0.9.5";
+const LP_ASSET_VERSION = "0.9.6";
 
 function lpAsset(path: string): string {
   return `${path}?v=${LP_ASSET_VERSION}`;

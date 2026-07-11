@@ -27,9 +27,18 @@ export function FreeClaimButton({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(direct ? { direct } : {}),
       });
-      const data = (await res.json()) as { redirect?: string; error?: string };
+      const data = (await res.json()) as {
+        redirect?: string;
+        error?: string;
+        alreadyOwned?: boolean;
+      };
       if (!res.ok) {
         setError(data.error ?? t.freeClaimFailed);
+        return;
+      }
+      if (data.alreadyOwned) {
+        router.push(data.redirect ?? window.location.pathname);
+        router.refresh();
         return;
       }
       router.push(data.redirect ?? "/checkout/success?free=1");

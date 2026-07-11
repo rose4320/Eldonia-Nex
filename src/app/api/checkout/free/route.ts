@@ -3,6 +3,7 @@ import { clearCart, getCart } from "@/lib/cart/cookie-cart";
 import { buildOrderItemsPayload } from "@/lib/cart/order-items";
 import { resolveCart } from "@/lib/cart/resolve-cart";
 import { getShopProduct } from "@/lib/shop/get-products";
+import { userHasShopProductOrder } from "@/lib/shop/product-download-access";
 import { createClient } from "@/lib/supabase/server";
 import type { CartLine } from "@/lib/cart/types";
 
@@ -45,6 +46,14 @@ export async function POST(request: Request) {
         { error: "無料の物理商品は配送先入力が必要です。カートからお手続きください。" },
         { status: 400 },
       );
+    }
+
+    if (await userHasShopProductOrder(user.id, id)) {
+      return NextResponse.json({
+        ok: true,
+        alreadyOwned: true,
+        redirect: `/shop/${id}`,
+      });
     }
 
     const lines = [
@@ -104,6 +113,15 @@ export async function POST(request: Request) {
       { error: "無料の物理商品は配送先入力が必要です。" },
       { status: 400 },
     );
+  }
+
+  for (const item of summary.items) {
+    if (await userHasShopProductOrder(user.id, item.line.id)) {
+      return NextResponse.json(
+        { error: "すでに入手済みの商品がカートに含まれています。" },
+        { status: 409 },
+      );
+    }
   }
 
   const lines = summary.items.map((item) => ({
