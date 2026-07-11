@@ -3,13 +3,14 @@ import type { ArtworkMediaType, ShopProductType } from "@/types/database";
 
 const SHOP_REALM_VALUES = new Set(["apparel", "digital", "goods", "tools", "books"]);
 
-const DIGITAL_MEDIA_TYPES = new Set<ArtworkMediaType>(["image", "document", "audio", "video"]);
+const DIGITAL_MEDIA_TYPES = new Set<ArtworkMediaType>(["image", "document", "audio", "video", "model"]);
 
 export type ArtworkProductPrefill = {
   artworkId: string;
   title: string;
   description: string;
   imageUrl: string | null;
+  downloadUrl: string | null;
   category: string;
   productType: ShopProductType;
 };
@@ -38,11 +39,14 @@ export async function getArtworkProductPrefill(
     return null;
   }
 
+  const isImageProduct = data.media_type === "image";
+
   return {
     artworkId: data.id,
     title: data.title,
     description: data.description ?? "",
-    imageUrl: data.thumbnail_url ?? data.media_url,
+    imageUrl: data.thumbnail_url ?? (isImageProduct ? data.media_url : null),
+    downloadUrl: isImageProduct ? null : data.media_url,
     category: mapShopCategory(data.category),
     productType: defaultProductType(data.media_type),
   };

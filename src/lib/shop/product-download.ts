@@ -1,19 +1,93 @@
 import type { ShopProduct } from "@/types/database";
 
-export function resolveProductDownloadUrl(
-  product: Pick<ShopProduct, "image_url" | "gallery_urls">,
-): string | null {
-  const primary = product.image_url?.trim();
-  if (primary) return primary;
+const COVER_IMAGE_EXTENSIONS = new Set([
+  "jpg",
+  "jpeg",
+  "png",
+  "gif",
+  "webp",
+  "heic",
+  "heif",
+]);
 
-  const gallery = product.gallery_urls.find((url) => url.trim().length > 0);
-  return gallery?.trim() ?? null;
+const DISTRIBUTION_EXTENSIONS = new Set([
+  "mp3",
+  "wav",
+  "flac",
+  "m4a",
+  "aac",
+  "ogg",
+  "mp4",
+  "mov",
+  "webm",
+  "pdf",
+  "glb",
+  "gltf",
+  "zip",
+  "rar",
+  "7z",
+  "psd",
+  "clip",
+]);
+
+export type ProductDownloadSource = Pick<
+  ShopProduct,
+  "image_url" | "gallery_urls" | "download_url"
+>;
+
+export function urlFileExtension(url: string): string | null {
+  const pathname = url.split("?")[0]?.split("#")[0] ?? "";
+  const ext = pathname.split(".").pop()?.toLowerCase();
+  return ext && ext.length <= 8 ? ext : null;
+}
+
+export function isLikelyCoverImageUrl(url: string): boolean {
+  const ext = urlFileExtension(url);
+  return ext ? COVER_IMAGE_EXTENSIONS.has(ext) : false;
+}
+
+export function isLikelyDistributionMediaUrl(url: string): boolean {
+  const ext = urlFileExtension(url);
+  if (!ext) return false;
+  if (COVER_IMAGE_EXTENSIONS.has(ext)) return false;
+  return DISTRIBUTION_EXTENSIONS.has(ext);
+}
+
+/** 配布用 URL — ジャケット（image_url）より優先 */
+export function resolveProductDownloadUrl(product: ProductDownloadSource): string | null {
+  const explicit = product.download_url?.trim();
+  if (explicit) return explicit;
+
+  for (const raw of product.gallery_urls) {
+    const url = raw.trim();
+    if (url && isLikelyDistributionMediaUrl(url)) {
+      return url;
+    }
+  }
+
+  const imageUrl = product.image_url?.trim();
+  if (imageUrl && !isLikelyCoverImageUrl(imageUrl)) {
+    return imageUrl;
+  }
+
+  for (const raw of product.gallery_urls) {
+    const url = raw.trim();
+    if (url) return url;
+  }
+
+  if (imageUrl) {
+    return imageUrl;
+  }
+
+  return null;
+}
+
+export function productHasDownloadFile(product: ProductDownloadSource): boolean {
+  return resolveProductDownloadUrl(product) !== null;
 }
 
 export function productDownloadFilename(title: string, sourceUrl: string): string {
-  const pathname = sourceUrl.split("?")[0] ?? "";
-  const extMatch = /\.([a-zA-Z0-9]{2,8})$/.exec(pathname);
-  const ext = extMatch?.[1] ?? "bin";
+  const ext = urlFileExtension(sourceUrl) ?? "bin";
   const safeTitle = title
     .trim()
     .replace(/[^\w\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf-]+/g, "-")
@@ -22,13 +96,6 @@ export function productDownloadFilename(title: string, sourceUrl: string): strin
     .slice(0, 80);
 
   return `${safeTitle || "product"}.${ext}`;
-}
-
-export function productHasDownloadFile(
-  product: Pick<ShopProduct, "image_url" | "gallery_urls">,
-): boolean {
-  if (product.image_url?.trim()) return true;
-  return product.gallery_urls.some((url) => url.trim().length > 0);
 }
 
 export function parseShopStoragePath(publicUrl: string): string | null {
@@ -45,4 +112,23 @@ export function parseShopStoragePath(publicUrl: string): string | null {
   if (!bucket || !path) return null;
 
   return `${bucket}/${path}`;
+}
+
+/** 登録時: デジタル商品の cover / download を正規化 */
+export function normalizeDigitalProductUrls(input: {
+  imageUrl: string;
+  downloadUrl: string;
+}): { image_url: string | null; download_url: string | null } {
+  let cover = input.imageUrl.trim();
+  let download = input.downloadUrl.trim();
+
+  if (!download && cover && !isLikelyCoverImageUrl(cover)) {
+    download = cover;
+    cover = "";
+  }
+
+  return {
+    image_url: cover || null,
+    download_url: download || null,
+  };
 }

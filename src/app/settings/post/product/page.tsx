@@ -68,6 +68,7 @@ export default async function SettingsPostProductPage({ searchParams }: Settings
                     category: artworkPrefill.category,
                     productType: artworkPrefill.productType,
                     imageUrl: artworkPrefill.imageUrl ?? "",
+                    downloadUrl: artworkPrefill.downloadUrl ?? "",
                   }
                 : undefined
             }

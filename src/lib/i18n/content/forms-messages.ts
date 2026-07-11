@@ -120,6 +120,11 @@ export type FormsContent = {
     typeDigital: string;
     price: string;
     stock: string;
+    coverImageUrl: string;
+    coverImageHint: string;
+    downloadUrl: string;
+    downloadUrlHint: string;
+    errDownloadUrl: string;
     imageUrl: string;
     freeDistribution: string;
     freeDistributionHint: string;
@@ -400,7 +405,12 @@ const FORMS_JA: FormsContent = {
     typeDigital: "デジタル",
     price: "価格（円）",
     stock: "在庫数",
-    imageUrl: "画像 URL（任意）",
+    coverImageUrl: "ジャケット / カバー画像 URL",
+    coverImageHint: "一覧・詳細に表示する画像。音楽・動画・PDF などは必須です。",
+    downloadUrl: "配布ファイル URL",
+    downloadUrlHint: "購入者がダウンロードする本体（MP3・PDF・GLB 等）。デジタル商品は必須です。",
+    errDownloadUrl: "デジタル商品は配布ファイル URL を入力してください。",
+    imageUrl: "画像 URL（物理商品・任意）",
     freeDistribution: "無料配布（¥0）",
     freeDistributionHint: "チェックすると SHOP に無料商品として掲載されます。Gallery 公開と併用できます。",
     submit: "商品を出品",
@@ -672,7 +682,12 @@ const FORMS_EN: FormsContent = {
     typeDigital: "Digital",
     price: "Price (JPY)",
     stock: "Stock",
-    imageUrl: "Image URL (optional)",
+    coverImageUrl: "Cover / jacket image URL",
+    coverImageHint: "Shown on listing and detail pages. Required for music, video, PDF, etc.",
+    downloadUrl: "Distribution file URL",
+    downloadUrlHint: "The file buyers download (MP3, PDF, GLB, etc.). Required for digital products.",
+    errDownloadUrl: "Enter a distribution file URL for digital products.",
+    imageUrl: "Image URL (physical, optional)",
     freeDistribution: "Free distribution (¥0)",
     freeDistributionHint: "List on SHOP at no charge. You can still publish the artwork on Gallery.",
     submit: "List product",

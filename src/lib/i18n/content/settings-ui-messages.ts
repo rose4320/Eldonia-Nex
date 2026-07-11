@@ -33,6 +33,11 @@ export type SettingsUiContent = {
     republishProduct: string;
     processing: string;
     deleteFailed: string;
+    coverImageUrl: string;
+    downloadUrl: string;
+    saveFiles: string;
+    saveFilesFailed: string;
+    filesSaved: string;
   };
   artworkManagement: {
     heading: string;
@@ -217,6 +222,11 @@ const SETTINGS_UI_JA: SettingsUiContent = {
     republishProduct: "再公開",
     processing: "更新中...",
     deleteFailed: "商品の更新に失敗しました。",
+    coverImageUrl: "ジャケット画像 URL",
+    downloadUrl: "配布ファイル URL",
+    saveFiles: "配布設定を保存",
+    saveFilesFailed: "配布 URL の保存に失敗しました。",
+    filesSaved: "配布設定を保存しました。",
   },
   artworkManagement: {
     heading: "作品管理",
@@ -404,6 +414,11 @@ const SETTINGS_UI_EN: SettingsUiContent = {
     republishProduct: "Publish again",
     processing: "Updating…",
     deleteFailed: "Could not update the product.",
+    coverImageUrl: "Cover image URL",
+    downloadUrl: "Distribution file URL",
+    saveFiles: "Save distribution settings",
+    saveFilesFailed: "Could not save distribution URLs.",
+    filesSaved: "Distribution settings saved.",
   },
   artworkManagement: {
     heading: "Artwork management",

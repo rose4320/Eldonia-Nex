@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
+import { normalizeDigitalProductUrls } from "@/lib/shop/product-download";
 import { createClient } from "@/lib/supabase/client";
 import { shopRealmOptions } from "@/lib/i18n/taxonomy";
 
@@ -13,6 +14,7 @@ type ProductCreateInitialValues = {
   category?: string;
   productType?: "physical" | "digital";
   imageUrl?: string;
+  downloadUrl?: string;
 };
 
 type ProductCreateFormProps = {
@@ -40,7 +42,8 @@ export function ProductCreateForm({
   const [price, setPrice] = useState("");
   const [isFree, setIsFree] = useState(false);
   const [stock, setStock] = useState("");
-  const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
+  const [coverImageUrl, setCoverImageUrl] = useState(initialValues?.imageUrl ?? "");
+  const [downloadUrl, setDownloadUrl] = useState(initialValues?.downloadUrl ?? "");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -57,6 +60,20 @@ export function ProductCreateForm({
       return;
     }
 
+    const normalized =
+      productType === "digital"
+        ? normalizeDigitalProductUrls({
+            imageUrl: coverImageUrl,
+            downloadUrl,
+          })
+        : { image_url: coverImageUrl.trim() || null, download_url: null };
+
+    if (productType === "digital" && !normalized.download_url) {
+      setError(product.errDownloadUrl);
+      setLoading(false);
+      return;
+    }
+
     const supabase = createClient();
     const { data, error: insertError } = await supabase
       .from("shop_products")
@@ -68,7 +85,8 @@ export function ProductCreateForm({
         product_type: productType,
         price: priceNum,
         stock_quantity: productType === "physical" ? Number.parseInt(stock, 10) || 0 : null,
-        image_url: imageUrl.trim() || null,
+        image_url: normalized.image_url,
+        download_url: normalized.download_url,
         is_active: true,
       })
       .select("id")
@@ -156,10 +174,42 @@ export function ProductCreateForm({
           </span>
         </span>
       </label>
-      <div className="flex flex-col gap-1">
-        <label htmlFor="image_url" className="eldonia-label">{product.imageUrl}</label>
-        <input id="image_url" type="url" disabled={disabled} value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="eldonia-input" placeholder="https://..." />
-      </div>
+      {productType === "digital" ? (
+        <>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="cover_image_url" className="eldonia-label">{product.coverImageUrl}</label>
+            <input
+              id="cover_image_url"
+              type="url"
+              disabled={disabled}
+              value={coverImageUrl}
+              onChange={(e) => setCoverImageUrl(e.target.value)}
+              className="eldonia-input"
+              placeholder="https://..."
+            />
+            <p className="eldonia-hint text-xs">{product.coverImageHint}</p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <label htmlFor="download_url" className="eldonia-label">{product.downloadUrl}</label>
+            <input
+              id="download_url"
+              type="url"
+              required
+              disabled={disabled}
+              value={downloadUrl}
+              onChange={(e) => setDownloadUrl(e.target.value)}
+              className="eldonia-input"
+              placeholder="https://..."
+            />
+            <p className="eldonia-hint text-xs">{product.downloadUrlHint}</p>
+          </div>
+        </>
+      ) : (
+        <div className="flex flex-col gap-1">
+          <label htmlFor="image_url" className="eldonia-label">{product.imageUrl}</label>
+          <input id="image_url" type="url" disabled={disabled} value={coverImageUrl} onChange={(e) => setCoverImageUrl(e.target.value)} className="eldonia-input" placeholder="https://..." />
+        </div>
+      )}
       {error && <p className="eldonia-alert-error">{error}</p>}
       <button type="submit" disabled={disabled || loading} className="eldonia-btn-primary w-fit">
         {loading ? product.submitting : product.submit}

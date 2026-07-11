@@ -251,6 +251,7 @@ export type ShopProduct = {
   price: number;
   compare_at_price: number | null;
   image_url: string | null;
+  download_url: string | null;
   gallery_urls: string[];
   rating: number;
   review_count: number;
@@ -710,6 +711,7 @@ export type Database = {
           price: number;
           compare_at_price?: number | null;
           image_url?: string | null;
+          download_url?: string | null;
           gallery_urls?: string[];
           rating?: number;
           review_count?: number;
@@ -730,6 +732,7 @@ export type Database = {
           price?: number;
           compare_at_price?: number | null;
           image_url?: string | null;
+          download_url?: string | null;
           gallery_urls?: string[];
           rating?: number;
           review_count?: number;

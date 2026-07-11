@@ -24,7 +24,7 @@ export async function GET(
 
   const { data: product, error } = await supabase
     .from("shop_products")
-    .select("id, title, seller_id, product_type, image_url, gallery_urls, is_active")
+    .select("id, title, seller_id, product_type, image_url, download_url, gallery_urls, is_active")
     .eq("id", productId)
     .maybeSingle();
 
