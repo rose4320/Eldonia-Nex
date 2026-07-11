@@ -1,6 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import dynamic from "next/dynamic";
+
+const ArtworkModelViewerInner = dynamic(
+  () =>
+    import("@/components/gallery/artwork-model-viewer-inner").then(
+      (mod) => mod.ArtworkModelViewerInner,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="eldonia-model-viewer flex items-center justify-center text-sm text-eldonia-muted"
+        aria-busy="true"
+        aria-label="Loading 3D model"
+      />
+    ),
+  },
+);
 
 type ArtworkModelViewerProps = {
   src: string;
@@ -9,27 +26,6 @@ type ArtworkModelViewerProps = {
   className?: string;
 };
 
-export function ArtworkModelViewer({
-  src,
-  poster,
-  title,
-  className = "",
-}: ArtworkModelViewerProps) {
-  useEffect(() => {
-    void import("@google/model-viewer");
-  }, []);
-
-  return (
-    <model-viewer
-      src={src}
-      poster={poster ?? undefined}
-      alt={title}
-      camera-controls
-      auto-rotate
-      shadow-intensity="1"
-      exposure="1"
-      loading="lazy"
-      className={`eldonia-model-viewer ${className}`.trim()}
-    />
-  );
+export function ArtworkModelViewer(props: ArtworkModelViewerProps) {
+  return <ArtworkModelViewerInner {...props} />;
 }

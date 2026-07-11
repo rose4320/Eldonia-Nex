@@ -13,6 +13,7 @@ declare module "react" {
           "shadow-intensity"?: string;
           exposure?: string;
           loading?: "lazy" | "eager" | "auto";
+          crossorigin?: "anonymous" | "use-credentials";
           ar?: boolean | "";
         },
         HTMLElement
