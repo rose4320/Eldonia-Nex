@@ -291,3 +291,76 @@ def set_supabase_artworks_visibility(
         except SupabaseSyncError as exc:
             errors.append(f"{supabase_id}: {exc}")
     return synced, errors
+
+
+def find_supabase_artwork_id_by_title(title: str) -> uuid.UUID | None:
+    """Supabase artworks をタイトル完全一致で検索（Django 側 supabase_id 欠落時の救済）。"""
+    normalized = title.strip()
+    if not normalized:
+        return None
+
+    url, key = _supabase_config()
+    response = requests.get(
+        f"{url}/rest/v1/artworks",
+        headers=_headers(key),
+        params={
+            "select": "id",
+            "title": f"eq.{normalized}",
+            "limit": "1",
+        },
+        timeout=30,
+    )
+    if not response.ok:
+        return None
+
+    rows = response.json()
+    if not isinstance(rows, list) or not rows:
+        return None
+
+    return _parse_uuid(rows[0].get("id"))
+
+
+def hide_supabase_artworks_by_title_prefix(prefix: str) -> int:
+    """タイトル prefix に一致する Supabase 作品を一括非公開（verify テスト作品向け）。"""
+    url, key = _supabase_config()
+    response = requests.patch(
+        f"{url}/rest/v1/artworks",
+        headers={**_headers(key), "Prefer": "return=representation"},
+        params={"title": f"ilike.{prefix}"},
+        json={"is_public": False},
+        timeout=30,
+    )
+    if not response.ok:
+        raise SupabaseSyncError(
+            f"Supabase bulk hide failed: {response.status_code} {response.text[:300]}"
+        )
+
+    rows = response.json()
+    return len(rows) if isinstance(rows, list) else 0
+
+
+def resolve_artwork_supabase_ids(queryset) -> tuple[list[uuid.UUID], int, int]:
+    """
+    Django Artwork から Supabase ID を解決する。
+    戻り値: (supabase_ids, title で補完した件数, 未解決件数)
+    """
+    supabase_ids: list[uuid.UUID] = []
+    resolved_from_title = 0
+    still_missing = 0
+
+    for artwork in queryset:
+        if artwork.supabase_id:
+            supabase_ids.append(artwork.supabase_id)
+            continue
+
+        found = find_supabase_artwork_id_by_title(artwork.title)
+        if not found:
+            still_missing += 1
+            continue
+
+        artwork.supabase_id = found
+        artwork.save(update_fields=["supabase_id"])
+        supabase_ids.append(found)
+        resolved_from_title += 1
+
+    return supabase_ids, resolved_from_title, still_missing
