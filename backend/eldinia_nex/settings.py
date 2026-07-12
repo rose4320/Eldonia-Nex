@@ -172,6 +172,21 @@ if _use_database_url:
             " pip install dj-database-url を実行するか、ローカルでは USE_DATABASE_URL を外してください。"
         ) from exc
 
+    from urllib.parse import urlparse
+
+    _parsed_db = urlparse(DATABASE_URL)
+    if _parsed_db.scheme not in ("postgresql", "postgres"):
+        raise ImproperlyConfigured(
+            "DATABASE_URL の形式が不正です。"
+            " postgresql:// で始まる URL を Render の Postgres → Connect から丸ごとコピーしてください。"
+            f"（現在の scheme: {_parsed_db.scheme!r}）"
+        )
+    if not _parsed_db.hostname:
+        raise ImproperlyConfigured(
+            "DATABASE_URL にホスト名がありません。"
+            " Internal Database URL を丸ごと貼り直してください。"
+        )
+
     _ssl_default = "false" if DEBUG else "true"
     _ssl_require = os.getenv("DATABASE_SSL_REQUIRE", _ssl_default).lower() == "true"
     # Render Postgres は URL 内 sslmode 付きのことが多い — 二重指定を避ける
