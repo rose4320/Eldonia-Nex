@@ -12,13 +12,15 @@ from dotenv import load_dotenv
 
 # pyright: reportUnknownVariableType=false
 
-# Load environment variables (.env then .env.local for Supabase keys etc.)
-_project_root = Path(__file__).resolve().parent.parent.parent
-load_dotenv(_project_root / ".env")
-load_dotenv(_project_root / ".env.local", override=True)
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# ローカル開発のみ .env を読む（Render/Fly 等の注入 env を上書きしない）
+if os.getenv("DEBUG", "True").lower() == "true":
+    _repo_root = BASE_DIR.parent
+    load_dotenv(_repo_root / ".env")
+    load_dotenv(_repo_root / ".env.local", override=True)
+    load_dotenv(BASE_DIR / ".env", override=True)
 
 
 # Quick-start development settings - unsuitable for production

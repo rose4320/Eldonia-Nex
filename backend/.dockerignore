@@ -1,0 +1,16 @@
+# Secrets and local dev — never bake into production images
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+backend/db.sqlite3
+backend/db.sqlite3-journal
+backend/staticfiles/
+backend/media/
+backend/logs/
+**/__pycache__/
+**/*.pyc
+.git/
+.venv/
+venv/
