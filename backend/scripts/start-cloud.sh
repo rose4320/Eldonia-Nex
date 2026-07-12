@@ -8,11 +8,6 @@ if [[ "${USE_DATABASE_URL:-}" == "true" || "${DEBUG:-True}" == "False" ]]; then
     echo "[eldonia] ERROR: DATABASE_URL is not set. Link Postgres in Render Environment."
     exit 1
   fi
-  if [[ "${DATABASE_URL}" == *"@localhost"* || "${DATABASE_URL}" == *"@127.0.0.1"* ]]; then
-    echo "[eldonia] ERROR: DATABASE_URL points to localhost. Remove local DATABASE_URL from Render env."
-    exit 1
-  fi
-  # ログ用（パスワードは伏せる）
   db_host="$(python - <<'PY'
 import os
 from urllib.parse import urlparse
@@ -22,6 +17,11 @@ print(parsed.hostname or "unknown")
 PY
 )"
   echo "[eldonia] DATABASE host: ${db_host}"
+  if [[ "${db_host}" == "localhost" || "${db_host}" == "127.0.0.1" ]]; then
+    echo "[eldonia] ERROR: DATABASE_URL host is localhost."
+    echo "[eldonia] Render → eldonia-django-db → Connect → Internal Database URL を DATABASE_URL に貼り直してください。"
+    exit 1
+  fi
 fi
 
 echo "[eldonia] migrate..."

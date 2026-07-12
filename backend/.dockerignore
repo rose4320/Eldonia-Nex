@@ -1,14 +1,12 @@
-# Secrets and local dev — never bake into production images
+# Secrets and local dev — never bake into production images (context: backend/)
 .env
 .env.*
 !.env.example
-backend/.env
-backend/.env.*
-backend/db.sqlite3
-backend/db.sqlite3-journal
-backend/staticfiles/
-backend/media/
-backend/logs/
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+logs/
 **/__pycache__/
 **/*.pyc
 .git/
