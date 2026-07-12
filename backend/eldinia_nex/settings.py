@@ -150,7 +150,21 @@ WSGI_APPLICATION = "eldinia_nex.wsgi.application"
 # 環境変数で簡単に切り替え可能: 'sqlite' | 'postgresql' | 'aurora'
 
 DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
-DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+
+
+def _normalize_database_url(raw: str) -> str:
+    url = raw.strip().strip('"').strip("'")
+    if not url:
+        return url
+    if url.startswith(("postgresql://", "postgres://")):
+        return url
+    # postgresql:// が欠けているだけのケース（手入力ミス）
+    if "@" in url and "/" in url:
+        return f"postgresql://{url.lstrip('/')}"
+    return url
+
+
+DATABASE_URL = _normalize_database_url(os.getenv("DATABASE_URL", ""))
 _is_production = os.getenv("DEBUG", "True").lower() != "true"
 # Cloud (Railway/Render): USE_DATABASE_URL=true または DEBUG=False のときだけ DATABASE_URL を使う。
 _use_database_url = bool(DATABASE_URL) and (

@@ -13,12 +13,24 @@ import os
 import sys
 from urllib.parse import urlparse
 
-url = (os.environ.get("DATABASE_URL") or "").strip()
+def normalize(raw: str) -> str:
+    url = raw.strip().strip('"').strip("'")
+    if not url:
+        return url
+    if url.startswith(("postgresql://", "postgres://")):
+        return url
+    if "@" in url and "/" in url:
+        return f"postgresql://{url.lstrip('/')}"
+    return url
+
+url = normalize(os.environ.get("DATABASE_URL") or "")
+os.environ["DATABASE_URL"] = url
 parsed = urlparse(url)
 scheme = (parsed.scheme or "").lower()
 host = parsed.hostname or ""
 
 print(f"[eldonia] DATABASE_URL length: {len(url)}")
+print(f"[eldonia] DATABASE prefix: {url[:20]}...")
 print(f"[eldonia] DATABASE scheme: {scheme or '(empty)'}")
 print(f"[eldonia] DATABASE host: {host or 'unknown'}")
 
