@@ -65,6 +65,11 @@ done
 
 python manage.py createcachetable --noinput 2>/dev/null || true
 
+if [[ -n "${DJANGO_ADMIN_USERNAME:-}" && -n "${DJANGO_ADMIN_PASSWORD:-}" ]]; then
+  echo "[eldonia] ensure superuser..."
+  SKIP_ENV_WRITE=true PRINT_ADMIN_PASSWORD=false python scripts/create_superuser.py
+fi
+
 PORT="${PORT:-8000}"
 WORKERS="${WEB_CONCURRENCY:-1}"
 echo "[eldonia] gunicorn on 0.0.0.0:${PORT} (workers=${WORKERS})"
