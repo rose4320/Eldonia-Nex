@@ -25,8 +25,13 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . /app
 
-RUN chmod +x /app/scripts/start-cloud.sh /app/scripts/cloud-bootstrap.sh && \
+RUN sed -i 's/\r$//' /app/scripts/*.sh && \
+    chmod +x /app/scripts/start-cloud.sh /app/scripts/cloud-bootstrap.sh && \
     mkdir -p /app/logs /app/staticfiles /app/media
+
+# collectstatic は DB 不要 — 起動時間短縮（Render ヘルスチェック対策）
+ENV SECRET_KEY=build-only-collectstatic-placeholder
+RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
