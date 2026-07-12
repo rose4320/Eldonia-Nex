@@ -25,7 +25,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . /app
 
-RUN chmod +x /app/scripts/start-cloud.sh && \
+RUN chmod +x /app/scripts/start-cloud.sh /app/scripts/cloud-bootstrap.sh && \
     mkdir -p /app/logs /app/staticfiles /app/media
 
 EXPOSE 8000

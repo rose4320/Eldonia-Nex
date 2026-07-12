@@ -95,7 +95,7 @@ npx vercel --prod --yes
 
 | 方式 | 文書 |
 |------|------|
-| クラウド常時（Railway 推奨） | [`15_Djangoクラウド常時デプロイ.md`](./15_Djangoクラウド常時デプロイ.md) |
+| クラウド常時（Render / Fly.io 推奨） | [`17_Django_Render_Flyio_デプロイ.md`](./17_Django_Render_Flyio_デプロイ.md) · [`15_…`](./15_Djangoクラウド常時デプロイ.md)（Railway） |
 | 一時トンネル | cloudflared / ngrok（開発PC起動中のみ） |
 
 クラウド化後も **料金の正本フローは A と同じ**（Admin → Supabase → FE）。

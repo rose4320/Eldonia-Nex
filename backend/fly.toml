@@ -1,0 +1,36 @@
+# Eldonia-Nex Django Admin — Fly.io
+# 初回: cd backend && fly launch --no-deploy --copy-config
+# 詳細: docs/17_Django_Render_Flyio_デプロイ.md
+
+app = 'eldonia-nex-admin'
+primary_region = 'nrt'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  DEBUG = 'False'
+  USE_DATABASE_URL = 'true'
+  DATABASE_SSL_REQUIRE = 'true'
+  SECURE_SSL_REDIRECT = 'true'
+  WEB_CONCURRENCY = '1'
+  FRONTEND_URL = 'https://eldonia-nex.com'
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '60s'
+    method = 'GET'
+    path = '/api/v1/health/'
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

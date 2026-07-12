@@ -1,0 +1,46 @@
+# Eldonia-Nex Django Admin — Render Blueprint
+# Dashboard → New → Blueprint → このリポジトリを指定
+# 詳細: docs/17_Django_Render_Flyio_デプロイ.md
+
+services:
+  - type: web
+    name: eldonia-django-admin
+    runtime: docker
+    region: singapore
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/v1/health/
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: USE_DATABASE_URL
+        value: "true"
+      - key: DATABASE_SSL_REQUIRE
+        value: "true"
+      - key: SECURE_SSL_REDIRECT
+        value: "true"
+      - key: WEB_CONCURRENCY
+        value: "1"
+      - key: FRONTEND_URL
+        value: https://eldonia-nex.com
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: eldonia-django-db
+          property: connectionString
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: DJANGO_ADMIN_USERNAME
+        sync: false
+      - key: DJANGO_ADMIN_PASSWORD
+        sync: false
+
+databases:
+  - name: eldonia-django-db
+    plan: free
+    databaseName: eldonia_nex
+    user: eldonia_nex

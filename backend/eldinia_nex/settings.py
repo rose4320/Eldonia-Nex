@@ -45,6 +45,41 @@ CSRF_TRUSTED_ORIGINS = [
     if o.strip()
 ]
 
+
+def _extend_cloud_hosts(hosts: list[str], origins: list[str]) -> None:
+    """Render / Fly.io / Railway が注入するホスト名を自動許可（初回デプロイ用）。"""
+    render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
+    if render_hostname:
+        if render_hostname not in hosts:
+            hosts.append(render_hostname)
+        origin = f"https://{render_hostname}"
+        if origin not in origins:
+            origins.append(origin)
+
+    render_url = os.getenv("RENDER_EXTERNAL_URL", "").strip().rstrip("/")
+    if render_url.startswith("https://") and render_url not in origins:
+        origins.append(render_url)
+
+    fly_app = os.getenv("FLY_APP_NAME", "").strip()
+    if fly_app:
+        fly_host = f"{fly_app}.fly.dev"
+        if fly_host not in hosts:
+            hosts.append(fly_host)
+        fly_origin = f"https://{fly_host}"
+        if fly_origin not in origins:
+            origins.append(fly_origin)
+
+    railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN", "").strip()
+    if railway_domain:
+        if railway_domain not in hosts:
+            hosts.append(railway_domain)
+        railway_origin = f"https://{railway_domain}"
+        if railway_origin not in origins:
+            origins.append(railway_origin)
+
+
+_extend_cloud_hosts(ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS)
+
 # Next.js ↔ Django internal API auth (empty = dev-only open access)
 INTERNAL_API_TOKEN = os.getenv("INTERNAL_API_TOKEN", "")
 
