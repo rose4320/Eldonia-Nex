@@ -20,7 +20,7 @@ if os.getenv("DEBUG", "True").lower() == "true":
     _repo_root = BASE_DIR.parent
     load_dotenv(_repo_root / ".env")
     load_dotenv(_repo_root / ".env.local", override=True)
-    load_dotenv(BASE_DIR / ".env", override=True)
+    # backend/.env は Postgres localhost 等を含むため自動読込しない（ルート .env を正とする）
 
 
 # Quick-start development settings - unsuitable for production
