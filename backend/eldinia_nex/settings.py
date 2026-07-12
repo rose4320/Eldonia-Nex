@@ -151,11 +151,17 @@ WSGI_APPLICATION = "eldinia_nex.wsgi.application"
 
 DATABASE_TYPE = os.getenv("DATABASE_TYPE", "sqlite")
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
+_is_production = os.getenv("DEBUG", "True").lower() != "true"
 # Cloud (Railway/Render): USE_DATABASE_URL=true または DEBUG=False のときだけ DATABASE_URL を使う。
-# ローカル DEBUG では .env の DATABASE_URL があっても SQLite / DATABASE_TYPE を優先する。
 _use_database_url = bool(DATABASE_URL) and (
-    os.getenv("USE_DATABASE_URL", "").lower() == "true" or not DEBUG
+    os.getenv("USE_DATABASE_URL", "").lower() == "true" or _is_production
 )
+
+if _is_production and not DATABASE_URL:
+    raise ImproperlyConfigured(
+        "本番環境では DATABASE_URL が必須です。"
+        "Render の eldonia-django-db を Web Service の Environment にリンクしてください。"
+    )
 
 if _use_database_url:
     try:
@@ -167,13 +173,21 @@ if _use_database_url:
         ) from exc
 
     _ssl_default = "false" if DEBUG else "true"
+    _ssl_require = os.getenv("DATABASE_SSL_REQUIRE", _ssl_default).lower() == "true"
+    # Render Postgres は URL 内 sslmode 付きのことが多い — 二重指定を避ける
+    if "sslmode=" in DATABASE_URL.lower():
+        _ssl_require = False
     DATABASES = {  # type: ignore
         "default": dj_database_url.config(
             default=DATABASE_URL,
             conn_max_age=600,
-            ssl_require=os.getenv("DATABASE_SSL_REQUIRE", _ssl_default).lower() == "true",
+            ssl_require=_ssl_require,
         )
     }
+elif _is_production:
+    raise ImproperlyConfigured(
+        "本番環境で SQLite / ローカル Postgres は使えません。USE_DATABASE_URL=true と DATABASE_URL を設定してください。"
+    )
 elif DATABASE_TYPE == "sqlite":
     # Current: SQLite (開発中)
     DATABASES = {  # type: ignore
