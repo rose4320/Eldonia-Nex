@@ -126,7 +126,7 @@ export function PhotoAlbumSlideshow({
   return (
     <section className="photo-slideshow space-y-3">
       <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-4 sm:px-6">
-        <p className="eldonia-label text-sm">
+        <p className="photo-slideshow__heading text-sm">
           {gallery.photoSlideshowHeading}
           {badge && (
             <span className="ml-2 text-eldonia-text-muted">({badge})</span>

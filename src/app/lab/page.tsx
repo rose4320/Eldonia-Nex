@@ -26,7 +26,7 @@ export default async function LabHubPage() {
       <main className="mx-auto flex w-full max-w-[1240px] flex-1 flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
         <PageIntro
           eyebrow="LAB"
-          title="LAB"
+          title={t.lab.heading}
           lead={t.lab.lead}
           hint={t.lab.flowHint}
           iconSrc={MODULE_ICONS.lab}
@@ -45,9 +45,14 @@ export default async function LabHubPage() {
         ) : labs.length === 0 ? (
           <div className="eldonia-card-dashed px-6 py-10 text-center">
             <p className="eldonia-body text-sm">{t.lab.empty}</p>
-            <Link href="/gallery" className="eldonia-link mt-3 inline-block text-sm">
-              {t.pages.lab.galleryLink}
-            </Link>
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+              <Link href="/gallery" className="eldonia-link text-sm">
+                {t.pages.lab.galleryLink}
+              </Link>
+              <Link href="/lab/preview" className="eldonia-btn-secondary text-xs">
+                {t.lab.previewLink}
+              </Link>
+            </div>
           </div>
         ) : (
           <ul className="space-y-3">

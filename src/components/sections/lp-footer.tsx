@@ -1,8 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_FOOTER, LP_FOOTER_LINKS } from "@/lib/lp/content";
 
 const SOCIAL_ICONS: Record<string, ReactNode> = {
   X: (
@@ -27,7 +28,10 @@ const SOCIAL_ICONS: Record<string, ReactNode> = {
   ),
 };
 
-export function LpFooter() {
+export async function LpFooter() {
+  const locale = await getUiLocale();
+  const { LP_FOOTER, LP_FOOTER_LINKS } = getLpContent(locale);
+
   return (
     <footer className="lp-footer bg-[#020817]">
       <div className="lp-footer__divider" aria-hidden>

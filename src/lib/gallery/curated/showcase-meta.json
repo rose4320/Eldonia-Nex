@@ -1,0 +1,38 @@
+{
+  "00000000-0000-4000-8000-000000000601": {
+    "ja": {
+      "title": "Eldonia-Nex",
+      "excerpt": "黒と金の Nexus を象徴する公式キービジュアル。"
+    },
+    "en": {
+      "title": "Eldonia-Nex",
+      "excerpt": "Official key visual embodying the black-and-gold Nexus."
+    },
+    "ko": {
+      "title": "Eldonia-Nex",
+      "excerpt": "흑과 금의 Nexus를 상징하는 공식 키 비주얼."
+    },
+    "zh-CN": {
+      "title": "Eldonia-Nex",
+      "excerpt": "象征黑与金 Nexus 的官方主视觉。"
+    }
+  },
+  "00000000-0000-4000-8000-000000000602": {
+    "ja": {
+      "title": "Nexus Gate — 創作者の領域",
+      "excerpt": "Quest・作品・コマース・コミュニティが交差する創作の門。"
+    },
+    "en": {
+      "title": "Nexus Gate — Realm of Creators",
+      "excerpt": "The gate where Quests, works, commerce, and community meet."
+    },
+    "ko": {
+      "title": "Nexus Gate — 창작자의 영역",
+      "excerpt": "Quest·작품·커머스·커뮤니티가 교차하는 창작의 문."
+    },
+    "zh-CN": {
+      "title": "Nexus Gate — 创作者领域",
+      "excerpt": "Quest、作品、商业与社区交汇的创作之门。"
+    }
+  }
+}

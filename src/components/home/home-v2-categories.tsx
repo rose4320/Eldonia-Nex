@@ -1,4 +1,5 @@
-import Link from "next/link";
+"use client";
+
 import { HomeV2Reveal } from "@/components/home/home-v2-reveal";
 import type { HomeV2Content } from "@/lib/i18n/content/home-v2-messages";
 
@@ -24,12 +25,6 @@ export function HomeV2Categories({ copy }: HomeV2CategoriesProps) {
             <strong>{cat.label}</strong>
           </div>
         ))}
-      </div>
-      <div className="home-v2-categories__cta">
-        <p>{categories.ctaLead}</p>
-        <Link href="/investors" className="home-v2-btn home-v2-btn--outline">
-          {categories.cta}
-        </Link>
       </div>
     </HomeV2Reveal>
   );

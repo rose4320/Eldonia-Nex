@@ -4,6 +4,7 @@ import type { FormsContent } from "@/lib/i18n/content/forms-messages";
 import type { SettingsUiContent } from "@/lib/i18n/content/settings-ui-messages";
 import type { EngagementContent } from "@/lib/i18n/content/engagement-messages";
 import type { SignupContent } from "@/lib/i18n/content/signup-messages";
+import type { HomeAuthenticatedContent } from "@/lib/i18n/content/home-authenticated-messages";
 
 export type ModuleContent = {
   name: string;
@@ -57,6 +58,7 @@ export type ContentCatalog = {
     ctaSignup: string;
     modules: ModuleContent[];
   };
+  homeAuthenticated?: HomeAuthenticatedContent;
   gallery: {
     heading: string;
     lead: string;
@@ -110,6 +112,7 @@ export type ContentCatalog = {
     addToCartFailed: string;
     checkoutFailed: string;
     cartHeading: string;
+    cartEyebrow: string;
     cartEmpty: string;
     cartBrowseShop: string;
     cartRemove: string;
@@ -148,11 +151,13 @@ export type ContentCatalog = {
     viewAll: string;
     eventUnit: string;
     sidebarRealms: string;
+    sidebarFormat: string;
     sidebarWhen: string;
     whenUpcoming: string;
     whenPast: string;
     whenAll: string;
     featured: string;
+    heroHeading: string;
   };
   community: {
     heading: string;
@@ -161,6 +166,14 @@ export type ContentCatalog = {
     threadsHeading: string;
     recentThreads: string;
     empty: string;
+    boardDescriptions: Record<
+      "general" | "gallery" | "shop" | "events" | "works" | "lore",
+      string
+    >;
+    boardNames: Record<
+      "general" | "gallery" | "shop" | "events" | "works" | "lore",
+      string
+    >;
   };
   works: {
     heading: string;
@@ -168,10 +181,13 @@ export type ContentCatalog = {
     empty: string;
   };
   lab: {
+    heading: string;
     lead: string;
     empty: string;
     flowHint: string;
     memberCount: (n: number) => string;
+    previewLink: string;
+    previewBanner: string;
   };
   help: {
     eyebrow: string;

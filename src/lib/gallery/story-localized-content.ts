@@ -1,15 +1,11 @@
-import { readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import {
+  isCuratedTextbookArtwork,
+  resolveCuratedArtworkFields,
+} from "@/lib/gallery/artwork-localized-meta";
 import { hasNarrativeBody } from "@/lib/gallery/parse-story-sections";
 import type { UiLocale } from "@/lib/i18n/locale";
-
-const TEXTBOOK_DIR = join(process.cwd(), "public/aset/seed/composer-eldonia-textbook");
-const TEXTBOOK_TITLE_JA = "Eldonia-Nex 使い方テキストブック";
-const TEXTBOOK_IDS = new Set([
-  "e305dbc6-bb63-4eb2-8f96-a3a94965068b",
-]);
-
-type TextbookMeta = Record<UiLocale, { title: string; excerpt: string }>;
+import { join } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
 
 export type ResolvedStoryReaderContent = {
   title: string;
@@ -17,22 +13,20 @@ export type ResolvedStoryReaderContent = {
   body: string;
 };
 
-function loadTextbookMeta(): TextbookMeta | null {
-  const path = join(TEXTBOOK_DIR, "textbook-meta.json");
-  if (!existsSync(path)) return null;
-  return JSON.parse(readFileSync(path, "utf8")) as TextbookMeta;
-}
-
 function loadTextbookBody(locale: UiLocale): string | null {
+  // Keep fs scoped so NFT does not pull the whole repo into serverless bundles.
+  const dir = join(
+    /* turbopackIgnore: true */ process.cwd(),
+    "public",
+    "aset",
+    "seed",
+    "composer-eldonia-textbook",
+  );
   const filename =
     locale === "ja" ? "textbook-body.md" : `textbook-body.${locale}.md`;
-  const path = join(TEXTBOOK_DIR, filename);
+  const path = join(dir, filename);
   if (!existsSync(path)) return null;
   return readFileSync(path, "utf8").trim();
-}
-
-function isTextbookArtwork(artworkId: string, title: string): boolean {
-  return TEXTBOOK_IDS.has(artworkId) || title === TEXTBOOK_TITLE_JA;
 }
 
 export function resolveStoryReaderContent(
@@ -42,14 +36,13 @@ export function resolveStoryReaderContent(
   description: string | null,
   locale: UiLocale,
 ): ResolvedStoryReaderContent | null {
-  if (isTextbookArtwork(artworkId, title)) {
-    const meta = loadTextbookMeta();
+  if (isCuratedTextbookArtwork(artworkId, title)) {
     const body = loadTextbookBody(locale) ?? loadTextbookBody("ja");
     if (!body) return null;
-    const localized = meta?.[locale] ?? meta?.ja;
+    const localized = resolveCuratedArtworkFields(artworkId, title, excerpt, locale);
     return {
-      title: localized?.title ?? title,
-      excerpt: localized?.excerpt ?? excerpt,
+      title: localized.title ?? title,
+      excerpt: localized.story_excerpt ?? excerpt,
       body,
     };
   }

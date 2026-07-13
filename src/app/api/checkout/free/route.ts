@@ -30,6 +30,12 @@ export async function POST(request: Request) {
 
   if (body.direct) {
     const { kind, id, quantity } = body.direct;
+    if (kind === "event") {
+      return NextResponse.json(
+        { error: "イベントはイベントページから無料チケットを取得してください。", code: "use_event_claim" },
+        { status: 400 },
+      );
+    }
     if (kind !== "shop" || !id || quantity < 1) {
       return NextResponse.json({ error: "無効な商品です。" }, { status: 400 });
     }
@@ -99,6 +105,17 @@ export async function POST(request: Request) {
   if (summary.items.length === 0) {
     return NextResponse.json({ error: "有効な商品がありません。" }, { status: 400 });
   }
+
+  if (summary.items.some((item) => item.line.kind === "event")) {
+    return NextResponse.json(
+      {
+        error: "無料イベントはイベントページから「無料チケットを取得」をご利用ください。",
+        code: "use_event_claim",
+      },
+      { status: 400 },
+    );
+  }
+
   if (!summary.canFreeCheckout) {
     if (summary.requiresShippingPayment) {
       return NextResponse.json(

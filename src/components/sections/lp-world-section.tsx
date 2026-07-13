@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { LpGoldFrame } from "@/components/ui/lp-gold-frame";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_WORLD } from "@/lib/lp/content";
 
-export function LpWorldSection() {
+export async function LpWorldSection() {
+  const locale = await getUiLocale();
+  const { LP_WORLD } = getLpContent(locale);
+
   return (
     <section id="world" className="lp-world-section scroll-mt-24 px-3 py-5 sm:px-5 lg:px-6">
       <div className="lp-world-panel mx-auto max-w-[1240px]">
@@ -36,5 +40,3 @@ export function LpWorldSection() {
     </section>
   );
 }
-
-

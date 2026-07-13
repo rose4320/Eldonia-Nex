@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { issueEventTicketsFromStripeSession } from "@/lib/events/issue-event-tickets";
 import { normalizePlanId } from "@/lib/plans/catalog";
 import { getStripe } from "@/lib/stripe/server";
 
@@ -39,6 +40,8 @@ export async function POST(request: Request) {
               : session.payment_intent?.id ?? null,
         })
         .eq("stripe_session_id", session.id);
+
+      await issueEventTicketsFromStripeSession(session.id);
 
       if (session.metadata?.kind === "subscription_onboarding") {
         const planId = normalizePlanId(session.metadata.plan_id);

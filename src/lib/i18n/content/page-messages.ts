@@ -4,6 +4,7 @@ export type PageMessages = {
   userFallback: string;
   anonymous: string;
   creatorFallback: string;
+  sellerFallback: string;
   posterFallback: string;
   prev: string;
   next: string;
@@ -12,6 +13,7 @@ export type PageMessages = {
   soldOut: string;
   descriptionPending: string;
   loginToAction: (action: string) => string;
+  legalContactPrefix: string;
   gallery: {
     backToList: string;
     openPdf: string;
@@ -56,35 +58,76 @@ export type PageMessages = {
     storyNarrationResume: string;
     storyNarrationStop: string;
     storyNarrationUnsupported: string;
-    storyShowPdf: string;
-    storyHidePdf: string;
     storyChapterList: string;
     storyChapterListAria: string;
     storyReadingMeta: (chapter: number, totalChapters: number, totalParagraphs: number) => string;
     storySfxSoon: string;
+    storyUntitledSection: string;
   };
   events: {
     back: string;
     organizer: string;
     venueSection: string;
+    streamAccessSection: string;
+    hybridAccessSection: string;
     labelFormat: string;
     labelRealm: string;
     labelVenue: string;
     labelAddress: string;
     labelOnline: string;
+    labelStream: string;
     urlAfterPurchase: string;
+    streamLockedHint: string;
     badgeFeatured: string;
     badgeVerified: string;
     toolbarSearch: string;
     toolbarSearchAria: string;
     toolbarOrders: string;
+    toolbarMyTickets: string;
     ticketHeading: string;
     ticketCompare: string;
     ticketPast: string;
     ticketGet: string;
     ticketLogin: string;
+    ticketOwned: string;
+    ticketWatchRoom: string;
+    ticketFreeClaim: string;
+    ticketFreeClaiming: string;
     ticketQrNote: string;
+    ticketStreamNote: string;
+    ticketHybridNote: string;
     soldOutFull: string;
+    aboutHeading: string;
+    hostFallback: string;
+    myTicketsTitle: string;
+    myTicketsLead: string;
+    myTicketsEmpty: string;
+    myTicketsBrowse: string;
+    watchBack: string;
+    watchHeading: string;
+    watchNotYet: string;
+    watchEnded: string;
+    watchOpensAt: (when: string) => string;
+    watchJoin: string;
+    watchJoining: string;
+    watchJoinError: string;
+    watchNoTicket: string;
+    watchLogin: string;
+    ticketCodeLabel: string;
+    ticketQrScanHint: string;
+    ticketVerifyHeading: string;
+    ticketVerifyValid: string;
+    ticketVerifyInvalid: string;
+    ticketEventNotFound: string;
+    ticketIssueUnavailable: string;
+    ticketDownloadPdf: string;
+    ticketDownloadText: string;
+    ticketViewPdf: string;
+    ticketPrint: string;
+    ticketPdfHint: string;
+    ticketPdfGenerating: string;
+    ticketPdfFailed: string;
+    ticketPdfNotFound: string;
   };
   works: {
     back: string;
@@ -162,8 +205,13 @@ export type PageMessages = {
     replySubmit: string;
     replySubmitting: string;
     repliesEmpty: string;
+    replyDelete: string;
+    replyDeleting: string;
+    replyDeleteConfirm: string;
+    replyDeleteFailed: string;
     nexusBadge: string;
     nexusTargetAria: string;
+    nexusOriginalLang: string;
     nexusTranslating: string;
     nexusShow: string;
     nexusRetranslate: string;
@@ -175,6 +223,8 @@ export type PageMessages = {
     nexusTranslationHeading: (label: string) => string;
     nexusHideOriginal: string;
     nexusShowOriginal: string;
+    backToCommunity: string;
+    boardFallback: string;
   };
   help: {
     faqTitle: string;
@@ -233,6 +283,7 @@ export type PageMessages = {
     titleFree: string;
     body: string;
     bodyFree: string;
+    sessionLabel: string;
     backShop: string;
     dashboard: string;
   };
@@ -242,6 +293,7 @@ export type PageMessages = {
     ordersEmpty: string;
     ordersBrowse: string;
     orderLabel: string;
+    freePriceLabel: string;
   };
   notifications: {
     bellLabel: string;
@@ -253,6 +305,8 @@ export type PageMessages = {
     galleryLink: string;
     viewArtwork: string;
     allLabs: string;
+    previewBadge: string;
+    previewChatDisabled: string;
   };
   shop: {
     badgeBestseller: string;
@@ -264,6 +318,7 @@ const PAGE_JA: PageMessages = {
   userFallback: "ユーザー",
   anonymous: "匿名",
   creatorFallback: "クリエイター",
+  sellerFallback: "Eldonia 出品者",
   posterFallback: "掲載者未設定",
   prev: "前へ",
   next: "次へ",
@@ -272,6 +327,7 @@ const PAGE_JA: PageMessages = {
   soldOut: "Sold Out",
   descriptionPending: "説明は準備中です。",
   loginToAction: (action) => `ログインして${action}`,
+  legalContactPrefix: "お問い合わせ:",
   gallery: {
     backToList: "← ギャラリー一覧",
     openPdf: "PDF を開く",
@@ -316,36 +372,77 @@ const PAGE_JA: PageMessages = {
     storyNarrationResume: "再開",
     storyNarrationStop: "停止",
     storyNarrationUnsupported: "このブラウザでは読み上げに対応していません。",
-    storyShowPdf: "PDF を表示",
-    storyHidePdf: "PDF を閉じる",
     storyChapterList: "目次",
     storyChapterListAria: "章の目次",
     storyReadingMeta: (chapter, totalChapters, totalParagraphs) =>
       `全 ${totalParagraphs} 段落 · 第 ${chapter} / ${totalChapters} 章付近`,
     storySfxSoon: "効果音（再生は今後対応）",
+    storyUntitledSection: "はじめに",
   },
   events: {
     back: "← EVENTS に戻る",
     organizer: "主催",
     venueSection: "会場・参加方法",
+    streamAccessSection: "配信・参加方法",
+    hybridAccessSection: "会場・配信",
     labelFormat: "形式",
     labelRealm: "領域",
     labelVenue: "会場",
     labelAddress: "住所",
     labelOnline: "オンライン",
-    urlAfterPurchase: "購入後に URL を表示",
+    labelStream: "配信",
+    urlAfterPurchase: "チケット取得後に配信ルームを開けます",
+    streamLockedHint: "配信 URL はチケット所持者のみ、開始前に配信ルームから入室できます",
     badgeFeatured: "Chronicle Highlight",
     badgeVerified: "Verified Host",
     toolbarSearch: "Chronicle を検索…",
     toolbarSearchAria: "イベント検索",
     toolbarOrders: "購入履歴",
+    toolbarMyTickets: "マイチケット",
     ticketHeading: "チケット",
     ticketCompare: "通常",
     ticketPast: "このイベントは終了しました",
     ticketGet: "チケットを取得",
     ticketLogin: "ログインしてチケット取得",
-    ticketQrNote: "電子チケット · QR 入場（準備中）",
+    ticketOwned: "チケット取得済み",
+    ticketWatchRoom: "配信ルームへ",
+    ticketFreeClaim: "無料チケットを取得",
+    ticketFreeClaiming: "取得中…",
+    ticketQrNote: "電子チケット · 会場では QR 入場",
+    ticketStreamNote: "オンライン · 配信ルームは開始 15 分前から",
+    ticketHybridNote: "会場 QR + オンライン配信ルーム",
     soldOutFull: "完売 — Sold Out",
+    aboutHeading: "この Chronicle について",
+    hostFallback: "Eldonia 主催",
+    myTicketsTitle: "マイチケット",
+    myTicketsLead: "取得した Chronicle チケット — オンラインは配信ルームから参加",
+    myTicketsEmpty: "まだチケットがありません。",
+    myTicketsBrowse: "EVENTS を見る →",
+    watchBack: "← マイチケット",
+    watchHeading: "配信ルーム",
+    watchNotYet: "配信開始前です。開始 15 分前から入室できます。",
+    watchEnded: "この配信は終了しました。",
+    watchOpensAt: (when) => `${when} から入室できます`,
+    watchJoin: "配信を見る",
+    watchJoining: "入室中…",
+    watchJoinError: "配信ルームを開けませんでした。",
+    watchNoTicket: "チケットが必要です。",
+    watchLogin: "ログインして配信ルームへ",
+    ticketCodeLabel: "チケット番号",
+    ticketQrScanHint: "会場入口でこの QR を提示してください",
+    ticketVerifyHeading: "チケット確認",
+    ticketVerifyValid: "有効なチケットです",
+    ticketVerifyInvalid: "無効なチケットです",
+    ticketEventNotFound: "このイベントは発券できません。一覧から再度お選びください。",
+    ticketIssueUnavailable: "チケット発行を一時的に利用できません。しばらくしてからお試しください。",
+    ticketDownloadPdf: "PDFをダウンロード",
+    ticketDownloadText: "テキスト保存",
+    ticketViewPdf: "チケットを表示",
+    ticketPrint: "印刷 / PDF保存",
+    ticketPdfHint: "テキストと同じ内容を PDF 化。表示はブラウザでも確認可",
+    ticketPdfGenerating: "準備中…",
+    ticketPdfFailed: "チケットを取得できませんでした。しばらくしてからお試しください。",
+    ticketPdfNotFound: "チケットが見つかりません。",
   },
   works: {
     back: "← WORKS",
@@ -423,8 +520,13 @@ const PAGE_JA: PageMessages = {
     replySubmit: "返信を投稿",
     replySubmitting: "送信中...",
     repliesEmpty: "まだ返信がありません。翻訳 Nexus で多言語返信を読めます。",
+    replyDelete: "削除",
+    replyDeleting: "削除中…",
+    replyDeleteConfirm: "自分のコメントを削除しますか？（一覧から非表示になります）",
+    replyDeleteFailed: "削除に失敗しました。",
     nexusBadge: "翻訳 Nexus",
-    nexusTargetAria: "翻訳先言語",
+    nexusTargetAria: "表示・翻訳先の言語",
+    nexusOriginalLang: "原文",
     nexusTranslating: "翻訳中...",
     nexusShow: "翻訳を表示",
     nexusRetranslate: "再翻訳",
@@ -436,6 +538,8 @@ const PAGE_JA: PageMessages = {
     nexusTranslationHeading: (label) => `Nexus Translation · ${label}`,
     nexusHideOriginal: "原文を隠す",
     nexusShowOriginal: "原文を表示",
+    backToCommunity: "← COMMUNITY",
+    boardFallback: "Board",
   },
   help: {
     faqTitle: "よくある質問",
@@ -497,13 +601,15 @@ const PAGE_JA: PageMessages = {
     bodyFree: "無料商品の入手が完了しました。デジタル配布は順次対応予定です。",
     backShop: "SHOP に戻る",
     dashboard: "ダッシュボード",
+    sessionLabel: "Session",
   },
   dashboard: {
     back: "← ダッシュボード",
     ordersTitle: "注文履歴",
     ordersEmpty: "まだ注文がありません。",
     ordersBrowse: "SHOP を見る →",
-    orderLabel: "Order",
+    orderLabel: "注文",
+    freePriceLabel: "無料",
   },
   notifications: {
     bellLabel: "通知",
@@ -515,6 +621,8 @@ const PAGE_JA: PageMessages = {
     galleryLink: "GALLERY →",
     viewArtwork: "作品を見る",
     allLabs: "Lab 一覧",
+    previewBadge: "PREVIEW",
+    previewChatDisabled: "プレビューでは投稿できません。",
   },
   shop: {
     badgeBestseller: "Realm Bestseller",
@@ -526,6 +634,7 @@ const PAGE_EN: PageMessages = {
   userFallback: "User",
   anonymous: "Anonymous",
   creatorFallback: "Creator",
+  sellerFallback: "Eldonia Seller",
   posterFallback: "Unlisted poster",
   prev: "Previous",
   next: "Next",
@@ -534,6 +643,7 @@ const PAGE_EN: PageMessages = {
   soldOut: "Sold Out",
   descriptionPending: "Description coming soon.",
   loginToAction: (action) => `Log in to ${action}`,
+  legalContactPrefix: "Contact:",
   gallery: {
     backToList: "← Back to GALLERY",
     openPdf: "Open PDF",
@@ -578,36 +688,77 @@ const PAGE_EN: PageMessages = {
     storyNarrationResume: "Resume",
     storyNarrationStop: "Stop",
     storyNarrationUnsupported: "Read-aloud is not supported in this browser.",
-    storyShowPdf: "Show PDF",
-    storyHidePdf: "Hide PDF",
     storyChapterList: "Chapters",
     storyChapterListAria: "Chapter list",
     storyReadingMeta: (chapter, totalChapters, totalParagraphs) =>
       `${totalParagraphs} paragraphs · near chapter ${chapter} / ${totalChapters}`,
     storySfxSoon: "Sound effect (playback coming soon)",
+    storyUntitledSection: "Introduction",
   },
   events: {
     back: "← Back to EVENTS",
     organizer: "Host",
     venueSection: "Venue & access",
+    streamAccessSection: "Stream & access",
+    hybridAccessSection: "Venue & stream",
     labelFormat: "Format",
     labelRealm: "Realm",
     labelVenue: "Venue",
     labelAddress: "Address",
     labelOnline: "Online",
-    urlAfterPurchase: "URL shown after purchase",
+    labelStream: "Stream",
+    urlAfterPurchase: "Watch room opens after you get a ticket",
+    streamLockedHint: "Stream URL is for ticket holders only — join from the watch room before start",
     badgeFeatured: "Chronicle Highlight",
     badgeVerified: "Verified Host",
     toolbarSearch: "Search chronicles…",
     toolbarSearchAria: "Search events",
     toolbarOrders: "Order history",
+    toolbarMyTickets: "My tickets",
     ticketHeading: "Tickets",
     ticketCompare: "Regular",
     ticketPast: "This event has ended",
     ticketGet: "Get tickets",
     ticketLogin: "Log in to get tickets",
-    ticketQrNote: "E-ticket · QR entry (coming soon)",
+    ticketOwned: "Ticket secured",
+    ticketWatchRoom: "Open watch room",
+    ticketFreeClaim: "Claim free ticket",
+    ticketFreeClaiming: "Claiming…",
+    ticketQrNote: "E-ticket · QR at the venue",
+    ticketStreamNote: "Online · Watch room opens 15 min before start",
+    ticketHybridNote: "Venue QR + online watch room",
     soldOutFull: "Sold out",
+    aboutHeading: "About this chronicle",
+    hostFallback: "Eldonia Host",
+    myTicketsTitle: "My tickets",
+    myTicketsLead: "Your Chronicle tickets — join online events from the watch room",
+    myTicketsEmpty: "You do not have any tickets yet.",
+    myTicketsBrowse: "Browse EVENTS →",
+    watchBack: "← My tickets",
+    watchHeading: "Watch room",
+    watchNotYet: "The stream has not opened yet. Entry is available 15 minutes before start.",
+    watchEnded: "This stream has ended.",
+    watchOpensAt: (when) => `Opens at ${when}`,
+    watchJoin: "Join stream",
+    watchJoining: "Opening…",
+    watchJoinError: "Could not open the watch room.",
+    watchNoTicket: "A ticket is required.",
+    watchLogin: "Log in to enter the watch room",
+    ticketCodeLabel: "Ticket code",
+    ticketQrScanHint: "Show this QR at the venue entrance",
+    ticketVerifyHeading: "Ticket check",
+    ticketVerifyValid: "Valid ticket",
+    ticketVerifyInvalid: "Invalid ticket",
+    ticketEventNotFound: "This event cannot issue tickets. Please pick it again from the list.",
+    ticketIssueUnavailable: "Ticket issuance is temporarily unavailable. Please try again later.",
+    ticketDownloadPdf: "Download PDF",
+    ticketDownloadText: "Save as text",
+    ticketViewPdf: "View ticket",
+    ticketPrint: "Print / Save PDF",
+    ticketPdfHint: "Same content as text, exported to PDF. Also viewable in browser",
+    ticketPdfGenerating: "Preparing…",
+    ticketPdfFailed: "Could not load the ticket. Please try again later.",
+    ticketPdfNotFound: "Ticket not found.",
   },
   works: {
     back: "← WORKS",
@@ -685,8 +836,13 @@ const PAGE_EN: PageMessages = {
     replySubmit: "Post reply",
     replySubmitting: "Sending…",
     repliesEmpty: "No replies yet. Use Nexus translation to read multilingual replies.",
+    replyDelete: "Delete",
+    replyDeleting: "Deleting…",
+    replyDeleteConfirm: "Delete your comment? It will be hidden from the thread.",
+    replyDeleteFailed: "Could not delete the comment.",
     nexusBadge: "Nexus Translate",
-    nexusTargetAria: "Target language",
+    nexusTargetAria: "Display / target language",
+    nexusOriginalLang: "original",
     nexusTranslating: "Translating…",
     nexusShow: "Show translation",
     nexusRetranslate: "Retranslate",
@@ -698,6 +854,8 @@ const PAGE_EN: PageMessages = {
     nexusTranslationHeading: (label) => `Nexus Translation · ${label}`,
     nexusHideOriginal: "Hide original",
     nexusShowOriginal: "Show original",
+    backToCommunity: "← COMMUNITY",
+    boardFallback: "Board",
   },
   help: {
     faqTitle: "FAQ",
@@ -759,6 +917,7 @@ const PAGE_EN: PageMessages = {
     bodyFree: "Your free item is ready. Digital delivery will roll out soon.",
     backShop: "Back to SHOP",
     dashboard: "Dashboard",
+    sessionLabel: "Session",
   },
   dashboard: {
     back: "← Dashboard",
@@ -766,6 +925,7 @@ const PAGE_EN: PageMessages = {
     ordersEmpty: "No orders yet.",
     ordersBrowse: "Browse SHOP →",
     orderLabel: "Order",
+    freePriceLabel: "Free",
   },
   notifications: {
     bellLabel: "Notifications",
@@ -777,6 +937,8 @@ const PAGE_EN: PageMessages = {
     galleryLink: "GALLERY →",
     viewArtwork: "View artwork",
     allLabs: "All Labs",
+    previewBadge: "PREVIEW",
+    previewChatDisabled: "Posting is disabled in preview.",
   },
   shop: {
     badgeBestseller: "Realm Bestseller",
@@ -789,6 +951,7 @@ const PAGE_KO: PageMessages = {
   userFallback: "사용자",
   anonymous: "익명",
   creatorFallback: "크리에이터",
+  sellerFallback: "Eldonia 판매자",
   posterFallback: "게시자 미등록",
   prev: "이전",
   next: "다음",
@@ -808,28 +971,65 @@ const PAGE_KO: PageMessages = {
     commentSending: "전송 중…",
     commentsEmpty: "아직 댓글이 없습니다.",
     loginToCommentFull: "로그인 후 댓글 →",
+    photoAlbumHeading: "포토 앨범",
+    photoSlideshowHeading: "슬라이드쇼",
+    photoThumbStripAria: "사진 썸네일 목록",
+    slideshowPlay: "재생",
+    slideshowPause: "일시정지",
+    slideshowFullscreen: "전체 화면",
+    slideshowExitFullscreen: "전체 화면 종료",
+    bgmOn: "BGM 재생 중",
+    bgmOff: "BGM",
+    bgmMute: "BGM 끄기",
+    bgmUnmute: "BGM 켜기",
   },
   events: {
     ...PAGE_EN.events,
     back: "← EVENTS로",
     organizer: "주최",
     venueSection: "장소·참가 방법",
+    streamAccessSection: "스트리밍·참가 방법",
+    hybridAccessSection: "장소·스트리밍",
     labelFormat: "형식",
     labelRealm: "영역",
     labelVenue: "장소",
     labelAddress: "주소",
     labelOnline: "온라인",
-    urlAfterPurchase: "구매 후 URL 표시",
+    labelStream: "스트리밍",
+    urlAfterPurchase: "티켓 확보 후 시청실 이용",
+    streamLockedHint: "스트리밍 URL은 티켓 소지자만 시청실에서 입장",
     toolbarSearch: "Chronicle 검색…",
     toolbarSearchAria: "이벤트 검색",
     toolbarOrders: "구매 내역",
+    toolbarMyTickets: "내 티켓",
     ticketHeading: "티켓",
     ticketCompare: "정가",
     ticketPast: "종료된 이벤트입니다",
     ticketGet: "티켓 받기",
     ticketLogin: "로그인 후 티켓",
-    ticketQrNote: "전자 티켓 · QR 입장 (준비 중)",
+    ticketOwned: "티켓 보유 중",
+    ticketWatchRoom: "시청실 입장",
+    ticketFreeClaim: "무료 티켓 받기",
+    ticketFreeClaiming: "처리 중…",
+    ticketQrNote: "전자 티켓 · 현장 QR",
+    ticketQrScanHint: "현장 입구에서 이 QR을 제시하세요",
+    ticketDownloadPdf: "PDF 다운로드",
+    ticketDownloadText: "텍스트 저장",
+    ticketViewPdf: "티켓 보기",
+    ticketPrint: "인쇄 / PDF 저장",
+    ticketPdfHint: "텍스트와 동일 내용을 PDF로. 브라우저에서도 확인 가능",
+    ticketPdfGenerating: "준비 중…",
+    ticketPdfFailed: "티켓을 가져올 수 없습니다.",
+    ticketPdfNotFound: "티켓을 찾을 수 없습니다.",
+    ticketStreamNote: "온라인 · 시작 15분 전부터 시청실",
+    ticketHybridNote: "현장 QR + 온라인 시청실",
     soldOutFull: "매진",
+    myTicketsTitle: "내 티켓",
+    myTicketsLead: "보유 Chronicle 티켓 — 온라인은 시청실에서 참가",
+    myTicketsEmpty: "아직 티켓이 없습니다.",
+    myTicketsBrowse: "EVENTS 보기 →",
+    watchHeading: "시청실",
+    watchJoin: "스트리밍 보기",
   },
   works: {
     ...PAGE_EN.works,
@@ -918,6 +1118,7 @@ const PAGE_KO: PageMessages = {
     backShop: "SHOP으로",
     dashboard: "대시보드",
   },
+  legalContactPrefix: "문의:",
   dashboard: {
     ...PAGE_EN.dashboard,
     back: "← 대시보드",
@@ -939,6 +1140,7 @@ const PAGE_ZH: PageMessages = {
   userFallback: "用户",
   anonymous: "匿名",
   creatorFallback: "创作者",
+  sellerFallback: "Eldonia 卖家",
   posterFallback: "未登记发布者",
   prev: "上一页",
   next: "下一页",
@@ -958,6 +1160,17 @@ const PAGE_ZH: PageMessages = {
     commentSending: "发送中…",
     commentsEmpty: "暂无评论。",
     loginToCommentFull: "登录后评论 →",
+    photoAlbumHeading: "摄影专辑",
+    photoSlideshowHeading: "幻灯片",
+    photoThumbStripAria: "照片缩略图列表",
+    slideshowPlay: "播放",
+    slideshowPause: "暂停",
+    slideshowFullscreen: "全屏",
+    slideshowExitFullscreen: "退出全屏",
+    bgmOn: "BGM 播放中",
+    bgmOff: "BGM",
+    bgmMute: "关闭 BGM",
+    bgmUnmute: "开启 BGM",
   },
   events: {
     ...PAGE_EN.events,
@@ -978,7 +1191,16 @@ const PAGE_ZH: PageMessages = {
     ticketPast: "活动已结束",
     ticketGet: "获取门票",
     ticketLogin: "登录后购票",
-    ticketQrNote: "电子票 · QR 入场（筹备中）",
+    ticketQrNote: "电子票 · 现场 QR 入场",
+    ticketQrScanHint: "请在会场入口出示此 QR",
+    ticketDownloadPdf: "下载 PDF",
+    ticketDownloadText: "保存文本",
+    ticketViewPdf: "查看票券",
+    ticketPrint: "打印 / 保存 PDF",
+    ticketPdfHint: "与文本相同内容导出为 PDF，也可在浏览器中查看",
+    ticketPdfGenerating: "准备中…",
+    ticketPdfFailed: "无法获取票券，请稍后重试。",
+    ticketPdfNotFound: "未找到票券。",
     soldOutFull: "售罄",
   },
   works: {
@@ -1067,6 +1289,7 @@ const PAGE_ZH: PageMessages = {
     backShop: "返回 SHOP",
     dashboard: "控制台",
   },
+  legalContactPrefix: "联系:",
   dashboard: {
     ...PAGE_EN.dashboard,
     back: "← 控制台",

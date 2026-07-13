@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { ContentLine } from "@/components/i18n/content-line";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
+import { getCartItemTranslations } from "@/lib/translation/list-translations";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
@@ -30,6 +32,15 @@ export default async function CartPage() {
   } = await supabase.auth.getUser();
 
   const summary = await resolveCart();
+  const cartTranslations = await getCartItemTranslations(
+    summary.items.map((item) => ({
+      key: `${item.line.kind}-${item.line.id}`,
+      kind: item.line.kind,
+      id: item.line.id,
+      title: item.title,
+    })),
+    locale,
+  );
 
   let initialShipping = null;
   if (user) {
@@ -47,7 +58,7 @@ export default async function CartPage() {
       <ShopToolbar />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-8">
-        <p className="eldonia-eyebrow">CART</p>
+        <p className="eldonia-eyebrow">{t.shop.cartEyebrow}</p>
         <h1 className="eldonia-heading eldonia-heading-lg mt-2">{t.shop.cartHeading}</h1>
 
         {summary.items.length === 0 ? (
@@ -59,15 +70,19 @@ export default async function CartPage() {
           </div>
         ) : (
           <div className="mt-8 space-y-4">
-            {summary.items.map((item) => (
+            {summary.items.map((item) => {
+              const cartKey = `${item.line.kind}-${item.line.id}`;
+              return (
               <div
-                key={`${item.line.kind}-${item.line.id}`}
+                key={cartKey}
                 className="eldonia-card flex flex-wrap items-center justify-between gap-4"
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-xs text-[var(--eldonia-gold-muted)]">{item.subtitle}</p>
-                  <ContentLine
+                  <TranslatedContentLine
                     text={item.title}
+                    translatedText={cartTranslations[cartKey]?.title}
+                    sourceLocale={inferSourceLocale(item.title)}
                     locale={locale}
                     as="h2"
                     className="font-display text-[var(--eldonia-gold-light)]"
@@ -88,7 +103,8 @@ export default async function CartPage() {
                   </form>
                 </div>
               </div>
-            ))}
+            );
+            })}
 
             <div className="eldonia-buy-box">
               <EldoniaDivider />

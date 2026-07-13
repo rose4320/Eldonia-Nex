@@ -6,12 +6,13 @@ import { SAMPLE_EVENTS } from "./sample-events";
 type EventFilters = {
   q?: string;
   category?: string;
+  format?: string;
   when?: string;
 };
 
 function filterEvents(
   events: NexusEventWithOrganizer[],
-  { q, category, when = "upcoming" }: EventFilters,
+  { q, category, format, when = "upcoming" }: EventFilters,
 ): NexusEventWithOrganizer[] {
   let result = events;
 
@@ -23,6 +24,10 @@ function filterEvents(
 
   if (category && category !== "all") {
     result = result.filter((e) => e.category === category);
+  }
+
+  if (format && format !== "all") {
+    result = result.filter((e) => e.format === format);
   }
 
   const term = q?.trim().toLowerCase();
@@ -70,23 +75,25 @@ export async function getEvents(
   }
 }
 
-export async function getEvent(id: string): Promise<NexusEventWithOrganizer | null> {
+const EVENT_SELECT = `
+  *,
+  profiles:organizer_id (
+    display_name,
+    username
+  )
+`;
+
+export async function getPublishedEventFromDb(
+  id: string,
+): Promise<NexusEventWithOrganizer | null> {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("events")
-      .select(
-        `
-        *,
-        profiles:organizer_id (
-          display_name,
-          username
-        )
-      `,
-      )
+      .select(EVENT_SELECT)
       .eq("id", id)
       .eq("status", "published")
-      .single();
+      .maybeSingle();
 
     if (!error && data) {
       return data as NexusEventWithOrganizer;
@@ -94,6 +101,47 @@ export async function getEvent(id: string): Promise<NexusEventWithOrganizer | nu
   } catch {
     // fall through
   }
+
+  return null;
+}
+
+export async function fetchPublishedEventsByIds(
+  ids: string[],
+): Promise<Map<string, NexusEventWithOrganizer>> {
+  const uniqueIds = [...new Set(ids)];
+  const map = new Map<string, NexusEventWithOrganizer>();
+  if (uniqueIds.length === 0) return map;
+
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("events")
+      .select(EVENT_SELECT)
+      .in("id", uniqueIds)
+      .eq("status", "published");
+
+    if (!error && data?.length) {
+      for (const row of data as NexusEventWithOrganizer[]) {
+        map.set(row.id, row);
+      }
+    }
+  } catch {
+    // fall through — sample fallback below
+  }
+
+  for (const id of uniqueIds) {
+    if (!map.has(id)) {
+      const sample = SAMPLE_EVENTS.find((event) => event.id === id);
+      if (sample) map.set(id, sample);
+    }
+  }
+
+  return map;
+}
+
+export async function getEvent(id: string): Promise<NexusEventWithOrganizer | null> {
+  const fromDb = await getPublishedEventFromDb(id);
+  if (fromDb) return fromDb;
 
   return SAMPLE_EVENTS.find((e) => e.id === id) ?? null;
 }

@@ -1,10 +1,14 @@
 import Image from "next/image";
 import { LpCard } from "@/components/ui/lp-card";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_REWARDS } from "@/lib/lp/content";
 
-export function LpRewardsSection() {
+export async function LpRewardsSection() {
+  const locale = await getUiLocale();
+  const { LP_REWARDS } = getLpContent(locale);
+
   return (
     <section id="rewards" className="scroll-mt-24 px-3 py-6 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1240px]">
@@ -18,7 +22,7 @@ export function LpRewardsSection() {
           <div className="mx-auto lg:mx-0">
             <Image
               src={LP_ASSETS.pinBadge}
-              alt="EN記念ピンバッジ"
+              alt={LP_REWARDS.pinBadgeAlt}
               width={220}
               height={220}
             />
@@ -32,7 +36,7 @@ export function LpRewardsSection() {
                 {LP_REWARDS.serialTitle}
               </p>
               <p className="mt-2 text-xs leading-6 text-[#9e927d] sm:text-sm">{LP_REWARDS.serialBody}</p>
-              <p className="mt-4 font-display text-xs tracking-wider text-[#d8c8a8]">例：</p>
+              <p className="mt-4 font-display text-xs tracking-wider text-[#d8c8a8]">{LP_REWARDS.serialExampleLabel}</p>
               <p className="mt-1 font-display text-xl text-[#d6a84f]">{LP_REWARDS.serialExample}</p>
               <p className="mt-3 text-xs text-[#9e927d]">{LP_REWARDS.serialLegend}</p>
             </LpCard>
@@ -62,5 +66,3 @@ export function LpRewardsSection() {
     </section>
   );
 }
-
-

@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ContentLine } from "@/components/i18n/content-line";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { CreatorDisciplineBadges } from "@/components/gallery/creator-discipline-badges";
 import { artworkCoverUrl, categoryLabel, formatBadgeLabel, formatDate } from "@/lib/gallery/constants";
@@ -16,12 +17,14 @@ type GalleryArtworkCardProps = {
   artwork: ArtworkWithCreator;
   engagement: GalleryArtworkEngagement;
   userId: string | null;
+  translations?: { title?: string };
 };
 
 export function GalleryArtworkCard({
   artwork,
   engagement,
   userId,
+  translations,
 }: GalleryArtworkCardProps) {
   const locale = useLocale();
   const t = useContent();
@@ -171,8 +174,10 @@ export function GalleryArtworkCard({
             )}
           </p>
           <Link href={detailHref} className="block">
-            <ContentLine
+            <TranslatedContentLine
               text={artwork.title}
+              translatedText={translations?.title}
+              sourceLocale={inferSourceLocale(artwork.title)}
               locale={locale}
               as="h2"
               className="line-clamp-1 font-display font-semibold text-eldonia-gold-light hover:text-eldonia-gold"

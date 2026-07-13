@@ -386,7 +386,7 @@ const SETTINGS_UI_JA: SettingsUiContent = {
   referral: {
     heading: "紹介プログラム",
     title: "紹介コード / QR",
-    body: "サブスクプランが Free 以外の会員には、サインイン確定後に紹介コードが付与されます。紹介成立から3か月目以降、日本の紹介は10%、日本以外は15%を還元します。",
+    body: "サブスクプランが Free 以外の会員には、サインイン確定後に紹介コードが付与されます。紹介成立から3か月目以降、日本の紹介は10%、日本以外は15%を還元します。振込先（銀行口座等）が未入力の場合は振込できません。設定で振込先を登録してください。",
     codeLabel: "紹介コード",
     urlLabel: "紹介URL",
     copyUrl: "紹介URLをコピー",
@@ -590,7 +590,7 @@ const SETTINGS_UI_EN: SettingsUiContent = {
   referral: {
     heading: "Referral program",
     title: "Referral code / QR",
-    body: "Paid members (non-Free plans) receive a referral code after sign-in. From the third month after a successful referral, Japan referrals earn 10% and international referrals earn 15%.",
+    body: "Paid members (non-Free plans) receive a referral code after sign-in. From the third month after a successful referral, Japan referrals earn 10% and international referrals earn 15%. Transfers cannot be made until payout bank details are saved in Settings.",
     codeLabel: "Referral code",
     urlLabel: "Referral URL",
     copyUrl: "Copy referral URL",

@@ -1,14 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import { useLpContent } from "@/components/providers/lp-content-provider";
 import { LpButton } from "@/components/ui/lp-button";
 import { LpCtaFrame } from "@/components/ui/lp-cta-frame";
 import { LpCtaOwl } from "@/components/ui/lp-cta-owl";
-import { LP_CTA } from "@/lib/lp/content";
+import type { LpContent } from "@/lib/i18n/content/lp-messages";
 
 type SubmitStatus = "idle" | "loading" | "success" | "duplicate" | "error";
 
-export function LpCtaSection() {
+type LpCtaSectionProps = {
+  content?: LpContent;
+};
+
+export function LpCtaSection({ content }: LpCtaSectionProps = {}) {
+  const { LP_CTA } = useLpContent(content);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<SubmitStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -142,8 +148,6 @@ export function LpCtaSection() {
                 type="button"
                 className="px-8"
                 onClick={() =>
-                  // 自動ログイン成功時はホーム（/ = ログイン済みホーム）へ。
-                  // セッションが張れなかった場合は / に行っても /lp に戻されるだけなのでログインへ誘導。
                   window.location.assign(loggedIn ? "/" : "/auth/login")
                 }
               >
@@ -163,5 +167,3 @@ export function LpCtaSection() {
     </section>
   );
 }
-
-

@@ -1,5 +1,15 @@
 import type { UiLocale } from "@/lib/i18n/locale";
 import { PLAN_CATALOG, type CatalogPlanId } from "@/lib/plans/catalog";
+import {
+  PRIVACY_POLICY_CONSENT_SUMMARY,
+  PRIVACY_POLICY_VERSION,
+} from "@/lib/i18n/content/privacy-policy";
+import {
+  COMMERCE_TERMS_CONSENT_SUMMARY,
+  CREATOR_GUIDELINES_CONSENT_SUMMARY,
+  TERMS_OF_SERVICE_CONSENT_SUMMARY,
+  TERMS_OF_SERVICE_VERSION,
+} from "@/lib/i18n/content/terms-of-service";
 
 export type SignupPlanId = CatalogPlanId;
 
@@ -176,30 +186,19 @@ const SIGNUP_JA: SignupContent = {
   consents: [
     {
       type: "terms_of_service",
-      title: "利用規約",
-      version: CONSENT_VERSION,
-      lead: "Eldonia-Nex を利用するための基本ルールです。",
-      body: [
-        "アカウントは本人が管理し、第三者への譲渡や不正利用を行わないでください。",
-        "サービス上での投稿・販売・交流は、法令とプラットフォームルールに従う必要があります。",
-        "【重要】誹謗中傷、名誉毀損、嫌がらせ、脅迫、差別的発言、その他他者の権利・尊厳を侵害する言動は固く禁止されています。",
-        "【重要】詐欺、なりすまし、虚偽情報の流布、不正な勧誘、第三者のなりすましアカウント作成などの行為は、アカウント永久停止および関係機関への通報の対象となります。",
-        "違反が確認された場合、投稿の制限、アカウント停止、取引の保留、損害賠償請求の検討を行うことがあります。",
-      ],
-      requiredLabel:
-        "利用規約を読み、誹謗中傷・詐欺行為を含む禁止事項を理解し、遵守することに同意しました",
+      title: TERMS_OF_SERVICE_CONSENT_SUMMARY.ja.title,
+      version: TERMS_OF_SERVICE_VERSION,
+      lead: TERMS_OF_SERVICE_CONSENT_SUMMARY.ja.lead,
+      body: TERMS_OF_SERVICE_CONSENT_SUMMARY.ja.body,
+      requiredLabel: TERMS_OF_SERVICE_CONSENT_SUMMARY.ja.requiredLabel,
     },
     {
       type: "privacy_policy",
-      title: "プライバシーポリシー",
-      version: CONSENT_VERSION,
-      lead: "登録情報・決済情報・利用履歴の取り扱いについてです。",
-      body: [
-        "登録情報は認証、本人確認、サポート、通知、サービス改善のために利用します。",
-        "決済に必要な情報は Stripe 等の決済事業者と連携して処理します。",
-        "法令に基づく場合を除き、必要な範囲を超えて個人情報を第三者へ提供しません。",
-      ],
-      requiredLabel: "個人情報の利用目的と管理方針を理解しました",
+      title: PRIVACY_POLICY_CONSENT_SUMMARY.ja.title,
+      version: PRIVACY_POLICY_VERSION,
+      lead: PRIVACY_POLICY_CONSENT_SUMMARY.ja.lead,
+      body: PRIVACY_POLICY_CONSENT_SUMMARY.ja.body,
+      requiredLabel: PRIVACY_POLICY_CONSENT_SUMMARY.ja.requiredLabel,
     },
     {
       type: "subscription_terms",
@@ -215,32 +214,19 @@ const SIGNUP_JA: SignupContent = {
     },
     {
       type: "creator_guidelines",
-      title: "投稿・コンテンツガイドライン",
-      version: CONSENT_VERSION,
-      lead: "作品投稿、販売、コミュニティ活動で守る内容です。",
-      body: [
-        "権利を保有していない作品、盗用、無断転載、権利侵害コンテンツは投稿できません。",
-        "【重要】特定個人・団体への誹謗中傷、根拠のない批判、晒し行為、執拗な嫌がらせは投稿・コメント・メッセージ等すべての場面で禁止です。",
-        "年齢制限が必要な表現、暴力的・差別的な表現は適切な分類と制限が必要です。",
-        "購入者や参加者に誤解を与える説明、価格表示、納品条件の記載を避けてください。",
-      ],
-      requiredLabel:
-        "誹謗中傷を含む投稿ルールと禁止事項を理解し、他者への侵害行為を行わないことに同意しました",
+      title: CREATOR_GUIDELINES_CONSENT_SUMMARY.ja.title,
+      version: TERMS_OF_SERVICE_VERSION,
+      lead: CREATOR_GUIDELINES_CONSENT_SUMMARY.ja.lead,
+      body: CREATOR_GUIDELINES_CONSENT_SUMMARY.ja.body,
+      requiredLabel: CREATOR_GUIDELINES_CONSENT_SUMMARY.ja.requiredLabel,
     },
     {
       type: "commerce_terms",
-      title: "取引・返金・収益化条件",
-      version: CONSENT_VERSION,
-      lead: "販売、イベント、仕事依頼など金銭を伴う活動の確認です。",
-      body: [
-        "販売・受注・イベント開催では、提供内容、価格、納期、キャンセル条件を明確にしてください。",
-        "【重要】虚偽の商品説明、存在しないサービスの販売、前払い詐欺、なりすまし販売、不正な紹介報酬の勧誘などの詐欺行為は厳禁です。",
-        "【重要】詐欺・不正取引が確認された場合、取引の即時停止、アカウント永久停止、関係機関への通報、損害賠償請求を行うことがあります。",
-        "返金や紛争対応は、各取引の状態、決済状況、運営判断に基づいて処理されます。",
-        "収益の支払いには本人情報、振込先、税務上必要な情報の確認が必要になる場合があります。",
-      ],
-      requiredLabel:
-        "詐欺行為を含む取引禁止事項を理解し、誠実な取引のみ行うことに同意しました",
+      title: COMMERCE_TERMS_CONSENT_SUMMARY.ja.title,
+      version: TERMS_OF_SERVICE_VERSION,
+      lead: COMMERCE_TERMS_CONSENT_SUMMARY.ja.lead,
+      body: COMMERCE_TERMS_CONSENT_SUMMARY.ja.body,
+      requiredLabel: COMMERCE_TERMS_CONSENT_SUMMARY.ja.requiredLabel,
     },
   ],
 };
@@ -333,27 +319,16 @@ const SIGNUP_EN: SignupContent = {
   })).map((item) => {
     const enMap: Record<string, Omit<SignupConsent, "type" | "version">> = {
       terms_of_service: {
-        title: "Terms of Service",
-        lead: "Basic rules for using Eldonia-Nex.",
-        body: [
-          "You are responsible for your account; do not transfer or misuse it.",
-          "Posts, sales, and community activity must follow laws and platform rules.",
-          "[Important] Defamation, harassment, threats, discrimination, and any conduct that infringes others' rights or dignity are strictly prohibited.",
-          "[Important] Fraud, impersonation, spreading false information, deceptive solicitation, and creating fake accounts may result in permanent suspension and reporting to authorities.",
-          "Violations may lead to restrictions, suspension, held transactions, or pursuit of damages.",
-        ],
-        requiredLabel:
-          "I have read the Terms of Service and agree to comply, including prohibitions on defamation and fraud",
+        title: TERMS_OF_SERVICE_CONSENT_SUMMARY.en.title,
+        lead: TERMS_OF_SERVICE_CONSENT_SUMMARY.en.lead,
+        body: TERMS_OF_SERVICE_CONSENT_SUMMARY.en.body,
+        requiredLabel: TERMS_OF_SERVICE_CONSENT_SUMMARY.en.requiredLabel,
       },
       privacy_policy: {
-        title: "Privacy Policy",
-        lead: "How we handle registration, payment, and usage data.",
-        body: [
-          "We use registration data for auth, verification, support, notifications, and improvements.",
-          "Payment data is processed via Stripe and other payment providers.",
-          "We do not share personal data beyond what is legally required.",
-        ],
-        requiredLabel: "I understand how personal data is used and managed",
+        title: PRIVACY_POLICY_CONSENT_SUMMARY.en.title,
+        lead: PRIVACY_POLICY_CONSENT_SUMMARY.en.lead,
+        body: PRIVACY_POLICY_CONSENT_SUMMARY.en.body,
+        requiredLabel: PRIVACY_POLICY_CONSENT_SUMMARY.en.requiredLabel,
       },
       subscription_terms: {
         title: "Subscription & billing",
@@ -366,29 +341,16 @@ const SIGNUP_EN: SignupContent = {
         requiredLabel: "I understand billing, auto-renewal, and cancellation",
       },
       creator_guidelines: {
-        title: "Content guidelines",
-        lead: "Rules for posting, selling, and community activity.",
-        body: [
-          "Do not post content you do not own or that infringes rights.",
-          "[Important] Defamation, baseless attacks, doxxing, and persistent harassment are prohibited in posts, comments, and messages.",
-          "Age-restricted or harmful content must be classified and limited appropriately.",
-          "Avoid misleading descriptions, pricing, or delivery terms.",
-        ],
-        requiredLabel:
-          "I understand posting rules including defamation bans and will not harm others",
+        title: CREATOR_GUIDELINES_CONSENT_SUMMARY.en.title,
+        lead: CREATOR_GUIDELINES_CONSENT_SUMMARY.en.lead,
+        body: CREATOR_GUIDELINES_CONSENT_SUMMARY.en.body,
+        requiredLabel: CREATOR_GUIDELINES_CONSENT_SUMMARY.en.requiredLabel,
       },
       commerce_terms: {
-        title: "Commerce & payouts",
-        lead: "Sales, events, jobs, and other paid activity.",
-        body: [
-          "Clearly state what you offer, price, timeline, and cancellation terms.",
-          "[Important] Fraudulent listings, selling non-existent services, advance-payment scams, impersonation sales, and deceptive referral schemes are strictly forbidden.",
-          "[Important] Confirmed fraud may result in immediate transaction holds, permanent suspension, reporting to authorities, and pursuit of damages.",
-          "Refunds and disputes are handled per transaction state and platform policy.",
-          "Payouts may require identity and tax information.",
-        ],
-        requiredLabel:
-          "I understand commerce rules including fraud prohibitions and will trade honestly",
+        title: COMMERCE_TERMS_CONSENT_SUMMARY.en.title,
+        lead: COMMERCE_TERMS_CONSENT_SUMMARY.en.lead,
+        body: COMMERCE_TERMS_CONSENT_SUMMARY.en.body,
+        requiredLabel: COMMERCE_TERMS_CONSENT_SUMMARY.en.requiredLabel,
       },
     };
     const en = enMap[item.type];
@@ -412,6 +374,37 @@ export const SIGNUP_CONTENT: Record<UiLocale, SignupContent> = {
         "확인 메일을 보냈습니다. 메일의 링크를 열면 별도 로그인 없이 플랜 선택부터 가입을 이어갈 수 있습니다.",
       flowComplete: "Eldonia-Nex에 오신 것을 환영합니다!",
     },
+    consents: SIGNUP_EN.consents.map((c) => {
+      if (c.type === "privacy_policy") {
+        return {
+          type: "privacy_policy",
+          version: PRIVACY_POLICY_VERSION,
+          ...PRIVACY_POLICY_CONSENT_SUMMARY.ko,
+        };
+      }
+      if (c.type === "terms_of_service") {
+        return {
+          type: "terms_of_service",
+          version: TERMS_OF_SERVICE_VERSION,
+          ...TERMS_OF_SERVICE_CONSENT_SUMMARY.ko,
+        };
+      }
+      if (c.type === "creator_guidelines") {
+        return {
+          type: "creator_guidelines",
+          version: TERMS_OF_SERVICE_VERSION,
+          ...CREATOR_GUIDELINES_CONSENT_SUMMARY.ko,
+        };
+      }
+      if (c.type === "commerce_terms") {
+        return {
+          type: "commerce_terms",
+          version: TERMS_OF_SERVICE_VERSION,
+          ...COMMERCE_TERMS_CONSENT_SUMMARY.ko,
+        };
+      }
+      return c;
+    }),
   },
   "zh-CN": {
     ...SIGNUP_EN,
@@ -426,5 +419,36 @@ export const SIGNUP_CONTENT: Record<UiLocale, SignupContent> = {
         "已发送确认邮件。点击邮件中的链接即可从方案选择继续注册，无需另行登录。",
       flowComplete: "欢迎来到 Eldonia-Nex！",
     },
+    consents: SIGNUP_EN.consents.map((c) => {
+      if (c.type === "privacy_policy") {
+        return {
+          type: "privacy_policy",
+          version: PRIVACY_POLICY_VERSION,
+          ...PRIVACY_POLICY_CONSENT_SUMMARY["zh-CN"],
+        };
+      }
+      if (c.type === "terms_of_service") {
+        return {
+          type: "terms_of_service",
+          version: TERMS_OF_SERVICE_VERSION,
+          ...TERMS_OF_SERVICE_CONSENT_SUMMARY["zh-CN"],
+        };
+      }
+      if (c.type === "creator_guidelines") {
+        return {
+          type: "creator_guidelines",
+          version: TERMS_OF_SERVICE_VERSION,
+          ...CREATOR_GUIDELINES_CONSENT_SUMMARY["zh-CN"],
+        };
+      }
+      if (c.type === "commerce_terms") {
+        return {
+          type: "commerce_terms",
+          version: TERMS_OF_SERVICE_VERSION,
+          ...COMMERCE_TERMS_CONSENT_SUMMARY["zh-CN"],
+        };
+      }
+      return c;
+    }),
   },
 };

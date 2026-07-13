@@ -7,7 +7,13 @@ import { ThreadCard } from "@/components/community/thread-card";
 import { ThreadPagination } from "@/components/community/thread-pagination";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import { getCommunityBoards, getCommunityThreadsPaginated } from "@/lib/community/get-community";
+import {
+  getCommunityBoards,
+  getCommunityThreadsPaginated,
+  getLatestRepliesByThreadIds,
+} from "@/lib/community/get-community";
+import { getThreadCardTranslationsWithWarm } from "@/lib/translation/content-cache";
+import { getBoardDescription, getBoardName } from "@/lib/community/board-labels";
 import { createClient } from "@/lib/supabase/server";
 
 type BoardPageProps = {
@@ -35,6 +41,12 @@ export default async function CommunityBoardPage({ params, searchParams }: Board
     q,
     page,
   });
+  const [latestReplies, threadTranslations] = await Promise.all([
+    getLatestRepliesByThreadIds(threads.map((thread) => thread.id)),
+    getLatestRepliesByThreadIds(threads.map((thread) => thread.id)).then((replies) =>
+      getThreadCardTranslationsWithWarm(threads, replies, locale),
+    ),
+  ]);
 
   return (
     <div className="eldonia-page">
@@ -43,10 +55,14 @@ export default async function CommunityBoardPage({ params, searchParams }: Board
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-8">
         <Link href="/community" className="eldonia-link text-sm">
-          ← COMMUNITY
+          {pages.community.backToCommunity}
         </Link>
-        <h1 className="eldonia-heading eldonia-heading-lg mt-4">{board.name}</h1>
-        <p className="eldonia-body mt-2 text-sm">{board.description}</p>
+        <h1 className="eldonia-heading eldonia-heading-lg mt-4">
+          {getBoardName(board.slug, locale, board.name)}
+        </h1>
+        <p className="eldonia-body mt-2 text-sm">
+          {getBoardDescription(board.slug, locale, board.description)}
+        </p>
         {user ? (
           <Link
             href={`/community/b/${slug}/new`}
@@ -69,7 +85,14 @@ export default async function CommunityBoardPage({ params, searchParams }: Board
           {threads.length === 0 ? (
             <p className="eldonia-body text-center py-12">{pages.community.threadsEmpty}</p>
           ) : (
-            threads.map((thread) => <ThreadCard key={thread.id} thread={thread} />)
+            threads.map((thread) => (
+              <ThreadCard
+                key={thread.id}
+                thread={thread}
+                latestReply={latestReplies.get(thread.id) ?? null}
+                translations={threadTranslations[thread.id]}
+              />
+            ))
           )}
         </div>
 

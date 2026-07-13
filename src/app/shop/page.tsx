@@ -16,6 +16,7 @@ import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { MODULE_ICONS } from "@/lib/layout/module-icons";
 import { realmLabel } from "@/lib/shop/constants";
+import { getProductListTranslations } from "@/lib/translation/list-translations";
 
 type ShopPageProps = {
   searchParams: Promise<{ q?: string; category?: string }>;
@@ -29,6 +30,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const featuredProducts = pickFeaturedProducts(products, 3);
   const featuredIds = new Set(featuredProducts.map((product) => product.id));
   const gridProducts = excludeProductIds(products, featuredIds);
+  const productTranslations = await getProductListTranslations(products, locale);
 
   const heading =
     q?.trim()
@@ -56,7 +58,7 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <ShopSidebar activeCategory={category} query={q} />
 
           <div className="flex min-w-0 flex-col gap-8">
-            <ShopHeroStrip products={featuredProducts} />
+            <ShopHeroStrip products={featuredProducts} translations={productTranslations} />
 
             {gridProducts.length > 0 || products.length === 0 ? (
             <section>
@@ -84,7 +86,11 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {gridProducts.map((product) => (
-                    <ProductCard key={product.id} product={product} />
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      translations={productTranslations[product.id]}
+                    />
                   ))}
                 </div>
               )}

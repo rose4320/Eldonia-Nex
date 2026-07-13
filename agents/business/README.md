@@ -3,7 +3,7 @@
 | ファイル | 役割 |
 |---------|------|
 | [Revenue_Payment_Manager.agent.md](./Revenue_Payment_Manager.agent.md) | Stripe・手数料 |
-| [Translation_Manager.agent.md](./Translation_Manager.agent.md) | i18n・翻訳 |
+| [Translation_Manager.agent.md](./Translation_Manager.agent.md) | i18n・翻訳 Nexus · 正本 [`docs/translation-architecture.md`](../../docs/translation-architecture.md) |
 | [Moderation_Safety_Manager.agent.md](./Moderation_Safety_Manager.agent.md) | モデレーション |
 | [Support_Desk_Manager.agent.md](./Support_Desk_Manager.agent.md) | サポート |
 | [Marketing_Manager.agent.md](./Marketing_Manager.agent.md) | LP・マーケ |

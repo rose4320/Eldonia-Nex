@@ -1,6 +1,6 @@
 {
   "name": "eldonia-nex",
-  "version": "0.9.9",
+  "version": "0.10.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -13,6 +13,7 @@
     "health:check:prod": "node scripts/health-check.mjs https://eldonia-nex.com",
     "aset:sync": "node scripts/sync-aset-to-public.mjs",
     "prebuild": "node scripts/sync-aset-to-public.mjs",
+    "fonts:ticket": "node scripts/fetch-noto-otf.mjs && node scripts/build-ticket-font.mjs",
     "prototype:home": "npx serve prototype/home-v2 -p 5199",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
@@ -31,12 +32,15 @@
     "fix:facebook-secret": "node scripts/set-facebook-secret.mjs"
   },
   "dependencies": {
+    "@fontsource/noto-sans-jp": "^5.2.9",
     "@google/model-viewer": "^4.3.1",
+    "@pdf-lib/fontkit": "^1.1.1",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.1",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "next": "16.2.9",
+    "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -51,6 +55,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "subset-font": "^2.5.0",
     "supabase": "^2.107.0",
     "tailwindcss": "^4",
     "typescript": "^5"

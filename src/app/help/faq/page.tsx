@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { PAGE_ICONS } from "@/lib/layout/module-icons";
-import { createClient } from "@/lib/supabase/server";
+import { getReleaseFaqArticles } from "@/lib/support/faq-release-catalog";
 
 type FaqPageProps = {
   searchParams: Promise<{ q?: string }>;
@@ -17,13 +17,7 @@ export default async function FaqPage({ searchParams }: FaqPageProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
   const params = await searchParams;
-  const supabase = await createClient();
-
-  const { data: articles } = await supabase
-    .from("support_faq_articles")
-    .select("id, category, question, answer")
-    .eq("is_published", true)
-    .order("sort_order", { ascending: true });
+  const articles = getReleaseFaqArticles(locale);
 
   return (
     <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
@@ -48,10 +42,7 @@ export default async function FaqPage({ searchParams }: FaqPageProps) {
         </section>
 
         <section className="eldonia-card">
-          <FaqAccordion
-            articles={articles ?? []}
-            initialQuery={params.q ?? ""}
-          />
+          <FaqAccordion articles={articles} initialQuery={params.q ?? ""} />
         </section>
       </main>
 

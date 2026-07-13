@@ -170,6 +170,27 @@ export function supportTicketStatusLabel(value: string, locale: UiLocale): strin
   return taxonomyLabel(SUPPORT_TICKET_STATUS_LABELS, value, locale);
 }
 
+export const QUEST_STATUS_LABELS: Record<string, TaxonomyEntry> = {
+  draft: L("下書き", "Draft", "초안", "草稿"),
+  open: L("公開中", "Open", "공개", "进行中"),
+  closed: L("終了", "Closed", "종료", "已结束"),
+};
+
+export function questStatusLabel(value: string, locale: UiLocale): string {
+  return taxonomyLabel(QUEST_STATUS_LABELS, value, locale);
+}
+
+export const ORDER_STATUS_LABELS: Record<string, TaxonomyEntry> = {
+  pending: L("処理中", "Pending", "처리 중", "处理中"),
+  paid: L("支払い済み", "Paid", "결제 완료", "已支付"),
+  failed: L("失敗", "Failed", "실패", "失败"),
+  refunded: L("返金済み", "Refunded", "환불됨", "已退款"),
+};
+
+export function orderStatusLabel(value: string, locale: UiLocale): string {
+  return taxonomyLabel(ORDER_STATUS_LABELS, value, locale);
+}
+
 export const NOTIFICATION_KIND_LABELS: Record<string, TaxonomyEntry> = {
   collab_request: L("コラボ申請", "Collab request", "콜라보 신청", "合作申请"),
   collab_accepted: L("コラボ承認", "Collab accepted", "콜라보 승인", "合作已同意"),
@@ -236,6 +257,20 @@ export function eventRealmOptions(locale: UiLocale) {
   return (["all", "concert", "workshop", "meetup", "exhibition", "streaming", "competition"] as const).map(
     (value) => ({ value, label: eventRealmLabel(value, locale) }),
   );
+}
+
+export function eventFormatOptions(locale: UiLocale) {
+  return (["all", "online", "offline", "hybrid"] as const).map((value) => ({
+    value,
+    label:
+      value === "all"
+        ? taxonomyLabel(
+            { all: L("すべて", "All formats", "전체 형식", "全部形式") },
+            value,
+            locale,
+          )
+        : eventFormatLabel(value, locale),
+  }));
 }
 
 export function shopRealmOptions(locale: UiLocale) {

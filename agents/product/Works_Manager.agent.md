@@ -20,3 +20,13 @@
 **協議**: Lab（作業場所）, Quest（独立）, Portfolio/Passport（実績反映）
 
 **推奨実行モデル**: OpenAI Codex
+
+---
+
+## 翻訳（Phase 3）
+
+**正本**: `docs/translation-architecture.md`
+
+- 求人タイトル・説明・`location` — 保存時キャッシュ翻訳
+- 一覧 `JobCard` — 既存 `localizedHint` / 将来 `ContentLine` + Google キャッシュ
+- 創作・契約用語は機械翻訳限界あり → 「原文を見る」必須

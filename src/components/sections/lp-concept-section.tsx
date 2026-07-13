@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useLpContent } from "@/components/providers/lp-content-provider";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
+import type { LpContent } from "@/lib/i18n/content/lp-messages";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_CONCEPT } from "@/lib/lp/content";
 
-export function LpConceptSection() {
+type LpConceptSectionProps = {
+  content?: LpContent;
+};
+
+export function LpConceptSection({ content }: LpConceptSectionProps = {}) {
+  const { LP_CONCEPT } = useLpContent(content);
   const [active, setActive] = useState(0);
   const pinZoneRef = useRef<HTMLDivElement>(null);
   const spacerRef = useRef<HTMLDivElement>(null);
@@ -102,7 +108,7 @@ export function LpConceptSection() {
             <div
               className="lp-concept-tree mx-auto w-full"
               aria-live="polite"
-              aria-label="世界樹の創造循環アニメーション"
+              aria-label={LP_CONCEPT.controls.treeAriaLabel}
             >
               <div className="lp-concept-tree__frame">
                 <div className="lp-concept-tree__canvas">

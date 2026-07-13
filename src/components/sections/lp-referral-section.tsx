@@ -1,7 +1,11 @@
 import { LpOrnateBox } from "@/components/ui/lp-ornate-box";
-import { LP_REFERRAL } from "@/lib/lp/content";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
-export function LpReferralSection() {
+export async function LpReferralSection() {
+  const locale = await getUiLocale();
+  const { LP_REFERRAL } = getLpContent(locale);
+
   return (
     <section className="px-3 py-5 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1240px]">
@@ -33,5 +37,3 @@ export function LpReferralSection() {
     </section>
   );
 }
-
-

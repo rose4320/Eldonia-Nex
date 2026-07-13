@@ -18,6 +18,9 @@ const nextConfig: NextConfig = {
   generateBuildId: async () =>
     process.env.VERCEL_GIT_COMMIT_SHA ?? `local-${Date.now()}`,
   reactCompiler: true,
+  outputFileTracingIncludes: {
+    "/api/events/tickets/[id]/pdf": ["./assets/fonts/NotoSansJP-Ticket.ttf"],
+  },
   async headers() {
     return [
       {

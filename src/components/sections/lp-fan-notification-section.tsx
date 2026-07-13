@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_FAN_NOTIFICATION } from "@/lib/lp/content";
 
-export function LpFanNotificationSection() {
+export async function LpFanNotificationSection() {
+  const locale = await getUiLocale();
+  const { LP_FAN_NOTIFICATION } = getLpContent(locale);
+
   return (
     <section id="fan" className="scroll-mt-24 px-3 py-5 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1240px]">

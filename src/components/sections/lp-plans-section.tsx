@@ -1,7 +1,8 @@
 import { LpButton } from "@/components/ui/lp-button";
 import { LpCard } from "@/components/ui/lp-card";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
-import { LP_PLANS, LP_PLANS_SECTION } from "@/lib/lp/content";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 export type LpPlanCard = {
   id: string;
@@ -19,7 +20,9 @@ type LpPlansSectionProps = {
   plans?: LpPlanCard[];
 };
 
-export function LpPlansSection({ plans }: LpPlansSectionProps) {
+export async function LpPlansSection({ plans }: LpPlansSectionProps) {
+  const locale = await getUiLocale();
+  const { LP_PLANS_SECTION, LP_PLANS } = getLpContent(locale);
   const items = plans ?? [...LP_PLANS];
 
   return (

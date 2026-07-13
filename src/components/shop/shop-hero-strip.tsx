@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { ContentLine } from "@/components/i18n/content-line";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
 import type { ShopProductWithSeller } from "@/types/database";
 import { formatPrice } from "@/lib/shop/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 
 type ShopHeroStripProps = {
   products: ShopProductWithSeller[];
+  translations?: Record<string, { title?: string }>;
 };
 
-export async function ShopHeroStrip({ products: featured }: ShopHeroStripProps) {
+export async function ShopHeroStrip({ products: featured, translations = {} }: ShopHeroStripProps) {
   const locale = await getUiLocale();
   const { shop } = getContent(locale);
 
@@ -26,8 +28,10 @@ export async function ShopHeroStrip({ products: featured }: ShopHeroStripProps) 
             className="eldonia-shop-hero-card group min-w-[14rem]"
           >
             <p className="eldonia-badge-bestseller">{shop.featured}</p>
-            <ContentLine
+            <TranslatedContentLine
               text={product.title}
+              translatedText={translations[product.id]?.title}
+              sourceLocale={inferSourceLocale(product.title)}
               locale={locale}
               as="h3"
               className="mt-2 font-display text-sm text-[var(--eldonia-gold-light)] group-hover:text-[var(--eldonia-gold)]"

@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { LpCard } from "@/components/ui/lp-card";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS, LP_IMAGE_SIZE } from "@/lib/lp/assets";
-import { LP_FEATURE_CARDS } from "@/lib/lp/content";
 
-export function LpFeatureCards() {
+export async function LpFeatureCards() {
+  const locale = await getUiLocale();
+  const { LP_FEATURE_CARDS } = getLpContent(locale);
+
   return (
     <div className="grid gap-3 sm:grid-cols-3">
       {LP_FEATURE_CARDS.map((card) => (

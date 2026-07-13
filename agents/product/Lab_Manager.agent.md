@@ -14,4 +14,10 @@
 
 **協議**: Gallery（コラボ起点）, Works（案件作業場所）
 
+**バージョン管理（方針）**:
+- **Snapshot**: Lab 内の復元点（タイムライン / Mixer / ステージ状態の JSON）
+- **Publish Version**: Gallery / Works 向け成果ポインタ（`kind = publish`）
+- 物理削除しない（`archived`）。復元はリーダー（プレビューはデモで全員可）
+- スキーマ: `supabase/migrations/039_lab_snapshots.sql` / 型: `src/lib/lab/lab-snapshot.ts`
+
 **推奨実行モデル**: OpenAI Codex

@@ -85,7 +85,7 @@ agents/
 | 部署 | ファイル |
 |------|---------|
 | Revenue / Payment | `business/Revenue_Payment_Manager.agent.md` |
-| Translation | `business/Translation_Manager.agent.md` |
+| Translation | `business/Translation_Manager.agent.md` · [`docs/translation-architecture.md`](../docs/translation-architecture.md) |
 | Moderation / Safety | `business/Moderation_Safety_Manager.agent.md` |
 | Support | `business/Support_Desk_Manager.agent.md` |
 | Marketing | `business/Marketing_Manager.agent.md` |

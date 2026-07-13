@@ -15,7 +15,11 @@ export type CollabLabData = {
   members: Array<{
     user_id: string;
     role: string;
-    profiles: { display_name: string | null; username: string | null } | null;
+    profiles: {
+      display_name: string | null;
+      username: string | null;
+      avatar_url: string | null;
+    } | null;
   }>;
   posts: CollabLabPostWithAuthor[];
 };
@@ -56,7 +60,7 @@ export async function getCollabLabForArtwork(
         `
         user_id,
         role,
-        profiles:user_id (display_name, username)
+        profiles:user_id (display_name, username, avatar_url)
       `,
       )
       .eq("lab_id", lab.id),

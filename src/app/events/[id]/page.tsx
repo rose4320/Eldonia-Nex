@@ -2,10 +2,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
+import { TagWithHint, TranslatedContentLine } from "@/components/i18n/content-line";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
+import { getEventDetailTranslations } from "@/lib/translation/list-translations";
+import { EventCoverFrame } from "@/components/events/event-cover-frame";
+import { EventFormatBadge } from "@/components/events/event-format-badge";
 import { EventTicketBox } from "@/components/events/event-ticket-box";
 import { EventsToolbar } from "@/components/events/events-toolbar";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
+import { eventAccessSectionTitle } from "@/lib/events/access-section";
+import { userHasValidEventTicket } from "@/lib/events/event-ticket-access";
+import { eventHasStream } from "@/lib/events/stream-access";
 import {
   CATEGORY_ICONS,
   formatEventDate,
@@ -39,9 +46,15 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
   const organizerName =
     event.profiles?.display_name ??
     event.profiles?.username ??
-    "Eldonia Host";
+    pages.events.hostFallback;
+  const contentTranslations = await getEventDetailTranslations(event, locale);
+  const titleLocale = inferSourceLocale(event.title);
   const icon = CATEGORY_ICONS[event.category] ?? "◆";
   const date = formatEventDate(event.starts_at, locale);
+  const hasTicket = user ? await userHasValidEventTicket(user.id, event.id) : false;
+  const accessTitle = eventAccessSectionTitle(event.format, pages.events);
+  const showStreamLocked =
+    eventHasStream(event) && !hasTicket;
 
   return (
     <div className="eldonia-page">
@@ -57,25 +70,21 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
           <div className="space-y-6">
             <div className="eldonia-card overflow-hidden p-0">
               <div className="flex aspect-[21/9] max-h-80 items-center justify-center bg-[var(--eldonia-surface)]">
-                {event.cover_image_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={event.cover_image_url}
-                    alt={event.title}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-8xl opacity-80" aria-hidden>
-                    {icon}
-                  </span>
-                )}
+                <EventCoverFrame
+                  src={event.cover_image_url}
+                  alt={event.title}
+                  placeholder={<span className="text-8xl opacity-80">{icon}</span>}
+                  variant="hero"
+                />
               </div>
             </div>
 
             <section className="eldonia-card">
               <p className="eldonia-eyebrow">{date.full}</p>
-              <ContentLine
+              <TranslatedContentLine
                 text={event.title}
+                translatedText={contentTranslations.title}
+                sourceLocale={titleLocale}
                 locale={locale}
                 as="h1"
                 className="eldonia-heading eldonia-heading-sm mt-2"
@@ -85,6 +94,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                 {pages.events.organizer}: {organizerName}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
+                <EventFormatBadge format={event.format} locale={locale} />
                 {event.is_featured && (
                   <span className="eldonia-badge-bestseller">{pages.events.badgeFeatured}</span>
                 )}
@@ -97,9 +107,11 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                 <EldoniaDivider />
               </div>
 
-              <h2 className="eldonia-label">About this chronicle</h2>
-              <ContentLine
+              <h2 className="eldonia-label">{pages.events.aboutHeading}</h2>
+              <TranslatedContentLine
                 text={event.description ?? pages.descriptionPending}
+                translatedText={contentTranslations.description}
+                sourceLocale={inferSourceLocale(event.description ?? "", titleLocale)}
                 locale={locale}
                 as="p"
                 className="eldonia-body mt-3 whitespace-pre-wrap text-sm"
@@ -121,7 +133,7 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
             </section>
 
             <section className="eldonia-card">
-              <h2 className="eldonia-label">{pages.events.venueSection}</h2>
+              <h2 className="eldonia-label">{accessTitle}</h2>
               <dl className="mt-4 grid gap-3 text-sm">
                 <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
                   <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelFormat}</dt>
@@ -131,31 +143,40 @@ export default async function EventDetailPage({ params }: EventDetailPageProps) 
                   <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelRealm}</dt>
                   <dd>{realmLabel(event.category, locale)}</dd>
                 </div>
-                {event.venue_name && (
+                {event.format !== "online" && event.venue_name && (
                   <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
                     <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelVenue}</dt>
                     <dd className="text-right">{event.venue_name}</dd>
                   </div>
                 )}
-                {event.venue_address && (
+                {event.format !== "online" && event.venue_address && (
                   <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
                     <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelAddress}</dt>
                     <dd className="text-right">{event.venue_address}</dd>
                   </div>
                 )}
-                {event.online_url && (
+                {eventHasStream(event) && (
                   <div className="flex justify-between gap-4 border-b border-[var(--eldonia-border)] pb-2">
-                    <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelOnline}</dt>
+                    <dt className="text-[var(--eldonia-text-dim)]">{pages.events.labelStream}</dt>
                     <dd className="text-right text-[var(--eldonia-gold-muted)]">
-                      {pages.events.urlAfterPurchase}
+                      {hasTicket ? (
+                        <Link href={`/events/${event.id}/watch`} className="eldonia-link">
+                          {pages.events.ticketWatchRoom}
+                        </Link>
+                      ) : (
+                        pages.events.urlAfterPurchase
+                      )}
                     </dd>
                   </div>
+                )}
+                {showStreamLocked && (
+                  <p className="eldonia-hint text-xs">{pages.events.streamLockedHint}</p>
                 )}
               </dl>
             </section>
           </div>
 
-          <EventTicketBox event={event} isLoggedIn={!!user} />
+          <EventTicketBox event={event} isLoggedIn={!!user} hasTicket={hasTicket} />
         </div>
       </main>
 

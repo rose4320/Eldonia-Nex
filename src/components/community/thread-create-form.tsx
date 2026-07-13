@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
+import { requestTranslationWarm } from "@/lib/translation/request-warm";
 
 type ThreadCreateFormProps = {
   boardId: string;
@@ -47,6 +48,15 @@ export function ThreadCreateForm({ boardId, boardSlug, userId }: ThreadCreateFor
     }
 
     await awardUserExp(supabase, "community.thread", data.id);
+    requestTranslationWarm({
+      entityType: "community_thread",
+      entityId: data.id,
+      sourceLocale: locale,
+      fields: [
+        { fieldName: "title", text: title.trim() },
+        { fieldName: "body", text: body.trim() },
+      ],
+    });
     router.push(`/community/t/${data.id}`);
     router.refresh();
   }

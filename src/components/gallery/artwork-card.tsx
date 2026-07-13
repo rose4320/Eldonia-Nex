@@ -1,12 +1,14 @@
 import Link from "next/link";
 import type { ArtworkWithCreator } from "@/types/database";
-import { ContentLine } from "@/components/i18n/content-line";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
 import { categoryLabel, formatDate } from "@/lib/gallery/constants";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 
 type ArtworkCardProps = {
   artwork: ArtworkWithCreator;
+  translations?: { title?: string };
 };
 
 function previewUrl(artwork: ArtworkWithCreator): string | null {
@@ -15,7 +17,7 @@ function previewUrl(artwork: ArtworkWithCreator): string | null {
   return null;
 }
 
-export async function ArtworkCard({ artwork }: ArtworkCardProps) {
+export async function ArtworkCard({ artwork, translations }: ArtworkCardProps) {
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const imageUrl = previewUrl(artwork);
@@ -34,7 +36,7 @@ export async function ArtworkCard({ artwork }: ArtworkCardProps) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imageUrl}
-            alt={artwork.title}
+            alt={translations?.title ?? artwork.title}
             className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
           />
         ) : (
@@ -47,8 +49,10 @@ export async function ArtworkCard({ artwork }: ArtworkCardProps) {
         <p className="eldonia-eyebrow text-[0.65rem]">
           {categoryLabel(artwork.category, locale)}
         </p>
-        <ContentLine
+        <TranslatedContentLine
           text={artwork.title}
+          translatedText={translations?.title}
+          sourceLocale={inferSourceLocale(artwork.title)}
           locale={locale}
           as="h2"
           className="line-clamp-1 font-display font-semibold text-eldonia-gold-light"

@@ -212,7 +212,13 @@ Shop は `UI_UX_Designer` のトークンを継承。追加:
 | 3.12 | **デジタル DL** | **MVP 実装済**（`image_url`）/ Storage 本番は計画 |
 | 3.13 | **Stripe Connect + 返品 RMA** | 計画 P1 |
 | 3.14 | **海外配送 DDU** | 計画 P2 |
-| 3.15 | **商品翻訳 4 ロケール** | 計画 P1 |
+| 3.15 | **商品翻訳 4 ロケール** | 計画 P1 — [翻訳正本](../../docs/translation-architecture.md) |
+
+### 商品翻訳方針（§3.15 補足）
+
+- **保存時**に `title` / `description` を en / ko / zh-CN へ翻訳 → `content_translations`（`entity_type: shop_product`）
+- 閲覧時: UI locale に合わせキャッシュ訳を主表示（Buy Box・カードは `ContentLine` パターン）
+- 原文は DB 正本。送料・価格表示は翻訳対象外
 
 ---
 

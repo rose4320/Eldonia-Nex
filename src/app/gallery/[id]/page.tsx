@@ -10,8 +10,11 @@ import { ArtworkLikeButtons } from "@/components/gallery/artwork-like-buttons";
 import { GalleryToolbar } from "@/components/gallery/gallery-toolbar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
+import { TagWithHint, TranslatedContentLine } from "@/components/i18n/content-line";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
+import { getArtworkDetailTranslations } from "@/lib/translation/list-translations";
 import { categoryLabel, formatBadgeLabel, formatDate, artworkCoverUrl } from "@/lib/gallery/constants";
+import { resolveCuratedPhotoCaptions } from "@/lib/gallery/artwork-localized-meta";
 import {
   canShowStoryReader,
   resolveStoryReaderContent,
@@ -70,6 +73,8 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
   }
 
   const item = artwork as ArtworkWithCreator;
+  const contentTranslations = await getArtworkDetailTranslations(item, locale);
+  const titleLocale = inferSourceLocale(item.title);
   const creatorName =
     item.profiles?.display_name ?? item.profiles?.username ?? pages.creatorFallback;
   const isOwner = userId === item.creator_id;
@@ -141,18 +146,22 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                     title={storyContent.title}
                     excerpt={storyContent.excerpt}
                     body={storyContent.body}
-                    pdfUrl={item.media_url}
-                    openPdfLabel={pages.gallery.openPdf}
                   />
                 ) : showPageViewer ? (
                   <ArtworkPageViewer
                     title={item.title}
+                    artworkId={item.id}
                     category={item.category}
                     format={item.format ?? "single"}
                     pageCount={item.page_count ?? 1}
                     coverUrl={artworkCoverUrl(item)}
                     pages={artworkPages}
                     bgmUrl={item.bgm_url}
+                    captionByPageIndex={resolveCuratedPhotoCaptions(
+                      item.id,
+                      item.title,
+                      locale,
+                    )}
                   />
                 ) : (
                   <ArtworkMediaHero
@@ -172,8 +181,10 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                       <span className="ml-2 text-eldonia-text-muted">· {formatBadge}</span>
                     )}
                   </p>
-                  <ContentLine
-                    text={showStoryReader && storyContent ? storyContent.title : item.title}
+                  <TranslatedContentLine
+                    text={item.title}
+                    translatedText={contentTranslations.title}
+                    sourceLocale={titleLocale}
                     locale={locale}
                     as="h1"
                     className="eldonia-heading eldonia-heading-lg mt-1"
@@ -201,7 +212,15 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                 {item.story_excerpt && !showStoryReader && (
                   <div className="rounded-md border border-eldonia-border bg-eldonia-surface/60 p-4">
                     <p className="eldonia-label text-xs">{pages.gallery.storyExcerptHeading}</p>
-                    <p className="eldonia-body mt-2 whitespace-pre-wrap text-sm">{item.story_excerpt}</p>
+                    <TranslatedContentLine
+                      text={item.story_excerpt}
+                      translatedText={contentTranslations.story_excerpt}
+                      sourceLocale={inferSourceLocale(item.story_excerpt, titleLocale)}
+                      locale={locale}
+                      as="p"
+                      className="eldonia-body mt-2 whitespace-pre-wrap text-sm"
+                      hintClassName="eldonia-localized-hint text-xs"
+                    />
                   </div>
                 )}
 
@@ -213,8 +232,10 @@ export default async function ArtworkDetailPage({ params }: ArtworkDetailPagePro
                 )}
 
                 {item.description && !showStoryReader && (
-                  <ContentLine
+                  <TranslatedContentLine
                     text={item.description}
+                    translatedText={contentTranslations.description}
+                    sourceLocale={inferSourceLocale(item.description, titleLocale)}
                     locale={locale}
                     as="p"
                     className="eldonia-body whitespace-pre-wrap text-sm"

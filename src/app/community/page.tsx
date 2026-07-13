@@ -10,7 +10,12 @@ import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { MODULE_ICONS } from "@/lib/layout/module-icons";
-import { getCommunityBoards, getCommunityThreadsPaginated } from "@/lib/community/get-community";
+import {
+  getCommunityBoards,
+  getCommunityThreadsPaginated,
+  getLatestRepliesByThreadIds,
+} from "@/lib/community/get-community";
+import { getThreadCardTranslationsWithWarm } from "@/lib/translation/content-cache";
 
 type CommunityPageProps = {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -21,8 +26,16 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
   const t = getContent(locale);
   const { q, page: pageParam } = await searchParams;
   const page = Math.max(1, Number(pageParam) || 1);
-  const boards = await getCommunityBoards();
-  const { threads, totalPages, total } = await getCommunityThreadsPaginated({ q, page });
+  const [boards, { threads, totalPages, total }] = await Promise.all([
+    getCommunityBoards(),
+    getCommunityThreadsPaginated({ q, page }),
+  ]);
+  const latestReplies = await getLatestRepliesByThreadIds(threads.map((thread) => thread.id));
+  const threadTranslations = await getThreadCardTranslationsWithWarm(
+    threads,
+    latestReplies,
+    locale,
+  );
 
   return (
     <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
@@ -62,7 +75,12 @@ export default async function CommunityPage({ searchParams }: CommunityPageProps
           </div>
           <div className="flex flex-col gap-3">
             {threads.map((thread) => (
-              <ThreadCard key={thread.id} thread={thread} />
+              <ThreadCard
+                key={thread.id}
+                thread={thread}
+                latestReply={latestReplies.get(thread.id) ?? null}
+                translations={threadTranslations[thread.id]}
+              />
             ))}
           </div>
           <ThreadPagination

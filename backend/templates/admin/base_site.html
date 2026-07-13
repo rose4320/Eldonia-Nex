@@ -22,7 +22,7 @@
 {% block branding %}
   <div id="site-name" class="ops-brand-mark">
     <a href="{% url 'admin:index' %}">
-      <img src="{% static 'admin/img/logo.png' %}" alt="ELDONIA NEX" width="40" height="40">
+      <img src="{% static 'admin/img/logo.svg' %}" alt="ELDONIA NEX" width="40" height="40">
       <span class="ops-brand-copy">
         <strong>ELDONIA NEX</strong>
         <small>A Fantasy Nexus for Creators</small>
@@ -37,6 +37,7 @@
     <a href="{% url 'admin:ops_announcement_broadcast' %}">ANNOUNCE</a>
     <a href="{{ frontend_url|default:'http://localhost:3000' }}/lp" target="_blank" rel="noopener">LP</a>
     <a href="{{ frontend_url|default:'http://localhost:3000' }}/gallery" target="_blank" rel="noopener">GALLERY</a>
+    <a href="{{ frontend_url|default:'http://localhost:3000' }}/shop" target="_blank" rel="noopener">SHOP</a>
   </nav>
   {% endif %}
 {% endblock %}

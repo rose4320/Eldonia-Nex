@@ -6,6 +6,7 @@ from marketplace.supabase_sync import (
     SupabaseSyncError,
     sync_supabase_artworks,
     sync_supabase_profiles,
+    sync_supabase_shop_products,
 )
 
 
@@ -29,20 +30,37 @@ class Command(BaseCommand):
             action="store_true",
             help="artworks のみ同期",
         )
+        parser.add_argument(
+            "--shop-only",
+            action="store_true",
+            help="shop_products のみ同期",
+        )
+        parser.add_argument(
+            "--seller-id",
+            dest="seller_id",
+            default=None,
+            help="特定出品者の商品のみ同期（Supabase profile UUID）",
+        )
 
     def handle(self, *args, **options):
         creator_id = options.get("creator_id")
+        seller_id = options.get("seller_id")
         profiles_only = options.get("profiles_only")
         artworks_only = options.get("artworks_only")
+        shop_only = options.get("shop_only")
 
         try:
-            if not artworks_only:
+            if not artworks_only and not shop_only:
                 profile_stats = sync_supabase_profiles()
                 self.stdout.write(self.style.SUCCESS(f"profiles: {profile_stats}"))
 
-            if not profiles_only:
+            if not profiles_only and not shop_only:
                 artwork_stats = sync_supabase_artworks(creator_id=creator_id)
                 self.stdout.write(self.style.SUCCESS(f"artworks: {artwork_stats}"))
+
+            if not profiles_only and not artworks_only:
+                shop_stats = sync_supabase_shop_products(seller_id=seller_id)
+                self.stdout.write(self.style.SUCCESS(f"shop_products: {shop_stats}"))
 
         except SupabaseSyncError as exc:
             self.stderr.write(self.style.ERROR(str(exc)))

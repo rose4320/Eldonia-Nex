@@ -147,18 +147,29 @@ export async function getCommunityReplies(
 ): Promise<CommunityReplyWithAuthor[]> {
   try {
     const supabase = await createClient();
-    const { data, error } = await supabase
-      .from("community_replies")
-      .select(
-        `
+    const select = `
         *,
         profiles:author_id (display_name, username)
-      `,
-      )
+      `;
+    let { data, error } = await supabase
+      .from("community_replies")
+      .select(select)
       .eq("thread_id", threadId)
+      .is("deleted_at", null)
       .order("created_at");
 
-    if (!error && data) return data as CommunityReplyWithAuthor[];
+    // Migration 040 not applied yet: retry without soft-delete filter.
+    if (error) {
+      ({ data, error } = await supabase
+        .from("community_replies")
+        .select(select)
+        .eq("thread_id", threadId)
+        .order("created_at"));
+    }
+
+    if (!error && data) {
+      return (data as CommunityReplyWithAuthor[]).filter((r) => !r.deleted_at);
+    }
   } catch {
     // fallback
   }
@@ -177,4 +188,47 @@ export async function getCommunityReplies(
     ];
   }
   return [];
+}
+
+export async function getLatestRepliesByThreadIds(
+  threadIds: string[],
+): Promise<Map<string, CommunityReplyWithAuthor>> {
+  const map = new Map<string, CommunityReplyWithAuthor>();
+  if (threadIds.length === 0) return map;
+
+  try {
+    const supabase = await createClient();
+    const select = `
+        *,
+        profiles:author_id (display_name, username)
+      `;
+    let { data, error } = await supabase
+      .from("community_replies")
+      .select(select)
+      .in("thread_id", threadIds)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      ({ data, error } = await supabase
+        .from("community_replies")
+        .select(select)
+        .in("thread_id", threadIds)
+        .order("created_at", { ascending: false }));
+    }
+
+    if (error || !data) return map;
+
+    for (const row of data) {
+      const reply = row as CommunityReplyWithAuthor;
+      if (reply.deleted_at) continue;
+      if (!map.has(reply.thread_id)) {
+        map.set(reply.thread_id, reply);
+      }
+    }
+  } catch {
+    // ignore
+  }
+
+  return map;
 }

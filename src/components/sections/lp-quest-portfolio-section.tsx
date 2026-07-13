@@ -2,14 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { LpCard } from "@/components/ui/lp-card";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
+import type { LpQuestPortfolioCard } from "@/lib/i18n/content/lp-messages";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS, LP_IMAGE_SIZE } from "@/lib/lp/assets";
-import { LP_QUEST_PORTFOLIO } from "@/lib/lp/content";
 
-function GrowthCard({
-  item,
-}: {
-  item: typeof LP_QUEST_PORTFOLIO.quest | typeof LP_QUEST_PORTFOLIO.portfolio;
-}) {
+function GrowthCard({ item }: { item: LpQuestPortfolioCard }) {
   const icon = LP_ASSETS.modules[item.key as keyof typeof LP_ASSETS.modules];
   const iconSize = LP_IMAGE_SIZE.moduleIcon;
   const scene =
@@ -80,7 +78,10 @@ function GrowthCard({
   );
 }
 
-export function LpQuestPortfolioSection() {
+export async function LpQuestPortfolioSection() {
+  const locale = await getUiLocale();
+  const { LP_QUEST_PORTFOLIO } = getLpContent(locale);
+
   return (
     <section id="quest" className="scroll-mt-24 px-3 py-6 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1240px]">
@@ -89,7 +90,7 @@ export function LpQuestPortfolioSection() {
           {LP_QUEST_PORTFOLIO.title}
         </p>
         <p className="mx-auto mb-3 max-w-[36rem] text-center text-[0.7rem] tracking-wide text-[#d6a84f] sm:text-xs">
-          成長の流れを、シンプルに示します。
+          {LP_QUEST_PORTFOLIO.flowHint}
         </p>
         <p className="mx-auto mb-3 max-w-[42rem] text-center text-xs leading-6 text-[#d8c8a8] sm:text-sm">
           {LP_QUEST_PORTFOLIO.lead}

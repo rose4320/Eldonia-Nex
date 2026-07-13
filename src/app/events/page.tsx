@@ -8,28 +8,32 @@ import { EventsSidebar } from "@/components/events/events-sidebar";
 import { EventsToolbar } from "@/components/events/events-toolbar";
 import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getEvents } from "@/lib/events/get-events";
+import { formatLabel, realmLabel } from "@/lib/events/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { MODULE_ICONS } from "@/lib/layout/module-icons";
-import { realmLabel } from "@/lib/events/constants";
+import { getEventListTranslations } from "@/lib/translation/list-translations";
 
 type EventsPageProps = {
-  searchParams: Promise<{ q?: string; category?: string; when?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; format?: string; when?: string }>;
 };
 
 export default async function EventsPage({ searchParams }: EventsPageProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
-  const { q, category = "all", when = "upcoming" } = await searchParams;
-  const events = await getEvents({ q, category, when });
+  const { q, category = "all", format = "all", when = "upcoming" } = await searchParams;
+  const events = await getEvents({ q, category, format, when });
+  const eventTranslations = await getEventListTranslations(events, locale);
 
   const heading = q?.trim()
     ? t.common.searchResults(q.trim())
-    : category !== "all"
-      ? realmLabel(category, locale)
-      : when === "past"
-        ? t.events.headingPast
-        : t.events.heading;
+    : format !== "all"
+      ? formatLabel(format, locale)
+      : category !== "all"
+        ? realmLabel(category, locale)
+        : when === "past"
+          ? t.events.headingPast
+          : t.events.heading;
 
   return (
     <div className="lp-page flex min-h-screen flex-col text-[#f8f1df]">
@@ -49,19 +53,22 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
         <div className="grid gap-8 lg:grid-cols-[14rem_1fr]">
           <EventsSidebar
             activeCategory={category}
+            activeFormat={format}
             activeWhen={when}
             query={q}
           />
 
           <div className="flex min-w-0 flex-col gap-8">
-            {when !== "past" && <EventsHeroStrip events={events} />}
+            {when !== "past" && (
+              <EventsHeroStrip events={events} translations={eventTranslations} />
+            )}
 
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="font-display text-sm tracking-wider text-[var(--eldonia-gold-muted)] uppercase">
                   {t.common.countItems(events.length, t.events.eventUnit)}
                 </h2>
-                {(q || category !== "all" || when !== "upcoming") && (
+                {(q || category !== "all" || format !== "all" || when !== "upcoming") && (
                   <Link href="/events" className="eldonia-link text-sm">
                     {t.common.clearFilter}
                   </Link>
@@ -78,7 +85,11 @@ export default async function EventsPage({ searchParams }: EventsPageProps) {
               ) : (
                 <div className="flex flex-col gap-4">
                   {events.map((event) => (
-                    <EventCard key={event.id} event={event} />
+                    <EventCard
+                      key={event.id}
+                      event={event}
+                      translations={eventTranslations[event.id]}
+                    />
                   ))}
                 </div>
               )}

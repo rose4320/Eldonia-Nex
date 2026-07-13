@@ -18,6 +18,9 @@ export async function EventsToolbar({ query }: EventsToolbarProps) {
   const ordersHref = user
     ? "/dashboard/orders"
     : "/auth/login?redirect_to=/dashboard/orders";
+  const ticketsHref = user
+    ? "/events/my-tickets"
+    : "/auth/login?redirect_to=/events/my-tickets";
 
   return (
     <div className="eldonia-events-toolbar">
@@ -43,6 +46,9 @@ export async function EventsToolbar({ query }: EventsToolbarProps) {
           </button>
         </form>
 
+        <Link href={ticketsHref} className="eldonia-btn-ghost shrink-0 text-xs">
+          {t.pages.events.toolbarMyTickets}
+        </Link>
         <Link href={ordersHref} className="eldonia-btn-ghost shrink-0 text-xs">
           {t.pages.events.toolbarOrders}
         </Link>

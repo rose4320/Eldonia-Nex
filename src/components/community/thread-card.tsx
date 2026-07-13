@@ -1,18 +1,37 @@
 import Link from "next/link";
-import { ContentLine } from "@/components/i18n/content-line";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
 import { formatRelativeTime, LOCALE_LABELS } from "@/lib/community/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
-import type { CommunityThreadWithAuthor } from "@/types/database";
+import type { ThreadCardTranslations } from "@/lib/translation/content-cache";
+import type {
+  CommunityReplyWithAuthor,
+  CommunityThreadWithAuthor,
+} from "@/types/database";
 
-type ThreadCardProps = { thread: CommunityThreadWithAuthor };
+type ThreadCardProps = {
+  thread: CommunityThreadWithAuthor;
+  latestReply?: CommunityReplyWithAuthor | null;
+  translations?: ThreadCardTranslations;
+};
 
-export async function ThreadCard({ thread }: ThreadCardProps) {
+export async function ThreadCard({
+  thread,
+  latestReply = null,
+  translations,
+}: ThreadCardProps) {
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
-  const author =
-    thread.profiles?.display_name ?? thread.profiles?.username ?? pages.anonymous;
-  const sourceLocale = LOCALE_LABELS[thread.locale] ?? thread.locale;
+  const previewText = latestReply?.body ?? thread.body;
+  const previewLocale = latestReply?.locale ?? thread.locale;
+  const previewAuthor =
+    latestReply?.profiles?.display_name ??
+    latestReply?.profiles?.username ??
+    thread.profiles?.display_name ??
+    thread.profiles?.username ??
+    pages.anonymous;
+  const previewTime = latestReply?.created_at ?? thread.updated_at;
+  const previewLocaleLabel = LOCALE_LABELS[previewLocale] ?? previewLocale;
 
   return (
     <Link href={`/community/t/${thread.id}`} className="eldonia-thread-card group">
@@ -21,15 +40,19 @@ export async function ThreadCard({ thread }: ThreadCardProps) {
           {thread.is_pinned && (
             <span className="eldonia-badge-bestseller mb-2 inline-block">{pages.pinned}</span>
           )}
-          <ContentLine
+          <TranslatedContentLine
             text={thread.title}
+            translatedText={translations?.title}
+            sourceLocale={thread.locale}
             locale={locale}
             as="h2"
             className="line-clamp-2 font-display text-base text-[var(--eldonia-text)] group-hover:text-[var(--eldonia-gold-light)]"
             hintClassName="eldonia-localized-hint text-xs line-clamp-2"
           />
-          <ContentLine
-            text={thread.body}
+          <TranslatedContentLine
+            text={previewText}
+            translatedText={translations?.preview}
+            sourceLocale={previewLocale}
             locale={locale}
             as="p"
             className="mt-2 line-clamp-2 text-sm text-[var(--eldonia-text-muted)]"
@@ -41,7 +64,7 @@ export async function ThreadCard({ thread }: ThreadCardProps) {
         </span>
       </div>
       <p className="mt-3 text-xs text-[var(--eldonia-text-dim)]">
-        {author} · {formatRelativeTime(thread.updated_at)} · {sourceLocale}
+        {previewAuthor} · {formatRelativeTime(previewTime, locale)} · {previewLocaleLabel}
         {thread.community_boards && ` · ${thread.community_boards.name}`}
       </p>
     </Link>

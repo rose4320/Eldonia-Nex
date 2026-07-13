@@ -8,12 +8,14 @@ import { ThreadReplyList } from "@/components/community/thread-reply-list";
 import { TranslationPanel } from "@/components/community/translation-panel";
 import { EldoniaDivider } from "@/components/ui/eldonia-divider";
 import { formatRelativeTime, LOCALE_LABELS } from "@/lib/community/constants";
-import { getContent } from "@/lib/i18n/content/messages";
-import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import {
   getCommunityReplies,
   getCommunityThread,
 } from "@/lib/community/get-community";
+import { getContent } from "@/lib/i18n/content/messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { getBoardName } from "@/lib/community/board-labels";
+import { getCachedTranslation } from "@/lib/translation/content-cache";
 import { createClient } from "@/lib/supabase/server";
 
 type ThreadPageProps = { params: Promise<{ id: string }> };
@@ -27,6 +29,41 @@ export default async function CommunityThreadPage({ params }: ThreadPageProps) {
   if (!thread) notFound();
 
   const replies = await getCommunityReplies(id);
+  const [cachedTitle, cachedBody, ...replyCaches] = await Promise.all([
+    getCachedTranslation({
+      entityType: "community_thread",
+      entityId: id,
+      fieldName: "title",
+      sourceLocale: thread.locale,
+      targetLocale: locale,
+      sourceText: thread.title,
+    }),
+    getCachedTranslation({
+      entityType: "community_thread",
+      entityId: id,
+      fieldName: "body",
+      sourceLocale: thread.locale,
+      targetLocale: locale,
+      sourceText: thread.body,
+    }),
+    ...replies.map((reply) =>
+      getCachedTranslation({
+        entityType: "community_reply",
+        entityId: reply.id,
+        fieldName: "body",
+        sourceLocale: reply.locale,
+        targetLocale: locale,
+        sourceText: reply.body,
+      }),
+    ),
+  ]);
+
+  const replyTranslations: Record<string, string> = {};
+  replies.forEach((reply, index) => {
+    const translated = replyCaches[index];
+    if (translated) replyTranslations[reply.id] = translated;
+  });
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -44,14 +81,24 @@ export default async function CommunityThreadPage({ params }: ThreadPageProps) {
           href={`/community/b/${thread.community_boards?.slug ?? "general"}`}
           className="eldonia-link text-sm"
         >
-          ← {thread.community_boards?.name ?? "Board"}
+          ← {getBoardName(
+            thread.community_boards?.slug ?? "general",
+            locale,
+            thread.community_boards?.name ?? pages.community.boardFallback,
+          )}
         </Link>
 
         <article className="eldonia-card mt-6">
           {thread.is_pinned && (
             <span className="eldonia-badge-bestseller mb-3 inline-block">{pages.pinned}</span>
           )}
-          <h1 className="eldonia-heading eldonia-heading-sm">{thread.title}</h1>
+          <TranslationPanel
+            key={`thread-title-${id}-${locale}`}
+            text={thread.title}
+            sourceLocale={thread.locale}
+            variant="title"
+            initialTranslated={cachedTitle}
+          />
           <p className="mt-2 text-xs text-[var(--eldonia-text-dim)]">
             {author} · {formatRelativeTime(thread.created_at)} ·{" "}
             {LOCALE_LABELS[thread.locale] ?? thread.locale}
@@ -59,13 +106,21 @@ export default async function CommunityThreadPage({ params }: ThreadPageProps) {
           <div className="my-6">
             <EldoniaDivider />
           </div>
-          <p className="eldonia-body whitespace-pre-wrap text-sm">{thread.body}</p>
-          <TranslationPanel text={thread.body} sourceLocale={thread.locale} />
+          <TranslationPanel
+            key={`thread-body-${id}-${locale}`}
+            text={thread.body}
+            sourceLocale={thread.locale}
+            initialTranslated={cachedBody}
+          />
         </article>
 
         <section className="mt-8">
           <h2 className="eldonia-label mb-4">{pages.community.replies(replies.length)}</h2>
-          <ThreadReplyList replies={replies} />
+          <ThreadReplyList
+            replies={replies}
+            translationCache={replyTranslations}
+            currentUserId={user?.id ?? null}
+          />
           {user ? (
             <ThreadReplyForm threadId={id} userId={user.id} />
           ) : (

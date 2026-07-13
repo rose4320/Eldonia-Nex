@@ -49,6 +49,12 @@ class Artwork(models.Model):
     thumbnail_url = models.URLField(max_length=1000, blank=True)
     file_size = models.BigIntegerField(null=True, blank=True)
     file_type = models.CharField(max_length=50, blank=True)
+    gallery_category = models.CharField(
+        max_length=30,
+        blank=True,
+        db_index=True,
+        help_text="Supabase artworks.category（GALLERY 表示カテゴリ slug）",
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     is_free = models.BooleanField(default=True)
     license_type = models.CharField(max_length=50, blank=True)
@@ -100,6 +106,72 @@ class Product(models.Model):
 
     class Meta:
         db_table = "products"
+        verbose_name = "商品（旧）"
+        verbose_name_plural = "商品（旧）"
+
+
+class ShopProduct(models.Model):
+    """Supabase public.shop_products の Admin 用ミラー。"""
+
+    PRODUCT_TYPE_PHYSICAL = "physical"
+    PRODUCT_TYPE_DIGITAL = "digital"
+    PRODUCT_TYPE_CHOICES = [
+        (PRODUCT_TYPE_PHYSICAL, "physical"),
+        (PRODUCT_TYPE_DIGITAL, "digital"),
+    ]
+
+    supabase_id = models.UUIDField(
+        unique=True,
+        db_index=True,
+        editable=False,
+        help_text="Supabase public.shop_products.id",
+    )
+    seller = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="shop_products",
+    )
+    seller_external_id = models.UUIDField(null=True, blank=True, editable=False, db_index=True)
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=50, default="goods", db_index=True)
+    product_type = models.CharField(
+        max_length=20,
+        choices=PRODUCT_TYPE_CHOICES,
+        default=PRODUCT_TYPE_PHYSICAL,
+        db_index=True,
+    )
+    price = models.PositiveIntegerField(default=0)
+    compare_at_price = models.PositiveIntegerField(null=True, blank=True)
+    image_url = models.URLField(max_length=1000, blank=True)
+    download_url = models.URLField(max_length=1000, blank=True)
+    source_artwork_id = models.UUIDField(null=True, blank=True, db_index=True)
+    gallery_urls = models.JSONField(default=list, blank=True)
+    tags = models.JSONField(default=list, blank=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=1, default=0)
+    review_count = models.PositiveIntegerField(default=0)
+    stock_quantity = models.PositiveIntegerField(null=True, blank=True)
+    is_nexus_prime = models.BooleanField(default=False)
+    is_nexus_choice = models.BooleanField(default=False)
+    is_bestseller = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField()
+    updated_at = models.DateTimeField()
+
+    class Meta:
+        db_table = "shop_products_mirror"
+        verbose_name = "SHOP商品"
+        verbose_name_plural = "SHOP商品"
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["is_active", "-created_at"]),
+            models.Index(fields=["category", "is_active"]),
+        ]
+
+    def __str__(self) -> str:
+        return self.title
 
 
 class Order(models.Model):

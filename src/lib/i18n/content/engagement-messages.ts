@@ -47,6 +47,139 @@ export type EngagementContent = {
     downloadModel: string;
     downloadThumbnail: string;
     downloadArtworkTitle: (title: string) => string;
+    room: {
+      membersAria: string;
+      presenceAria: string;
+      presenceYou: string;
+      presenceDemoHint: string;
+      presenceWaiting: string;
+      presenceEditing: (name: string, area: string) => string;
+      presenceFocusChat: string;
+      presenceFocusFolders: string;
+      presenceFocusWorkspace: string;
+      presenceFocusTimeline: string;
+      presenceFocusMixer: string;
+      presenceFocusIdle: string;
+      snapshotOpen: string;
+      snapshotTitle: string;
+      snapshotLead: string;
+      snapshotName: string;
+      snapshotSave: string;
+      snapshotPublish: string;
+      snapshotHint: string;
+      snapshotEmpty: string;
+      snapshotRestore: string;
+      snapshotArchive: string;
+      snapshotKindSnapshot: string;
+      snapshotKindPublish: string;
+      snapshotLeaderOnly: string;
+      snapshotSaved: (label: string) => string;
+      snapshotPublishSaved: (label: string) => string;
+      snapshotRestored: (label: string) => string;
+      snapshotArchived: string;
+      snapshotRestoreConfirm: (label: string) => string;
+      snapshotPublishDefault: (n: number) => string;
+      youAreLeader: string;
+      currentLeader: (name: string) => string;
+      foldersHeading: string;
+      foldersHint: string;
+      folderUpload: string;
+      folderUploading: string;
+      folderUploadHint: string;
+      folderPermHint: string;
+      deleteFile: string;
+      deleteFolder: string;
+      deleteLeaderOnly: string;
+      workspaceHeading: string;
+      workspaceEmpty: string;
+      workspaceDropHint: string;
+      workspaceDropped: (name: string) => string;
+      workspaceStageHint: string;
+      workspaceExpand: string;
+      workspaceOnTimeline: string;
+      timelineFilesHeading: string;
+      pendingFilesHeading: string;
+      operateHint: string;
+      stageExclude: string;
+      stageExcludeHint: string;
+      clipExclude: string;
+      clipDragHint: string;
+      waveformHeading: string;
+      waveformHint: string;
+      waveformSelect: string;
+      waveformScrub: string;
+      waveformSynced: string;
+      videoPreviewHeading: string;
+      workspaceOpenHint: (name: string) => string;
+      chatHeading: string;
+      chatPlaceholder: string;
+      chatSubmit: string;
+      mediaHeading: string;
+      uploadChip: string;
+      playlistChip: string;
+      assetsChip: string;
+      downloadNote: string;
+      videoTimeline: string;
+      audioTimeline: string;
+      bgmTimeline: string;
+      overlayTimeline: string;
+      timelineHint: string;
+      timelinePlayhead: string;
+      timelineTimecode: string;
+      timelinePlay: string;
+      timelinePause: string;
+      timelineScrub: string;
+      panelMixer: string;
+      panelEq: string;
+      audioConsoleOpen: string;
+      audioConsoleTitle: string;
+      audioConsoleLead: string;
+      audioWinLockHint: string;
+      audioWinUnlockHint: string;
+      audioWinResize: string;
+      mixerMaster: string;
+      mixerHint: string;
+      addAudioTrack: string;
+      mixerPan: string;
+      mixerPanCenter: string;
+      mixerMute: string;
+      mixerSolo: string;
+      mixerGain: string;
+      mixerSend: string;
+      mixerLimiter: string;
+      eqHint: string;
+      eqBand: (label: string) => string;
+      eqPresetFlat: string;
+      eqPresetVoice: string;
+      eqPresetMusic: string;
+      eqPresetBass: string;
+      eqLowCut: string;
+      eqHighCut: string;
+      eqQ: string;
+      resizeTimeline: string;
+      trackVideo: (n: number) => string;
+      trackAudio: (n: number) => string;
+      canonicalBadge: string;
+      modalHeading: string;
+      modalBody: string;
+      modalBusy: string;
+      modalLeaderOnly: string;
+      downloadAction: string;
+      closeAction: string;
+      closeLeaderOnly: string;
+      mobilePcHint: string;
+      mobileConfirmHeading: string;
+      mobileConfirmArtwork: string;
+      mobileConfirmLatest: string;
+      mobileConfirmEmpty: string;
+      fileAttach: string;
+      fileSendShared: string;
+      filePending: string;
+      fileOpen: string;
+      fileSentLabel: string;
+      fileTooLarge: string;
+      fileUploadFailed: string;
+    };
   };
 };
 
@@ -102,6 +235,141 @@ const ENGAGEMENT_JA: EngagementContent = {
     downloadModel: "3Dモデルをダウンロード",
     downloadThumbnail: "サムネイルをダウンロード",
     downloadArtworkTitle: (title) => `対象作品: ${title}`,
+    room: {
+      membersAria: "参加メンバー",
+      presenceAria: "同時編集の状態",
+      presenceYou: "あなた",
+      presenceDemoHint: "メンバーの作業エリアを表示（デモ）",
+      presenceWaiting: "他メンバーの作業エリアはリアルタイム接続後に表示",
+      presenceEditing: (name, area) => `${name} · ${area}`,
+      presenceFocusChat: "チャット",
+      presenceFocusFolders: "共有フォルダ",
+      presenceFocusWorkspace: "ステージ",
+      presenceFocusTimeline: "タイムライン",
+      presenceFocusMixer: "Mixer / EQ",
+      presenceFocusIdle: "待機",
+      snapshotOpen: "Versions",
+      snapshotTitle: "Versions",
+      snapshotLead: "Snapshot＝復元点 / Publish＝Gallery・Works 向け版",
+      snapshotName: "名前",
+      snapshotSave: "Snapshot 保存",
+      snapshotPublish: "Publish Version",
+      snapshotHint: "プレビューは端末内デモ。本番は lab_snapshots に保存予定",
+      snapshotEmpty: "まだバージョンがありません",
+      snapshotRestore: "復元",
+      snapshotArchive: "アーカイブ",
+      snapshotKindSnapshot: "Snapshot",
+      snapshotKindPublish: "Publish",
+      snapshotLeaderOnly: "復元・Publish・アーカイブはリーダーのみです",
+      snapshotSaved: (label) => `保存しました: ${label}`,
+      snapshotPublishSaved: (label) => `Publish 版を作成: ${label}`,
+      snapshotRestored: (label) => `復元しました: ${label}`,
+      snapshotArchived: "アーカイブしました（非表示・削除ではありません）",
+      snapshotRestoreConfirm: (label) =>
+        `「${label}」に復元します。いまの未保存の変更は失われます。よろしいですか？`,
+      snapshotPublishDefault: (n) => `Publish v${n}`,
+      youAreLeader: "リーダー",
+      currentLeader: (name) => `現行リーダー: ${name}`,
+      foldersHeading: "共有フォルダ",
+      foldersHint: "先頭の Audio フォルダにデモ音声があります。中央へドラッグして波形を確認",
+      folderUpload: "ファイルをアップロード",
+      folderUploading: "アップロード中…",
+      folderUploadHint: "この部屋のメンバー全員がアップロードできます",
+      folderPermHint: "アップロード・中央ドラッグ: 全員 / 消去: リーダーのみ",
+      deleteFile: "消去",
+      deleteFolder: "フォルダ消去",
+      deleteLeaderOnly: "消去はリーダーのみです",
+      workspaceHeading: "共同作業場",
+      workspaceEmpty: "共有フォルダのファイルをクリック → チェックで下にステージング → 中央で操作",
+      workspaceDropHint: "ドロップで中央候補に追加",
+      workspaceDropped: (name) => `タイムライン上: ${name}`,
+      workspaceStageHint: "チェック＝下のタイムラインへステージング。タイムライン上のファイルは中央で操作",
+      workspaceExpand: "下にステージング",
+      workspaceOnTimeline: "ステージング中",
+      timelineFilesHeading: "タイムライン上（中央で操作）",
+      pendingFilesHeading: "候補（チェックで下へ）",
+      operateHint: "選択中のタイムライン素材",
+      stageExclude: "共有フォルダに戻す",
+      stageExcludeHint: "中央とタイムラインから外し、左の共有フォルダへ戻します（全員可）",
+      clipExclude: "選択クリップを共有フォルダに戻す",
+      clipDragHint: "ドラッグでタイミング調整",
+      waveformHeading: "波形",
+      waveformHint: "チェックを入れて下にステージングすると、ここで操作できます",
+      waveformSelect: "選択して中央で操作",
+      waveformScrub: "波形をドラッグしてスクラブ（下の再生ヘッドと連動）",
+      waveformSynced: "クリップ内位置＝下のタイムライン再生ヘッドと同期",
+      videoPreviewHeading: "フレーム",
+      workspaceOpenHint: (name) => `展開中: ${name}`,
+      chatHeading: "翻訳チャット",
+      chatPlaceholder: "メッセージを入力…（翻訳＋原文併記）",
+      chatSubmit: "送信",
+      mediaHeading: "タイムライン",
+      uploadChip: "UPLOAD",
+      playlistChip: "PLAYLIST",
+      assetsChip: "ASSETS",
+      downloadNote: "リーダー・メンバーともにダウンロード可。中央モーダルは同時に1つ。閉じるのはリーダーのみ。",
+      videoTimeline: "動画タイムライン",
+      audioTimeline: "音声タイムライン",
+      bgmTimeline: "BGM タイムライン",
+      overlayTimeline: "オーバーレイ",
+      timelineHint: "再生ヘッド／ルーラーをドラッグしてスクラブ。▶で再生デモ",
+      timelinePlayhead: "再生ヘッド",
+      timelineTimecode: "00:00:34:12",
+      timelinePlay: "再生",
+      timelinePause: "停止",
+      timelineScrub: "クリックまたはドラッグでスクラブ",
+      panelMixer: "ミキサー",
+      panelEq: "EQ",
+      audioConsoleOpen: "Mixer / EQ",
+      audioConsoleTitle: "Audio Console",
+      audioConsoleLead: "固定中。動かす→タイトルクリック→ドラッグ→離すと再固定",
+      audioWinLockHint: "ドラッグで移動／クリックで固定",
+      audioWinUnlockHint: "クリックで移動モードへ",
+      audioWinResize: "サイズ変更",
+      mixerMaster: "Master",
+      mixerHint: "フェーダーは A トラック単位。Solo 中は Solo のみ、Mute は無音扱いです",
+      addAudioTrack: "+ A トラック",
+      mixerPan: "Pan",
+      mixerPanCenter: "C",
+      mixerMute: "M",
+      mixerSolo: "S",
+      mixerGain: "Gain",
+      mixerSend: "Send",
+      mixerLimiter: "Limiter",
+      eqHint: "トラック別 7 バンド EQ。プリセットと Low/High Cut、Q を調整できます",
+      eqBand: (label) => label,
+      eqPresetFlat: "Flat",
+      eqPresetVoice: "Voice",
+      eqPresetMusic: "Music",
+      eqPresetBass: "Bass",
+      eqLowCut: "Low Cut",
+      eqHighCut: "High Cut",
+      eqQ: "Q",
+      resizeTimeline: "タイムラインの高さを調整",
+      trackVideo: (n) => `V${n}`,
+      trackAudio: (n) => `A${n}`,
+      canonicalBadge: "現行",
+      modalHeading: "ファイル展開",
+      modalBody: "Phase 1 プレビューです。実ファイルのプレビュー／編集は Phase 2 以降で接続します。",
+      modalBusy: "別のファイルが展開中です。リーダーが閉じてから開けます。",
+      modalLeaderOnly: "閉じる操作はリーダーのみです。",
+      downloadAction: "ダウンロード",
+      closeAction: "閉じる",
+      closeLeaderOnly: "閉じる（リーダーのみ）",
+      mobilePcHint:
+        "スマホはチャットがメインです。ファイルはここから送れます。フォルダ作業は PC 向けです。",
+      mobileConfirmHeading: "状況確認",
+      mobileConfirmArtwork: "対象作品",
+      mobileConfirmLatest: "共有ファイル（確認）",
+      mobileConfirmEmpty: "まだ共有メモはありません。",
+      fileAttach: "ファイルを添付",
+      fileSendShared: "共有ファイルを送る",
+      filePending: "添付中",
+      fileOpen: "開く / 保存",
+      fileSentLabel: "ファイル送信",
+      fileTooLarge: "ファイルが大きすぎます（上限 25MB）。",
+      fileUploadFailed: "ファイルの送信に失敗しました。",
+    },
   },
 };
 
@@ -157,6 +425,141 @@ const ENGAGEMENT_EN: EngagementContent = {
     downloadModel: "Download 3D model",
     downloadThumbnail: "Download thumbnail",
     downloadArtworkTitle: (title) => `Artwork: ${title}`,
+    room: {
+      membersAria: "Participants",
+      presenceAria: "Live collaboration presence",
+      presenceYou: "You",
+      presenceDemoHint: "Showing member work areas (demo)",
+      presenceWaiting: "Teammate work areas appear after realtime sync",
+      presenceEditing: (name, area) => `${name} · ${area}`,
+      presenceFocusChat: "Chat",
+      presenceFocusFolders: "Folders",
+      presenceFocusWorkspace: "Stage",
+      presenceFocusTimeline: "Timeline",
+      presenceFocusMixer: "Mixer / EQ",
+      presenceFocusIdle: "Idle",
+      snapshotOpen: "Versions",
+      snapshotTitle: "Versions",
+      snapshotLead: "Snapshot = restore point / Publish = Gallery·Works version",
+      snapshotName: "Name",
+      snapshotSave: "Save Snapshot",
+      snapshotPublish: "Publish Version",
+      snapshotHint: "Preview stores locally. Production will use lab_snapshots.",
+      snapshotEmpty: "No versions yet",
+      snapshotRestore: "Restore",
+      snapshotArchive: "Archive",
+      snapshotKindSnapshot: "Snapshot",
+      snapshotKindPublish: "Publish",
+      snapshotLeaderOnly: "Restore, publish, and archive are leader-only",
+      snapshotSaved: (label) => `Saved: ${label}`,
+      snapshotPublishSaved: (label) => `Publish version created: ${label}`,
+      snapshotRestored: (label) => `Restored: ${label}`,
+      snapshotArchived: "Archived (hidden, not deleted)",
+      snapshotRestoreConfirm: (label) =>
+        `Restore “${label}”? Unsaved changes will be lost.`,
+      snapshotPublishDefault: (n) => `Publish v${n}`,
+      youAreLeader: "Leader",
+      currentLeader: (name) => `Current leader: ${name}`,
+      foldersHeading: "Shared folders",
+      foldersHint: "Open the Audio folder for demo clips. Drag to center to see waveforms.",
+      folderUpload: "Upload file",
+      folderUploading: "Uploading…",
+      folderUploadHint: "All room members can upload",
+      folderPermHint: "Upload & center drag: everyone / Delete: leader only",
+      deleteFile: "Delete",
+      deleteFolder: "Delete folder",
+      deleteLeaderOnly: "Only the leader can delete",
+      workspaceHeading: "Workspace",
+      workspaceEmpty: "Click a shared-folder file → check to stage on the bottom timeline → operate in center",
+      workspaceDropHint: "Drop to add as a center candidate",
+      workspaceDropped: (name) => `On timeline: ${name}`,
+      workspaceStageHint: "Check = stage to the bottom timeline. Timeline files are operable in the center.",
+      workspaceExpand: "Stage to bottom",
+      workspaceOnTimeline: "Staged",
+      timelineFilesHeading: "On timeline (operate in center)",
+      pendingFilesHeading: "Candidates (check to stage below)",
+      operateHint: "Selected timeline media",
+      stageExclude: "Return to folder",
+      stageExcludeHint: "Remove from center/timeline and put back in the shared folder (everyone)",
+      clipExclude: "Return selected clip to shared folder",
+      clipDragHint: "Drag to adjust timing",
+      waveformHeading: "Waveform",
+      waveformHint: "Check to stage on the bottom timeline, then operate here",
+      waveformSelect: "Select to operate in center",
+      waveformScrub: "Drag waveform to scrub (syncs with the bottom playhead)",
+      waveformSynced: "In-clip position synced with the bottom timeline playhead",
+      videoPreviewHeading: "Frames",
+      workspaceOpenHint: (name) => `Open: ${name}`,
+      chatHeading: "Live translation chat",
+      chatPlaceholder: "Write a message… (translation + original)",
+      chatSubmit: "Send",
+      mediaHeading: "Timeline",
+      uploadChip: "UPLOAD",
+      playlistChip: "PLAYLIST",
+      assetsChip: "ASSETS",
+      downloadNote: "Leaders and members can download. One modal at a time; only the leader can close it.",
+      videoTimeline: "Video timeline",
+      audioTimeline: "Audio timeline",
+      bgmTimeline: "BGM timeline",
+      overlayTimeline: "Overlay",
+      timelineHint: "Drag the playhead or ruler to scrub. ▶ plays a demo scrub.",
+      timelinePlayhead: "Playhead",
+      timelineTimecode: "00:00:34:12",
+      timelinePlay: "Play",
+      timelinePause: "Stop",
+      timelineScrub: "Click or drag to scrub",
+      panelMixer: "Mixer",
+      panelEq: "EQ",
+      audioConsoleOpen: "Mixer / EQ",
+      audioConsoleTitle: "Audio Console",
+      audioConsoleLead: "Locked. Click title → drag → release to lock again",
+      audioWinLockHint: "Drag to move / click to lock",
+      audioWinUnlockHint: "Click to unlock for moving",
+      audioWinResize: "Resize",
+      mixerMaster: "Master",
+      mixerHint: "One fader per A track. Solo isolates; Mute silences the channel.",
+      addAudioTrack: "+ A track",
+      mixerPan: "Pan",
+      mixerPanCenter: "C",
+      mixerMute: "M",
+      mixerSolo: "S",
+      mixerGain: "Gain",
+      mixerSend: "Send",
+      mixerLimiter: "Limiter",
+      eqHint: "Per-track 7-band EQ with presets, Low/High Cut, and Q",
+      eqBand: (label) => label,
+      eqPresetFlat: "Flat",
+      eqPresetVoice: "Voice",
+      eqPresetMusic: "Music",
+      eqPresetBass: "Bass",
+      eqLowCut: "Low Cut",
+      eqHighCut: "High Cut",
+      eqQ: "Q",
+      resizeTimeline: "Resize timeline height",
+      trackVideo: (n) => `V${n}`,
+      trackAudio: (n) => `A${n}`,
+      canonicalBadge: "Current",
+      modalHeading: "File view",
+      modalBody: "Phase 1 preview. Real preview/edit connects in Phase 2+.",
+      modalBusy: "Another file is open. Ask the leader to close it first.",
+      modalLeaderOnly: "Only the leader can close this.",
+      downloadAction: "Download",
+      closeAction: "Close",
+      closeLeaderOnly: "Close (leader only)",
+      mobilePcHint:
+        "Chat is the main view on mobile. Send files here. Folder work is best on PC.",
+      mobileConfirmHeading: "Status check",
+      mobileConfirmArtwork: "Artwork",
+      mobileConfirmLatest: "Shared files (view)",
+      mobileConfirmEmpty: "No shared notes yet.",
+      fileAttach: "Attach file",
+      fileSendShared: "Send shared file",
+      filePending: "Attached",
+      fileOpen: "Open / save",
+      fileSentLabel: "File share",
+      fileTooLarge: "File is too large (max 25MB).",
+      fileUploadFailed: "Could not send the file.",
+    },
   },
 };
 

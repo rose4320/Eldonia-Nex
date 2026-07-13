@@ -29,7 +29,9 @@ export default async function CheckoutSuccessPage({ searchParams }: SuccessPageP
             {isFree ? t.pages.checkout.bodyFree : t.pages.checkout.body}
           </p>
           {session_id && (
-            <p className="eldonia-hint mt-2 break-all">Session: {session_id}</p>
+            <p className="eldonia-hint mt-2 break-all">
+              {t.pages.checkout.sessionLabel}: {session_id}
+            </p>
           )}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/shop" className="eldonia-btn-primary">

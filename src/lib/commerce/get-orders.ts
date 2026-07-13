@@ -8,14 +8,11 @@ export function parseOrderItems(items: unknown): OrderItem[] {
   return parseOrderItemsPayload(items).lines;
 }
 
-export function orderStatusLabel(status: string): string {
-  const map: Record<string, string> = {
-    pending: "処理中",
-    paid: "支払い済み",
-    failed: "失敗",
-    refunded: "返金済み",
-  };
-  return map[status] ?? status;
+import { orderStatusLabel as orderStatusLabelForLocale } from "@/lib/i18n/taxonomy";
+import type { UiLocale } from "@/lib/i18n/locale";
+
+export function orderStatusLabel(status: string, locale: UiLocale = "ja"): string {
+  return orderStatusLabelForLocale(status, locale);
 }
 
 export async function getOrdersForUser(userId: string): Promise<Order[]> {

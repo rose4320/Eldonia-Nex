@@ -10,6 +10,9 @@ import { getCreatorByUsername } from "@/lib/gallery/get-creator-profile";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { createClient } from "@/lib/supabase/server";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
+import { getProfileTextTranslations, getArtworkListTranslations } from "@/lib/translation/list-translations";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 
 type CreatorProfilePageProps = {
   params: Promise<{ username: string }>;
@@ -33,7 +36,16 @@ export default async function CreatorProfilePage({ params }: CreatorProfilePageP
 
   const displayName =
     data.profile.display_name ?? data.profile.username ?? pages.creatorFallback;
-  const engagementMap = await getGalleryFeedEngagement(data.artworks, user?.id ?? null);
+  const allArtworks = [...data.seriesAlbums, ...data.artworks];
+  const [engagementMap, profileTranslations, artworkTranslations] = await Promise.all([
+    getGalleryFeedEngagement(data.artworks, user?.id ?? null),
+    getProfileTextTranslations(
+      data.profile.id,
+      { bio: data.profile.bio, headline: data.portfolio?.headline },
+      locale,
+    ),
+    getArtworkListTranslations(allArtworks, locale, { warmLimit: 8, liveLimit: 24 }),
+  ]);
   const engagementByArtwork = Object.fromEntries(engagementMap);
 
   return (
@@ -68,10 +80,26 @@ export default async function CreatorProfilePage({ params }: CreatorProfilePageP
             )}
             <CreatorDisciplineBadges disciplines={data.profile.disciplines} max={4} />
             {data.portfolio?.headline && (
-              <p className="font-display text-eldonia-gold-light">{data.portfolio.headline}</p>
+              <TranslatedContentLine
+                text={data.portfolio.headline}
+                translatedText={profileTranslations.headline}
+                sourceLocale={inferSourceLocale(data.portfolio.headline)}
+                locale={locale}
+                as="p"
+                className="font-display text-eldonia-gold-light"
+                hintClassName="eldonia-localized-hint text-xs"
+              />
             )}
             {data.profile.bio && (
-              <p className="eldonia-body whitespace-pre-wrap text-sm">{data.profile.bio}</p>
+              <TranslatedContentLine
+                text={data.profile.bio}
+                translatedText={profileTranslations.bio}
+                sourceLocale={inferSourceLocale(data.profile.bio)}
+                locale={locale}
+                as="p"
+                className="eldonia-body whitespace-pre-wrap text-sm"
+                hintClassName="eldonia-localized-hint text-xs"
+              />
             )}
             {data.portfolio && (
               <p className="text-xs text-eldonia-text-muted">
@@ -103,6 +131,7 @@ export default async function CreatorProfilePage({ params }: CreatorProfilePageP
                     }
                   }
                   userId={user?.id ?? null}
+                  translations={artworkTranslations[artwork.id]}
                 />
               ))}
             </ul>

@@ -48,31 +48,62 @@ export function paragraphSpeechText(paragraph: string): string {
     .trim();
 }
 
-export function parseStorySections(body: string): StorySection[] {
+export function parseStorySections(
+  body: string,
+  options?: { untitledFallback?: string },
+): StorySection[] {
   const normalized = body.replace(/\r\n/g, "\n").trim();
   if (!normalized) return [];
 
+  const untitledFallback = options?.untitledFallback ?? "Introduction";
   const chunks = normalized.split(/\n(?=##\s+)/);
   const sections: StorySection[] = [];
+  let pendingPreamble: string[] = [];
 
-  for (const [index, chunk] of chunks.entries()) {
+  for (const chunk of chunks) {
     const trimmed = chunk.trim();
     if (!trimmed) continue;
 
     const headingMatch = trimmed.match(/^##\s+(.+?)(?:\n|$)/);
-    const title = headingMatch?.[1]?.trim() ?? (index === 0 ? "はじめに" : `Section ${index + 1}`);
     const content = headingMatch ? trimmed.slice(headingMatch[0].length).trim() : trimmed;
     const paragraphs = content
       .split(/\n{2,}/)
       .map((paragraph) => paragraph.replace(/\n/g, " ").trim())
       .filter(Boolean);
 
-    if (paragraphs.length === 0 && index === 0 && !headingMatch) continue;
+    // Leading text before the first ## is preamble — fold into the next headed section
+    // instead of inventing a locale-hardcoded "はじめに" chapter.
+    if (!headingMatch) {
+      if (sections.length === 0) {
+        pendingPreamble = paragraphs.length > 0 ? paragraphs : [content];
+        continue;
+      }
+      const last = sections[sections.length - 1];
+      last.paragraphs = [...last.paragraphs, ...(paragraphs.length > 0 ? paragraphs : [content])];
+      continue;
+    }
+
+    const title = headingMatch[1].trim();
+    const merged =
+      pendingPreamble.length > 0
+        ? [...pendingPreamble, ...(paragraphs.length > 0 ? paragraphs : [])]
+        : paragraphs.length > 0
+          ? paragraphs
+          : [content];
+    pendingPreamble = [];
 
     sections.push({
-      id: `section-${index}`,
+      id: `section-${sections.length}`,
       title,
-      paragraphs: paragraphs.length > 0 ? paragraphs : [content],
+      paragraphs: merged,
+    });
+  }
+
+  if (pendingPreamble.length > 0 && sections.length === 0) {
+    sections.push({
+      id: "section-0",
+      title: untitledFallback,
+      paragraphs: pendingPreamble,
     });
   }
 
@@ -92,6 +123,17 @@ export type StoryProgress = {
   sectionIndex: number;
   paragraphIndex: number;
 };
+
+/** Stable identity for useSyncExternalStore snapshots (must not allocate per call). */
+export const STORY_PROGRESS_DEFAULT: StoryProgress = Object.freeze({
+  sectionIndex: 0,
+  paragraphIndex: 0,
+});
+
+const progressSnapshotCache = new Map<
+  string,
+  { raw: string | null; value: StoryProgress }
+>();
 
 export function storyProgressKey(artworkId: string, locale = "ja"): string {
   return `eldonia-story-progress:${artworkId}:${locale}`;
@@ -121,7 +163,61 @@ export function saveStoryProgress(
   locale = "ja",
 ): void {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(storyProgressKey(artworkId, locale), JSON.stringify(progress));
+  const key = storyProgressKey(artworkId, locale);
+  const raw = JSON.stringify(progress);
+  window.localStorage.setItem(key, raw);
+  progressSnapshotCache.set(key, { raw, value: progress });
+  window.dispatchEvent(new Event(key));
+}
+
+export function subscribeStoryProgress(
+  artworkId: string,
+  locale: string,
+  onStoreChange: () => void,
+): () => void {
+  if (typeof window === "undefined") return () => {};
+  const key = storyProgressKey(artworkId, locale);
+  window.addEventListener(key, onStoreChange);
+  return () => window.removeEventListener(key, onStoreChange);
+}
+
+export function getStoryProgressSnapshot(
+  artworkId: string,
+  locale: string,
+): StoryProgress {
+  if (typeof window === "undefined") return STORY_PROGRESS_DEFAULT;
+
+  const key = storyProgressKey(artworkId, locale);
+  const raw = window.localStorage.getItem(key);
+  const cached = progressSnapshotCache.get(key);
+  if (cached && cached.raw === raw) {
+    return cached.value;
+  }
+
+  if (!raw) {
+    progressSnapshotCache.set(key, { raw: null, value: STORY_PROGRESS_DEFAULT });
+    return STORY_PROGRESS_DEFAULT;
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as StoryProgress;
+    if (
+      typeof parsed.sectionIndex === "number" &&
+      typeof parsed.paragraphIndex === "number"
+    ) {
+      progressSnapshotCache.set(key, { raw, value: parsed });
+      return parsed;
+    }
+  } catch {
+    /* fall through */
+  }
+
+  progressSnapshotCache.set(key, { raw: null, value: STORY_PROGRESS_DEFAULT });
+  return STORY_PROGRESS_DEFAULT;
+}
+
+export function getStoryProgressServerSnapshot(): StoryProgress {
+  return STORY_PROGRESS_DEFAULT;
 }
 
 export function progressPercent(

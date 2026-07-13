@@ -19,16 +19,20 @@ export function resolveNexusTarget(
   source: NexusLocale,
   preferred?: string,
 ): NexusLocale {
-  const preferredLocale = normalizeNexusLocale(preferred);
-  if (preferredLocale !== source) {
-    return preferredLocale;
+  // UI 言語を優先。原文と同じでもそのまま（原文表示）を許可する。
+  if (preferred) {
+    return normalizeNexusLocale(preferred);
   }
-  return (
-    NEXUS_LOCALES.find((locale) => locale.value !== source)?.value ?? "en"
-  );
+  return source;
 }
 
-export function listNexusTargetLocales(source: NexusLocale) {
+/** 翻訳パネル用：原文言語も含む全 Nexus 言語（原文選択時は翻訳しない）。 */
+export function listNexusTargetLocales() {
+  return NEXUS_LOCALES;
+}
+
+/** 原文以外の翻訳先のみ（API 呼び出し候補など）。 */
+export function listNexusForeignLocales(source: NexusLocale) {
   return NEXUS_LOCALES.filter((locale) => locale.value !== source);
 }
 

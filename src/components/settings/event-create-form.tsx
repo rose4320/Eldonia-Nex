@@ -1,9 +1,12 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { EventCoverFrame } from "@/components/events/event-cover-frame";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
+import { validateEventCoverFile, type EventCoverValidationCode } from "@/lib/events/cover-image";
+import { uploadEventCoverToStorage } from "@/lib/events/upload-event-cover";
 import { createClient } from "@/lib/supabase/client";
 import { eventFormatLabel, eventRealmOptions } from "@/lib/i18n/taxonomy";
 
@@ -32,8 +35,56 @@ export function EventCreateForm({ userId }: EventCreateFormProps) {
   const [onlineUrl, setOnlineUrl] = useState("");
   const [ticketPrice, setTicketPrice] = useState("0");
   const [capacity, setCapacity] = useState("");
+  const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (coverPreviewUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(coverPreviewUrl);
+      }
+    };
+  }, [coverPreviewUrl]);
+
+  function coverErrorMessage(code: EventCoverValidationCode): string {
+    switch (code) {
+      case "format":
+        return event.errCoverFormat;
+      case "size":
+        return event.errCoverSize;
+      case "aspect":
+        return event.errCoverAspect;
+      case "min_dimensions":
+        return event.errCoverMinDimensions;
+      default:
+        return event.errCoverUpload;
+    }
+  }
+
+  async function handleCoverChange(file: File | null) {
+    setError(null);
+    if (coverPreviewUrl?.startsWith("blob:")) {
+      URL.revokeObjectURL(coverPreviewUrl);
+    }
+    if (!file) {
+      setCoverFile(null);
+      setCoverPreviewUrl(null);
+      return;
+    }
+
+    const result = await validateEventCoverFile(file);
+    if (!result.ok) {
+      setCoverFile(null);
+      setCoverPreviewUrl(null);
+      setError(coverErrorMessage(result.code));
+      return;
+    }
+
+    setCoverFile(file);
+    setCoverPreviewUrl(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(eventForm: React.FormEvent<HTMLFormElement>) {
     eventForm.preventDefault();
@@ -44,8 +95,25 @@ export function EventCreateForm({ userId }: EventCreateFormProps) {
       return;
     }
 
+    if ((format === "online" || format === "hybrid") && !onlineUrl.trim()) {
+      setError(event.errOnlineUrl);
+      return;
+    }
+
     setLoading(true);
     const supabase = createClient();
+
+    let coverImageUrl: string | null = null;
+    if (coverFile) {
+      try {
+        coverImageUrl = await uploadEventCoverToStorage(supabase, userId, coverFile);
+      } catch {
+        setError(event.errCoverUpload);
+        setLoading(false);
+        return;
+      }
+    }
+
     const { data, error: insertError } = await supabase
       .from("events")
       .insert({
@@ -62,6 +130,7 @@ export function EventCreateForm({ userId }: EventCreateFormProps) {
         online_url: onlineUrl.trim() || null,
         ticket_price: Number.parseInt(ticketPrice, 10) || 0,
         capacity: capacity ? Number.parseInt(capacity, 10) : null,
+        cover_image_url: coverImageUrl,
       })
       .select("id")
       .single();
@@ -83,6 +152,22 @@ export function EventCreateForm({ userId }: EventCreateFormProps) {
         <label htmlFor="title" className="eldonia-label">{event.title}</label>
         <input id="title" required maxLength={120} value={title} onChange={(e) => setTitle(e.target.value)} className="eldonia-input" />
       </div>
+
+      <div className="flex flex-col gap-2">
+        <label htmlFor="cover_image" className="eldonia-label">{event.coverImage}</label>
+        <input
+          id="cover_image"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="eldonia-input file:mr-3 file:rounded file:border-0 file:bg-[var(--eldonia-gold)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[#1a1208]"
+          onChange={(e) => void handleCoverChange(e.target.files?.[0] ?? null)}
+        />
+        <p className="eldonia-hint text-xs">{event.coverImageHint}</p>
+        <p className="eldonia-hint text-xs">{event.coverSafeZone}</p>
+        <p className="eldonia-label text-xs">{event.coverPreview}</p>
+        <EventCoverFrame src={coverPreviewUrl} variant="preview" />
+      </div>
+
       <div className="flex flex-col gap-1">
         <label htmlFor="description" className="eldonia-label">{event.description}</label>
         <textarea id="description" rows={4} maxLength={4000} value={description} onChange={(e) => setDescription(e.target.value)} className="eldonia-textarea" />
@@ -130,7 +215,14 @@ export function EventCreateForm({ userId }: EventCreateFormProps) {
       {(format === "online" || format === "hybrid") && (
         <div className="flex flex-col gap-1">
           <label htmlFor="online_url" className="eldonia-label">{event.onlineUrl}</label>
-          <input id="online_url" type="url" value={onlineUrl} onChange={(e) => setOnlineUrl(e.target.value)} className="eldonia-input" />
+          <input
+            id="online_url"
+            type="url"
+            required={format === "online" || format === "hybrid"}
+            value={onlineUrl}
+            onChange={(e) => setOnlineUrl(e.target.value)}
+            className="eldonia-input"
+          />
         </div>
       )}
       <div className="grid gap-4 sm:grid-cols-2">

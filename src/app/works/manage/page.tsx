@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { QuestCreateForm } from "@/components/works/quest-create-form";
 import { WorksToolbar } from "@/components/works/works-toolbar";
+import { questStatusLabel } from "@/lib/i18n/taxonomy";
 import { formatQuestReward, questKindLabel } from "@/lib/quests/constants";
 import { getQuestListings } from "@/lib/quests/get-quests";
 import { isQuestAdmin } from "@/lib/quests/is-quest-admin";
@@ -58,7 +59,7 @@ export default async function WorksManagePage() {
                   </Link>
                   <p className="mt-1 text-xs text-[var(--eldonia-text-dim)]">
                     {questKindLabel(quest.kind, locale)} · {formatQuestReward(quest.exp_reward, locale)} ·{" "}
-                    {quest.status}
+                    {questStatusLabel(quest.status, locale)}
                   </p>
                 </li>
               ))}

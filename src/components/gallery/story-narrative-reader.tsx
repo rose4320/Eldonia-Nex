@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { intlLocale } from "@/lib/i18n/content/messages";
 import {
   countStoryParagraphs,
-  loadStoryProgress,
+  getStoryProgressServerSnapshot,
+  getStoryProgressSnapshot,
   parseParagraphSegments,
   parseStorySections,
   paragraphSpeechText,
   progressPercent,
   saveStoryProgress,
+  subscribeStoryProgress,
   type StoryInlineSegment,
   type StoryProgress,
   type StorySection,
@@ -23,8 +25,6 @@ type StoryNarrativeReaderProps = {
   title: string;
   excerpt: string | null;
   body: string;
-  pdfUrl?: string | null;
-  openPdfLabel: string;
 };
 
 function flattenParagraphs(sections: StorySection[]) {
@@ -38,30 +38,51 @@ function flattenParagraphs(sections: StorySection[]) {
   );
 }
 
+function subscribeSpeechSupport() {
+  return () => {};
+}
+
+function getSpeechSupportedSnapshot() {
+  return typeof window !== "undefined" && "speechSynthesis" in window;
+}
+
+function getSpeechSupportedServerSnapshot() {
+  return false;
+}
+
 export function StoryNarrativeReader({
   artworkId,
   title,
   excerpt,
   body,
-  pdfUrl,
-  openPdfLabel,
 }: StoryNarrativeReaderProps) {
   const locale = useLocale();
   const { pages } = useContent();
   const gallery = pages.gallery;
-  const sections = useMemo(() => parseStorySections(body), [body]);
+  const sections = useMemo(
+    () =>
+      parseStorySections(body, {
+        untitledFallback: gallery.storyUntitledSection,
+      }),
+    [body, gallery.storyUntitledSection],
+  );
   const flat = useMemo(() => flattenParagraphs(sections), [sections]);
   const totalParagraphs = countStoryParagraphs(sections);
 
-  const [progress, setProgress] = useState<StoryProgress>(() => {
-    return loadStoryProgress(artworkId, locale) ?? { sectionIndex: 0, paragraphIndex: 0 };
-  });
+  const progress = useSyncExternalStore(
+    (onStoreChange) => subscribeStoryProgress(artworkId, locale, onStoreChange),
+    () => getStoryProgressSnapshot(artworkId, locale),
+    getStoryProgressServerSnapshot,
+  );
+
+  const speechSupported = useSyncExternalStore(
+    subscribeSpeechSupport,
+    getSpeechSupportedSnapshot,
+    getSpeechSupportedServerSnapshot,
+  );
+
   const [narration, setNarration] = useState<NarrationState>("idle");
   const [speechIndex, setSpeechIndex] = useState<number | null>(null);
-  const [showPdf, setShowPdf] = useState(false);
-  const [speechSupported] = useState(
-    () => typeof window !== "undefined" && "speechSynthesis" in window,
-  );
 
   const paragraphRefs = useRef<Map<string, HTMLParagraphElement>>(new Map());
   const sectionRefs = useRef<Map<string, HTMLElement>>(new Map());
@@ -73,7 +94,6 @@ export function StoryNarrativeReader({
 
   const updateProgress = useCallback(
     (next: StoryProgress) => {
-      setProgress(next);
       saveStoryProgress(artworkId, next, locale);
     },
     [artworkId, locale],
@@ -177,10 +197,23 @@ export function StoryNarrativeReader({
   }, []);
 
   useEffect(() => {
+    restoredRef.current = false;
+  }, [artworkId, locale]);
+
+  useEffect(() => {
     if (restoredRef.current || flat.length === 0) return;
+    if (progress.sectionIndex === 0 && progress.paragraphIndex === 0) {
+      restoredRef.current = true;
+      return;
+    }
     restoredRef.current = true;
     scrollToParagraph(progress.sectionIndex, progress.paragraphIndex);
-  }, [flat.length, progress.paragraphIndex, progress.sectionIndex, scrollToParagraph]);
+  }, [
+    flat.length,
+    progress.paragraphIndex,
+    progress.sectionIndex,
+    scrollToParagraph,
+  ]);
 
   useEffect(() => {
     const nodes = Array.from(paragraphRefs.current.values());
@@ -197,15 +230,12 @@ export function StoryNarrativeReader({
         const paragraphIndex = Number(visible.target.getAttribute("data-paragraph-index"));
         if (Number.isNaN(sectionIndex) || Number.isNaN(paragraphIndex)) return;
 
-        setProgress((current) => {
-          const isAhead =
-            sectionIndex > current.sectionIndex ||
-            (sectionIndex === current.sectionIndex && paragraphIndex > current.paragraphIndex);
-          if (!isAhead) return current;
-          const next = { sectionIndex, paragraphIndex };
-          saveStoryProgress(artworkId, next, locale);
-          return next;
-        });
+        const current = getStoryProgressSnapshot(artworkId, locale);
+        const isAhead =
+          sectionIndex > current.sectionIndex ||
+          (sectionIndex === current.sectionIndex && paragraphIndex > current.paragraphIndex);
+        if (!isAhead) return;
+        saveStoryProgress(artworkId, { sectionIndex, paragraphIndex }, locale);
       },
       { threshold: [0.45, 0.6, 0.75] },
     );
@@ -279,15 +309,6 @@ export function StoryNarrativeReader({
             </>
           ) : (
             <p className="text-xs text-eldonia-text-muted">{gallery.storyNarrationUnsupported}</p>
-          )}
-          {pdfUrl && (
-            <button
-              type="button"
-              onClick={() => setShowPdf((value) => !value)}
-              className="eldonia-btn-secondary px-2 py-1 text-xs"
-            >
-              {showPdf ? gallery.storyHidePdf : gallery.storyShowPdf}
-            </button>
           )}
         </div>
       </header>
@@ -368,24 +389,6 @@ export function StoryNarrativeReader({
           ))}
         </article>
       </div>
-
-      {showPdf && pdfUrl && (
-        <div className="story-reader__pdf border-t border-eldonia-border p-4 sm:p-6">
-          <iframe
-            src={`${pdfUrl}#toolbar=0&navpanes=0`}
-            title={title}
-            className="h-[min(70vh,42rem)] w-full rounded-md border border-eldonia-border bg-eldonia-surface"
-          />
-          <a
-            href={pdfUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="eldonia-link mt-3 inline-block text-sm"
-          >
-            {openPdfLabel}
-          </a>
-        </div>
-      )}
     </section>
   );
 }

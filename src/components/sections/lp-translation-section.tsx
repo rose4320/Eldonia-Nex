@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { LpOrnateBox } from "@/components/ui/lp-ornate-box";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_TRANSLATION } from "@/lib/lp/content";
 
-export function LpTranslationSection() {
+export async function LpTranslationSection() {
+  const locale = await getUiLocale();
+  const { LP_TRANSLATION } = getLpContent(locale);
+
   return (
     <section className="px-3 py-5 sm:px-5 lg:px-6">
       <div className="lp-translation-panel mx-auto max-w-[1240px]">
@@ -47,7 +51,7 @@ export function LpTranslationSection() {
             <div className="flex justify-center lg:justify-end">
               <Image
                 src={LP_ASSETS.translation}
-                alt="多言語翻訳を示すネオンアイコン"
+                alt={LP_TRANSLATION.imageAlt}
                 width={160}
                 height={160}
                 className="lp-translation-image h-28 w-28 rounded-lg object-cover sm:h-32 sm:w-32 lg:h-36 lg:w-36"
@@ -59,5 +63,3 @@ export function LpTranslationSection() {
     </section>
   );
 }
-
-

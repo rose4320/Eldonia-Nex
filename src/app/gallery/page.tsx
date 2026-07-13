@@ -9,6 +9,7 @@ import { getPublicArtworks } from "@/lib/gallery/get-public-artworks";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { MODULE_ICONS } from "@/lib/layout/module-icons";
+import { getArtworkListTranslations } from "@/lib/translation/list-translations";
 import { createClient } from "@/lib/supabase/server";
 
 type GalleryPageProps = {
@@ -29,7 +30,10 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
   const term = q?.trim();
   const heading = term ? t.common.searchResults(term) : t.gallery.heading;
   const items = await getPublicArtworks(q, realm);
-  const engagementMap = await getGalleryFeedEngagement(items, user?.id ?? null);
+  const [engagementMap, artworkTranslations] = await Promise.all([
+    getGalleryFeedEngagement(items, user?.id ?? null),
+    getArtworkListTranslations(items, locale, { warmLimit: 12, liveLimit: 24 }),
+  ]);
   const engagementByArtwork = Object.fromEntries(engagementMap);
 
   return (
@@ -51,6 +55,7 @@ export default async function GalleryPage({ searchParams }: GalleryPageProps) {
           query={q}
           engagementByArtwork={engagementByArtwork}
           userId={user?.id ?? null}
+          translations={artworkTranslations}
         />
       </main>
 

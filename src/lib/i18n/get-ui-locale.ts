@@ -1,7 +1,12 @@
-import { cookies } from "next/headers";
-import { parseUiLocale, type UiLocale } from "@/lib/i18n/locale";
+import { cookies, headers } from "next/headers";
+import { resolveUiLocale } from "@/lib/i18n/resolve-ui-locale";
+import type { UiLocale } from "@/lib/i18n/locale";
 
 export async function getUiLocale(): Promise<UiLocale> {
   const cookieStore = await cookies();
-  return parseUiLocale(cookieStore.get("eldonia_locale")?.value);
+  const headerStore = await headers();
+  return resolveUiLocale(
+    cookieStore.get("eldonia_locale")?.value,
+    headerStore.get("accept-language"),
+  );
 }

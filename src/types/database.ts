@@ -303,6 +303,20 @@ export type NexusEventWithOrganizer = NexusEvent & {
   profiles: Pick<Profile, "display_name" | "username"> | null;
 };
 
+export type EventTicketStatus = "valid" | "used" | "cancelled" | "refunded";
+
+export type EventTicket = {
+  id: string;
+  event_id: string;
+  order_id: string | null;
+  holder_user_id: string;
+  ticket_code: string;
+  qr_token: string;
+  status: EventTicketStatus;
+  checked_in_at: string | null;
+  created_at: string;
+};
+
 export type CommunityBoard = {
   id: string;
   slug: string;
@@ -337,10 +351,28 @@ export type CommunityReply = {
   body: string;
   locale: string;
   created_at: string;
+  deleted_at?: string | null;
+  deleted_by?: string | null;
 };
 
 export type CommunityReplyWithAuthor = CommunityReply & {
   profiles: Pick<Profile, "display_name" | "username"> | null;
+};
+
+export type ContentTranslation = {
+  id: string;
+  entity_type: string;
+  entity_id: string;
+  field_name: string;
+  source_locale: string;
+  target_locale: string;
+  provider: string;
+  review_status: string;
+  source_hash: string;
+  source_text: string;
+  translated_text: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type JobType = "freelance" | "full_time" | "part_time" | "collab";
@@ -798,6 +830,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      event_tickets: {
+        Row: EventTicket;
+        Insert: {
+          id?: string;
+          event_id: string;
+          order_id?: string | null;
+          holder_user_id: string;
+          ticket_code?: string;
+          qr_token: string;
+          status?: EventTicketStatus;
+          checked_in_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          status?: EventTicketStatus;
+          checked_in_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "event_tickets_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "events";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       community_boards: {
         Row: CommunityBoard;
         Insert: {
@@ -848,7 +907,38 @@ export type Database = {
           locale?: string;
           created_at?: string;
         };
-        Update: { body?: string };
+        Update: {
+          body?: string;
+          deleted_at?: string | null;
+          deleted_by?: string | null;
+        };
+        Relationships: [];
+      };
+      content_translations: {
+        Row: ContentTranslation;
+        Insert: {
+          id?: string;
+          entity_type: string;
+          entity_id: string;
+          field_name: string;
+          source_locale: string;
+          target_locale: string;
+          provider?: string;
+          review_status?: string;
+          source_hash: string;
+          source_text: string;
+          translated_text: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          provider?: string;
+          review_status?: string;
+          source_hash?: string;
+          source_text?: string;
+          translated_text?: string;
+          updated_at?: string;
+        };
         Relationships: [];
       };
       portfolios: {
@@ -1401,8 +1491,18 @@ export type Database = {
         Args: { p_request_id: string; p_action: string };
         Returns: string;
       };
+      issue_event_tickets_for_line: {
+        Args: {
+          p_order_id: string;
+          p_holder_user_id: string;
+          p_event_id: string;
+          p_quantity: number;
+        };
+        Returns: string[];
+      };
     };
     Enums: {
+      event_ticket_status: EventTicketStatus;
       artwork_media_type: ArtworkMediaType;
       collab_request_status: CollabRequestStatus;
       shop_product_type: ShopProductType;

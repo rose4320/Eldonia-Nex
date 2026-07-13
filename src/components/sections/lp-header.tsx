@@ -5,11 +5,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { LpButton } from "@/components/ui/lp-button";
+import { useLpContent } from "@/components/providers/lp-content-provider";
+import type { LpContent } from "@/lib/i18n/content/lp-messages";
 import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_NAV } from "@/lib/lp/content";
 import { useIsClient } from "@/lib/react/use-is-client";
 
-export function LpHeader() {
+type LpHeaderProps = {
+  content?: LpContent;
+};
+
+export function LpHeader({ content }: LpHeaderProps = {}) {
+  const { LP_NAV } = useLpContent(content);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const mounted = useIsClient();
@@ -175,4 +181,3 @@ export function LpHeader() {
     </>
   );
 }
-

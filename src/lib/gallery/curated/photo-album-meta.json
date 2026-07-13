@@ -1,0 +1,66 @@
+{
+  "ja": {
+    "title": "幻想紀行 — ファンタジー世界写真集",
+    "excerpt": "黄金と闇に彩られた幻想世界を、10枚の写真で旅する。",
+    "captions": [
+      "黄昏の黄金都市 — ネクサスの都",
+      "灯り揺れる市場路",
+      "浮遊する山脈と朝霧",
+      "古代樹の森、光の筋",
+      "鏡の湖と二つの月",
+      "夜の城下町",
+      "オーロラの平原",
+      "嵐の断崖と石の門",
+      "ネクサスの夕暮れ",
+      "星降る黄金の門"
+    ]
+  },
+  "en": {
+    "title": "Fantasy Chronicle — Photo Journey",
+    "excerpt": "A ten-photo journey through a world of gold and shadow.",
+    "captions": [
+      "Golden dusk city — the Nexus capital",
+      "Lantern-lit market street",
+      "Floating peaks and morning mist",
+      "Ancient forest, shafts of light",
+      "Mirror lake and twin moons",
+      "Castle town at night",
+      "Aurora plains",
+      "Storm cliff and stone gate",
+      "Nexus twilight",
+      "Starfall golden gate"
+    ]
+  },
+  "ko": {
+    "title": "환상기행 — 판타지 세계 사진집",
+    "excerpt": "황금과 어둠으로 물든 환상 세계를 사진 10장으로 여행합니다.",
+    "captions": [
+      "황혼의 황금 도시 — 넥서스의 수도",
+      "등불이 흔들리는 시장길",
+      "떠오른 산맥과 아침 안개",
+      "고대 나무 숲, 빛의 줄기",
+      "거울 호수와 두 개의 달",
+      "밤의 성 아래 마을",
+      "오로라 평원",
+      "폭풍 절벽과 돌문",
+      "넥서스의 석양",
+      "별이 내리는 황금의 문"
+    ]
+  },
+  "zh-CN": {
+    "title": "幻想纪行 — 奇幻世界摄影集",
+    "excerpt": "用十张照片游历金与暗交织的幻想世界。",
+    "captions": [
+      "黄昏黄金都市 — Nexus 之都",
+      "灯火摇曳的市集路",
+      "悬浮山脉与晨雾",
+      "古树之森，光之径",
+      "镜湖与双月",
+      "夜之城下町",
+      "极光平原",
+      "风暴断崖与石门",
+      "Nexus 的黄昏",
+      "星落黄金之门"
+    ]
+  }
+}

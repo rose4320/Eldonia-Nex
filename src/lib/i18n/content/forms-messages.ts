@@ -146,10 +146,20 @@ export type FormsContent = {
     onlineUrl: string;
     ticketPrice: string;
     capacity: string;
+    coverImage: string;
+    coverImageHint: string;
+    coverSafeZone: string;
+    coverPreview: string;
     submit: string;
     submitting: string;
     errStartsAt: string;
     errSave: string;
+    errCoverFormat: string;
+    errCoverSize: string;
+    errCoverAspect: string;
+    errCoverMinDimensions: string;
+    errCoverUpload: string;
+    errOnlineUrl: string;
   };
   job: {
     heading: string;
@@ -432,10 +442,20 @@ const FORMS_JA: FormsContent = {
     onlineUrl: "配信 URL",
     ticketPrice: "チケット価格（円）",
     capacity: "定員（任意）",
+    coverImage: "サムネイル（横長 2:1）",
+    coverImageHint: "推奨 1920×960 px（最小 1200×600）。JPEG / PNG / WebP、最大 5 MB。",
+    coverSafeZone: "タイトルやロゴは中央付近に配置してください（端は表示で切れる場合があります）。",
+    coverPreview: "サムネイルプレビュー",
     submit: "イベントを公開",
     submitting: "登録中...",
     errStartsAt: "開始日時を入力してください。",
     errSave: "イベントの登録に失敗しました。",
+    errCoverFormat: "JPEG / PNG / WebP 形式の画像を選んでください。",
+    errCoverSize: "ファイルサイズは 5 MB 以下にしてください。",
+    errCoverAspect: "横長 2:1（例: 1920×960）の比率でアップロードしてください。",
+    errCoverMinDimensions: "画像は 1200×600 px 以上にしてください。",
+    errCoverUpload: "サムネイルのアップロードに失敗しました。",
+    errOnlineUrl: "オンライン形式では配信 URL を入力してください。",
   },
   job: {
     heading: "求人を掲載",
@@ -710,10 +730,20 @@ const FORMS_EN: FormsContent = {
     onlineUrl: "Stream URL",
     ticketPrice: "Ticket price (JPY)",
     capacity: "Capacity (optional)",
+    coverImage: "Cover image (2:1 landscape)",
+    coverImageHint: "Recommended 1920×960 px (min 1200×600). JPEG / PNG / WebP, max 5 MB.",
+    coverSafeZone: "Keep titles and logos near the center — edges may be cropped on some screens.",
+    coverPreview: "Cover preview",
     submit: "Publish event",
     submitting: "Saving…",
     errStartsAt: "Enter a start date/time.",
     errSave: "Could not save event.",
+    errCoverFormat: "Use a JPEG, PNG, or WebP image.",
+    errCoverSize: "Image must be 5 MB or smaller.",
+    errCoverAspect: "Use a 2:1 landscape ratio (e.g. 1920×960).",
+    errCoverMinDimensions: "Image must be at least 1200×600 px.",
+    errCoverUpload: "Could not upload the cover image.",
+    errOnlineUrl: "Enter a stream URL for online or hybrid events.",
   },
   job: {
     heading: "Post a job",

@@ -477,6 +477,16 @@ Fan機能と通知配信を担当する。
 
 多言語化と自動翻訳を担当する。
 
+**戦略正本**: `docs/translation-architecture.md`（v1.1, 2026-07-13）
+
+| 方針 | 内容 |
+|------|------|
+| UGC | **投稿時翻訳 + `content_translations` キャッシュ** |
+| 表示 | 投稿 locale ≠ UI locale → **訳文主・原文従** |
+| API | Google Cloud Translation Basic v2 — 本番接続済 |
+| コスト | ~100 MAU は月 50 万文字無料枠内（キャッシュ前提） |
+| デザイン | 翻訳 Nexus トークンのみ — 外部ウィジェット禁止 |
+
 ### Sub Agents
 
 | サブエージェント | 役割 |
@@ -486,7 +496,7 @@ Fan機能と通知配信を担当する。
 | Product Translation Agent | 商品説明翻訳 |
 | Event Translation Agent | イベント情報翻訳 |
 | Work Translation Agent | 案件情報翻訳 |
-| Translation Quality Agent | 翻訳品質チェック |
+| Translation Quality Agent | 翻訳品質チェック・**校正フロー**（`Translation_Manager` §Translation Quality） |
 
 **Agent 定義**: `agents/business/Translation_Manager.agent.md` — `src/lib/i18n/`, `/api/nexus/translate`
 

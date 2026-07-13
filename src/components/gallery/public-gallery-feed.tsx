@@ -10,6 +10,7 @@ type PublicGalleryFeedProps = {
   query?: string;
   engagementByArtwork: Record<string, GalleryArtworkEngagement>;
   userId: string | null;
+  translations?: Record<string, { title?: string }>;
 };
 
 export function PublicGalleryFeed({
@@ -17,6 +18,7 @@ export function PublicGalleryFeed({
   query,
   engagementByArtwork,
   userId,
+  translations = {},
 }: PublicGalleryFeedProps) {
   const t = useContent();
 
@@ -50,6 +52,7 @@ export function PublicGalleryFeed({
           artwork={artwork}
           engagement={engagementByArtwork[artwork.id] ?? defaultEngagement}
           userId={userId}
+          translations={translations[artwork.id]}
         />
       ))}
     </section>

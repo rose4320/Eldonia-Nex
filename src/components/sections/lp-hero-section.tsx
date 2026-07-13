@@ -1,10 +1,14 @@
 import Image from "next/image";
 import { LpButton } from "@/components/ui/lp-button";
-import { LP_ASSETS } from "@/lib/lp/assets";
-import { LP_HERO } from "@/lib/lp/content";
 import { LpFeatureCards } from "@/components/sections/lp-feature-cards";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { LP_ASSETS } from "@/lib/lp/assets";
 
-export function LpHeroSection() {
+export async function LpHeroSection() {
+  const locale = await getUiLocale();
+  const { LP_HERO } = getLpContent(locale);
+
   return (
     <section className="lp-hero relative overflow-hidden">
       <div className="absolute inset-0">

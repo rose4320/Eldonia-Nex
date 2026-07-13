@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FooterTechStack } from "@/components/layout/footer-tech-stack";
 import { BrandLogo } from "@/components/ui/brand-logo";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import type { UiLocale } from "@/lib/i18n/locale";
@@ -7,31 +8,42 @@ import {
   localizedFooterLabel,
   SITE_FOOTER_NAV_LINKS,
 } from "@/lib/layout/footer-links";
-import { MODULE_NAV_LINKS } from "@/lib/layout/nav-links";
+import {
+  getFooterPartners,
+  localizedPartnerRole,
+} from "@/lib/layout/footer-partners";
 
-const TECH_STACK = [
-  "Next.js 16",
-  "Supabase",
-  "PostgreSQL",
-  "Stripe",
-  "Django Admin",
-];
-
+/** Middle column — help + legal (modules live on `/sitemap`). */
 const HELP_LINKS = [
-  { href: "/help", label: { ja: "ヘルプセンター", en: "Help Center", ko: "도움말", "zh-CN": "帮助中心" } },
-  { href: "/help/faq", label: { ja: "よくある質問", en: "FAQ", ko: "FAQ", "zh-CN": "常见问题" } },
-  { href: "/help/guides", label: { ja: "利用ガイド", en: "Guides", ko: "가이드", "zh-CN": "使用指南" } },
-  { href: "/help/contact", label: { ja: "お問い合わせ", en: "Contact", ko: "문의", "zh-CN": "联系我们" } },
-  { href: "/help/tickets", label: { ja: "マイチケット", en: "My Tickets", ko: "내 티켓", "zh-CN": "我的工单" } },
-  { href: "/investors", label: { ja: "投資家・共創パートナー", en: "Investors", ko: "Investors", "zh-CN": "投资者" } },
-  { href: "/terms", label: { ja: "利用規約", en: "Terms of Service", ko: "이용 약관", "zh-CN": "服务条款" } },
-  { href: "/privacy", label: { ja: "プライバシーポリシー", en: "Privacy Policy", ko: "개인정보 처리방침", "zh-CN": "隐私政策" } },
-];
-
-const PARTNERS = [
-  { name: "Nexus Cloud", role: { ja: "インフラ協力", en: "Infrastructure", ko: "인프라", "zh-CN": "基础设施" } },
-  { name: "Creator Guild", role: { ja: "コミュニティ協力", en: "Community Partner", ko: "커뮤니티", "zh-CN": "社区合作" } },
-  { name: "Gold Sponsor Slot", role: { ja: "スポンサー枠", en: "Sponsor Slot", ko: "스폰서", "zh-CN": "赞助位" } },
+  {
+    href: "/help",
+    label: { ja: "ヘルプセンター", en: "Help Center", ko: "도움말", "zh-CN": "帮助中心" },
+  },
+  {
+    href: "/help/faq",
+    label: { ja: "よくある質問", en: "FAQ", ko: "FAQ", "zh-CN": "常见问题" },
+  },
+  {
+    href: "/help/guides",
+    label: { ja: "利用ガイド", en: "Guides", ko: "가이드", "zh-CN": "使用指南" },
+  },
+  {
+    href: "/help/contact",
+    label: { ja: "お問い合わせ", en: "Contact", ko: "문의", "zh-CN": "联系我们" },
+  },
+  {
+    href: "/terms",
+    label: { ja: "利用規約", en: "Terms of Service", ko: "이용 약관", "zh-CN": "服务条款" },
+  },
+  {
+    href: "/privacy",
+    label: {
+      ja: "プライバシーポリシー",
+      en: "Privacy Policy",
+      ko: "개인정보 처리방침",
+      "zh-CN": "隐私政策",
+    },
+  },
 ];
 
 function localizedLabel(
@@ -41,8 +53,10 @@ function localizedLabel(
   return record[locale] ?? record.ja;
 }
 
+/** 3-column site footer: tech / help / partners. */
 export async function SiteFooter() {
   const locale = await getUiLocale();
+  const partners = await getFooterPartners();
 
   return (
     <footer className="eldonia-footer bg-[#020817]">
@@ -59,32 +73,16 @@ export async function SiteFooter() {
         <div className="eldonia-footer-grid mt-8">
           <div>
             <h2 className="eldonia-eyebrow">{uiMessage(locale, "footerTech")}</h2>
-            <ul className="mt-4 space-y-2">
-              {TECH_STACK.map((item) => (
-                <li key={item} className="eldonia-body text-sm text-eldonia-text-muted">
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <FooterTechStack locale={locale} />
           </div>
 
           <div>
             <h2 className="eldonia-eyebrow">{uiMessage(locale, "footerHelp")}</h2>
-            <ul className="mt-4 space-y-2">
+            <ul className="mt-4 list-none space-y-2 p-0">
               {HELP_LINKS.map((link) => (
-                <li key={link.href}>
+                <li key={link.href} className="list-none">
                   <Link href={link.href} className="eldonia-link text-sm">
                     {localizedLabel(link.label, locale)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <p className="eldonia-eyebrow mt-6">{uiMessage(locale, "footerSitemap")}</p>
-            <ul className="mt-3 flex flex-wrap gap-x-3 gap-y-2">
-              {MODULE_NAV_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="eldonia-link text-xs tracking-wider">
-                    {link.label}
                   </Link>
                 </li>
               ))}
@@ -94,14 +92,28 @@ export async function SiteFooter() {
           <div>
             <h2 className="eldonia-eyebrow">{uiMessage(locale, "footerPartners")}</h2>
             <ul className="mt-4 space-y-3">
-              {PARTNERS.map((partner) => (
-                <li key={partner.name} className="text-sm">
-                  <p className="font-display text-eldonia-gold-light">{partner.name}</p>
-                  <p className="eldonia-body text-xs text-eldonia-text-muted">
-                    {localizedLabel(partner.role, locale)}
-                  </p>
-                </li>
-              ))}
+              {partners.map((partner) => {
+                const showLink = Boolean(partner.link_enabled) && Boolean(partner.url);
+                return (
+                  <li key={partner.id ?? partner.name} className="text-sm">
+                    {showLink ? (
+                      <a
+                        href={partner.url!}
+                        className="font-display text-eldonia-gold-light hover:underline"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {partner.name}
+                      </a>
+                    ) : (
+                      <p className="font-display text-eldonia-gold-light">{partner.name}</p>
+                    )}
+                    <p className="eldonia-body text-xs text-eldonia-text-muted">
+                      {localizedPartnerRole(partner.role, locale)}
+                    </p>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         </div>

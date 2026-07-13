@@ -119,8 +119,11 @@ if (html) {
   switch (art?.media_type) {
     case "model":
       assert(
-        html.includes("model-viewer") || html.includes("ArtworkModelViewer"),
-        "3D model-viewer in page",
+        html.includes("model-viewer") ||
+          html.includes("ArtworkModelViewer") ||
+          html.includes("Loading 3D model") ||
+          html.includes("eldonia-model-viewer"),
+        "3D viewer shell in page",
       );
       if (art.media_url) {
         const file = art.media_url.split("/").pop()?.split("?")[0] ?? "";

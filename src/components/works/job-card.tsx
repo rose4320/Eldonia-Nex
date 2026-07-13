@@ -1,19 +1,24 @@
 import Link from "next/link";
-import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
+import { TranslatedContentLine, TagWithHint } from "@/components/i18n/content-line";
 import { formatBudget, jobTypeLabel } from "@/lib/works/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { localizedHint } from "@/lib/i18n/localized-hint";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 import type { JobListingWithPoster } from "@/types/database";
 
-type JobCardProps = { job: JobListingWithPoster };
+type JobCardProps = {
+  job: JobListingWithPoster;
+  translations?: { title?: string; description?: string };
+};
 
-export async function JobCard({ job }: JobCardProps) {
+export async function JobCard({ job, translations }: JobCardProps) {
   const locale = await getUiLocale();
   const pages = getContent(locale).pages;
   const posterFallback = pages.posterFallback;
   const poster = job.profiles?.display_name ?? job.profiles?.username ?? posterFallback;
   const locationHint = job.location ? localizedHint(job.location, locale) : null;
+  const titleLocale = inferSourceLocale(job.title);
 
   return (
     <Link href={`/works/${job.id}`} className="eldonia-job-card group">
@@ -24,8 +29,10 @@ export async function JobCard({ job }: JobCardProps) {
               {pages.works.badgeFeatured}
             </span>
           )}
-          <ContentLine
+          <TranslatedContentLine
             text={job.title}
+            translatedText={translations?.title}
+            sourceLocale={titleLocale}
             locale={locale}
             as="h2"
             className="font-display text-lg text-[var(--eldonia-gold-light)] group-hover:text-[var(--eldonia-gold)]"
@@ -35,8 +42,10 @@ export async function JobCard({ job }: JobCardProps) {
         </div>
         <span className="eldonia-badge-nexus-prime">{jobTypeLabel(job.job_type, locale)}</span>
       </div>
-      <ContentLine
+      <TranslatedContentLine
         text={job.description}
+        translatedText={translations?.description}
+        sourceLocale={inferSourceLocale(job.description, titleLocale)}
         locale={locale}
         as="p"
         className="eldonia-body mt-3 line-clamp-2 text-sm"

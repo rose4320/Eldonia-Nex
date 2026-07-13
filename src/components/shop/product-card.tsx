@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ContentLine } from "@/components/i18n/content-line";
+import { TranslatedContentLine } from "@/components/i18n/content-line";
 import {
   CATEGORY_ICONS,
   discountPercent,
@@ -8,18 +8,21 @@ import {
 } from "@/lib/shop/constants";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
 import type { ShopProductWithSeller } from "@/types/database";
 import { StarRating } from "./star-rating";
 
 type ProductCardProps = {
   product: ShopProductWithSeller;
+  translations?: { title?: string; description?: string };
 };
 
-export async function ProductCard({ product }: ProductCardProps) {
+export async function ProductCard({ product, translations }: ProductCardProps) {
   const locale = await getUiLocale();
   const t = getContent(locale);
   const discount = discountPercent(product.price, product.compare_at_price);
   const icon = CATEGORY_ICONS[product.category] ?? "◆";
+  const titleLocale = inferSourceLocale(product.title);
 
   return (
     <Link href={`/shop/${product.id}`} className="eldonia-product-card group">
@@ -28,7 +31,7 @@ export async function ProductCard({ product }: ProductCardProps) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={product.image_url}
-            alt={product.title}
+            alt={translations?.title ?? product.title}
             className="h-full w-full object-cover transition-transform group-hover:scale-[1.03]"
           />
         ) : (
@@ -46,8 +49,10 @@ export async function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        <ContentLine
+        <TranslatedContentLine
           text={product.title}
+          translatedText={translations?.title}
+          sourceLocale={titleLocale}
           locale={locale}
           as="h2"
           className="line-clamp-2 text-sm leading-snug text-[var(--eldonia-text)] group-hover:text-[var(--eldonia-gold-light)]"

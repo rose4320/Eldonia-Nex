@@ -9,22 +9,29 @@ import type { ArtworkFormat, ArtworkPage } from "@/types/database";
 
 type ArtworkPageViewerProps = {
   title: string;
+  artworkId?: string;
   category: string;
   format: ArtworkFormat;
   pageCount: number;
   coverUrl: string | null;
   pages: ArtworkPage[];
   bgmUrl?: string | null;
+  /** Optional 1-based page_index → localized caption */
+  captionByPageIndex?: Record<number, string> | null;
 };
 
-function buildSlides(coverUrl: string | null, pages: ArtworkPage[]): PhotoSlide[] {
+function buildSlides(
+  coverUrl: string | null,
+  pages: ArtworkPage[],
+  captionByPageIndex?: Record<number, string> | null,
+): PhotoSlide[] {
   const ordered: PhotoSlide[] = [];
   if (coverUrl) {
     ordered.push({
       id: "cover",
       page_index: 1,
       media_url: coverUrl,
-      caption: null,
+      caption: captionByPageIndex?.[1] ?? null,
     });
   }
   for (const page of pages) {
@@ -32,7 +39,7 @@ function buildSlides(coverUrl: string | null, pages: ArtworkPage[]): PhotoSlide[
       id: page.id,
       page_index: page.page_index,
       media_url: page.media_url,
-      caption: page.caption,
+      caption: captionByPageIndex?.[page.page_index] ?? page.caption,
     });
   }
   return ordered.sort((a, b) => a.page_index - b.page_index);
@@ -40,19 +47,21 @@ function buildSlides(coverUrl: string | null, pages: ArtworkPage[]): PhotoSlide[
 
 export function ArtworkPageViewer({
   title,
+  artworkId,
   category,
   format,
   pageCount,
   coverUrl,
   pages,
   bgmUrl,
+  captionByPageIndex = null,
 }: ArtworkPageViewerProps) {
   const locale = useLocale();
   const { pages: pageCopy } = useContent();
   const gallery = pageCopy.gallery;
   const [index, setIndex] = useState(0);
 
-  const ordered = buildSlides(coverUrl, pages);
+  const ordered = buildSlides(coverUrl, pages, captionByPageIndex);
 
   const goPrev = useCallback(() => {
     setIndex((value) => Math.max(0, value - 1));
@@ -79,6 +88,7 @@ export function ArtworkPageViewer({
   if (isPhotoAlbum) {
     return (
       <PhotoAlbumSlideshow
+        key={`${artworkId ?? title}-${locale}`}
         title={title}
         format={format}
         category={category}

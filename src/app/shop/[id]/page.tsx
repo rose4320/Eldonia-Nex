@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ContentLine, TagWithHint } from "@/components/i18n/content-line";
+import { ContentLine, TagWithHint, TranslatedContentLine } from "@/components/i18n/content-line";
+import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
+import { getProductDetailTranslations } from "@/lib/translation/list-translations";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ProductBuyBox } from "@/components/shop/product-buy-box";
@@ -36,9 +38,11 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
   const sellerName =
     product.profiles?.display_name ??
     product.profiles?.username ??
-    "Eldonia Seller";
+    t.pages.sellerFallback;
   const icon = CATEGORY_ICONS[product.category] ?? "◆";
   const description = product.description ?? t.shop.descriptionPending;
+  const contentTranslations = await getProductDetailTranslations(product, locale);
+  const titleLocale = inferSourceLocale(product.title);
   const access = await getShopProductBuyerAccess(user?.id, product);
   const canDownload =
     productHasDownloadFile(product) && access.canDownload;
@@ -73,8 +77,10 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
             </div>
 
             <section className="eldonia-card">
-              <ContentLine
+              <TranslatedContentLine
                 text={product.title}
+                translatedText={contentTranslations.title}
+                sourceLocale={titleLocale}
                 locale={locale}
                 as="h1"
                 className="eldonia-heading eldonia-heading-sm"
@@ -97,8 +103,10 @@ export default async function ShopDetailPage({ params }: ShopDetailPageProps) {
               </div>
 
               <h2 className="eldonia-label">{t.shop.aboutHeading}</h2>
-              <ContentLine
+              <TranslatedContentLine
                 text={description}
+                translatedText={contentTranslations.description}
+                sourceLocale={inferSourceLocale(description, titleLocale)}
                 locale={locale}
                 as="p"
                 className="eldonia-body mt-3 whitespace-pre-wrap text-sm"

@@ -114,18 +114,54 @@ export function formatBadgeLabel(
 ): string | null {
   if (format === "multi_page" || pageCount > 1) {
     if (category === "manga") {
-      return locale === "ja" ? `全${pageCount}P` : `${pageCount} pages`;
+      switch (locale) {
+        case "ja":
+          return `全${pageCount}P`;
+        case "ko":
+          return `총 ${pageCount}P`;
+        case "zh-CN":
+          return `共${pageCount}页`;
+        default:
+          return `${pageCount} pages`;
+      }
     }
     if (category === "photo") {
-      return locale === "ja" ? `${pageCount}枚` : `${pageCount} photos`;
+      switch (locale) {
+        case "ja":
+          return `${pageCount}枚`;
+        case "ko":
+          return `${pageCount}장`;
+        case "zh-CN":
+          return `${pageCount}张`;
+        default:
+          return `${pageCount} photos`;
+      }
     }
-    return locale === "ja" ? `${pageCount}ページ` : `${pageCount} pages`;
+    switch (locale) {
+      case "ja":
+        return `${pageCount}ページ`;
+      case "ko":
+        return `${pageCount}페이지`;
+      case "zh-CN":
+        return `${pageCount}页`;
+      default:
+        return `${pageCount} pages`;
+    }
   }
   if (format === "story" || category === "story") {
     return categoryLabel("story", locale);
   }
   if (format === "series_album") {
-    return locale === "ja" ? "シリーズ" : "Series";
+    switch (locale) {
+      case "ja":
+        return "シリーズ";
+      case "ko":
+        return "시리즈";
+      case "zh-CN":
+        return "系列";
+      default:
+        return "Series";
+    }
   }
   return null;
 }

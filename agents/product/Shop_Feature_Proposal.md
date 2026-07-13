@@ -1069,7 +1069,9 @@ Sub Agent: **Shipping**
 
 ### 3.15 Shop 商品翻訳（採用）
 
-`docs/translation-architecture.md` Layer 2 に準拠。UI ロケール `ja` / `en` / `ko` / `zh-CN` で商品名・説明を表示。
+`docs/translation-architecture.md` v1.1（2026-07-13）Layer 2 に準拠。UI ロケール `ja` / `en` / `ko` / `zh-CN` で商品名・説明を表示。
+
+**表示方針**: 購入者 UI locale ≠ `source_locale` のとき **キャッシュ訳を主表示**、原文は `ContentLine` / `eldonia-localized-hint` で従表示。Google ウィジェットは使わない。
 
 #### 対象フィールド
 

@@ -19,27 +19,15 @@ export function localizedFooterLabel(
   return record[locale] ?? record.ja;
 }
 
-/** 未ログイン LP（`/lp`）向け — セクションアンカーは LP 内 */
+/** Legal / utility strip under the 3-column SiteFooter. Full directory: `/sitemap`. */
 export const LP_FOOTER_NAV_LINKS: FooterNavLink[] = [
   {
-    href: "/lp#services",
-    label: { ja: "サービス一覧", en: "Services", ko: "서비스", "zh-CN": "服务一览" },
+    href: "/sitemap",
+    label: { ja: "サイトマップ", en: "Sitemap", ko: "사이트맵", "zh-CN": "站点地图" },
   },
   {
-    href: "/lp#world",
-    label: { ja: "ワールドガイド", en: "World Guide", ko: "월드 가이드", "zh-CN": "世界指南" },
-  },
-  {
-    href: "/lp#plans",
-    label: { ja: "料金プラン", en: "Plans", ko: "요금 플랜", "zh-CN": "定价方案" },
-  },
-  {
-    href: "/help/guides",
-    label: { ja: "スタートガイド", en: "Getting Started", ko: "시작 가이드", "zh-CN": "入门指南" },
-  },
-  {
-    href: "/investors",
-    label: { ja: "運営・パートナー", en: "About & Partners", ko: "운영·파트너", "zh-CN": "运营与伙伴" },
+    href: "/help",
+    label: { ja: "ヘルプ", en: "Help", ko: "도움말", "zh-CN": "帮助" },
   },
   {
     href: "/help/contact",
@@ -47,35 +35,23 @@ export const LP_FOOTER_NAV_LINKS: FooterNavLink[] = [
   },
   {
     href: "/terms",
-    label: { ja: "利用規約", en: "Terms of Service", ko: "이용 약관", "zh-CN": "服务条款" },
+    label: { ja: "利用規約", en: "Terms", ko: "이용 약관", "zh-CN": "服务条款" },
   },
   {
     href: "/privacy",
-    label: { ja: "プライバシーポリシー", en: "Privacy Policy", ko: "개인정보 처리방침", "zh-CN": "隐私政策" },
+    label: { ja: "プライバシー", en: "Privacy", ko: "개인정보", "zh-CN": "隐私" },
   },
 ];
 
-/** ログイン後 SiteFooter 向け — Home / アプリ内ルート */
+/** SiteFooter utility strip (same as LP legal links). */
 export const SITE_FOOTER_NAV_LINKS: FooterNavLink[] = [
   {
-    href: "/#modules",
-    label: { ja: "サービス一覧", en: "Services", ko: "서비스", "zh-CN": "服务一览" },
+    href: "/sitemap",
+    label: { ja: "サイトマップ", en: "Sitemap", ko: "사이트맵", "zh-CN": "站点地图" },
   },
   {
-    href: "/#world",
-    label: { ja: "ワールドガイド", en: "World Guide", ko: "월드 가이드", "zh-CN": "世界指南" },
-  },
-  {
-    href: "/settings/plan",
-    label: { ja: "料金プラン", en: "Plans", ko: "요금 플랜", "zh-CN": "定价方案" },
-  },
-  {
-    href: "/help/guides",
-    label: { ja: "スタートガイド", en: "Getting Started", ko: "시작 가이드", "zh-CN": "入门指南" },
-  },
-  {
-    href: "/investors",
-    label: { ja: "運営・パートナー", en: "About & Partners", ko: "운영·파트너", "zh-CN": "运营与伙伴" },
+    href: "/help",
+    label: { ja: "ヘルプ", en: "Help", ko: "도움말", "zh-CN": "帮助" },
   },
   {
     href: "/help/contact",
@@ -83,10 +59,10 @@ export const SITE_FOOTER_NAV_LINKS: FooterNavLink[] = [
   },
   {
     href: "/terms",
-    label: { ja: "利用規約", en: "Terms of Service", ko: "이용 약관", "zh-CN": "服务条款" },
+    label: { ja: "利用規約", en: "Terms", ko: "이용 약관", "zh-CN": "服务条款" },
   },
   {
     href: "/privacy",
-    label: { ja: "プライバシーポリシー", en: "Privacy Policy", ko: "개인정보 처리방침", "zh-CN": "隐私政策" },
+    label: { ja: "プライバシー", en: "Privacy", ko: "개인정보", "zh-CN": "隐私" },
   },
 ];

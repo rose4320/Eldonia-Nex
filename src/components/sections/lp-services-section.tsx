@@ -2,14 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { LpCard } from "@/components/ui/lp-card";
 import { LpSectionTitle } from "@/components/ui/lp-section-title";
+import { getLpContent } from "@/lib/i18n/content/lp-messages";
+import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { LP_ASSETS, LP_IMAGE_SIZE } from "@/lib/lp/assets";
-import { LP_SERVICES } from "@/lib/lp/content";
 
 function moduleIconSize(key: string) {
   return key === "lab" ? LP_IMAGE_SIZE.labIcon : LP_IMAGE_SIZE.moduleIcon;
 }
 
-export function LpServicesSection() {
+export async function LpServicesSection() {
+  const locale = await getUiLocale();
+  const { LP_SERVICES } = getLpContent(locale);
+
   return (
     <section id="services" className="scroll-mt-24 px-3 py-6 sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[1240px]">
@@ -26,7 +30,6 @@ export function LpServicesSection() {
                 hover
                 className="lp-service-card flex flex-col overflow-hidden"
               >
-                {/* Scene banner */}
                 <div className="relative h-36 w-full sm:h-40">
                   <Image
                     src={LP_ASSETS.serviceBg[service.key as keyof typeof LP_ASSETS.serviceBg]}
@@ -41,7 +44,6 @@ export function LpServicesSection() {
                   />
                 </div>
 
-                {/* Content */}
                 <div className="relative -mt-9 flex flex-1 flex-col items-center px-5 pb-5 text-center">
                   <div className="flex h-16 w-16 shrink-0 items-center justify-center">
                     <Image

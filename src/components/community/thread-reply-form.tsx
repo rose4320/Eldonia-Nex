@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useContent, useLocale } from "@/components/providers/locale-provider";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import { createClient } from "@/lib/supabase/client";
+import { requestTranslationWarm } from "@/lib/translation/request-warm";
 
 type ThreadReplyFormProps = {
   threadId: string;
@@ -44,6 +45,12 @@ export function ThreadReplyForm({ threadId, userId }: ThreadReplyFormProps) {
     }
 
     await awardUserExp(supabase, "community.reply", data.id);
+    requestTranslationWarm({
+      entityType: "community_reply",
+      entityId: data.id,
+      sourceLocale: locale,
+      fields: [{ fieldName: "body", text: body.trim() }],
+    });
     setBody("");
     setLoading(false);
     router.refresh();

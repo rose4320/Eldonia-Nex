@@ -181,6 +181,42 @@
 
 ---
 
+## 翻訳 Nexus UX（UGC）
+
+**正本**: `docs/translation-architecture.md`
+
+Dark Fantasy を崩さずグローバル可読性を上げる。Google ウィジェット・白背景オーバーレイは **禁止**。
+
+### 表示ルール
+
+| 条件 | 主表示 | 従表示 |
+|------|--------|--------|
+| 投稿言語 ≠ UI 言語 | 訳文（通常 `eldonia-body`） | 原文（`.eldonia-localized-hint` / italic / dim） |
+| 投稿言語 = UI 言語 | 原文のみ | 翻訳 UI 非表示 |
+
+### トークン（既存のみ使用）
+
+| クラス | 用途 |
+|--------|------|
+| `.eldonia-badge-nexus-prime` | 翻訳 Nexus バッジ（10px） |
+| `.eldonia-localized-hint` | 一覧・副次原文 |
+| `.eldonia-localized-hint-inline` | タグ・短い括弧訳 |
+| `.eldonia-nexus-translation` | 訳文ブロック枠（詳細） |
+| `--eldonia-gold-muted` | 訳文テキスト（詳細パネル） |
+| `--eldonia-text-dim` | 原文ヒント |
+
+### コンポーネント
+
+- 詳細: `TranslationPanel` — バッジ + 言語 `<select>` + 「原文を見る」リンク
+- 一覧: `ContentLine` — 訳タイトル主、原文は括弧ヒント
+- 禁止: 外部翻訳バー、ライトテーマ、目立つ「Powered by Google」帯
+
+### ローディング
+
+訳文取得中は原文を skeleton またはそのまま表示 → 訳到着後に差し替え。レイアウトシフトを最小化。
+
+---
+
 ## 新規画面チェックリスト
 
 - [ ] `.eldonia-page` + `SiteHeader` + `SiteFooter` を使用
