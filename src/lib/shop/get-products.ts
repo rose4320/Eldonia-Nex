@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { ShopProductWithSeller } from "@/types/database";
+import { dedupeShopProducts } from "./dedupe-products";
 import { SAMPLE_PRODUCTS } from "./sample-products";
 
 type ProductFilters = {
@@ -50,12 +51,12 @@ export async function getShopProducts(
       .order("created_at", { ascending: false });
 
     if (error || !data?.length) {
-      return filterProducts(SAMPLE_PRODUCTS, filters);
+      return filterProducts(dedupeShopProducts(SAMPLE_PRODUCTS), filters);
     }
 
-    return filterProducts(data as ShopProductWithSeller[], filters);
+    return filterProducts(dedupeShopProducts(data as ShopProductWithSeller[]), filters);
   } catch {
-    return filterProducts(SAMPLE_PRODUCTS, filters);
+    return filterProducts(dedupeShopProducts(SAMPLE_PRODUCTS), filters);
   }
 }
 

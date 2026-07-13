@@ -8,6 +8,10 @@ import { ShopSidebar } from "@/components/shop/shop-sidebar";
 import { ShopToolbar } from "@/components/shop/shop-toolbar";
 import { LpSectionRule } from "@/components/ui/lp-section-rule";
 import { getShopProducts } from "@/lib/shop/get-products";
+import {
+  excludeProductIds,
+  pickFeaturedProducts,
+} from "@/lib/shop/dedupe-products";
 import { getContent } from "@/lib/i18n/content/messages";
 import { getUiLocale } from "@/lib/i18n/get-ui-locale";
 import { MODULE_ICONS } from "@/lib/layout/module-icons";
@@ -22,6 +26,9 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
   const t = getContent(locale);
   const { q, category = "all" } = await searchParams;
   const products = await getShopProducts({ q, category });
+  const featuredProducts = pickFeaturedProducts(products, 3);
+  const featuredIds = new Set(featuredProducts.map((product) => product.id));
+  const gridProducts = excludeProductIds(products, featuredIds);
 
   const heading =
     q?.trim()
@@ -49,12 +56,16 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
           <ShopSidebar activeCategory={category} query={q} />
 
           <div className="flex min-w-0 flex-col gap-8">
-            <ShopHeroStrip products={products} />
+            <ShopHeroStrip products={featuredProducts} />
 
+            {gridProducts.length > 0 || products.length === 0 ? (
             <section>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
                 <h2 className="font-display text-sm tracking-wider text-[var(--eldonia-gold-muted)] uppercase">
-                  {t.common.countItems(products.length, t.shop.productUnit)}
+                  {t.common.countItems(
+                    gridProducts.length > 0 ? gridProducts.length : products.length,
+                    t.shop.productUnit,
+                  )}
                 </h2>
                 {(q || category !== "all") && (
                   <Link href="/shop" className="eldonia-link text-sm">
@@ -72,12 +83,13 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
                 </div>
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                  {products.map((product) => (
+                  {gridProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               )}
             </section>
+            ) : null}
           </div>
         </div>
       </main>

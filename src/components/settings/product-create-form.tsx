@@ -75,6 +75,21 @@ export function ProductCreateForm({
     }
 
     const supabase = createClient();
+
+    const { data: duplicate } = await supabase
+      .from("shop_products")
+      .select("id")
+      .eq("seller_id", userId)
+      .eq("is_active", true)
+      .ilike("title", title.trim())
+      .maybeSingle();
+
+    if (duplicate) {
+      setError(product.errDuplicate);
+      setLoading(false);
+      return;
+    }
+
     const { data, error: insertError } = await supabase
       .from("shop_products")
       .insert({

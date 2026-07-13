@@ -9,10 +9,9 @@ type ShopHeroStripProps = {
   products: ShopProductWithSeller[];
 };
 
-export async function ShopHeroStrip({ products }: ShopHeroStripProps) {
+export async function ShopHeroStrip({ products: featured }: ShopHeroStripProps) {
   const locale = await getUiLocale();
   const { shop } = getContent(locale);
-  const featured = products.filter((p) => p.is_bestseller || p.is_nexus_choice).slice(0, 3);
 
   if (featured.length === 0) return null;
 

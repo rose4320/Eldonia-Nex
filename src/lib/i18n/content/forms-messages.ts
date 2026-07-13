@@ -132,6 +132,7 @@ export type FormsContent = {
     submitting: string;
     errPrice: string;
     errSave: string;
+    errDuplicate: string;
   };
   event: {
     title: string;
@@ -417,6 +418,7 @@ const FORMS_JA: FormsContent = {
     submitting: "登録中...",
     errPrice: "価格を正しく入力してください。",
     errSave: "商品の登録に失敗しました。",
+    errDuplicate: "同じタイトルの出品中商品が既にあります。設定の Shop 管理から確認してください。",
   },
   event: {
     title: "イベント名",
@@ -694,6 +696,7 @@ const FORMS_EN: FormsContent = {
     submitting: "Saving…",
     errPrice: "Enter a valid price.",
     errSave: "Could not save product.",
+    errDuplicate: "You already have an active product with this title. Check Shop management in Settings.",
   },
   event: {
     title: "Event name",
