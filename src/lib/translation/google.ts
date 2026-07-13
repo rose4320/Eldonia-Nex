@@ -31,7 +31,10 @@ export async function translateTextWithGoogle(params: {
     return { translatedText: params.text, sourceHash };
   }
 
-  const apiKey = params.apiKey ?? process.env.GOOGLE_TRANSLATE_API_KEY;
+  const apiKey =
+    params.apiKey ??
+    process.env.GOOGLE_TRANSLATE_API_KEY ??
+    process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     throw new Error("GOOGLE_TRANSLATE_API_KEY is not configured.");

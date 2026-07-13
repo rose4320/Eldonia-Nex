@@ -1,8 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useContent } from "@/components/providers/locale-provider";
-import { NEXUS_LOCALES, type NexusLocale } from "@/lib/nexus-translate/translate";
+import { useEffect, useState } from "react";
+import { useContent, useLocale } from "@/components/providers/locale-provider";
+import {
+  listNexusTargetLocales,
+  normalizeNexusLocale,
+  resolveNexusTarget,
+  type NexusLocale,
+} from "@/lib/nexus-translate/translate";
 
 type TranslationPanelProps = {
   text: string;
@@ -14,17 +19,35 @@ type TranslationPanelProps = {
 export function TranslationPanel({
   text,
   sourceLocale = "ja",
-  defaultTarget = "en",
+  defaultTarget,
   compact = false,
 }: TranslationPanelProps) {
   const { pages } = useContent();
+  const uiLocale = useLocale();
   const nexus = pages.community;
-  const [target, setTarget] = useState<NexusLocale>(defaultTarget);
+  const source = normalizeNexusLocale(sourceLocale);
+  const targetOptions = listNexusTargetLocales(source);
+  const preferredTarget = resolveNexusTarget(
+    source,
+    defaultTarget ?? uiLocale,
+  );
+  const [target, setTarget] = useState<NexusLocale>(preferredTarget);
   const [translated, setTranslated] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTranslation, setShowTranslation] = useState(false);
+
+  useEffect(() => {
+    setTarget((current) =>
+      current !== source && targetOptions.some((locale) => locale.value === current)
+        ? current
+        : preferredTarget,
+    );
+    setShowTranslation(false);
+    setTranslated(null);
+    setError(null);
+  }, [source, preferredTarget, targetOptions]);
 
   async function handleTranslate() {
     setLoading(true);
@@ -33,7 +56,7 @@ export function TranslationPanel({
       const res = await fetch("/api/nexus/translate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, target, source: sourceLocale }),
+        body: JSON.stringify({ text, target, source }),
       });
       const data = (await res.json()) as {
         translated?: string;
@@ -54,7 +77,7 @@ export function TranslationPanel({
     }
   }
 
-  if (sourceLocale === target && !showTranslation) {
+  if (targetOptions.length === 0) {
     return null;
   }
 
@@ -68,11 +91,12 @@ export function TranslationPanel({
             setTarget(e.target.value as NexusLocale);
             setShowTranslation(false);
             setTranslated(null);
+            setError(null);
           }}
           className="rounded border border-[var(--eldonia-border)] bg-[var(--eldonia-surface)] px-2 py-1 text-xs"
           aria-label={nexus.nexusTargetAria}
         >
-          {NEXUS_LOCALES.filter((l) => l.value !== sourceLocale).map((locale) => (
+          {targetOptions.map((locale) => (
             <option key={locale.value} value={locale.value}>
               {locale.label}
             </option>

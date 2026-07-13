@@ -7,6 +7,31 @@ export const NEXUS_LOCALES: { value: NexusLocale; label: string }[] = [
   { value: "zh-CN", label: "中文" },
 ];
 
+export function normalizeNexusLocale(value: string | undefined): NexusLocale {
+  if (value && NEXUS_LOCALES.some((locale) => locale.value === value)) {
+    return value as NexusLocale;
+  }
+  return "ja";
+}
+
+/** 翻訳先の初期値（ソース言語と UI 言語を考慮）。 */
+export function resolveNexusTarget(
+  source: NexusLocale,
+  preferred?: string,
+): NexusLocale {
+  const preferredLocale = normalizeNexusLocale(preferred);
+  if (preferredLocale !== source) {
+    return preferredLocale;
+  }
+  return (
+    NEXUS_LOCALES.find((locale) => locale.value !== source)?.value ?? "en"
+  );
+}
+
+export function listNexusTargetLocales(source: NexusLocale) {
+  return NEXUS_LOCALES.filter((locale) => locale.value !== source);
+}
+
 const JA_TO_EN: Record<string, string> = {
   ようこそ: "Welcome",
   クリエイター: "creator",
