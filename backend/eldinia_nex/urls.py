@@ -19,9 +19,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
+from django.views.generic import RedirectView
 
 from users.views import referral_program_status, sync_plans_view, sync_supabase_user_view
 from marketplace.catalog_views import sync_supabase_catalog_view
+from content.views import footer_partners_list
 from .views import community_page
 
 
@@ -41,12 +43,14 @@ def api_health_check(_request):
 
 
 urlpatterns = [
+    path("", RedirectView.as_view(url="/admin/", permanent=False), name="root"),
     path("admin/", admin.site.urls),
     path("api/v1/health/", api_health_check, name="api_health"),
     path("api/v1/referrals/status/", referral_program_status, name="referral_program_status"),
     path("api/v1/users/sync/", sync_supabase_user_view, name="sync_supabase_user"),
     path("api/v1/plans/sync/", sync_plans_view, name="sync_plans"),
     path("api/v1/catalog/sync/", sync_supabase_catalog_view, name="sync_supabase_catalog"),
+    path("api/v1/footer/partners/", footer_partners_list, name="footer_partners"),
     path("community/", community_page, name="community"),
     # path('api/v1/users/', include('users.urls')),
     # path('api/v1/content/', include('content.urls')),
