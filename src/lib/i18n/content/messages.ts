@@ -179,6 +179,9 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       memberCount: (n) => `${n} 人のメンバー`,
       previewLink: "ルーム UI をプレビュー →",
       previewBanner: "プレビュー（デモデータ・保存されません）",
+      accessHint:
+        "プレビューは誰でも操作できます。本番の共同作業 Lab はメンバーのみ入れます。",
+      guestLead: "共同作業 Lab を開くにはログインが必要です。UI はプレビューで試せます。",
     },
     help: {
       eyebrow: "Help Center",
@@ -352,6 +355,9 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       memberCount: (n) => `${n} members`,
       previewLink: "Preview room UI →",
       previewBanner: "Preview (demo data — nothing is saved)",
+      accessHint:
+        "Anyone can try the preview. Real collaborative Labs are members only.",
+      guestLead: "Sign in to open a real Lab. Try the room UI in preview anytime.",
     },
     help: {
       eyebrow: "Help Center",
@@ -525,6 +531,9 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       memberCount: (n) => `${n}명 참여`,
       previewLink: "룸 UI 미리보기 →",
       previewBanner: "미리보기 (데모 데이터 · 저장되지 않음)",
+      accessHint:
+        "미리보기는 누구나 조작할 수 있습니다. 실제 공동 작업 Lab은 멤버만 입장할 수 있습니다.",
+      guestLead: "실제 Lab을 열려면 로그인이 필요합니다. UI는 미리보기에서 체험할 수 있습니다.",
     },
     help: {
       eyebrow: "Help Center",
@@ -697,6 +706,8 @@ export const CONTENT: Record<UiLocale, ContentCatalog> = {
       memberCount: (n) => `${n} 位成员`,
       previewLink: "预览房间 UI →",
       previewBanner: "预览（演示数据 · 不会保存）",
+      accessHint: "预览任何人都能操作。正式共同创作 Lab 仅成员可进入。",
+      guestLead: "打开正式 Lab 需要登录。可随时在预览中试用房间 UI。",
     },
     help: {
       eyebrow: "Help Center",

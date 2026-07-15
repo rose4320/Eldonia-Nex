@@ -19,6 +19,7 @@
 - **Publish Version**: Gallery / Works 向け成果ポインタ（`kind = publish`）→ DB 保存済み。メディア書き出しは次フェーズ
 - **Folders / Assets**: `lab_folders` / `lab_assets` + Storage（`044_lab_assets.sql`）
 - **Chat Realtime**: `useLabChatRealtime`（`collab_lab_posts`）
+- **アクセス**: `/lab/preview` は誰でも操作可（ローカルデモ・DB 非書き込み）。本番 Lab（`/gallery/[id]/lab`）はメンバーのみ（ページガード + RLS）
 - 物理削除しない（`archived`）。復元はリーダー（プレビューはデモで全員可）
 - スキーマ: `039_lab_snapshots.sql`, `044_lab_assets.sql` / 型: `src/lib/lab/lab-snapshot.ts`, `lab-assets.ts`
 

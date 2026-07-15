@@ -188,6 +188,9 @@ export type ContentCatalog = {
     memberCount: (n: number) => string;
     previewLink: string;
     previewBanner: string;
+    /** Preview is open to anyone; real Lab is members-only. */
+    accessHint: string;
+    guestLead: string;
   };
   help: {
     eyebrow: string;

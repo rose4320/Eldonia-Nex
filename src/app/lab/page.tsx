@@ -32,15 +32,21 @@ export default async function LabHubPage() {
           iconSrc={MODULE_ICONS.lab}
         />
 
+        <p className="eldonia-hint text-xs text-eldonia-text-muted">{t.lab.accessHint}</p>
+
         <LpSectionRule />
 
         {!user ? (
-          <div className="eldonia-card text-center">
-            <p className="eldonia-body text-sm">
-              <Link href="/auth/login?redirect_to=/lab" className="eldonia-link">
+          <div className="eldonia-card space-y-4 px-6 py-8 text-center">
+            <p className="eldonia-body text-sm">{t.lab.guestLead}</p>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Link href="/auth/login?redirect_to=/lab" className="eldonia-link text-sm">
                 {t.chrome.login}
               </Link>
-            </p>
+              <Link href="/lab/preview" className="eldonia-btn-secondary text-xs">
+                {t.lab.previewLink}
+              </Link>
+            </div>
           </div>
         ) : labs.length === 0 ? (
           <div className="eldonia-card-dashed px-6 py-10 text-center">
@@ -55,40 +61,48 @@ export default async function LabHubPage() {
             </div>
           </div>
         ) : (
-          <ul className="space-y-3">
-            {labs.map((lab) => (
-              <li key={lab.id}>
-                <Link
-                  href={`/gallery/${lab.artwork_id}/lab`}
-                  className="eldonia-card flex gap-4 transition hover:border-eldonia-gold/50"
-                >
-                  {lab.artworkThumb ? (
-                    <img
-                      src={lab.artworkThumb}
-                      alt=""
-                      className="h-16 w-16 shrink-0 rounded-md border border-eldonia-border object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-md border border-eldonia-border bg-eldonia-surface text-xs text-eldonia-text-dim">
-                      LAB
+          <>
+            <ul className="space-y-3">
+              {labs.map((lab) => (
+                <li key={lab.id}>
+                  <Link
+                    href={`/gallery/${lab.artwork_id}/lab`}
+                    className="eldonia-card flex gap-4 transition hover:border-eldonia-gold/50"
+                  >
+                    {lab.artworkThumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- hub thumb; remote URLs vary
+                      <img
+                        src={lab.artworkThumb}
+                        alt=""
+                        className="h-16 w-16 shrink-0 rounded-md border border-eldonia-border object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-md border border-eldonia-border bg-eldonia-surface text-xs text-eldonia-text-dim">
+                        LAB
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display text-sm font-semibold text-eldonia-gold-light">
+                        {lab.title}
+                      </p>
+                      <p className="eldonia-body mt-1 truncate text-xs text-eldonia-text-muted">
+                        {lab.artworkTitle}
+                      </p>
+                      <p className="eldonia-hint mt-2 text-xs">
+                        {t.lab.memberCount(lab.memberCount)} ·{" "}
+                        {new Date(lab.created_at).toLocaleDateString(dateLocale)}
+                      </p>
                     </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <p className="font-display text-sm font-semibold text-eldonia-gold-light">
-                      {lab.title}
-                    </p>
-                    <p className="eldonia-body mt-1 truncate text-xs text-eldonia-text-muted">
-                      {lab.artworkTitle}
-                    </p>
-                    <p className="eldonia-hint mt-2 text-xs">
-                      {t.lab.memberCount(lab.memberCount)} ·{" "}
-                      {new Date(lab.created_at).toLocaleDateString(dateLocale)}
-                    </p>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="text-center">
+              <Link href="/lab/preview" className="eldonia-link text-xs">
+                {t.lab.previewLink}
+              </Link>
+            </p>
+          </>
         )}
       </main>
       <SiteFooter />
