@@ -143,6 +143,61 @@ export type CollabLabPostWithAuthor = CollabLabPost & {
   profiles: Pick<Profile, "display_name" | "username" | "avatar_url"> | null;
 };
 
+export type LabSnapshotKind = "snapshot" | "publish";
+
+export type LabSnapshotRow = {
+  id: string;
+  lab_id: string;
+  created_by: string;
+  label: string;
+  kind: LabSnapshotKind;
+  schema_version: number;
+  payload: Record<string, unknown>;
+  archived: boolean;
+  archived_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LabFolderKind =
+  | "project"
+  | "lore"
+  | "timeline"
+  | "framework"
+  | "media"
+  | "archive";
+
+export type LabFolderRow = {
+  id: string;
+  lab_id: string;
+  name: string;
+  kind: LabFolderKind;
+  sort_order: number;
+  archived: boolean;
+  archived_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type LabAssetKind = "image" | "audio" | "video" | "doc" | "other";
+
+export type LabAssetRow = {
+  id: string;
+  lab_id: string;
+  folder_id: string;
+  name: string;
+  ext: string;
+  kind: LabAssetKind;
+  storage_path: string | null;
+  public_url: string | null;
+  archived: boolean;
+  archived_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type ArtworkFormat = "single" | "multi_page" | "story" | "series_album";
 
 export type Artwork = {
@@ -1478,6 +1533,79 @@ export type Database = {
           created_at?: string;
         };
         Update: Record<string, never>;
+        Relationships: [];
+      };
+      lab_snapshots: {
+        Row: LabSnapshotRow;
+        Insert: {
+          id?: string;
+          lab_id: string;
+          created_by: string;
+          label: string;
+          kind?: LabSnapshotKind;
+          schema_version?: number;
+          payload?: Record<string, unknown>;
+          archived?: boolean;
+          archived_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          label?: string;
+          archived?: boolean;
+          archived_at?: string | null;
+          payload?: Record<string, unknown>;
+        };
+        Relationships: [];
+      };
+      lab_folders: {
+        Row: LabFolderRow;
+        Insert: {
+          id?: string;
+          lab_id: string;
+          name: string;
+          kind?: LabFolderKind;
+          sort_order?: number;
+          archived?: boolean;
+          archived_at?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          kind?: LabFolderKind;
+          sort_order?: number;
+          archived?: boolean;
+          archived_at?: string | null;
+        };
+        Relationships: [];
+      };
+      lab_assets: {
+        Row: LabAssetRow;
+        Insert: {
+          id?: string;
+          lab_id: string;
+          folder_id: string;
+          name: string;
+          ext?: string;
+          kind?: LabAssetKind;
+          storage_path?: string | null;
+          public_url?: string | null;
+          archived?: boolean;
+          archived_at?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          folder_id?: string;
+          archived?: boolean;
+          archived_at?: string | null;
+          public_url?: string | null;
+          storage_path?: string | null;
+        };
         Relationships: [];
       };
     };

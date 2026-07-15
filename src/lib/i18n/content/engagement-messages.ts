@@ -77,6 +77,7 @@ export type EngagementContent = {
       snapshotPublishSaved: (label: string) => string;
       snapshotRestored: (label: string) => string;
       snapshotArchived: string;
+      snapshotSaveFailed: string;
       snapshotRestoreConfirm: (label: string) => string;
       snapshotPublishDefault: (n: number) => string;
       youAreLeader: string;
@@ -129,6 +130,8 @@ export type EngagementContent = {
       timelinePlay: string;
       timelinePause: string;
       timelineScrub: string;
+      timelineAudioNeedsUrl: string;
+      timelineAudioMovePlayhead: string;
       panelMixer: string;
       panelEq: string;
       audioConsoleOpen: string;
@@ -254,7 +257,7 @@ const ENGAGEMENT_JA: EngagementContent = {
       snapshotName: "名前",
       snapshotSave: "Snapshot 保存",
       snapshotPublish: "Publish Version",
-      snapshotHint: "プレビューは端末内デモ。本番は lab_snapshots に保存予定",
+      snapshotHint: "Snapshot / Publish は lab_snapshots に保存されます（リロード後も復元可）",
       snapshotEmpty: "まだバージョンがありません",
       snapshotRestore: "復元",
       snapshotArchive: "アーカイブ",
@@ -265,13 +268,14 @@ const ENGAGEMENT_JA: EngagementContent = {
       snapshotPublishSaved: (label) => `Publish 版を作成: ${label}`,
       snapshotRestored: (label) => `復元しました: ${label}`,
       snapshotArchived: "アーカイブしました（非表示・削除ではありません）",
+      snapshotSaveFailed: "バージョンの保存に失敗しました。もう一度お試しください。",
       snapshotRestoreConfirm: (label) =>
         `「${label}」に復元します。いまの未保存の変更は失われます。よろしいですか？`,
       snapshotPublishDefault: (n) => `Publish v${n}`,
       youAreLeader: "リーダー",
       currentLeader: (name) => `現行リーダー: ${name}`,
       foldersHeading: "共有フォルダ",
-      foldersHint: "先頭の Audio フォルダにデモ音声があります。中央へドラッグして波形を確認",
+      foldersHint: "共有フォルダにファイルをアップロードできます。中央へドラッグして確認",
       folderUpload: "ファイルをアップロード",
       folderUploading: "アップロード中…",
       folderUploadHint: "この部屋のメンバー全員がアップロードできます",
@@ -280,13 +284,13 @@ const ENGAGEMENT_JA: EngagementContent = {
       deleteFolder: "フォルダ消去",
       deleteLeaderOnly: "消去はリーダーのみです",
       workspaceHeading: "共同作業場",
-      workspaceEmpty: "共有フォルダのファイルをクリック → チェックで下にステージング → 中央で操作",
+      workspaceEmpty: "共有フォルダのファイルをクリック → チェックで下にステージング → ミニウィンドウで展開",
       workspaceDropHint: "ドロップで中央候補に追加",
       workspaceDropped: (name) => `タイムライン上: ${name}`,
-      workspaceStageHint: "チェック＝下のタイムラインへステージング。タイムライン上のファイルは中央で操作",
+      workspaceStageHint: "チェック＝下のタイムラインへ。ステージングするとミニウィンドウが重なって開きます",
       workspaceExpand: "下にステージング",
       workspaceOnTimeline: "ステージング中",
-      timelineFilesHeading: "タイムライン上（中央で操作）",
+      timelineFilesHeading: "タイムライン上（ミニウィンドウ）",
       pendingFilesHeading: "候補（チェックで下へ）",
       operateHint: "選択中のタイムライン素材",
       stageExclude: "共有フォルダに戻す",
@@ -294,11 +298,11 @@ const ENGAGEMENT_JA: EngagementContent = {
       clipExclude: "選択クリップを共有フォルダに戻す",
       clipDragHint: "ドラッグでタイミング調整",
       waveformHeading: "波形",
-      waveformHint: "チェックを入れて下にステージングすると、ここで操作できます",
-      waveformSelect: "選択して中央で操作",
+      waveformHint: "チェックを入れて下にステージングすると、ミニウィンドウで操作できます",
+      waveformSelect: "選択してミニウィンドウを開く",
       waveformScrub: "波形をドラッグしてスクラブ（下の再生ヘッドと連動）",
       waveformSynced: "クリップ内位置＝下のタイムライン再生ヘッドと同期",
-      videoPreviewHeading: "フレーム",
+      videoPreviewHeading: "プレビュー",
       workspaceOpenHint: (name) => `展開中: ${name}`,
       chatHeading: "翻訳チャット",
       chatPlaceholder: "メッセージを入力…（翻訳＋原文併記）",
@@ -312,12 +316,16 @@ const ENGAGEMENT_JA: EngagementContent = {
       audioTimeline: "音声タイムライン",
       bgmTimeline: "BGM タイムライン",
       overlayTimeline: "オーバーレイ",
-      timelineHint: "再生ヘッド／ルーラーをドラッグしてスクラブ。▶で再生デモ",
+      timelineHint: "再生ヘッドをドラッグしてスクラブ。▶で実音声を再生（URL付きクリップ）",
       timelinePlayhead: "再生ヘッド",
       timelineTimecode: "00:00:34:12",
       timelinePlay: "再生",
       timelinePause: "停止",
       timelineScrub: "クリックまたはドラッグでスクラブ",
+      timelineAudioNeedsUrl:
+        "音が出ません。共有フォルダへアップロードした音声をステージへ入れてください（デモクリップは無音です）",
+      timelineAudioMovePlayhead:
+        "再生ヘッドを音声クリップの上に合わせてから ▶ を押してください",
       panelMixer: "ミキサー",
       panelEq: "EQ",
       audioConsoleOpen: "Mixer / EQ",
@@ -444,7 +452,7 @@ const ENGAGEMENT_EN: EngagementContent = {
       snapshotName: "Name",
       snapshotSave: "Save Snapshot",
       snapshotPublish: "Publish Version",
-      snapshotHint: "Preview stores locally. Production will use lab_snapshots.",
+      snapshotHint: "Snapshots and Publish versions are saved to lab_snapshots (restore after reload).",
       snapshotEmpty: "No versions yet",
       snapshotRestore: "Restore",
       snapshotArchive: "Archive",
@@ -455,13 +463,14 @@ const ENGAGEMENT_EN: EngagementContent = {
       snapshotPublishSaved: (label) => `Publish version created: ${label}`,
       snapshotRestored: (label) => `Restored: ${label}`,
       snapshotArchived: "Archived (hidden, not deleted)",
+      snapshotSaveFailed: "Could not save version. Please try again.",
       snapshotRestoreConfirm: (label) =>
         `Restore “${label}”? Unsaved changes will be lost.`,
       snapshotPublishDefault: (n) => `Publish v${n}`,
       youAreLeader: "Leader",
       currentLeader: (name) => `Current leader: ${name}`,
       foldersHeading: "Shared folders",
-      foldersHint: "Open the Audio folder for demo clips. Drag to center to see waveforms.",
+      foldersHint: "Upload shared files to folders. Drag to the center stage to inspect.",
       folderUpload: "Upload file",
       folderUploading: "Uploading…",
       folderUploadHint: "All room members can upload",
@@ -470,13 +479,13 @@ const ENGAGEMENT_EN: EngagementContent = {
       deleteFolder: "Delete folder",
       deleteLeaderOnly: "Only the leader can delete",
       workspaceHeading: "Workspace",
-      workspaceEmpty: "Click a shared-folder file → check to stage on the bottom timeline → operate in center",
+      workspaceEmpty: "Click a shared-folder file → check to stage on the bottom timeline → opens as a mini window",
       workspaceDropHint: "Drop to add as a center candidate",
       workspaceDropped: (name) => `On timeline: ${name}`,
-      workspaceStageHint: "Check = stage to the bottom timeline. Timeline files are operable in the center.",
+      workspaceStageHint: "Check = stage to the bottom timeline. Staged files open as cascading mini windows.",
       workspaceExpand: "Stage to bottom",
       workspaceOnTimeline: "Staged",
-      timelineFilesHeading: "On timeline (operate in center)",
+      timelineFilesHeading: "On timeline (mini windows)",
       pendingFilesHeading: "Candidates (check to stage below)",
       operateHint: "Selected timeline media",
       stageExclude: "Return to folder",
@@ -484,11 +493,11 @@ const ENGAGEMENT_EN: EngagementContent = {
       clipExclude: "Return selected clip to shared folder",
       clipDragHint: "Drag to adjust timing",
       waveformHeading: "Waveform",
-      waveformHint: "Check to stage on the bottom timeline, then operate here",
-      waveformSelect: "Select to operate in center",
+      waveformHint: "Check to stage on the bottom timeline — media opens in a mini window",
+      waveformSelect: "Select to open mini window",
       waveformScrub: "Drag waveform to scrub (syncs with the bottom playhead)",
       waveformSynced: "In-clip position synced with the bottom timeline playhead",
-      videoPreviewHeading: "Frames",
+      videoPreviewHeading: "Preview",
       workspaceOpenHint: (name) => `Open: ${name}`,
       chatHeading: "Live translation chat",
       chatPlaceholder: "Write a message… (translation + original)",
@@ -502,12 +511,16 @@ const ENGAGEMENT_EN: EngagementContent = {
       audioTimeline: "Audio timeline",
       bgmTimeline: "BGM timeline",
       overlayTimeline: "Overlay",
-      timelineHint: "Drag the playhead or ruler to scrub. ▶ plays a demo scrub.",
+      timelineHint: "Drag the playhead to scrub. ▶ plays real audio for clips with a URL.",
       timelinePlayhead: "Playhead",
       timelineTimecode: "00:00:34:12",
       timelinePlay: "Play",
       timelinePause: "Stop",
       timelineScrub: "Click or drag to scrub",
+      timelineAudioNeedsUrl:
+        "No sound — stage an uploaded audio file (demo clips are silent).",
+      timelineAudioMovePlayhead:
+        "Move the playhead onto an audio clip, then press ▶",
       panelMixer: "Mixer",
       panelEq: "EQ",
       audioConsoleOpen: "Mixer / EQ",

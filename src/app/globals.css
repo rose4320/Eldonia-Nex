@@ -7029,6 +7029,126 @@ body {
   box-sizing: border-box;
 }
 
+.lab-room__clip-mini {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #3a3a3a;
+  border-radius: 0.45rem;
+  background: #121212;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.lab-room__clip-mini-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid #2a2a2a;
+  background: #1a1a1a;
+  user-select: none;
+}
+
+.lab-room__clip-mini-head.is-movable {
+  cursor: grab;
+}
+
+.lab-room__clip-mini-head.is-movable:active {
+  cursor: grabbing;
+}
+
+.lab-room__clip-mini-head.is-locked {
+  cursor: pointer;
+}
+
+.lab-room__clip-mini-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.lab-room__clip-mini-grip {
+  width: 0.35rem;
+  height: 1.1rem;
+  border-radius: 0.15rem;
+  background: repeating-linear-gradient(
+    to bottom,
+    #666 0 2px,
+    transparent 2px 4px
+  );
+  flex-shrink: 0;
+}
+
+.lab-room__clip-mini-eyebrow {
+  margin: 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b89a6a;
+}
+
+.lab-room__clip-mini-name {
+  margin: 0.1rem 0 0;
+  font-size: 0.72rem;
+  color: #e8e0d0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 14rem;
+}
+
+.lab-room__clip-mini-body {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 0.55rem;
+  background: #0a0a0a;
+}
+
+.lab-room__clip-mini-media {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 0.2rem;
+  background: #000;
+}
+
+.lab-room__clip-mini-video {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+}
+
+.lab-room__clip-mini-audio {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: stretch;
+}
+
+.lab-room__clip-mini-audio-label {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #cbbfa8;
+  text-align: center;
+  word-break: break-all;
+}
+
+.lab-room__clip-mini-audio audio {
+  width: 100%;
+}
+
 .lab-room__audio-win > .lab-room__audio-mixer,
 .lab-room__audio-win > .lab-room__audio-eq {
   border-radius: 0 0 0.45rem 0.45rem;

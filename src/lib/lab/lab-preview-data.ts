@@ -78,5 +78,8 @@ export function buildLabPreviewData(userId: string): CollabLabData {
         },
       },
     ],
+    folders: [],
+    assets: [],
+    snapshots: [],
   };
 }

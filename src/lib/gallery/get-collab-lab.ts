@@ -1,3 +1,12 @@
+import {
+  assetRowToDemo,
+  ensureDefaultLabFolders,
+  folderRowToDemo,
+  listLabAssets,
+} from "@/lib/lab/lab-assets";
+import { listLabSnapshots } from "@/lib/lab/lab-snapshot-db";
+import type { LabDemoAsset, LabDemoFolder } from "@/lib/lab/lab-room-demo";
+import type { LabRoomSnapshot } from "@/lib/lab/lab-snapshot";
 import { createClient } from "@/lib/supabase/server";
 import type { CollabLab, CollabLabPostWithAuthor, ArtworkMediaType } from "@/types/database";
 
@@ -22,6 +31,9 @@ export type CollabLabData = {
     } | null;
   }>;
   posts: CollabLabPostWithAuthor[];
+  folders: LabDemoFolder[];
+  assets: LabDemoAsset[];
+  snapshots: LabRoomSnapshot[];
 };
 
 export async function getCollabLabForArtwork(
@@ -53,36 +65,45 @@ export async function getCollabLabForArtwork(
     return null;
   }
 
-  const [membersRes, postsRes, artworkRes] = await Promise.all([
-    supabase
-      .from("collab_lab_members")
-      .select(
-        `
+  const [membersRes, postsRes, artworkRes, folderRows, assetRows, snapshots] =
+    await Promise.all([
+      supabase
+        .from("collab_lab_members")
+        .select(
+          `
         user_id,
         role,
         profiles:user_id (display_name, username, avatar_url)
       `,
-      )
-      .eq("lab_id", lab.id),
-    supabase
-      .from("collab_lab_posts")
-      .select(
-        `
+        )
+        .eq("lab_id", lab.id),
+      supabase
+        .from("collab_lab_posts")
+        .select(
+          `
         *,
         profiles:author_id (display_name, username, avatar_url)
       `,
-      )
-      .eq("lab_id", lab.id)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("artworks")
-      .select("id, title, media_type, media_url, thumbnail_url")
-      .eq("id", artworkId)
-      .maybeSingle(),
-  ]);
+        )
+        .eq("lab_id", lab.id)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("artworks")
+        .select("id, title, media_type, media_url, thumbnail_url")
+        .eq("id", artworkId)
+        .maybeSingle(),
+      ensureDefaultLabFolders(supabase, lab.id, userId),
+      listLabAssets(supabase, lab.id),
+      listLabSnapshots(supabase, lab.id),
+    ]);
 
   if (!artworkRes.data) {
     return null;
+  }
+
+  const countByFolder = new Map<string, number>();
+  for (const asset of assetRows) {
+    countByFolder.set(asset.folder_id, (countByFolder.get(asset.folder_id) ?? 0) + 1);
   }
 
   return {
@@ -90,5 +111,10 @@ export async function getCollabLabForArtwork(
     artwork: artworkRes.data as CollabLabArtwork,
     members: (membersRes.data ?? []) as CollabLabData["members"],
     posts: (postsRes.data ?? []) as CollabLabPostWithAuthor[],
+    folders: folderRows.map((row) =>
+      folderRowToDemo(row, countByFolder.get(row.id) ?? 0),
+    ),
+    assets: assetRows.map(assetRowToDemo),
+    snapshots,
   };
 }

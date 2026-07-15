@@ -12,6 +12,8 @@ export type LabDemoAsset = {
   kind: "image" | "audio" | "video" | "doc" | "other";
   folderId: string;
   isCanonical?: boolean;
+  url?: string | null;
+  storagePath?: string | null;
 };
 
 /** Phase 1 placeholder assets — replace with DB in Phase 2. */

@@ -15,6 +15,7 @@ export type LabRoomSnapshotPayload = {
     name: string;
     ext: string;
     assetKind: LabDemoAsset["kind"];
+    url?: string | null;
   }>;
   assetList: LabDemoAsset[];
   folderList: LabDemoFolder[];

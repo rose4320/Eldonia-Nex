@@ -15,9 +15,11 @@
 **協議**: Gallery（コラボ起点）, Works（案件作業場所）
 
 **バージョン管理（方針）**:
-- **Snapshot**: Lab 内の復元点（タイムライン / Mixer / ステージ状態の JSON）
-- **Publish Version**: Gallery / Works 向け成果ポインタ（`kind = publish`）
+- **Snapshot**: Lab 内の復元点（タイムライン / Mixer / ステージ状態の JSON）→ `lab_snapshots` に永続化済み
+- **Publish Version**: Gallery / Works 向け成果ポインタ（`kind = publish`）→ DB 保存済み。メディア書き出しは次フェーズ
+- **Folders / Assets**: `lab_folders` / `lab_assets` + Storage（`044_lab_assets.sql`）
+- **Chat Realtime**: `useLabChatRealtime`（`collab_lab_posts`）
 - 物理削除しない（`archived`）。復元はリーダー（プレビューはデモで全員可）
-- スキーマ: `supabase/migrations/039_lab_snapshots.sql` / 型: `src/lib/lab/lab-snapshot.ts`
+- スキーマ: `039_lab_snapshots.sql`, `044_lab_assets.sql` / 型: `src/lib/lab/lab-snapshot.ts`, `lab-assets.ts`
 
 **推奨実行モデル**: OpenAI Codex

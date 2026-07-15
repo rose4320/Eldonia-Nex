@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { LabChatTranslatedBody } from "@/components/lab/lab-chat-translated-body";
 import { LabArtworkDownloads } from "@/components/gallery/lab-artwork-downloads";
@@ -10,9 +10,15 @@ import { formatRelativeTime } from "@/lib/community/constants";
 import { awardUserExp } from "@/lib/exp/award-exp";
 import type { CollabLabData } from "@/lib/gallery/get-collab-lab";
 import {
+  archiveLabAsset,
+  archiveLabFolder,
+  insertLabAsset,
+} from "@/lib/lab/lab-assets";
+import {
   encodeLabChatFile,
   parseLabChatFile,
 } from "@/lib/lab/lab-chat-file";
+import { useLabChatRealtime } from "@/lib/lab/lab-chat-realtime";
 import {
   LAB_DEMO_ASSETS,
   LAB_DEMO_FOLDERS,
@@ -30,6 +36,11 @@ import {
   type LabRoomSnapshot,
   type LabRoomSnapshotPayload,
 } from "@/lib/lab/lab-snapshot";
+import {
+  archiveLabSnapshot,
+  insertLabSnapshot,
+} from "@/lib/lab/lab-snapshot-db";
+import { LabAudioEngine } from "@/lib/lab/lab-audio-engine";
 import { uploadLabChatShare } from "@/lib/lab/upload-lab-chat-share";
 import { createClient } from "@/lib/supabase/client";
 import { inferSourceLocale } from "@/lib/translation/infer-source-locale";
@@ -91,6 +102,8 @@ type WorkspaceStagedFile = {
   name: string;
   ext: string;
   assetKind: LabDemoAsset["kind"];
+  /** Public / object URL for real playback (audio/video). */
+  url?: string | null;
 };
 
 const NLE_HEIGHT_MIN = 168;
@@ -114,7 +127,49 @@ const AUDIO_WIN_H_DEFAULT = 420;
 const AUDIO_WIN_W_MIN = 280;
 const AUDIO_WIN_H_MIN = 240;
 
+/** Probe HTML media duration from a public / blob URL (audio or video). */
+function probeMediaDuration(url: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const audio = new Audio();
+    audio.preload = "metadata";
+    let settled = false;
+    const finish = (value: number | null) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      audio.onloadedmetadata = null;
+      audio.onerror = null;
+      audio.removeAttribute("src");
+      audio.load();
+      resolve(value);
+    };
+    const timer = window.setTimeout(() => finish(null), 8000);
+    audio.onloadedmetadata = () => {
+      const d = audio.duration;
+      finish(Number.isFinite(d) && d > 0 ? d : null);
+    };
+    audio.onerror = () => finish(null);
+    audio.src = url;
+  });
+}
+
 type AudioWinResizeEdge = "e" | "s" | "se";
+
+type ClipMiniWin = {
+  stageId: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  locked: boolean;
+  z: number;
+};
+
+const CLIP_MINI_W = 320;
+const CLIP_MINI_H = 248;
+const CLIP_MINI_W_MIN = 220;
+const CLIP_MINI_H_MIN = 168;
+const CLIP_MINI_CASCADE = 28;
 
 function buildDemoWaveform(seed: string, bars = 72): number[] {
   let hash = 2166136261;
@@ -157,6 +212,7 @@ function buildStagedFromTracks(trackList: LabTimelineTrack[]): WorkspaceStagedFi
         name,
         ext,
         assetKind: track.kind === "audio" ? "audio" : "video",
+        url: null,
       });
     }
   }
@@ -207,7 +263,11 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [selectedFolderId, setSelectedFolderId] = useState(LAB_DEMO_FOLDERS[0]?.id ?? "project");
+  const [selectedFolderId, setSelectedFolderId] = useState(
+    preview
+      ? (LAB_DEMO_FOLDERS[0]?.id ?? "project")
+      : (labData.folders[0]?.id ?? ""),
+  );
   const [openFile, setOpenFile] = useState<OpenFile | null>(null);
   const [modalError, setModalError] = useState<string | null>(null);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
@@ -249,6 +309,20 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     originTop: number;
     pointerId: number;
   } | null>(null);
+  /** Floating mini windows for timeline-staged media (cascade as files expand). */
+  const [clipMiniWins, setClipMiniWins] = useState<ClipMiniWin[]>([]);
+  const clipMiniZRef = useRef(40);
+  const clipMiniDragRef = useRef<{
+    stageId: string;
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+    moved: boolean;
+    pointerId: number;
+  } | null>(null);
+  const clipMiniSkipClickRef = useRef(false);
+  const clipMiniWinsRef = useRef<ClipMiniWin[]>([]);
   const [mixerLevels, setMixerLevels] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = { master: 78 };
     for (const track of LAB_DEMO_TIMELINE_TRACKS) {
@@ -294,7 +368,13 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   const canvasRef = useRef<HTMLDivElement>(null);
   const playheadDragRef = useRef(false);
   const [playheadPct, setPlayheadPct] = useState(NLE_PLAYHEAD_DEFAULT);
+  const [timelineDurationSec, setTimelineDurationSec] = useState(NLE_DURATION_SEC);
+  const timelineDurationRef = useRef(NLE_DURATION_SEC);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [audioNotice, setAudioNotice] = useState<string | null>(null);
+  const audioEngineRef = useRef<LabAudioEngine | null>(null);
+  const playheadScrubbedRef = useRef(false);
+  const playheadOverrideRef = useRef<number | null>(null);
   const waveformCanvasRef = useRef<HTMLDivElement>(null);
   const waveformDragRef = useRef(false);
   const [workspaceDropActive, setWorkspaceDropActive] = useState(false);
@@ -319,8 +399,15 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     laneWidth: number;
     moved: boolean;
   } | null>(null);
-  const [folderList, setFolderList] = useState(() => [...LAB_DEMO_FOLDERS]);
+  const [folderList, setFolderList] = useState(() =>
+    preview
+      ? [...LAB_DEMO_FOLDERS]
+      : labData.folders.map((folder) => ({ ...folder })),
+  );
   const [assetList, setAssetList] = useState<LabDemoAsset[]>(() => {
+    if (!preview) {
+      return labData.assets.map((asset) => ({ ...asset }));
+    }
     const seedLabels = new Set(
       buildStagedFromTracks(LAB_DEMO_TIMELINE_TRACKS).map((s) =>
         s.label.toLowerCase(),
@@ -334,7 +421,9 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   const [folderUploadError, setFolderUploadError] = useState<string | null>(null);
   const [chatFocused, setChatFocused] = useState(false);
   const [snapshotPanelOpen, setSnapshotPanelOpen] = useState(false);
-  const [snapshots, setSnapshots] = useState<LabRoomSnapshot[]>([]);
+  const [snapshots, setSnapshots] = useState<LabRoomSnapshot[]>(() =>
+    preview ? [] : labData.snapshots.map((s) => ({ ...s, payload: cloneSnapshotPayload(s.payload) })),
+  );
   const [snapshotLabelDraft, setSnapshotLabelDraft] = useState("");
   const [snapshotNotice, setSnapshotNotice] = useState<string | null>(null);
   const [peerPresence, setPeerPresence] = useState<
@@ -364,6 +453,21 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     () => [...labData.posts, ...localPosts],
     [labData.posts, localPosts],
   );
+
+  const handleRealtimePost = useCallback((post: CollabLabPostWithAuthor) => {
+    setLocalPosts((prev) => {
+      if (prev.some((p) => p.id === post.id) || labData.posts.some((p) => p.id === post.id)) {
+        return prev;
+      }
+      return [...prev, post];
+    });
+  }, [labData.posts]);
+
+  useLabChatRealtime({
+    labId: labData.lab.id,
+    enabled: !preview,
+    onInsert: handleRealtimePost,
+  });
 
   const audioTracks = useMemo(
     () => tracks.filter((track) => track.kind === "audio"),
@@ -477,7 +581,19 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
         ...track,
         clips: track.clips.map((clip) => ({ ...clip })),
       })),
-      stagedFiles: stagedFiles.map((item) => ({ ...item })),
+      stagedFiles: stagedFiles.map((item) => ({
+        id: item.id,
+        label: item.label,
+        kind: item.kind,
+        expanded: item.expanded,
+        clipId: item.clipId,
+        assetId: item.assetId,
+        folderId: item.folderId,
+        name: item.name,
+        ext: item.ext,
+        assetKind: item.assetKind,
+        url: item.url ?? null,
+      })),
       assetList: assetList.map((asset) => ({ ...asset })),
       folderList: folderList.map((folder) => ({ ...folder })),
       playheadPct,
@@ -524,7 +640,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     setSelectedStageId(next.stagedFiles.find((s) => s.expanded)?.id ?? null);
   }
 
-  function handleSaveSnapshot(kind: LabRoomSnapshot["kind"] = "snapshot") {
+  async function handleSaveSnapshot(kind: LabRoomSnapshot["kind"] = "snapshot") {
     if (kind === "publish" && !preview && !isLeader) {
       setSnapshotNotice(room.snapshotLeaderOnly);
       return;
@@ -534,16 +650,35 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
       (kind === "publish"
         ? room.snapshotPublishDefault(snapshots.filter((s) => s.kind === "publish").length + 1)
         : formatSnapshotDefaultLabel());
-    const entry: LabRoomSnapshot = {
-      id: crypto.randomUUID(),
-      label,
-      kind,
-      createdAt: new Date().toISOString(),
-      createdBy: userId,
-      archived: false,
-      payload: captureRoomSnapshotPayload(),
-    };
-    setSnapshots((prev) => [entry, ...prev]);
+    const payload = captureRoomSnapshotPayload();
+
+    if (preview) {
+      const entry: LabRoomSnapshot = {
+        id: crypto.randomUUID(),
+        label,
+        kind,
+        createdAt: new Date().toISOString(),
+        createdBy: userId,
+        archived: false,
+        payload,
+      };
+      setSnapshots((prev) => [entry, ...prev]);
+    } else {
+      const supabase = createClient();
+      const saved = await insertLabSnapshot(supabase, {
+        labId: labData.lab.id,
+        userId,
+        label,
+        kind,
+        payload,
+      });
+      if (!saved) {
+        setSnapshotNotice(room.snapshotSaveFailed);
+        return;
+      }
+      setSnapshots((prev) => [saved, ...prev]);
+    }
+
     setSnapshotLabelDraft("");
     setSnapshotNotice(
       kind === "publish" ? room.snapshotPublishSaved(label) : room.snapshotSaved(label),
@@ -562,10 +697,18 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     setSnapshotNotice(room.snapshotRestored(target.label));
   }
 
-  function handleArchiveSnapshot(id: string) {
+  async function handleArchiveSnapshot(id: string) {
     if (!preview && !isLeader) {
       setSnapshotNotice(room.snapshotLeaderOnly);
       return;
+    }
+    if (!preview) {
+      const supabase = createClient();
+      const ok = await archiveLabSnapshot(supabase, id);
+      if (!ok) {
+        setSnapshotNotice(room.snapshotSaveFailed);
+        return;
+      }
     }
     setSnapshots((prev) =>
       prev.map((s) => (s.id === id ? { ...s, archived: true } : s)),
@@ -598,7 +741,9 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   }, [stagedFiles, selectedStageId, selectedClipId, timelineStageFiles]);
 
   const playheadTimecode = useMemo(() => {
-    const totalFrames = Math.round((playheadPct / 100) * NLE_DURATION_SEC * 30);
+    const totalFrames = Math.round(
+      (playheadPct / 100) * timelineDurationSec * 30,
+    );
     const ff = totalFrames % 30;
     const totalSec = Math.floor(totalFrames / 30);
     const ss = totalSec % 60;
@@ -606,7 +751,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     const hh = Math.floor(totalSec / 3600);
     const pad = (n: number) => String(n).padStart(2, "0");
     return `${pad(hh)}:${pad(mm)}:${pad(ss)}:${pad(ff)}`;
-  }, [playheadPct]);
+  }, [playheadPct, timelineDurationSec]);
 
   const waveformTarget = useMemo(() => {
     if (!operateItem || operateItem.kind !== "audio") return null;
@@ -658,6 +803,48 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   }, [operateItem, tracks]);
 
   useEffect(() => {
+    const engine = new LabAudioEngine();
+    audioEngineRef.current = engine;
+    return () => {
+      engine.dispose();
+      audioEngineRef.current = null;
+    };
+  }, []);
+
+  const playableAudioClips = useMemo(() => {
+    const out: Array<{
+      clipId: string;
+      trackId: string;
+      url: string;
+      startPct: number;
+      widthPct: number;
+    }> = [];
+    for (const track of tracks) {
+      if (track.kind !== "audio") continue;
+      for (const clip of track.clips) {
+        const stage = stagedFiles.find((s) => s.clipId === clip.id);
+        const fromStage = stage?.url?.trim();
+        const fromAsset = assetList
+          .find((a) => a.id === stage?.assetId)
+          ?.url?.trim();
+        const url = fromStage || fromAsset || "";
+        if (!url) continue;
+        out.push({
+          clipId: clip.id,
+          trackId: track.id,
+          url,
+          startPct: clip.startPct,
+          widthPct: clip.widthPct,
+        });
+      }
+    }
+    return out;
+  }, [tracks, stagedFiles, assetList]);
+
+  const timelinePlaySpeed =
+    playableAudioClips.length > 0 ? 1 : NLE_PLAY_SPEED;
+
+  useEffect(() => {
     if (!isPlaying) return;
     let raf = 0;
     let last = performance.now();
@@ -665,7 +852,8 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
       const dt = (now - last) / 1000;
       last = now;
       setPlayheadPct((prev) => {
-        const next = prev + ((dt * NLE_PLAY_SPEED) / NLE_DURATION_SEC) * 100;
+        const dur = Math.max(0.05, timelineDurationRef.current);
+        const next = prev + ((dt * timelinePlaySpeed) / dur) * 100;
         if (next >= 100) {
           setIsPlaying(false);
           return 100;
@@ -676,7 +864,76 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [isPlaying]);
+  }, [isPlaying, timelinePlaySpeed]);
+
+  useEffect(() => {
+    const engine = audioEngineRef.current;
+    if (!engine) return;
+    const forceSeek = playheadScrubbedRef.current;
+    playheadScrubbedRef.current = false;
+    const head =
+      playheadOverrideRef.current != null
+        ? playheadOverrideRef.current
+        : playheadPct;
+    playheadOverrideRef.current = null;
+    const result = engine.sync({
+      isPlaying,
+      playheadPct: head,
+      durationSec: timelineDurationSec,
+      playSpeed: timelinePlaySpeed,
+      clips: playableAudioClips,
+      mixer: {
+        levels: mixerLevels,
+        mutes: mixerMutes,
+        solos: mixerSolos,
+        masterLimiter,
+      },
+      forceSeek,
+    });
+    if (result.error) {
+      setAudioNotice(result.error);
+    }
+  }, [
+    isPlaying,
+    playheadPct,
+    playableAudioClips,
+    timelinePlaySpeed,
+    mixerLevels,
+    mixerMutes,
+    mixerSolos,
+    masterLimiter,
+    timelineDurationSec,
+  ]);
+
+  function startTimelinePlayback() {
+    const head = playheadPct >= 100 ? 0 : playheadPct;
+    if (playheadPct >= 100) {
+      setPlayheadPct(0);
+    }
+
+    const hasUrlOnTimeline = playableAudioClips.length > 0;
+    const underHead = playableAudioClips.some(
+      (c) => head >= c.startPct && head < c.startPct + c.widthPct,
+    );
+    const hasAudioClip = tracks.some(
+      (t) => t.kind === "audio" && t.clips.length > 0,
+    );
+
+    if (hasUrlOnTimeline && underHead) {
+      setAudioNotice(null);
+    } else if (hasUrlOnTimeline && !underHead) {
+      setAudioNotice(room.timelineAudioMovePlayhead);
+    } else if (hasAudioClip) {
+      setAudioNotice(room.timelineAudioNeedsUrl);
+    } else {
+      setAudioNotice(null);
+    }
+
+    // Keep playhead where the user left it — never jump to a clip.
+    playheadScrubbedRef.current = true;
+    playheadOverrideRef.current = null;
+    setIsPlaying(true);
+  }
 
   function guessAssetKind(file: File): LabDemoAsset["kind"] {
     if (file.type.startsWith("image/")) return "image";
@@ -698,22 +955,54 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     setFolderUploadError(null);
     setFolderUploadLoading(true);
     try {
-      if (!preview) {
-        const supabase = createClient();
-        await uploadLabChatShare(supabase, userId, labData.lab.id, file);
-      }
-
       const parts = file.name.split(".");
       const ext = parts.length > 1 ? (parts.pop() as string) : "bin";
       const name = parts.join(".") || file.name;
-      const asset: LabDemoAsset = {
-        id: `up-${crypto.randomUUID().slice(0, 8)}`,
+      const kind = guessAssetKind(file);
+
+      if (preview) {
+        const asset: LabDemoAsset = {
+          id: `up-${crypto.randomUUID().slice(0, 8)}`,
+          name,
+          ext,
+          kind,
+          folderId: selectedFolderId,
+          url:
+            kind === "audio" || kind === "video" || kind === "image"
+              ? URL.createObjectURL(file)
+              : null,
+        };
+        setAssetList((prev) => [...prev, asset]);
+        return;
+      }
+
+      if (!selectedFolderId) {
+        setFolderUploadError(room.fileUploadFailed);
+        return;
+      }
+
+      const supabase = createClient();
+      const uploaded = await uploadLabChatShare(
+        supabase,
+        userId,
+        labData.lab.id,
+        file,
+      );
+      const saved = await insertLabAsset(supabase, {
+        labId: labData.lab.id,
+        folderId: selectedFolderId,
+        userId,
         name,
         ext,
-        kind: guessAssetKind(file),
-        folderId: selectedFolderId,
-      };
-      setAssetList((prev) => [...prev, asset]);
+        kind,
+        storagePath: uploaded.storagePath,
+        publicUrl: uploaded.publicUrl,
+      });
+      if (!saved) {
+        setFolderUploadError(room.fileUploadFailed);
+        return;
+      }
+      setAssetList((prev) => [...prev, saved]);
     } catch (err) {
       const message = err instanceof Error ? err.message : room.fileUploadFailed;
       if (message === "FILE_TOO_LARGE") {
@@ -727,19 +1016,35 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     }
   }
 
-  function handleDeleteAsset(assetId: string) {
+  async function handleDeleteAsset(assetId: string) {
     if (!isLeader) {
       setFolderUploadError(room.deleteLeaderOnly);
       return;
+    }
+    if (!preview) {
+      const supabase = createClient();
+      const ok = await archiveLabAsset(supabase, assetId);
+      if (!ok) {
+        setFolderUploadError(room.fileUploadFailed);
+        return;
+      }
     }
     setAssetList((prev) => prev.filter((asset) => asset.id !== assetId));
     setFolderUploadError(null);
   }
 
-  function handleDeleteFolder(folderId: string) {
+  async function handleDeleteFolder(folderId: string) {
     if (!isLeader) {
       setFolderUploadError(room.deleteLeaderOnly);
       return;
+    }
+    if (!preview) {
+      const supabase = createClient();
+      const ok = await archiveLabFolder(supabase, folderId);
+      if (!ok) {
+        setFolderUploadError(room.fileUploadFailed);
+        return;
+      }
     }
     const remaining = folderList.filter((folder) => folder.id !== folderId);
     setFolderList(remaining);
@@ -779,6 +1084,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     const rect = el.getBoundingClientRect();
     if (rect.width <= 0) return;
     const pct = ((clientX - rect.left) / rect.width) * 100;
+    playheadScrubbedRef.current = true;
     setPlayheadPct(Math.min(100, Math.max(0, pct)));
   }
 
@@ -823,9 +1129,11 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     const start = waveformTarget.clipStartPct;
     const width = waveformTarget.clipWidthPct;
     if (start != null && width != null && width > 0) {
+      playheadScrubbedRef.current = true;
       setPlayheadPct(start + (localPct / 100) * width);
       return;
     }
+    playheadScrubbedRef.current = true;
     setPlayheadPct(localPct);
   }
 
@@ -857,8 +1165,33 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     label: string,
     kind: LabTimelineTrackKind,
     clipId: string,
+    mediaDurationSec?: number,
   ) {
-    const widthPct = kind === "audio" ? 22 : 16;
+    const prevDur = Math.max(0.05, timelineDurationRef.current);
+    const defaultClipSec =
+      kind === "audio" ? prevDur * 0.22 : prevDur * 0.16;
+    const mediaSec =
+      mediaDurationSec && mediaDurationSec > 0
+        ? mediaDurationSec
+        : defaultClipSec;
+    const startSec = (playheadPct / 100) * prevDur;
+    const nextDur = Math.max(prevDur, startSec + mediaSec, NLE_DURATION_SEC);
+    const scale = prevDur / nextDur;
+    const startPct = Math.min(
+      99.5,
+      Math.max(0, Math.round((startSec / nextDur) * 1000) / 10),
+    );
+    const widthPct = Math.min(
+      100 - startPct,
+      Math.max(1, Math.round((mediaSec / nextDur) * 1000) / 10),
+    );
+
+    if (nextDur !== prevDur) {
+      timelineDurationRef.current = nextDur;
+      setTimelineDurationSec(nextDur);
+      setPlayheadPct((p) => Math.min(100, (p / 100) * prevDur / nextDur * 100));
+    }
+
     const existing = tracks.find((track) => track.kind === kind);
     let targetId = existing?.id ?? null;
     let created: LabTimelineTrack | null = null;
@@ -878,24 +1211,31 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     }
 
     setTracks((prev) => {
-      const target = created ?? prev.find((track) => track.id === targetId);
-      if (!target) return prev;
+      const scaled =
+        nextDur === prevDur
+          ? prev
+          : prev.map((track) => ({
+              ...track,
+              clips: track.clips.map((clip) => ({
+                ...clip,
+                startPct: clip.startPct * scale,
+                widthPct: clip.widthPct * scale,
+              })),
+            }));
+
+      const target = created ?? scaled.find((track) => track.id === targetId);
+      if (!target) return scaled;
       const next = created
         ? kind === "video"
           ? [
               created,
-              ...prev.filter((t) => t.kind === "video"),
-              ...prev.filter((t) => t.kind === "audio"),
+              ...scaled.filter((t) => t.kind === "video"),
+              ...scaled.filter((t) => t.kind === "audio"),
             ]
-          : [...prev, created]
-        : prev;
+          : [...scaled, created]
+        : scaled;
 
       const live = next.find((track) => track.id === target!.id) ?? target;
-      // Place at current playhead so center scrub and bottom timeline share the same moment.
-      const startPct = Math.min(
-        Math.max(0, 100 - widthPct),
-        Math.max(0, Math.round(playheadPct * 10) / 10),
-      );
 
       return next.map((track) =>
         track.id === live.id
@@ -962,6 +1302,57 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   useEffect(() => {
     audioWinLockedRef.current = audioWinLocked;
   }, [audioWinLocked]);
+
+  useEffect(() => {
+    clipMiniWinsRef.current = clipMiniWins;
+  }, [clipMiniWins]);
+
+  useEffect(() => {
+    function onMove(event: PointerEvent) {
+      const drag = clipMiniDragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      const dx = event.clientX - drag.startX;
+      const dy = event.clientY - drag.startY;
+      if (!drag.moved && dx * dx + dy * dy < 36) return;
+      drag.moved = true;
+      const win = clipMiniWinsRef.current.find((w) => w.stageId === drag.stageId);
+      const width = win?.w ?? CLIP_MINI_W;
+      const height = win?.h ?? CLIP_MINI_H;
+      const maxX = Math.max(8, window.innerWidth - width - 8);
+      const maxY = Math.max(8, window.innerHeight - height - 8);
+      const nextX = Math.min(maxX, Math.max(8, drag.originX + dx));
+      const nextY = Math.min(maxY, Math.max(8, drag.originY + dy));
+      setClipMiniWins((prev) =>
+        prev.map((w) =>
+          w.stageId === drag.stageId ? { ...w, x: nextX, y: nextY } : w,
+        ),
+      );
+    }
+
+    function onUp(event: PointerEvent) {
+      const drag = clipMiniDragRef.current;
+      if (!drag || drag.pointerId !== event.pointerId) return;
+      const moved = drag.moved;
+      clipMiniDragRef.current = null;
+      if (moved) {
+        clipMiniSkipClickRef.current = true;
+        setClipMiniWins((prev) =>
+          prev.map((w) =>
+            w.stageId === drag.stageId ? { ...w, locked: true } : w,
+          ),
+        );
+      }
+    }
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+  }, []);
 
   useEffect(() => {
     audioWinPosRef.current = audioWinPos;
@@ -1182,6 +1573,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     name: string;
     ext: string;
     assetKind: LabDemoAsset["kind"];
+    url?: string | null;
   }) {
     setAssetList((prev) => {
       if (prev.some((asset) => asset.id === item.assetId)) return prev;
@@ -1194,6 +1586,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
           ext: item.ext,
           kind: item.assetKind,
           folderId: folderExists ? item.folderId : folderList[0]?.id ?? "audio",
+          url: item.url ?? null,
         },
       ];
     });
@@ -1213,6 +1606,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
     restoreAssetToFolder(target);
     setStagedFiles((prev) => prev.filter((item) => item.id !== stageId));
     setSelectedStageId((id) => (id === stageId ? null : id));
+    closeClipMiniWin(stageId);
   }
 
   /** Return selected timeline clip to shared folder (not delete). */
@@ -1279,6 +1673,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
       asset?.folderId ?? (kind === "audio" ? "audio" : "project");
     const assetKind: LabDemoAsset["kind"] =
       asset?.kind ?? (kind === "audio" ? "audio" : kind === "video" ? "video" : "other");
+    const url = asset?.url ?? null;
 
     if (asset) {
       setAssetList((prev) => prev.filter((a) => a.id !== asset.id));
@@ -1300,20 +1695,30 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
         name,
         ext,
         assetKind,
+        url,
       },
     ]);
     setSelectedStageId(id);
     setOpenFile(null);
     setModalError(null);
+    setAudioNotice(null);
   }
 
-  function toggleStageExpand(stageId: string, expand: boolean) {
+  async function toggleStageExpand(stageId: string, expand: boolean) {
     const target = stagedFiles.find((item) => item.id === stageId);
     if (!target) return;
 
     if (expand && !target.expanded) {
       const clipId = `drop-${crypto.randomUUID().slice(0, 8)}`;
-      addClipToTimeline(target.label, target.kind, clipId);
+      let mediaDur: number | undefined;
+      if (
+        target.assetKind !== "image" &&
+        (target.kind === "audio" || target.kind === "video") &&
+        target.url
+      ) {
+        mediaDur = (await probeMediaDuration(target.url)) ?? undefined;
+      }
+      addClipToTimeline(target.label, target.kind, clipId, mediaDur);
       setStagedFiles((prev) =>
         prev.map((item) =>
           item.id === stageId ? { ...item, expanded: true, clipId } : item,
@@ -1321,6 +1726,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
       );
       setSelectedStageId(stageId);
       setSelectedClipId(clipId);
+      openClipMiniWin(stageId);
       return;
     }
 
@@ -1331,6 +1737,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
           item.id === stageId ? { ...item, expanded: false, clipId: null } : item,
         ),
       );
+      closeClipMiniWin(stageId);
     }
   }
 
@@ -1390,11 +1797,68 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
 
     const file = event.dataTransfer.files?.[0];
     if (file) {
-      const lower = file.name.toLowerCase();
-      const kind: LabTimelineTrackKind =
-        /\.(mp3|wav|flac|aac|m4a|ogg)$/.test(lower) ? "audio" : "video";
-      stageFile(file.name, kind);
+      void stageDroppedOsFile(file);
     }
+  }
+
+  async function stageDroppedOsFile(file: File) {
+    const assetKind = guessAssetKind(file);
+    const kind: LabTimelineTrackKind =
+      assetKind === "audio" ? "audio" : "video";
+    const parts = file.name.split(".");
+    const ext = parts.length > 1 ? (parts.pop() as string) : "bin";
+    const name = parts.join(".") || file.name;
+
+    let url: string | null = URL.createObjectURL(file);
+    let storagePath: string | null = null;
+    let assetId = `local-${crypto.randomUUID().slice(0, 8)}`;
+
+    if (!preview && (assetKind === "audio" || assetKind === "image" || assetKind === "video")) {
+      try {
+        const supabase = createClient();
+        const uploaded = await uploadLabChatShare(
+          supabase,
+          userId,
+          labData.lab.id,
+          file,
+        );
+        URL.revokeObjectURL(url);
+        url = uploaded.publicUrl;
+        storagePath = uploaded.storagePath;
+        if (selectedFolderId) {
+          const saved = await insertLabAsset(supabase, {
+            labId: labData.lab.id,
+            folderId: selectedFolderId,
+            userId,
+            name,
+            ext,
+            kind: assetKind,
+            storagePath,
+            publicUrl: url,
+          });
+          if (saved) {
+            assetId = saved.id;
+            url = saved.url ?? url;
+          }
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : room.fileUploadFailed;
+        setAudioNotice(
+          message === "FILE_TOO_LARGE" ? room.fileTooLarge : message || room.fileUploadFailed,
+        );
+        // Keep object URL so preview playback still works locally.
+      }
+    }
+
+    stageFile(file.name, kind, {
+      id: assetId,
+      name,
+      ext,
+      kind: assetKind,
+      folderId: selectedFolderId || (assetKind === "audio" ? "audio" : "project"),
+      url,
+      storagePath,
+    });
   }
 
   function handleFolderAssetClick(asset: LabDemoAsset) {
@@ -1404,6 +1868,95 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
   function selectStageItem(item: WorkspaceStagedFile) {
     setSelectedStageId(item.id);
     if (item.clipId) setSelectedClipId(item.clipId);
+    if (item.expanded) openClipMiniWin(item.id);
+  }
+
+  function clipMiniMediaKind(
+    item: WorkspaceStagedFile,
+  ): "image" | "video" | "audio" | "other" {
+    if (
+      item.assetKind === "image" ||
+      /\.(png|jpe?g|gif|webp|bmp|psd)$/i.test(item.ext)
+    ) {
+      return "image";
+    }
+    if (item.assetKind === "audio" || item.kind === "audio") return "audio";
+    if (item.assetKind === "video" || item.kind === "video") return "video";
+    return "other";
+  }
+
+  function openClipMiniWin(stageId: string) {
+    setClipMiniWins((prev) => {
+      clipMiniZRef.current += 1;
+      const z = clipMiniZRef.current;
+      const existing = prev.find((w) => w.stageId === stageId);
+      if (existing) {
+        return prev.map((w) => (w.stageId === stageId ? { ...w, z } : w));
+      }
+      const offset = prev.length * CLIP_MINI_CASCADE;
+      return [
+        ...prev,
+        {
+          stageId,
+          x: 56 + offset,
+          y: 88 + offset,
+          w: CLIP_MINI_W,
+          h: CLIP_MINI_H,
+          locked: true,
+          z,
+        },
+      ];
+    });
+  }
+
+  function closeClipMiniWin(stageId: string) {
+    setClipMiniWins((prev) => prev.filter((w) => w.stageId !== stageId));
+  }
+
+  function bringClipMiniToFront(stageId: string) {
+    clipMiniZRef.current += 1;
+    const z = clipMiniZRef.current;
+    setClipMiniWins((prev) =>
+      prev.map((w) => (w.stageId === stageId ? { ...w, z } : w)),
+    );
+  }
+
+  function handleClipMiniPointerDown(
+    stageId: string,
+    event: React.PointerEvent<HTMLElement>,
+  ) {
+    const target = event.target as HTMLElement;
+    if (target.closest("button, input, label, a, video, audio")) return;
+    const win = clipMiniWins.find((w) => w.stageId === stageId);
+    if (!win || win.locked) {
+      bringClipMiniToFront(stageId);
+      return;
+    }
+    event.preventDefault();
+    clipMiniDragRef.current = {
+      stageId,
+      startX: event.clientX,
+      startY: event.clientY,
+      originX: win.x,
+      originY: win.y,
+      moved: false,
+      pointerId: event.pointerId,
+    };
+    bringClipMiniToFront(stageId);
+  }
+
+  function handleClipMiniTitleClick(stageId: string, event: React.MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (target.closest("button")) return;
+    if (clipMiniSkipClickRef.current) {
+      clipMiniSkipClickRef.current = false;
+      return;
+    }
+    setClipMiniWins((prev) =>
+      prev.map((w) =>
+        w.stageId === stageId ? { ...w, locked: !w.locked } : w,
+      ),
+    );
   }
 
   function moveClipStart(clipId: string, startPct: number) {
@@ -2108,7 +2661,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
                   </div>
                 )}
 
-                {operateItem && operateItem.kind === "video" && (
+                {operateItem && operateItem.kind === "video" && !operateItem.url?.trim() && (
                   <div className="lab-room__waveform lab-room__video-preview">
                     <div className="lab-room__waveform-head">
                       <p className="lab-room__waveform-title">
@@ -2172,10 +2725,7 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
               className={`lab-room__nle-btn${isPlaying ? " is-active" : ""}`}
               title={room.timelinePlay}
               aria-pressed={isPlaying}
-              onClick={() => {
-                if (playheadPct >= 100) setPlayheadPct(0);
-                setIsPlaying(true);
-              }}
+              onClick={() => startTimelinePlayback()}
             >
               ▶
             </button>
@@ -2190,6 +2740,11 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
             <span className="lab-room__nle-tc" title={room.timelinePlayhead}>
               {playheadTimecode}
             </span>
+            {audioNotice && (
+              <span className="eldonia-hint text-[10px] text-eldonia-gold-light">
+                {audioNotice}
+              </span>
+            )}
             <button
               type="button"
               className="lab-room__nle-console-btn"
@@ -2485,6 +3040,89 @@ export function LabRoomShell({ labData, userId, preview = false }: LabRoomShellP
           </div>
         </div>
       )}
+
+      {clipMiniWins.map((win) => {
+        const item = stagedFiles.find((s) => s.id === win.stageId);
+        if (!item) return null;
+        const media = clipMiniMediaKind(item);
+        const url = item.url?.trim() || null;
+        return (
+          <div
+            key={win.stageId}
+            className="lab-room__clip-mini lab-room__desktop-only"
+            role="dialog"
+            aria-modal="false"
+            aria-label={item.label}
+            style={{
+              left: win.x,
+              top: win.y,
+              width: win.w,
+              height: win.h,
+              zIndex: win.z,
+              minWidth: CLIP_MINI_W_MIN,
+              minHeight: CLIP_MINI_H_MIN,
+            }}
+            onPointerDown={() => bringClipMiniToFront(win.stageId)}
+          >
+            <header
+              className={`lab-room__clip-mini-head${
+                win.locked ? " is-locked" : " is-movable"
+              }`}
+              title={
+                win.locked ? room.audioWinUnlockHint : room.audioWinLockHint
+              }
+              onPointerDown={(event) =>
+                handleClipMiniPointerDown(win.stageId, event)
+              }
+              onClick={(event) => handleClipMiniTitleClick(win.stageId, event)}
+            >
+              <div className="lab-room__clip-mini-title">
+                <span className="lab-room__clip-mini-grip" aria-hidden="true" />
+                <div>
+                  <p className="lab-room__clip-mini-eyebrow">
+                    {room.videoPreviewHeading}
+                  </p>
+                  <p className="lab-room__clip-mini-name">{item.label}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="lab-room__audio-win-close"
+                aria-label={room.closeAction}
+                onClick={() => closeClipMiniWin(win.stageId)}
+              >
+                ✕
+              </button>
+            </header>
+            <div className="lab-room__clip-mini-body">
+              {media === "image" && url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={url}
+                  alt={item.label}
+                  className="lab-room__clip-mini-media"
+                />
+              ) : media === "video" && url ? (
+                <video
+                  key={url}
+                  src={url}
+                  controls
+                  playsInline
+                  preload="metadata"
+                  className="lab-room__clip-mini-media lab-room__clip-mini-video"
+                />
+              ) : media === "audio" && url ? (
+                <div className="lab-room__clip-mini-audio">
+                  <p className="lab-room__clip-mini-audio-label">{item.label}</p>
+                  <audio key={url} src={url} controls preload="metadata" />
+                </div>
+              ) : (
+                <p className="eldonia-hint text-xs">{room.waveformHint}</p>
+              )}
+            </div>
+          </div>
+        );
+      })}
 
       {audioConsoleOpen && (
         <div

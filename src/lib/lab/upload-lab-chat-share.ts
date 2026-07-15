@@ -25,7 +25,7 @@ export async function uploadLabChatShare(
   userId: string,
   labId: string,
   file: File,
-): Promise<{ publicUrl: string; name: string }> {
+): Promise<{ publicUrl: string; name: string; storagePath: string }> {
   if (file.size > MAX_LAB_SHARE_BYTES) {
     throw new Error("FILE_TOO_LARGE");
   }
@@ -49,5 +49,5 @@ export async function uploadLabChatShare(
     data: { publicUrl },
   } = supabase.storage.from("artworks").getPublicUrl(objectPath);
 
-  return { publicUrl, name: safeName || `file.${extension}` };
+  return { publicUrl, name: safeName || `file.${extension}`, storagePath: objectPath };
 }

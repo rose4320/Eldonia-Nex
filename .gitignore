@@ -383,6 +383,12 @@ logs
 /media/
 /static/
 /staticfiles/
+# Full Noto source (~9MB) — keep only the pre-subset ticket font in git
+assets/fonts/NotoSansJP-Regular.ttf
+assets/fonts/*.otf
+assets/fonts/*.woff
+assets/fonts/*.woff2
+!assets/fonts/NotoSansJP-Ticket.ttf
 
 # Auto-installed GCP/Datacloud agent skills (clutters explorer & git)
 .cursor/skills/
